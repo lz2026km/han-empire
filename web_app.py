@@ -3,6 +3,7 @@
 import uuid
 import sys
 from pathlib import Path
+from typing import Dict, List
 
 import gradio as gr
 
@@ -14,6 +15,7 @@ from han_sim.llm_config import load_llm_config
 from han_sim.models import GameState
 from han_sim.paths import user_data_path
 from han_sim.session import GameSession
+from han_sim.conversation import get_recent_exchanges
 from han_sim.simulation import run_monthly_simulation
 
 # ── API Key ─────────────────────────────────────────────────────────────
@@ -64,18 +66,27 @@ class GameUI:
         return self._render_state()
 
     def _render_state(self):
-        s = self.session.state
-        lines = [
-            f"**【{s.year}年{s.period}月 · 第{s.turn}回合】**",
-            f"",
-            f"📦 汉室库：{s.metrics.get('汉室库', 0)}万两",
-            f"📦 内库：{s.metrics.get('内库', 0)}万两",
-            f"⭐ 声望：{s.metrics.get('声望', 0)}/100",
-            f"👑 威权：{s.metrics.get('威权', 0)}/100",
-            f"⚔️  藩镇：{s.metrics.get('藩镇', 0)}/100",
-            f"",
-        ]
-        return "\n".join(lines)
+            s = self.session.state
+            authority = s.metrics.get('威权', 0)
+            if authority >= 80:
+                auth_label = "🔴 诏书如山"
+            elif authority >= 50:
+                auth_label = "🟡 诏书有效"
+            elif authority >= 20:
+                auth_label = "🟠 阳奉阴违"
+            else:
+                auth_label = "⚫ 无人理会"
+            lines = [
+                f"**【{s.year}年{s.period}月 · 第{s.turn}回合 · {s.capital}】**",
+                "",
+                f"📦 汉室库：{s.metrics.get('汉室库', 0)}万两",
+                f"💰 内库：{s.metrics.get('内库', 0)}万两",
+                f"⭐ 声望：{s.metrics.get('声望', 0)}/100",
+                f"👑 威权：{authority}/100 — {auth_label}",
+                f"⚔️  藩镇：{s.metrics.get('藩镇', 0)}/100",
+                "",
+            ]
+            return "\n".join(lines)
 
     def _render_ministers(self):
         ministers = self.session.get_active_ministers()
@@ -86,6 +97,53 @@ class GameUI:
             lines.append(
                 f"| {m['name']} | {m.get('office','无')} | {m.get('loyalty',0)} | {m.get('ability',0)} |"
             )
+        return "\n".join(lines)
+
+    def _render_history(self):
+        """召对历史：最近10回合，每回合展示关键对话。"""
+        if not self.session:
+            return "_暂无召对记录_"
+        # 读取全局召对记录（按turn聚合）
+        rows = self.session.db.conn.execute(
+            """SELECT turn, period, role, content, minister_name
+               FROM conversation_history
+               WHERE campaign_id=?
+               ORDER BY id DESC LIMIT 40""",
+            (self.session.campaign_id,),
+        ).fetchall()
+        if not rows:
+            return "_暂无召对记录_"
+        # 按turn分组
+        by_turn: Dict[tuple, Dict] = {}
+        for row in reversed(rows):
+            turn, period, role, content, minister = row[0], row[1], row[2], row[3], row[4]
+            key = (turn, period)
+            if key not in by_turn:
+                by_turn[key] = {"emperor": "", "minister": "", "minister_name": minister}
+            if role == "emperor":
+                by_turn[key]["emperor"] = content[:80]
+            elif role == "minister":
+                by_turn[key]["minister"] = content[:80]
+        lines = ["**【召对历史】**", ""]
+        for (turn, period), data in sorted(by_turn.items(), key=lambda x: x[0][0], reverse=True)[:10]:
+            lines.append(f"**第{turn}回合 · {period}月**")
+            if data["emperor"]:
+                lines.append(f"👤 天子：{data['emperor']}…")
+            if data["minister"]:
+                lines.append(f"🏛️ {data['minister_name']}：{data['minister']}…")
+            lines.append("")
+        return "\n".join(lines)
+
+    def _render_log(self):
+        """游戏日志：最近20条。"""
+        if not self.session:
+            return "_暂无日志_"
+        rows = self.session.db.get_recent_log(limit=20)
+        if not rows:
+            return "_暂无日志_"
+        lines = ["**【游戏日志】**", ""]
+        for row in rows:
+            lines.append(f"第{row['turn']}回合 {row['phase']}：{row['entry'][:60]}")
         return "\n".join(lines)
 
     def cmd_summon(self, minister_name: str, question: str):
@@ -182,7 +240,7 @@ class GameUI:
 def build_ui():
     ui = GameUI()
 
-    with gr.Blocks(title="汉献帝之末路", theme=gr.themes.Soft()) as demo:
+    with gr.Blocks(title="汉献帝之末路") as demo:
         gr.Markdown("# 👑 汉献帝之末路")
         gr.Markdown("_189年，董卓进京，废少帝立献帝。名为天子，实为阶下囚。_")
         gr.Markdown(HELP)
@@ -215,9 +273,9 @@ def build_ui():
 
         gr.Markdown("---")
 
-        with gr.Row():
-            with gr.Column(scale=2):
-                gr.Markdown("### 📜 拟旨")
+        gr.Markdown("### 🗓️ 事务面板")
+        with gr.Tabs():
+            with gr.TabItem("📜 拟旨"):
                 intent_input = gr.Dropdown(
                     label="选择或输入拟旨意图",
                     choices=DECREE_TYPES,
@@ -226,6 +284,14 @@ def build_ui():
                 )
                 decree_btn = gr.Button("拟旨", variant="primary")
                 decree_output = gr.Markdown()
+
+            with gr.TabItem("📖 召对历史"):
+                history_display = gr.Markdown("*召对记录将显示在这里*")
+                refresh_history_btn = gr.Button("🔄 刷新召对记录")
+
+            with gr.TabItem("📋 游戏日志"):
+                log_display = gr.Markdown("*游戏日志将显示在这里*")
+                refresh_log_btn = gr.Button("🔄 刷新日志")
 
         gr.Markdown("---")
 
@@ -242,7 +308,15 @@ def build_ui():
         def do_new_game():
             out = ui.new_game()
             ministers = ui._render_ministers()
-            return out, ministers
+            history = ui._render_history()
+            log = ui._render_log()
+            return out, ministers, history, log
+
+        def do_refresh_history():
+            return ui._render_history()
+
+        def do_refresh_log():
+            return ui._render_log()
 
         summon_btn.click(
             fn=ui.cmd_summon,
@@ -262,14 +336,24 @@ def build_ui():
         new_game_btn.click(
             fn=do_new_game,
             inputs=[],
-            outputs=[state_display, ministers_display],
+            outputs=[state_display, ministers_display, history_display, log_display],
+        )
+        refresh_history_btn.click(
+            fn=do_refresh_history,
+            inputs=[],
+            outputs=history_display,
+        )
+        refresh_log_btn.click(
+            fn=do_refresh_log,
+            inputs=[],
+            outputs=log_display,
         )
 
         # 初始化
         demo.load(
             fn=do_new_game,
             inputs=[],
-            outputs=[state_display, ministers_display],
+            outputs=[state_display, ministers_display, history_display, log_display],
         )
 
     return demo
