@@ -48,6 +48,7 @@ HELP = """
 DECREE_TYPES = [
     "赈济灾民", "减免赋税", "颁布罪己诏", "提拔贤才", "整饬吏治",
     "军事调度", "外交安抚", "流通铜钱", "改革税制", "召集兵马",
+    "衣带密诏", "献帝东归",
 ]
 
 
@@ -306,6 +307,25 @@ class GameUI:
             return "❗ 请先点击 **新游戏** 开始。"
         if not intent:
             return "❗ 请输入拟旨意图。"
+
+        # 特殊诏书：衣带密诏走独立逻辑
+        if intent == "衣带密诏":
+            from han_sim.decree import issue_secret_edict
+            result = issue_secret_edict(self.session.state, self.session.db)
+            d = result.decree
+            lines = [
+                f"**【{'衣带密诏已下' if d.full_text else '衣带密诏失败'}】**",
+                "",
+            ]
+            if d.full_text:
+                lines.append(d.full_text)
+            else:
+                lines.append(f"_（{d.narrative}）_")
+            if result.log_entries:
+                lines.append("")
+                lines.append("**效果**：" + "；".join(result.log_entries))
+            return "\n".join(lines)
+
         try:
             result = issue_decree(intent, self.session.state, self.session.db)
             d = result.decree
@@ -361,6 +381,11 @@ class GameUI:
                 f"- 藩镇 {sim.metrics_delta.get('藩镇', 0):+d}",
                 "",
             ])
+            if hasattr(sim, 'warlord_changes') and sim.warlord_changes:
+                lines.append("**⚔️ 诸侯动态**")
+                for w in sim.warlord_changes[:5]:
+                    lines.append(f"- {w.get('id','?')}：{w.get('last_action','按兵不动')}")
+                lines.append("")
             if self.decree_log:
                 lines.append("**📋 本月诏书**")
                 for d in self.decree_log:

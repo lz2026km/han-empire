@@ -104,7 +104,6 @@ def apply_warlord_actions(state: GameState, db: GameDB) -> List[Dict]:
     changes: List[Dict] = []
     # 含汉室自身，取除汉室外所有势力
     powers = db.list_powers()
-    faction_leverage_delta = 0  # 所有势力的 leverage 变化汇总
 
     for p in powers:
         pid = p.get("id", "")
@@ -139,7 +138,6 @@ def apply_warlord_actions(state: GameState, db: GameDB) -> List[Dict]:
 
         new_lev = max(0, min(100, leverage + delta_leverage))
         new_mil = max(0, min(100, mil + delta_mil))
-        faction_leverage_delta += new_lev - leverage
 
         if delta_leverage or delta_mil:
             db.conn.execute(

@@ -99,6 +99,13 @@ DECREE_KINDS = {
     "east_return_edict": "东归诏书",
 }
 
+DECREE_TYPE_LABELS = {
+    "secret_edict": "衣带密诏",
+    "moving_edict": "迁都诏书",
+    "campaign_edict": "讨伐董卓",
+    "east_return_edict": "献帝东归",
+}
+
 
 @dataclass
 class Decree:

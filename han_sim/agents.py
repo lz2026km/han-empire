@@ -13,7 +13,7 @@ from han_sim.llm_model import create_chat_model, extract_agent_text, verify_llm_
 from han_sim.models import GameState
 
 
-def create_minister_agent(minister: Dict, state: GameState, memory_brief: str = "") -> Agent:
+def create_minister_agent(minister: Dict, state: GameState, memory_brief: str = "", loyalty_ctx: str = "") -> Agent:
     """创建大臣对话 agent。memory_brief 会注入到 system prompt 末尾。"""
     llm_cfg = load_llm_config(
         base_url="https://api.minimax.chat/v1",
@@ -31,6 +31,7 @@ def create_minister_agent(minister: Dict, state: GameState, memory_brief: str = 
         "- 忠诚：" + str(minister["loyalty"]) + " / 100\n"
         "- 简介：" + minister["summary"] + "\n"
         "- 特长：" + skills + "\n\n"
+        "【忠诚度说明】" + loyalty_ctx + "\n\n"
         "你是一个三国时期的历史人物，以符合你人物性格的方式与天子（汉献帝刘协）对话。\n"
         "天子此时被曹操控制在许昌，名为天子实为阶下囚。\n"
         "你要根据你的忠诚度和人物性格来决定如何回应天子。\n\n"

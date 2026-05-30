@@ -92,6 +92,10 @@ class GameSession:
         if not minister:
             return SummonResult(chat_text=f"找不到大臣：{minister_name}")
 
+        # ── 召见前：忠诚度上下文注入 ─────────────────────────
+        from han_sim.flows import get_minister_loyalty_context
+        loyalty_ctx = get_minister_loyalty_context(self.db, minister["name"])
+
         # ── 召见前：记忆召回 ───────────────────────────────────
         memory_brief = build_memory_brief(
             character_name=minister["name"],
@@ -106,12 +110,13 @@ class GameSession:
         recent = get_recent_exchanges(self.db, self.campaign_id, minister_name, n=6)
         context = build_context_prompt(recent)
 
-        agent = create_minister_agent(minister, self.state, memory_brief=memory_brief)
+        agent = create_minister_agent(minister, self.state, memory_brief=memory_brief, loyalty_ctx=loyalty_ctx)
 
         prompt = (
             f"{context}\n"
             f"【天子此次询问】{instruction}\n\n"
-            f"请以{minister['name']}的身份回应天子。"
+            f"请以{minister['name']}的身份回应天子。\n"
+            f"【忠诚度提示】{loyalty_ctx}"
         )
         response = agent.run(prompt)
         text = response.content if hasattr(response, "content") else str(response)

@@ -47,6 +47,7 @@ from han_sim.db import GameDB
 class SimulationResult:
     fiscal: Dict          # 财政结算
     faction_delta: List[Dict]  # 藩镇变化
+    warlord_changes: List[Dict]  # 诸侯动态
     historical: List[Dict]    # 历史事件列表
     threshold_crisis: List[Dict]  # 阈值危机列表
     random_events: List[Dict]     # 随机事件列表
@@ -198,6 +199,7 @@ def run_monthly_simulation(
     if check_dongzhuo_trap(state):
         return SimulationResult(
             fiscal=fiscal, faction_delta=faction_delta,
+            warlord_changes=warlord_changes,
             historical=historical, threshold_crisis=threshold_crisis,
             random_events=random_events,
             narrative="【游戏结束】董卓伏诛线失败，汉室名存实亡……",
@@ -255,6 +257,7 @@ def run_monthly_simulation(
     return SimulationResult(
         fiscal=fiscal,
         faction_delta=faction_delta,
+        warlord_changes=warlord_changes,
         historical=historical,
         threshold_crisis=threshold_crisis,
         random_events=random_events,
