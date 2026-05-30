@@ -11,3 +11,8 @@ class LLMUnavailable(GameError):
         self.code = code
         self.provider_message = provider_message
         self.status_code = status_code
+
+
+class LLMContractError(GameError):
+    """LLM 返回内容不符合契约规范（如 JSON 解析失败、字段缺失等）。"""
+    pass
