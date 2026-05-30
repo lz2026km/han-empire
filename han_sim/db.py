@@ -1217,7 +1217,7 @@ class GameDB:
         ).fetchall()
         return self._rows_to_dicts(rows)
 
-    # ── 事项追踪（Issues）──────────────────────────────
+    # ── 事项追踪（Issues）────────────────────────────
 
     def insert_issue(
         self,
@@ -1270,38 +1270,145 @@ class GameDB:
         row = self.conn.execute("SELECT last_insert_rowid()").fetchone()
         return int(row[0]) if row else 0
 
-    def advance_issue(self, issue_id: int, steps: int = 1, state: Optional["GameState"] = None) -> None:
-        turn = state.turn if state else self.load_state_key("turn", 1)
-        total = self._issue_total_steps(issue_id)
-        pct = (100 // max(1, total)) * steps
+    def advance_issue(
+        self,
+        state: "GameState",
+        issue_id: int,
+        trigger_kind: str = "decree",
+        delta_bar: int = 0,
+        stage_text: str = "",
+        narrative: str = "",
+        metric_delta: Optional[Dict[str, int]] = None,
+        inertia_delta: int = 0,
+    ) -> Optional[Dict]:
+        """推进事项，记录 issue_advances 条日志，返回更新后行（含结案状态）。"""
+        row = self.conn.execute(
+            "SELECT * FROM issues WHERE id=?", (int(issue_id),)
+        ).fetchone()
+        if row is None:
+            return None
+
+        from_val = int(row["bar_value"]) if "bar_value" in row.keys() else int(dict(row).get("progress", 40))
+        new_val = max(0, min(100, from_val + delta_bar))
+        status = row["status"]
+
+        # 判断结案
+        if new_val >= 80 and row["resolve_condition"]:
+            status = "resolved"
+        elif new_val <= 0 and row["fail_condition"]:
+            status = "failed"
+        elif new_val >= 80:
+            status = "resolved"
+        elif new_val <= 0:
+            status = "failed"
+
+        # inertia 变化
+        cur_inertia = int(dict(row).get("inertia", 0))
+        new_inertia = max(-10, min(10, cur_inertia + inertia_delta))
+
+        # 更新 issues 表
+        self.conn.execute("UPDATE issues SET bar_value=?, inertia=?, stage_text=?, status=? WHERE id=?",
+            (new_val, new_inertia, stage_text[:120], status, int(issue_id)))
+
+        # 记录 issue_advances
         self.conn.execute(
-            "UPDATE issues SET current_step=current_step+?, progress=progress+?, "
-            "last_advance_turn=? WHERE id=?",
-            (steps, pct, turn, issue_id),
+            """INSERT INTO issue_advances
+               (issue_id, turn, trigger_kind, delta_bar,
+                from_value, to_value, from_stage_text, to_stage_text,
+                narrative, metric_delta)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                int(issue_id), state.turn, trigger_kind, delta_bar,
+                from_val, new_val,
+                dict(row).get("stage_text", "")[:120], stage_text[:120],
+                narrative[:400],
+                json.dumps(metric_delta or {}, ensure_ascii=False),
+            ),
         )
         self.conn.commit()
+
+        return dict(self.conn.execute(
+            "SELECT * FROM issues WHERE id=?", (int(issue_id),)
+        ).fetchone())
 
     def _issue_total_steps(self, issue_id: int) -> int:
         row = self.conn.execute("SELECT total_steps FROM issues WHERE id=?", (issue_id,)).fetchone()
         return int(row["total_steps"]) if row else 1
 
-    def close_issue(self, issue_id: int, success: bool, state: Optional["GameState"] = None) -> None:
-        turn = state.turn if state else self.load_state_key("turn", 1)
+    def close_issue(
+        self,
+        state: "GameState",
+        issue_id: int,
+        reason: str = "resolved",
+        narrative: str = "",
+    ) -> Optional[Dict]:
+        """结案事项，返回更新后行。reason='resolved'|'failed'。"""
+        success = reason == "resolved"
         self.conn.execute(
-            "UPDATE issues SET status='closed', closed_turn=?, success=? WHERE id=?",
-            (turn, 1 if success else 0, issue_id),
+            "UPDATE issues SET status='closed', closed_turn=?, "
+            "resolution_summary=? WHERE id=?",
+            (state.turn, narrative[:400], int(issue_id)),
+        )
+        self.conn.execute(
+            """INSERT INTO issue_advances
+               (issue_id, turn, trigger_kind, delta_bar,
+                from_value, to_value, narrative, metric_delta)
+               VALUES (?, ?, 'close', 0, ?, ?, ?, '{}')""",
+            (
+                int(issue_id), state.turn,
+                int(self.conn.execute(
+                    "SELECT bar_value FROM issues WHERE id=?", (int(issue_id),)
+                ).fetchone()["bar_value"]),
+                0 if success else 100,
+                narrative[:400],
+            ),
         )
         self.conn.commit()
+        return dict(self.conn.execute(
+            "SELECT * FROM issues WHERE id=?", (int(issue_id),)
+        ).fetchone())
+
+    def cancel_issue(
+        self,
+        state: "GameState",
+        issue_id: int,
+        narrative: str = "",
+        applied_cost: Optional[Dict] = None,
+    ) -> None:
+        """撤销事项。"""
+        self.conn.execute(
+            "UPDATE issues SET status='cancelled', closed_turn=?, "
+            "resolution_summary=? WHERE id=?",
+            (state.turn, narrative[:400], int(issue_id)),
+        )
+        self.conn.execute(
+            """INSERT INTO issue_advances
+               (issue_id, turn, trigger_kind, delta_bar,
+                from_value, to_value, narrative, metric_delta)
+               VALUES (?, ?, 'cancel', 0, ?, ?, ?, '{}')""",
+            (
+                int(issue_id), state.turn,
+                int(self.conn.execute(
+                    "SELECT bar_value FROM issues WHERE id=?", (int(issue_id),)
+                ).fetchone()["bar_value"]),
+                0, narrative[:400],
+            ),
+        )
+        self.conn.commit()
+
+    def list_active_issues(self, tag: str = "") -> List[Dict]:
+        """兼容旧名：查询进行中事项。"""
+        return self.get_active_issues(tag)
 
     def get_active_issues(self, tag: str = "") -> List[Dict]:
         if tag:
             rows = self.conn.execute(
-                "SELECT * FROM issues WHERE status='active' AND tags LIKE ? ORDER BY id",
+                "SELECT * FROM issues WHERE status='active' AND tags LIKE ? ORDER BY severity DESC, id",
                 (f"%{tag}%",),
             ).fetchall()
         else:
             rows = self.conn.execute(
-                "SELECT * FROM issues WHERE status='active' ORDER BY id"
+                "SELECT * FROM issues WHERE status='active' ORDER BY severity DESC, id"
             ).fetchall()
         return self._rows_to_dicts(rows)
 
@@ -1317,6 +1424,15 @@ class GameDB:
             (origin_kind, origin_ref),
         ).fetchone()
         return dict(row) if row else None
+
+    def mark_event_triggered(self, state: "GameState", event_id: str) -> None:
+        """标记事件已触发（写入 event_triggers 表）。"""
+        self.conn.execute(
+            """INSERT OR IGNORE INTO event_triggers (event_id, turn, year, period, source)
+               VALUES (?, ?, ?, ?, 'issues')""",
+            (event_id, state.turn, state.year, state.period),
+        )
+        self.conn.commit()
 
     # ── 工具 ───────────────────────────────────────────────────
 
