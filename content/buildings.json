@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "version": 1,
+    "description": "汉末建筑系统：洛阳/长安/许昌宫阙、郡县城池、武库、太仓等。建筑分6类：军事/财政/民生/交通/内廷/礼制。",
+    "category_labels": {
+      "军事": "军事设施",
+      "财政": "财政设施",
+      "民生": "民生设施",
+      "交通": "交通设施",
+      "内廷": "内廷设施",
+      "礼制": "礼制建筑"
+    }
+  },
+  "buildings": [
+    {"id": "luoyang_palace", "region_id": "河南尹", "name": "洛阳宫殿", "category": "内廷", "level": 3, "condition": 30, "maintenance": 5, "risk": 60, "output_metric": "威权", "output_amount": 3, "status": "董卓焚毁大半，残存少许"},
+    {"id": "luoyang_wuku", "region_id": "河南尹", "name": "洛阳武库", "category": "军事", "level": 2, "condition": 15, "maintenance": 2, "risk": 70, "output_metric": "军备", "output_amount": 5, "status": "董卓焚掠后几近废墟"},
+    {"id": "luoyang_taicang", "region_id": "河南尹", "name": "洛阳太仓", "category": "财政", "level": 2, "condition": 20, "maintenance": 2, "risk": 65, "output_metric": "汉室库", "output_amount": 3, "status": "董卓迁都时劫掠一空"},
+    {"id": "luoyang_taixue", "region_id": "河南尹", "name": "洛阳太学", "category": "礼制", "level": 3, "condition": 45, "maintenance": 1, "risk": 30, "output_metric": "声望", "output_amount": 2, "status": "仍在运转，太学生三万余人"},
+    {"id": "luoyang_cheng", "region_id": "河南尹", "name": "洛阳城垣", "category": "军事", "level": 2, "condition": 25, "maintenance": 3, "risk": 75, "output_metric": "威权", "output_amount": 2, "status": "董卓焚城后残破不堪"},
+    {"id": "changan_palace", "region_id": "京兆尹", "name": "长安未央宫", "category": "内廷", "level": 4, "condition": 70, "maintenance": 8, "risk": 20, "output_metric": "威权", "output_amount": 5, "status": "董卓迁都后修复，壮丽非凡"},
+    {"id": "changan_wuku", "region_id": "京兆尹", "name": "长安武库", "category": "军事", "level": 3, "condition": 60, "maintenance": 3, "risk": 30, "output_metric": "军备", "output_amount": 8, "status": "董卓移置洛阳武库精械至此"},
+    {"id": "changan_taicang", "region_id": "京兆尹", "name": "长安太仓", "category": "财政", "level": 3, "condition": 65, "maintenance": 3, "risk": 25, "output_metric": "汉室库", "output_amount": 5, "status": "新修太仓，储备尚可"},
+    {"id": "changan_cheng", "region_id": "京兆尹", "name": "长安城垣", "category": "军事", "level": 3, "condition": 75, "maintenance": 4, "risk": 20, "output_metric": "威权", "output_amount": 3, "status": "新筑之城，防御完好"},
+    {"id": "xuchang_palace", "region_id": "颍川郡", "name": "许昌宫", "category": "内廷", "level": 3, "condition": 80, "maintenance": 6, "risk": 15, "output_metric": "威权", "output_amount": 4, "status": "曹操迎帝后新修，壮丽宏广"},
+    {"id": "xuchang_taicang", "region_id": "颍川郡", "name": "许昌太仓", "category": "财政", "level": 2, "condition": 75, "maintenance": 2, "risk": 20, "output_metric": "汉室库", "output_amount": 4, "status": "曹操新建，储备充实"},
+    {"id": "xuchang_wuqu", "region_id": "颍川郡", "name": "许都武库", "category": "军事", "level": 2, "condition": 70, "maintenance": 2, "risk": 20, "output_metric": "军备", "output_amount": 6, "status": "曹操新建，规模齐备"},
+    {"id": "nanyang_cheng", "region_id": "南阳郡", "name": "南阳城垣", "category": "军事", "level": 2, "condition": 55, "maintenance": 2, "risk": 35, "output_metric": "威权", "output_amount": 2, "status": "袁术据此时有修缮"},
+    {"id": "yecheng_cheng", "region_id": "魏郡", "name": "邺城", "category": "军事", "level": 3, "condition": 60, "maintenance": 3, "risk": 30, "output_metric": "威权", "output_amount": 3, "status": "袁绍据冀州时经营多年"},
+    {"id": "guangling_cheng", "region_id": "广陵郡", "name": "广陵城垣", "category": "军事", "level": 2, "condition": 50, "maintenance": 2, "risk": 40, "output_metric": "威权", "output_amount": 1, "status": "扬州重镇，守备一般"},
+    {"id": "wancheng_cheng", "region_id": "南郡", "name": "江陵城垣", "category": "军事", "level": 2, "condition": 60, "maintenance": 2, "risk": 30, "output_metric": "威权", "output_amount": 2, "status": "荆州要冲，刘表经营"},
+    {"id": "jiujiang_wuqu", "region_id": "豫章郡", "name": "九江武库", "category": "军事", "level": 2, "condition": 55, "maintenance": 2, "risk": 35, "output_metric": "军备", "output_amount": 5, "status": "扬州水军驻地"},
+    {"id": "huanian_cheng", "region_id": "南郡", "name": "襄阳城垣", "category": "军事", "level": 2, "condition": 65, "maintenance": 2, "risk": 25, "output_metric": "威权", "output_amount": 2, "status": "刘表镇荆州，治所有方"},
+    {"id": "xiucheng_road", "region_id": "河南尹", "name": "洛阳驰道", "category": "交通", "level": 2, "condition": 30, "maintenance": 1, "risk": 50, "output_metric": "威权", "output_amount": 1, "status": "秦驰道遗址，破败失修"},
+    {"id": "jingxing_road", "region_id": "常山郡", "name": "井陉道", "category": "交通", "level": 2, "condition": 50, "maintenance": 1, "risk": 40, "output_metric": "军备", "output_amount": 2, "status": "太行八陉之一，军事要道"},
+    {"id": "yangling_taicang", "region_id": "右扶风", "name": "雍城太仓", "category": "财政", "level": 2, "condition": 55, "maintenance": 2, "risk": 30, "output_metric": "汉室库", "output_amount": 3, "status": "关中旧有粮仓"},
+    {"id": "yongcheng", "region_id": "河南尹", "name": "雒阳太庙", "category": "礼制", "level": 3, "condition": 35, "maintenance": 2, "risk": 55, "output_metric": "声望", "output_amount": 3, "status": "董卓焚毁大半，先祖神位迁于长安"},
+    {"id": "chanyu_temple", "region_id": "京兆尹", "name": "长安宗庙", "category": "礼制", "level": 3, "condition": 65, "maintenance": 2, "risk": 25, "output_metric": "声望", "output_amount": 3, "status": "新立宗庙，香火初续"},
+    {"id": "taishan_shan", "region_id": "泰山郡", "name": "泰山封禅坛", "category": "礼制", "level": 3, "condition": 40, "maintenance": 1, "risk": 30, "output_metric": "威权", "output_amount": 5, "status": "历代帝王封禅圣地，若能登临天下侧目"},
+    {"id": "shouancheng", "region_id": "颍川郡", "name": "受禅台", "category": "礼制", "level": 4, "condition": 0, "maintenance": 0, "risk": 0, "output_metric": "威权", "output_amount": 10, "status": "尚未修建——若汉室至此，将有大事发生"}
+  ]
+}
