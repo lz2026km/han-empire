@@ -213,7 +213,10 @@ def build_ui():
                 )
                 summon_output = gr.Markdown()
 
-            with gr.Column(scale=1):
+        gr.Markdown("---")
+
+        with gr.Row():
+            with gr.Column(scale=2):
                 gr.Markdown("### 📜 拟旨")
                 intent_input = gr.Dropdown(
                     label="选择或输入拟旨意图",

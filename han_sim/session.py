@@ -10,6 +10,12 @@ from typing import Dict, List, Optional, Tuple
 from han_sim.agents import create_minister_agent
 from han_sim.constants import PHASE_ISSUED, PHASE_REVIEWING, PHASE_SUMMONING
 from han_sim.content import GameContent
+from han_sim.conversation import (
+    build_context_prompt,
+    get_recent_exchanges,
+    init_conv_table,
+    save_message,
+)
 from han_sim.db import GameDB
 from han_sim.flows import apply_monthly_flow
 from han_sim.models import Character, CourtContext, GameState
@@ -61,6 +67,7 @@ class GameSession:
             turn_phase=PHASE_SUMMONING,
         )
         session._init_db(content)
+        init_conv_table(session.db)
         return session
 
     def _init_db(self, content: GameContent) -> None:
@@ -84,12 +91,30 @@ class GameSession:
         if not minister:
             return SummonResult(chat_text=f"找不到大臣：{minister_name}")
 
+        # 加载历史对话，构建上下文
+        recent = get_recent_exchanges(self.db, self.campaign_id, minister_name, n=6)
+        context = build_context_prompt(recent)
+
         agent = create_minister_agent(minister, self.state)
-        prompt = f"你是{minister['name']}，{minister['summary']}\n\n天子问你：{instruction}"
+
+        prompt = (
+            f"【近日对话记录】\n{context}\n"
+            f"【天子此次询问】{instruction}\n\n"
+            f"请以{minister['name']}的身份回应天子。"
+        )
         response = agent.run(prompt)
         text = response.content if hasattr(response, "content") else str(response)
+        if not isinstance(text, str):
+            text = str(text)
 
-        self.db.append_log(self.state.turn, "summoning", f"召见 {minister['name']}：{instruction[:50]}")
+        # 持久化对话历史
+        save_message(self.db, self.campaign_id, minister_name,
+                    "emperor", instruction, self.state.turn, self.state.period)
+        save_message(self.db, self.campaign_id, minister_name,
+                    "minister", text, self.state.turn, self.state.period)
+
+        self.db.append_log(self.state.turn, "summoning",
+                           f"召见 {minister['name']}：{instruction[:50]}")
         self.db.commit()
         return SummonResult(chat_text=text)
 
