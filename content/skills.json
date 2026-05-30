@@ -1,0 +1,222 @@
+[
+  {
+    "id": "skill_constitution_chenzhou",
+    "name": "陈粥定策",
+    "category": "political",
+    "description": "天子以粥代馔，示节俭于天下，凝聚人心。",
+    "effect": { "authority": 3, "public_support": 4, "unrest": -2 },
+    "cost": { "treasury": -2 },
+    "cooldown": 3,
+    "requirement": { "authority": ">=5" },
+    "trigger": "节俭型事件"
+  },
+  {
+    "id": "skill_imperial_writ",
+    "name": "天子诏书",
+    "category": "political",
+    "description": "以天子名义颁布诏书，宣示政令。",
+    "effect": { "authority": 2, "factions": -2 },
+    "cost": {},
+    "cooldown": 1,
+    "requirement": { "authority": ">=10" },
+    "trigger": "政令型事件"
+  },
+  {
+    "id": "skill_personally_review",
+    "name": "亲政听讼",
+    "category": "political",
+    "description": "天子亲自审理案件，示公正于天下。",
+    "effect": { "authority": 4, "public_support": 3, "unrest": -3 },
+    "cost": { "time": 1 },
+    "cooldown": 5,
+    "requirement": { "authority": ">=15" },
+    "trigger": "司法型事件"
+  },
+  {
+    "id": "skill_prayer_war",
+    "name": "祈祷征伐",
+    "category": "military",
+    "description": "天子向天地祈祷，为战争祈求庇佑。",
+    "effect": { "military": 3, "public_support": 2 },
+    "cost": {},
+    "cooldown": 4,
+    "requirement": { "authority": ">=10" },
+    "trigger": "军事型事件"
+  },
+  {
+    "id": "skill_imperial_examination",
+    "name": "亲临殿试",
+    "category": "political",
+    "description": "天子亲自主持科举考试，选拔人才。",
+    "effect": { "authority": 3, "civil_faction": 4 },
+    "cost": { "treasury": -3 },
+    "cooldown": 6,
+    "requirement": { "authority": ">=20" },
+    "trigger": "选官型事件"
+  },
+  {
+    "id": "skill_consort_intercession",
+    "name": "枕边劝谏",
+    "category": "political",
+    "description": "通过后宫嫔妃向权臣说情或刺探消息。",
+    "effect": { "authority": 1, "unrest": -2, "note": "风险:暴露嫔妃" },
+    "cost": {},
+    "cooldown": 3,
+    "requirement": {},
+    "trigger": "密谋型事件"
+  },
+  {
+    "id": "skill_martyrdom_display",
+    "name": "展示忠烈",
+    "category": "political",
+    "description": "将忠臣遗物或绝命书公开于朝堂，激励忠义。",
+    "effect": { "authority": 3, "public_support": 5, "military": 2 },
+    "cost": {},
+    "cooldown": 5,
+    "requirement": {},
+    "trigger": "激励型事件"
+  },
+  {
+    "id": "skill_elder_consent",
+    "name": "询问老臣",
+    "category": "political",
+    "description": "向三朝元老征询对策，获取政治经验。",
+    "effect": { "authority": 2, "unrest": -2 },
+    "cost": { "time": 1 },
+    "cooldown": 4,
+    "requirement": { "turn": ">=12" },
+    "trigger": "咨询型事件"
+  },
+  {
+    "id": "skill_pearls_scattered",
+    "name": "散财安民",
+    "category": "economic",
+    "description": "开皇仓放粮，散内帑私财以安民心。",
+    "effect": { "public_support": 8, "unrest": -6, "treasury": -5 },
+    "cost": { "treasury": -5 },
+    "cooldown": 6,
+    "requirement": { "treasury": ">=10" },
+    "trigger": "赈济型事件"
+  },
+  {
+    "id": "skill_imperial_portrait",
+    "name": "御笔画像",
+    "category": "cultural",
+    "description": "天子亲笔为功臣画像，赐予荣耀。",
+    "effect": { "authority": 3, "military": 2, "factions": -1 },
+    "cost": {},
+    "cooldown": 8,
+    "requirement": {},
+    "trigger": "荣誉型事件"
+  },
+  {
+    "id": "skill_forced_marriage",
+    "name": "和亲之策",
+    "category": "diplomatic",
+    "description": "以宗室女或宫女下嫁藩镇首领，缓和关系。",
+    "effect": { "factions": 3, "unrest": -3 },
+    "cost": {},
+    "cooldown": 10,
+    "requirement": {},
+    "trigger": "外交型事件"
+  },
+  {
+    "id": "skill_secret_edict",
+    "name": "密诏外放",
+    "category": "political",
+    "description": "向外地藩镇秘密下达谕旨，串联倒董。",
+    "effect": { "authority": -2, "military": 4, "factions": -3, "note": "风险:泄露则威权大跌" },
+    "cost": {},
+    "cooldown": 5,
+    "requirement": { "authority": ">=20" },
+    "trigger": "密谋型事件"
+  },
+  {
+    "id": "skill_three_attacks",
+    "name": "三赏之恩",
+    "category": "political",
+    "description": "连续三次嘉奖同一功臣，令其感恩戴德。",
+    "effect": { "authority": 5, "military": 3, "note": "强化忠诚度" },
+    "cost": { "treasury": -4 },
+    "cooldown": 8,
+    "requirement": { "authority": ">=15" },
+    "trigger": "恩宠型事件"
+  },
+  {
+    "id": "skill_imperial_sword",
+    "name": "赐剑授权",
+    "category": "military",
+    "description": "天子将佩剑赐予大将，许以便宜行事。",
+    "effect": { "military": 5, "authority": -1, "factions": -2 },
+    "cost": {},
+    "cooldown": 6,
+    "requirement": { "authority": ">=25" },
+    "trigger": "授权型事件"
+  },
+  {
+    "id": "skill_tomb_visit",
+    "name": "祭祀先帝",
+    "category": "cultural",
+    "description": "率群臣祭祀列祖列宗，宣示正统。",
+    "effect": { "authority": 5, "public_support": 3, "unrest": -2 },
+    "cost": { "treasury": -3 },
+    "cooldown": 12,
+    "requirement": { "authority": ">=10" },
+    "trigger": "祭祀型事件"
+  },
+  {
+    "id": "skill_emperor_dream",
+    "name": "托梦宣旨",
+    "category": "political",
+    "description": "声称先帝托梦，传达神秘旨意以定人心。",
+    "effect": { "authority": 4, "public_support": 3, "unrest": -3 },
+    "cost": {},
+    "cooldown": 10,
+    "requirement": { "authority": ">=20" },
+    "trigger": "神秘型事件"
+  },
+  {
+    "id": "skill_crackdown_corruption",
+    "name": "彻查贪腐",
+    "category": "political",
+    "description": "下旨彻查朝中贪腐官员，整顿吏治。",
+    "effect": { "authority": 4, "unrest": -3, "factions": -4 },
+    "cost": {},
+    "cooldown": 6,
+    "requirement": { "authority": ">=30" },
+    "trigger": "整风型事件"
+  },
+  {
+    "id": "skill_mountain_inscription",
+    "name": "勒石记功",
+    "category": "cultural",
+    "description": "在名山刻石记功，永传后世。",
+    "effect": { "authority": 3, "public_support": 4, "note": "增强正统形象" },
+    "cost": { "treasury": -2 },
+    "cooldown": 15,
+    "requirement": { "authority": ">=15" },
+    "trigger": "纪念型事件"
+  },
+  {
+    "id": "skill_shadow_cabinet",
+    "name": "影子内阁",
+    "category": "political",
+    "description": "在暗中培养一批忠于天子的官员，形成制衡。",
+    "effect": { "authority": 3, "civil_faction": 3, "note": "效果需数回合积累" },
+    "cost": { "treasury": -4 },
+    "cooldown": 8,
+    "requirement": { "authority": ">=20" },
+    "trigger": "布局型事件"
+  },
+  {
+    "id": "skill_false_surrender",
+    "name": "诈降诱敌",
+    "category": "military",
+    "description": "设计让敌人以为天子将禅让，诱其放松警惕。",
+    "effect": { "military": 4, "authority": -3, "note": "高风险高回报" },
+    "cost": {},
+    "cooldown": 12,
+    "requirement": { "authority": ">=25", "military": ">=20" },
+    "trigger": "谋略型事件"
+  }
+]

@@ -1,0 +1,445 @@
+[
+  {
+    "id": "decree_confront_dongzhuo",
+    "name": "诏令董卓",
+    "type": "political",
+    "description": "以天子名义下诏斥责董卓暴行，命其率军返回凉州。",
+    "effect": {
+      "authority": -5,
+      "unrest": 3,
+      "note": "董卓极可能抗旨，威权受损"
+    },
+    "requirement": { "authority": ">=30", "turn": ">=2" },
+    "target": "dongzhuo",
+    "category": "天子诏令"
+  },
+  {
+    "id": "decree_bless_general",
+    "name": "加封将帅",
+    "type": "military",
+    "description": "天子亲笔下诏，加封有功将领，激励军心。",
+    "effect": {
+      "military": 2,
+      "unrest": -1,
+      "note": "提升军队士气"
+    },
+    "requirement": { "authority": ">=20" },
+    "target": "any_general",
+    "category": "天子诏令"
+  },
+  {
+    "id": "decree_announce_grant",
+    "name": "颁布推恩令",
+    "type": "political",
+    "description": "下令藩王将封地分封给诸子，削弱藩镇割据势力。",
+    "effect": {
+      "authority": 3,
+      "factions": -2,
+      "unrest": 5,
+      "note": "藩镇势力普遍抵制"
+    },
+    "requirement": { "authority": ">=60" },
+    "target": "all_warlords",
+    "category": "政令"
+  },
+  {
+    "id": "decree_recruit_volunteers",
+    "name": "招募义军",
+    "type": "military",
+    "description": "天子下诏天下，招募忠义之士入京勤王。",
+    "effect": {
+      "military": 3,
+      "authority": -2,
+      "unrest": -3,
+      "note": "民间忠汉志士响应"
+    },
+    "requirement": { "authority": ">=15" },
+    "target": "public",
+    "category": "天子诏令"
+  },
+  {
+    "id": "decree_remove_eunuch",
+    "name": "黜退宦官",
+    "type": "political",
+    "description": "下诏将宦官逐出宫掖，还政于外朝。",
+    "effect": {
+      "authority": 4,
+      "court_faction": -3,
+      "note": "宦官势力反扑"
+    },
+    "requirement": { "authority": ">=25" },
+    "target": "eunuchs",
+    "category": "政令"
+  },
+  {
+    "id": "decree_tax_reduction",
+    "name": "减免赋税",
+    "type": "economic",
+    "description": "天子下诏减免今年赋税，以安民心。",
+    "effect": {
+      "public_support": 8,
+      "treasury": -5,
+      "unrest": -5,
+      "note": "民心大悦，财政压力增加"
+    },
+    "requirement": { "authority": ">=20" },
+    "target": "all_regions",
+    "category": "恩旨"
+  },
+  {
+    "id": "decree_martyr_commemoration",
+    "name": "追封忠烈",
+    "type": "political",
+    "description": "为讨伐逆贼而死的忠臣义士上谥号，建祠祭祀。",
+    "effect": {
+      "public_support": 3,
+      "military": 2,
+      "authority": 1,
+      "note": "激励忠义之士"
+    },
+    "requirement": { "authority": ">=10" },
+    "target": "heroes",
+    "category": "恩旨"
+  },
+  {
+    "id": "decree_reclaim_fief",
+    "name": "收回分封",
+    "type": "political",
+    "description": "下诏剥夺谋反者的封地，收归天子。",
+    "effect": {
+      "authority": 5,
+      "factions": -5,
+      "note": "警告其他藩镇"
+    },
+    "requirement": { "authority": ">=50", "military": ">=30" },
+    "target": "traitor",
+    "category": "天子诏令"
+  },
+  {
+    "id": "decree_alliance_oath",
+    "name": "会盟诏书",
+    "type": "diplomatic",
+    "description": "以天子名义发布会盟诏书，号召诸侯共讨国贼。",
+    "effect": {
+      "authority": -3,
+      "military": 5,
+      "note": "盟主地位由实力最强诸侯代理"
+    },
+    "requirement": { "authority": ">=10" },
+    "target": "all_warlords",
+    "category": "天子诏令"
+  },
+  {
+    "id": "decree_pardon_prisoners",
+    "name": "大赦天下",
+    "type": "political",
+    "description": "下诏大赦天下囚犯，以示皇恩浩荡。",
+    "effect": {
+      "public_support": 5,
+      "unrest": -4,
+      "authority": 1,
+      "note": "部分罪犯混入义军"
+    },
+    "requirement": { "authority": ">=15" },
+    "target": "public",
+    "category": "恩旨"
+  },
+  {
+    "id": "decree_promote_civil_servants",
+    "name": "擢升文官",
+    "type": "political",
+    "description": "天子亲自擢升忠诚文官，削弱武将对朝政的垄断。",
+    "effect": {
+      "authority": 4,
+      "civil_faction": 3,
+      "military_faction": -2,
+      "note": "文官体系得以强化"
+    },
+    "requirement": { "authority": ">=30" },
+    "target": "civil_officials",
+    "category": "政令"
+  },
+  {
+    "id": "decree_distribute_land",
+    "name": "均田于民",
+    "type": "economic",
+    "description": "下诏将无主之地均分给无地农民，抑制土地兼并。",
+    "effect": {
+      "public_support": 10,
+      "unrest": -8,
+      "gentry_resistance": 8,
+      "note": "士族地主激烈反对"
+    },
+    "requirement": { "authority": ">=45" },
+    "target": "peasants",
+    "category": "恩旨"
+  },
+  {
+    "id": "decree_military_reform",
+    "name": "裁军整编",
+    "type": "military",
+    "description": "下诏各镇裁减兵员，统一编制，强化中央军。",
+    "effect": {
+      "military": -3,
+      "authority": 6,
+      "factions": -4,
+      "note": "藩镇阳奉阴违"
+    },
+    "requirement": { "authority": ">=55" },
+    "target": "all_warlords",
+    "category": "政令"
+  },
+  {
+    "id": "decree_festival_celebration",
+    "name": "大宴群臣",
+    "type": "political",
+    "description": "天子设宴款待百官，笼络人心，展示皇家气象。",
+    "effect": {
+      "authority": 2,
+      "unrest": -2,
+      "treasury": -2,
+      "note": "短期提升朝廷凝聚力"
+    },
+    "requirement": { "authority": ">=10" },
+    "target": "court",
+    "category": "恩旨"
+  },
+  {
+    "id": "decree_hire_advisor",
+    "name": "征召贤才",
+    "type": "political",
+    "description": "下诏天下，征召有才能者入朝为官。",
+    "effect": {
+      "authority": 2,
+      "civil_faction": 2,
+      "unrest": -1,
+      "note": "吸引隐居贤士出山"
+    },
+    "requirement": { "authority": ">=15" },
+    "target": "scholars",
+    "category": "天子诏令"
+  },
+  {
+    "id": "decree_bridge_repair",
+    "name": "修缮要道",
+    "type": "economic",
+    "description": "下诏各郡县督促农桑，发展生产，储备粮草。",
+    "effect": {
+      "public_support": 3,
+      "military": 2,
+      "treasury": -3,
+      "note": "促进各地物资流通"
+    },
+    "requirement": { "treasury": ">=10" },
+    "target": "all_regions",
+    "category": "工程"
+  },
+  {
+    "id": "decree_fortress_build",
+    "name": "筑城防守",
+    "type": "military",
+    "description": "下诏在险要之地筑城，增设防御工事。",
+    "effect": {
+      "military": 4,
+      "treasury": -4,
+      "unrest": -1,
+      "note": "增强京师防御能力"
+    },
+    "requirement": { "treasury": ">=15", "authority": ">=20" },
+    "target": "capital_region",
+    "category": "工程"
+  },
+  {
+    "id": "decree_lamp_industry",
+    "name": "劝课农桑",
+    "type": "economic",
+    "description": "下诏各郡县督促农桑，发展生产，储备粮草。",
+    "effect": {
+      "treasury": 3,
+      "public_support": 2,
+      "grain_security": 5,
+      "note": "长期有利于国库充盈"
+    },
+    "requirement": { "authority": ">=15" },
+    "target": "all_regions",
+    "category": "政令"
+  },
+  {
+    "id": "decree_ban_private_weapons",
+    "name": "禁私兵甲",
+    "type": "military",
+    "description": "下诏禁止民间私藏兵甲，减少叛乱隐患。",
+    "effect": {
+      "unrest": -3,
+      "military_faction": -3,
+      "authority": 3,
+      "note": "民间私下抗令者众"
+    },
+    "requirement": { "authority": ">=40" },
+    "target": "public",
+    "category": "政令"
+  },
+  {
+    "id": "decree_tribute_inspect",
+    "name": "核查贡赋",
+    "type": "economic",
+    "description": "下诏各镇核查贡赋数量，严惩贪墨。",
+    "effect": {
+      "authority": 4,
+      "factions": -3,
+      "treasury": 3,
+      "note": "藩镇首脑普遍不满"
+    },
+    "requirement": { "authority": ">=35" },
+    "target": "all_warlords",
+    "category": "政令"
+  },
+  {
+    "id": "decree_heir_establish",
+    "name": "立储诏书",
+    "type": "political",
+    "description": "正式册立太子，安定国本，堵截旁支觊觎。",
+    "effect": {
+      "authority": 5,
+      "unrest": -3,
+      "note": "朝野人心稍安"
+    },
+    "requirement": { "authority": ">=25" },
+    "target": "court",
+    "category": "天子诏令"
+  },
+  {
+    "id": "decree_emperor_tour",
+    "name": "天子巡狩",
+    "type": "political",
+    "description": "天子率众出京巡视各州，展示皇权，安定人心。",
+    "effect": {
+      "authority": 6,
+      "unrest": -4,
+      "military": 2,
+      "note": "必须有足够武力护驾"
+    },
+    "requirement": { "authority": ">=30", "military": ">=25" },
+    "target": "regions",
+    "category": "天子诏令"
+  },
+  {
+    "id": "decree_elect_meritorious",
+    "name": "举孝廉",
+    "type": "political",
+    "description": "下诏各郡国举荐孝廉之士，充实官僚体系。",
+    "effect": {
+      "authority": 2,
+      "civil_faction": 3,
+      "note": "传统的选官方式"
+    },
+    "requirement": { "authority": ">=20" },
+    "target": "scholars",
+    "category": "政令"
+  },
+  {
+    "id": "decree_relocate_capital_prepare",
+    "name": "迁都筹备",
+    "type": "political",
+    "description": "下诏筹备迁都事宜，考察新都地址，征调工匠物料。",
+    "effect": {
+      "authority": -2,
+      "treasury": -5,
+      "unrest": 2,
+      "note": "为正式迁都做准备"
+    },
+    "requirement": { "authority": ">=15" },
+    "target": "court",
+    "category": "天子诏令"
+  },
+  {
+    "id": "decree_honor_temple",
+    "name": "祭祀宗庙",
+    "type": "political",
+    "description": "天子亲赴宗庙祭祀，宣示汉室正统，维系人心。",
+    "effect": {
+      "authority": 4,
+      "public_support": 3,
+      "unrest": -2,
+      "note": "增强正统性"
+    },
+    "requirement": { "authority": ">=10" },
+    "target": "court",
+    "category": "恩旨"
+  },
+  {
+    "id": "decree_establish_imperial_academy",
+    "name": "设太学",
+    "type": "political",
+    "description": "下诏设立皇家太学，招收弟子，培养人才。",
+    "effect": {
+      "authority": 3,
+      "civil_faction": 4,
+      "treasury": -3,
+      "note": "长期培养忠于汉室的人才"
+    },
+    "requirement": { "authority": ">=30", "treasury": ">=10" },
+    "target": "scholars",
+    "category": "政令"
+  },
+  {
+    "id": "decree_national_prayer",
+    "name": "祈福天下",
+    "type": "political",
+    "description": "天子率百官祭祀天地，为天下祈福，安定人心。",
+    "effect": {
+      "public_support": 5,
+      "unrest": -4,
+      "authority": 2,
+      "note": "短期提升民心士气"
+    },
+    "requirement": { "authority": ">=10" },
+    "target": "public",
+    "category": "恩旨"
+  },
+  {
+    "id": "decree_imperial_interpretation",
+    "name": "注经释义",
+    "type": "cultural",
+    "description": "天子亲自主持注释经典，统一思想，确立正统学术。",
+    "effect": {
+      "authority": 3,
+      "civil_faction": 2,
+      "public_support": 2,
+      "note": "思想控制和文化统一"
+    },
+    "requirement": { "authority": ">=25" },
+    "target": "scholars",
+    "category": "恩旨"
+  },
+  {
+    "id": "decree_reward_industrious",
+    "name": "奖勤劝农",
+    "type": "economic",
+    "description": "下诏嘉奖勤于农桑者，授予荣誉称号，激励生产。",
+    "effect": {
+      "public_support": 4,
+      "grain_security": 4,
+      "unrest": -2,
+      "note": "提升农民生产积极性"
+    },
+    "requirement": { "authority": ">=15" },
+    "target": "peasants",
+    "category": "恩旨"
+  },
+  {
+    "id": "decree_rebel_suppression",
+    "name": "讨贼诏",
+    "type": "military",
+    "description": "以天子名义下诏讨伐叛逆，号召天下共诛。",
+    "effect": {
+      "authority": -4,
+      "military": 6,
+      "factions": -5,
+      "note": "将战争责任归于逆贼"
+    },
+    "requirement": { "authority": ">=20", "military": ">=30" },
+    "target": "rebel",
+    "category": "天子诏令"
+  }
+]

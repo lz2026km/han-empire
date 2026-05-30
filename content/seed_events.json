@@ -512,5 +512,182 @@
       "sunquan_military": 10
     },
     "type": "military_preparation"
+  },
+  {
+    "id": "seed_xunyu_conflict",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn_range",
+      "min": 12,
+      "max": 15
+    },
+    "title": "荀彧之死",
+    "description": "荀彧反对曹操进魏公，被逼自尽，汉室忠臣又失一人。",
+    "turn": 13,
+    "probability": 60,
+    "effects": {
+      "han_authority": -5,
+      "caowei_faction": -5
+    },
+    "type": "character_event"
+  },
+  {
+    "id": "seed_guangzong",
+    "trigger": "game_start",
+    "condition": {
+      "type": "always"
+    },
+    "title": "汉室禅让",
+    "description": "若献帝威权持续下降，曹丕逼迫禅位，汉朝终结。",
+    "turn": 1,
+    "probability": 30,
+    "effects": {
+      "han_authority": -50
+    },
+    "type": "political_change"
+  },
+  {
+    "id": "seed_dongzhuo_collapse",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn_range",
+      "min": 8,
+      "max": 15
+    },
+    "title": "董卓余部覆灭",
+    "description": "李傕郭汜互相火并，关中白骨蔽野，曹操趁势夺取关中。",
+    "turn": 10,
+    "probability": 70,
+    "effects": {
+      "zhongnans_power": -100,
+      "caowei_strength": 15
+    },
+    "type": "military_event"
+  },
+  {
+    "id": "seed_caocao_death",
+    "trigger": "game_start",
+    "condition": {
+      "type": "year_range",
+      "min": 210,
+      "max": 220
+    },
+    "title": "曹操之死",
+    "description": "曹操病逝于洛阳，其子曹丕继承魏王爵位，汉室最后希望破灭。",
+    "turn": 21,
+    "probability": 100,
+    "effects": {
+      "caowei_cohesion": -10,
+      "han_authority": 5
+    },
+    "type": "character_event"
+  },
+  {
+    "id": "seed_liubei_huran",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn_range",
+      "min": 10,
+      "max": 20
+    },
+    "title": "刘备取益州",
+    "description": "刘备用庞统之计，夺取益州，蜀汉基业渐成。",
+    "turn": 12,
+    "probability": 80,
+    "effects": {
+      "shu_territory": 30,
+      "liubei_faction": 20
+    },
+    "type": "military_event"
+  },
+  {
+    "id": "seed_zhangfei_death",
+    "trigger": "turn",
+    "condition": {
+      "type": "year_range",
+      "min": 220,
+      "max": 221
+    },
+    "title": "张飞遇害",
+    "description": "张飞准备伐吴时被部下范疆、张达刺杀。",
+    "turn": 30,
+    "probability": 90,
+    "effects": {
+      "shu_military": -10,
+      "shu_cohesion": -8
+    },
+    "type": "character_event"
+  },
+  {
+    "id": "seed_wuguo alliance",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn_range",
+      "min": 15,
+      "max": 25
+    },
+    "title": "吴蜀再盟",
+    "description": "诸葛亮修复吴蜀联盟，共抗曹魏，三国鼎立格局稳固。",
+    "turn": 18,
+    "probability": 75,
+    "effects": {
+      "dongwu_shuanli": 10,
+      "caowei_faction": -10
+    },
+    "type": "diplomatic_event"
+  },
+  {
+    "id": "seed_sanguozhi",
+    "trigger": "game_start",
+    "condition": {
+      "type": "year_range",
+      "min": 280,
+      "max": 290
+    },
+    "title": "晋灭吴",
+    "description": "司马炎代魏建晋，挥师南下，东吴覆灭，三国归晋。",
+    "turn": 99,
+    "probability": 50,
+    "effects": {
+      "dongwu_territory": -100,
+      "shu_territory": -100
+    },
+    "type": "military_event"
+  },
+  {
+    "id": "seed_hanfu_restoration",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn_range",
+      "min": 5,
+      "max": 10
+    },
+    "title": "汉仪复兴尝试",
+    "description": "部分朝臣联名上书，请求恢复西京旧制，振奋人心。",
+    "turn": 7,
+    "probability": 40,
+    "effects": {
+      "authority": 8,
+      "public_support": 5
+    },
+    "type": "political_change"
+  },
+  {
+    "id": "seed_liubei_death",
+    "trigger": "turn",
+    "condition": {
+      "type": "year_range",
+      "min": 221,
+      "max": 223
+    },
+    "title": "刘备白帝托孤",
+    "description": "刘备败于夷陵，病逝于白帝城，诸葛亮受托孤之任。",
+    "turn": 31,
+    "probability": 95,
+    "effects": {
+      "shu_cohesion": -15,
+      "zhugeliang_power": 15
+    },
+    "type": "character_event"
   }
 ]

@@ -879,5 +879,330 @@
       "public_support": 45,
       "unrest": 55
     }
+  },
+  {
+    "id": "yuzhou",
+    "name": "豫州",
+    "kind": "province",
+    "population": 500,
+    "public_support": 50,
+    "unrest": 50,
+    "natural_disaster": "旱灾频发",
+    "human_disaster": "黄巾余部骚扰",
+    "registered_land": 1200,
+    "hidden_land": 600,
+    "tax_per_turn": 20,
+    "grain_security": 55,
+    "gentry_resistance": 35,
+    "military_pressure": 40,
+    "status": "warlord",
+    "controlled_by": "caocao",
+    "fiscal": {
+      "corruption": 30
+    },
+    "on_restore": {
+      "public_support": 65,
+      "unrest": 30
+    }
+  },
+  {
+    "id": "yanzhou",
+    "name": "兖州",
+    "kind": "province",
+    "population": 450,
+    "public_support": 48,
+    "unrest": 52,
+    "natural_disaster": "蝗灾",
+    "human_disaster": "曹操兖州叛乱",
+    "registered_land": 1100,
+    "hidden_land": 500,
+    "tax_per_turn": 18,
+    "grain_security": 50,
+    "gentry_resistance": 40,
+    "military_pressure": 45,
+    "status": "warlord",
+    "controlled_by": "caocao",
+    "fiscal": {
+      "corruption": 35
+    },
+    "on_restore": {
+      "public_support": 62,
+      "unrest": 35
+    }
+  },
+  {
+    "id": "qingzhou",
+    "name": "青州",
+    "kind": "province",
+    "population": 380,
+    "public_support": 40,
+    "unrest": 60,
+    "natural_disaster": "黄巾余部盘踞",
+    "human_disaster": "黄巾之乱遗留",
+    "registered_land": 900,
+    "hidden_land": 700,
+    "tax_per_turn": 15,
+    "grain_security": 45,
+    "gentry_resistance": 30,
+    "military_pressure": 50,
+    "status": "warlord",
+    "controlled_by": "caocao",
+    "fiscal": {
+      "corruption": 40
+    },
+    "on_restore": {
+      "public_support": 60,
+      "unrest": 38
+    }
+  },
+  {
+    "id": "xuzhou",
+    "name": "徐州",
+    "kind": "province",
+    "population": 520,
+    "public_support": 55,
+    "unrest": 45,
+    "natural_disaster": "水患",
+    "human_disaster": "陶谦部下杀害曹操父亲",
+    "registered_land": 1300,
+    "hidden_land": 400,
+    "tax_per_turn": 22,
+    "grain_security": 65,
+    "gentry_resistance": 25,
+    "military_pressure": 35,
+    "status": "warlord",
+    "controlled_by": "taoqian",
+    "fiscal": {
+      "corruption": 25
+    },
+    "on_restore": {
+      "public_support": 70,
+      "unrest": 25
+    }
+  },
+  {
+    "id": "bingzhou",
+    "name": "并州",
+    "kind": "province",
+    "population": 180,
+    "public_support": 30,
+    "unrest": 70,
+    "natural_disaster": "严寒",
+    "human_disaster": "匈奴入侵",
+    "registered_land": 400,
+    "hidden_land": 300,
+    "tax_per_turn": 8,
+    "grain_security": 35,
+    "gentry_resistance": 15,
+    "military_pressure": 85,
+    "status": "warlord",
+    "controlled_by": "doubloon",
+    "fiscal": {
+      "corruption": 50
+    },
+    "on_restore": {
+      "public_support": 50,
+      "unrest": 45
+    }
+  },
+  {
+    "id": "liangzhou_region",
+    "name": "凉州",
+    "kind": "province",
+    "population": 200,
+    "public_support": 35,
+    "unrest": 65,
+    "natural_disaster": "干旱",
+    "human_disaster": "羌乱",
+    "registered_land": 350,
+    "hidden_land": 250,
+    "tax_per_turn": 7,
+    "grain_security": 30,
+    "gentry_resistance": 10,
+    "military_pressure": 80,
+    "status": "warlord",
+    "controlled_by": "liangzhou",
+    "fiscal": {
+      "corruption": 55
+    },
+    "on_restore": {
+      "public_support": 55,
+      "unrest": 40
+    }
+  },
+  {
+    "id": "jiaozhou",
+    "name": "交州",
+    "kind": "province",
+    "population": 120,
+    "public_support": 60,
+    "unrest": 40,
+    "natural_disaster": "瘴气",
+    "human_disaster": "土著反抗",
+    "registered_land": 200,
+    "hidden_land": 150,
+    "tax_per_turn": 5,
+    "grain_security": 70,
+    "gentry_resistance": 20,
+    "military_pressure": 30,
+    "status": "warlord",
+    "controlled_by": "shiceng",
+    "fiscal": {
+      "corruption": 20
+    },
+    "on_restore": {
+      "public_support": 75,
+      "unrest": 20
+    }
+  },
+  {
+    "id": "yingchuan",
+    "name": "颍川",
+    "kind": "commandery",
+    "population": 280,
+    "public_support": 65,
+    "unrest": 35,
+    "natural_disaster": "无",
+    "human_disaster": "无",
+    "registered_land": 800,
+    "hidden_land": 200,
+    "tax_per_turn": 14,
+    "grain_security": 75,
+    "gentry_resistance": 30,
+    "military_pressure": 20,
+    "status": "warlord",
+    "controlled_by": "caocao",
+    "fiscal": {
+      "corruption": 20
+    },
+    "on_restore": {
+      "public_support": 80,
+      "unrest": 15
+    }
+  },
+  {
+    "id": "changshan",
+    "name": "常山",
+    "kind": "commandery",
+    "population": 150,
+    "public_support": 55,
+    "unrest": 45,
+    "natural_disaster": "无",
+    "human_disaster": "黑山军活动",
+    "registered_land": 400,
+    "hidden_land": 200,
+    "tax_per_turn": 7,
+    "grain_security": 60,
+    "gentry_resistance": 25,
+    "military_pressure": 55,
+    "status": "warlord",
+    "controlled_by": "zhangyan",
+    "fiscal": {
+      "corruption": 35
+    },
+    "on_restore": {
+      "public_support": 70,
+      "unrest": 25
+    }
+  },
+  {
+    "id": "weinan",
+    "name": "渭南",
+    "kind": "commandery",
+    "population": 100,
+    "public_support": 25,
+    "unrest": 75,
+    "natural_disaster": "干旱",
+    "human_disaster": "李傕郭汜混战",
+    "registered_land": 200,
+    "hidden_land": 150,
+    "tax_per_turn": 4,
+    "grain_security": 25,
+    "gentry_resistance": 50,
+    "military_pressure": 90,
+    "status": "warlord",
+    "controlled_by": "zhongnans",
+    "fiscal": {
+      "corruption": 70
+    },
+    "on_restore": {
+      "public_support": 45,
+      "unrest": 50
+    }
+  },
+  {
+    "id": "donglai",
+    "name": "东莱",
+    "kind": "commandery",
+    "population": 90,
+    "public_support": 50,
+    "unrest": 50,
+    "natural_disaster": "海患",
+    "human_disaster": "海贼侵扰",
+    "registered_land": 180,
+    "hidden_land": 120,
+    "tax_per_turn": 4,
+    "grain_security": 55,
+    "gentry_resistance": 20,
+    "military_pressure": 40,
+    "status": "warlord",
+    "controlled_by": "caocao",
+    "fiscal": {
+      "corruption": 30
+    },
+    "on_restore": {
+      "public_support": 68,
+      "unrest": 28
+    }
+  },
+  {
+    "id": "hongnong",
+    "name": "弘农",
+    "kind": "commandery",
+    "population": 110,
+    "public_support": 30,
+    "unrest": 70,
+    "natural_disaster": "饥荒",
+    "human_disaster": "董卓西迁破坏",
+    "registered_land": 220,
+    "hidden_land": 100,
+    "tax_per_turn": 5,
+    "grain_security": 30,
+    "gentry_resistance": 60,
+    "military_pressure": 75,
+    "status": "warlord",
+    "controlled_by": "zhongnans",
+    "fiscal": {
+      "corruption": 65
+    },
+    "on_restore": {
+      "public_support": 50,
+      "unrest": 45
+    }
+  },
+  {
+    "id": "henan",
+    "name": "河南尹",
+    "kind": "commandery",
+    "population": 180,
+    "public_support": 35,
+    "unrest": 65,
+    "natural_disaster": "旱灾",
+    "human_disaster": "董卓焚毁雒阳",
+    "registered_land": 350,
+    "hidden_land": 150,
+    "tax_per_turn": 8,
+    "grain_security": 30,
+    "gentry_resistance": 55,
+    "military_pressure": 70,
+    "status": "warlord",
+    "controlled_by": "zhongnans",
+    "fiscal": {
+      "corruption": 60
+    },
+    "on_restore": {
+      "public_support": 55,
+      "unrest": 40
+    }
   }
 ]

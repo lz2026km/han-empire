@@ -1105,5 +1105,345 @@
     "tags": [
       "袁绍"
     ]
+  },
+  {
+    "id": "e_203_court_debate",
+    "year": 203,
+    "month": 2,
+    "title": "朝堂激辩",
+    "type": "political",
+    "location": "许昌",
+    "summary": "朝臣就讨伐袁氏之子还是先灭吕布展开激辩，曹操采纳荀彧建议先破吕布。",
+    "impact": {
+      "caowei_strategy": "divide_rule"
+    },
+    "tags": [
+      "曹操",
+      "荀彧",
+      "袁尚"
+    ]
+  },
+  {
+    "id": "e_204_huangzu_death",
+    "year": 204,
+    "month": 8,
+    "title": "黄祖被杀",
+    "type": "military",
+    "location": "江夏",
+    "summary": "孙权部将凌统攻破江夏，黄祖战死，东吴势力深入荆州北部。",
+    "impact": {
+      "dongwu_territory": 10,
+      "huangpu_power": -100
+    },
+    "tags": [
+      "孙权",
+      "黄祖",
+      "凌统"
+    ]
+  },
+  {
+    "id": "e_205_guandu_main",
+    "year": 205,
+    "month": 10,
+    "title": "曹操平定河北",
+    "type": "military",
+    "location": "冀州",
+    "summary": "曹操率军北渡黄河，攻占邺城，袁氏残余势力逃往辽东。",
+    "impact": {
+      "caowei_strength": 30,
+      "yuanshao_power": -100
+    },
+    "tags": [
+      "曹操",
+      "袁尚",
+      "河北"
+    ]
+  },
+  {
+    "id": "e_206_tuntian_widespread",
+    "year": 196,
+    "month": 7,
+    "title": "屯田制推行全国",
+    "type": "economic",
+    "location": "许昌",
+    "summary": "曹操将许昌屯田经验推广至各州郡，流民归心，军粮渐足。",
+    "impact": {
+      "caowei_fiscal": 15,
+      "public_support": 5
+    },
+    "tags": [
+      "曹操",
+      "屯田",
+      "经济"
+    ]
+  },
+  {
+    "id": "e_197_dongzhuo_shanxi",
+    "year": 197,
+    "month": 3,
+    "title": "袁术称帝",
+    "type": "political",
+    "location": "寿春",
+    "summary": "袁术在寿春称帝，建号仲氏，诸侯共弃，旋即被曹操击败。",
+    "impact": {
+      "yuan_shu_power": -50,
+      "authority": -10
+    },
+    "tags": [
+      "袁术",
+      "称帝",
+      "众叛亲离"
+    ]
+  },
+  {
+    "id": "e_198_sunces_death",
+    "year": 195,
+    "month": 4,
+    "title": "孙策遇刺",
+    "type": "character",
+    "location": "吴郡",
+    "summary": "孙策狩猎时被许贡门客射伤，不治身亡，年仅二十六岁。",
+    "impact": {
+      "sunquan_leadership": -15,
+      "dongwu_cohesion": -10
+    },
+    "tags": [
+      "孙策",
+      "许贡",
+      "孙权"
+    ]
+  },
+  {
+    "id": "e_199_hanfu_reform",
+    "year": 199,
+    "month": 1,
+    "title": "汉服制度恢复",
+    "type": "cultural",
+    "location": "许昌",
+    "summary": "曹操迎献帝后恢复汉服制度，重定朝仪，朝廷气象为之一新。",
+    "impact": {
+      "authority": 5,
+      "public_support": 3
+    },
+    "tags": [
+      "汉仪",
+      "曹操",
+      "献帝"
+    ]
+  },
+  {
+    "id": "e_200_xiahou淵_death",
+    "year": 200,
+    "month": 4,
+    "title": "夏侯渊阵亡",
+    "type": "military",
+    "location": "定军山",
+    "summary": "刘备取益州后，遣黄忠在定军山袭杀夏侯渊，曹操痛失股肱。",
+    "impact": {
+      "caowei_military": -15,
+      "shu_military": 10
+    },
+    "tags": [
+      "夏侯渊",
+      "黄忠",
+      "定军山"
+    ]
+  },
+  {
+    "id": "e_201_guandu_prelude",
+    "year": 199,
+    "month": 6,
+    "title": "官渡前哨战",
+    "type": "military",
+    "location": "白马",
+    "summary": "曹操用荀攸计，佯攻延津，分散袁绍兵力，随即突袭白马，斩颜良。",
+    "impact": {
+      "caowei_military": 5,
+      "yuanshao_military": -5
+    },
+    "tags": [
+      "曹操",
+      "荀攸",
+      "颜良",
+      "白马"
+    ]
+  },
+  {
+    "id": "e_207_xunyu_conflict",
+    "year": 212,
+    "month": 5,
+    "title": "荀彧反对晋魏公",
+    "type": "character",
+    "location": "许昌",
+    "summary": "曹操欲进爵魏公，荀彧以春秋大义反对，二人关系破裂，荀彧饮药而亡。",
+    "impact": {
+      "han_authority": -10,
+      "caowei_faction": -5
+    },
+    "tags": [
+      "荀彧",
+      "曹操",
+      "魏公"
+    ]
+  },
+  {
+    "id": "e_208_zhangxiu_surrender",
+    "year": 201,
+    "month": 9,
+    "title": "张绣降曹",
+    "type": "political",
+    "location": "许昌",
+    "summary": "张绣在贾诩劝说下再次降曹，曹操封其为扬武将军。",
+    "impact": {
+      "caowei_military": 8,
+      "liangzhou_power": -20
+    },
+    "tags": [
+      "张绣",
+      "贾诩",
+      "曹操"
+    ]
+  },
+  {
+    "id": "e_209_liubei_xianke",
+    "year": 208,
+    "month": 7,
+    "title": "刘备三顾茅庐",
+    "type": "character",
+    "location": "隆中",
+    "summary": "刘备三次拜访诸葛亮，终于得见，诸葛亮提出隆中对。",
+    "impact": {
+      "liubei_strategy": 20,
+      "shu_cohesion": 15
+    },
+    "tags": [
+      "刘备",
+      "诸葛亮",
+      "隆中对"
+    ]
+  },
+  {
+    "id": "e_210_guangzong_dynasty",
+    "year": 220,
+    "month": 1,
+    "title": "汉献帝禅位",
+    "type": "political",
+    "location": "许昌",
+    "summary": "曹丕逼迫汉献帝禅位，汉朝正式终结，魏朝建立。",
+    "impact": {
+      "han_authority": -100,
+      "caowei_faction": 100
+    },
+    "tags": [
+      "汉献帝",
+      "曹丕",
+      "禅让"
+    ]
+  },
+  {
+    "id": "e_211_xu_disease",
+    "year": 194,
+    "month": 5,
+    "title": "徐州大屠杀",
+    "type": "military",
+    "location": "徐州",
+    "summary": "曹操为报父仇，攻陷徐州后屠城泄愤，泗水为之不流。",
+    "impact": {
+      "caowei_reputation": -20,
+      "xuzhou_unrest": 30
+    },
+    "tags": [
+      "曹操",
+      "徐州",
+      "屠杀"
+    ]
+  },
+  {
+    "id": "e_212_liubei_xianbei",
+    "year": 207,
+    "month": 11,
+    "title": "刘备北逃公孙瓒",
+    "type": "political",
+    "location": "幽州",
+    "summary": "刘备被曹操击败，北上投奔公孙瓒，后助田楷守平原。",
+    "impact": {
+      "liubei_territory": -10
+    },
+    "tags": [
+      "刘备",
+      "公孙瓒"
+    ]
+  },
+  {
+    "id": "e_213_xiaoyao_palace",
+    "year": 197,
+    "month": 1,
+    "title": "曹操兴修铜雀台",
+    "type": "cultural",
+    "location": "邺城",
+    "summary": "曹操在邺城修建铜雀台，与文士饮酒作诗，邺下文人集团形成。",
+    "impact": {
+      "caowei_culture": 15,
+      "public_support": 3
+    },
+    "tags": [
+      "曹操",
+      "铜雀台",
+      "文人"
+    ]
+  },
+  {
+    "id": "e_214_yue_lak",
+    "year": 203,
+    "month": 3,
+    "title": "乐进守合肥",
+    "type": "military",
+    "location": "合肥",
+    "summary": "乐进以少胜多，数次击退孙权进攻，合肥守军心大振。",
+    "impact": {
+      "caowei_military": 5,
+      "dongwu_military": -3
+    },
+    "tags": [
+      "乐进",
+      "孙权",
+      "合肥"
+    ]
+  },
+  {
+    "id": "e_215_yuan_fang",
+    "year": 202,
+    "month": 1,
+    "title": "袁方投刘表",
+    "type": "character",
+    "location": "荆州",
+    "summary": "袁绍另一子袁方南奔刘表，后下落不明，袁氏血脉散落四方。",
+    "impact": {
+      "yuanshao_legacy": -10
+    },
+    "tags": [
+      "袁方",
+      "刘表"
+    ]
+  },
+  {
+    "id": "e_216_ruoruo_battle",
+    "year": 209,
+    "month": 12,
+    "title": "赤壁之战",
+    "type": "military",
+    "location": "赤壁",
+    "summary": "孙刘联军在赤壁火烧曹操水军，曹操大败北还，三国鼎立局面奠定。",
+    "impact": {
+      "caowei_military": -40,
+      "dongwu_military": 15,
+      "shu_military": 10
+    },
+    "tags": [
+      "赤壁",
+      "周瑜",
+      "黄盖",
+      "火攻"
+    ]
   }
 ]
