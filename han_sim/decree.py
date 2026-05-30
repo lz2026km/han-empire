@@ -280,10 +280,13 @@ def _generate_decree_text(intent: str, decree_type: str, state: GameState) -> st
         f"直接输出诏书正文，不要解释。"
     )
     try:
+        import os as _os
+        _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
         llm_cfg = load_llm_config(
-            base_url="https://api.minimax.chat/v1",
-            model="MiniMax-M2.7-highspeed",
-            api_key="",
+            base_url="https://api.minimaxi.com/v1",
+            model="MiniMax-M2.5",
+            api_key=_api_key,
+            timeout_seconds=180.0,
         )
         agent = Agent(
             name="诏书起草",

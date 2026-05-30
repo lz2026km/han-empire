@@ -290,10 +290,13 @@ def _generate_narration(state: GameState, fiscal: Dict,
     """调用 LLM 生成月度叙事。失败时返回 fallback 文本。"""
     prompt = _build_narration_prompt(state, fiscal, historical, threshold_crisis, random_events)
     try:
+        import os as _os
+        _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
         llm_cfg = load_llm_config(
-            base_url="https://api.minimax.chat/v1",
-            model="MiniMax-M2.7-highspeed",
-            api_key="",
+            base_url="https://api.minimaxi.com/v1",
+            model="MiniMax-M2.5",
+            api_key=_api_key,
+            timeout_seconds=180.0,
         )
         agent = Agent(
             name="月度叙事生成",
@@ -342,10 +345,13 @@ def _generate_emperor_diary(state: GameState, fiscal: Dict,
         f"日记内容："
     )
     try:
+        import os as _os
+        _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
         llm_cfg = load_llm_config(
-            base_url="https://api.minimax.chat/v1",
-            model="MiniMax-M2.7-highspeed",
-            api_key="",
+            base_url="https://api.minimaxi.com/v1",
+            model="MiniMax-M2.5",
+            api_key=_api_key,
+            timeout_seconds=180.0,
         )
         agent = Agent(
             name="天子日记生成",
@@ -491,10 +497,13 @@ def run_monthly_simulation(
     metrics_delta = tracker_output.get("metrics_delta", {})
     log_entries = tracker_output.get("log_entries", [])
     try:
+        import os as _os
+        _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
         llm_cfg = load_llm_config(
-            base_url="https://api.minimax.chat/v1",
-            model="MiniMax-M2.7-highspeed",
-            api_key="",
+            base_url="https://api.minimaxi.com/v1",
+            model="MiniMax-M2.5",
+            api_key=_api_key,
+            timeout_seconds=180.0,
         )
         agent = Agent(
             name="记忆提取",

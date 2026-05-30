@@ -15,10 +15,13 @@ from han_sim.models import GameState
 
 def create_minister_agent(minister: Dict, state: GameState, memory_brief: str = "", loyalty_ctx: str = "") -> Agent:
     """创建大臣对话 agent。memory_brief 会注入到 system prompt 末尾。"""
+    import os as _os
+    _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
     llm_cfg = load_llm_config(
-        base_url="https://api.minimax.chat/v1",
-        model="MiniMax-M2.7-highspeed",
-        api_key="",
+        base_url="https://api.minimaxi.com/v1",
+        model="MiniMax-M2.5",
+        api_key=_api_key,
+        timeout_seconds=180.0,
     )
     verify_llm_available(llm_cfg)
 

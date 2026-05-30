@@ -26,7 +26,8 @@ class GameDB:
         self.path = path
         self.content = content  # 过渡期可省略，seed_static_data 时自行加载
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-        self.conn = sqlite3.connect(path, check_same_thread=False)
+        self.conn = sqlite3.connect(path, check_same_thread=False, timeout=30)
+        self.conn.execute("PRAGMA journal_mode=WAL")
         self.conn.row_factory = sqlite3.Row
         self.init_schema()
         self.init_fiscal_config()
