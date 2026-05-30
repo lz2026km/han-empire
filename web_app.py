@@ -19,6 +19,7 @@ from han_sim.conversation import get_recent_exchanges
 from han_sim.simulation import run_monthly_simulation
 from han_sim.map_view import render_map_html as _render_svg_map
 from han_sim.portraits import render_avatar_grid_html, render_portrait_with_name_html
+from han_sim.theme import get_theme_css
 
 # ── API Key ─────────────────────────────────────────────────────────────
 def _get_api_key() -> str:
@@ -694,7 +695,7 @@ class GameUI:
 def build_ui():
     ui = GameUI()
 
-    with gr.Blocks(title="汉献帝之末路") as demo:
+    with gr.Blocks(title="汉献帝之末路", css=get_theme_css()) as demo:
         gr.Markdown("# 👑 汉献帝之末路")
         gr.Markdown("_189年，董卓进京，废少帝立献帝。名为天子，实为阶下囚。_")
         gr.Markdown(HELP)
