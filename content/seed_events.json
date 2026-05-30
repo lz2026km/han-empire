@@ -7,8 +7,14 @@
     "urgency": 95,
     "severity": 90,
     "credibility": 100,
-    "interests": ["朝堂", "天下"],
-    "audiences": ["皇帝", "百官"],
+    "interests": [
+      "朝堂",
+      "天下"
+    ],
+    "audiences": [
+      "皇帝",
+      "百官"
+    ],
     "resolve_condition": "董卓死亡或被驱逐",
     "fail_condition": "汉室威权降至0",
     "event_type": "situation",
@@ -23,8 +29,14 @@
     "urgency": 80,
     "severity": 85,
     "credibility": 100,
-    "interests": ["天下", "藩镇"],
-    "audiences": ["皇帝", "诸侯"],
+    "interests": [
+      "天下",
+      "藩镇"
+    ],
+    "audiences": [
+      "皇帝",
+      "诸侯"
+    ],
     "resolve_condition": "威权恢复至60以上",
     "fail_condition": "藩镇威胁达到100",
     "event_type": "situation",
@@ -39,12 +51,466 @@
     "urgency": 75,
     "severity": 75,
     "credibility": 100,
-    "interests": ["藩镇", "天下"],
-    "audiences": ["皇帝", "诸侯"],
+    "interests": [
+      "藩镇",
+      "天下"
+    ],
+    "audiences": [
+      "皇帝",
+      "诸侯"
+    ],
     "resolve_condition": "三分天下格局稳定",
     "fail_condition": "藩镇失控",
     "event_type": "situation",
     "trigger_gate": {},
     "trigger_condition": {}
+  },
+  {
+    "id": "seed_yuanshao_jicheng",
+    "trigger": "game_start",
+    "condition": {
+      "type": "character_alive",
+      "target": "yuanshao"
+    },
+    "title": "袁绍据冀州",
+    "description": "袁绍已据冀州，成为天下最强诸侯，虎视中原。",
+    "turn": 1,
+    "probability": 100,
+    "effects": {
+      "yuanshao_power": 20
+    },
+    "type": "power_rise"
+  },
+  {
+    "id": "seed_caowei_xu_chang",
+    "trigger": "game_start",
+    "condition": {
+      "type": "character_alive",
+      "target": "caocao"
+    },
+    "title": "曹操挟天子",
+    "description": "曹操已迁都许昌，挟天子以令诸侯，名副其实的汉室丞相。",
+    "turn": 1,
+    "probability": 100,
+    "effects": {
+      "caowei_power": 15,
+      "xundi_authority": 5
+    },
+    "type": "power_rise"
+  },
+  {
+    "id": "seed_liugong_donggui",
+    "trigger": "game_start",
+    "condition": {
+      "type": "turn",
+      "min": 1
+    },
+    "title": "献帝困于许昌",
+    "description": "献帝困于许昌，名为天子实为傀儡，诏令不出宫门。",
+    "turn": 1,
+    "probability": 100,
+    "effects": {
+      "xundi_authority": -5
+    },
+    "type": "political_crisis"
+  },
+  {
+    "id": "seed_dongbi_shili",
+    "trigger": "game_start",
+    "condition": {
+      "type": "power_exists",
+      "target": "dongzhuo"
+    },
+    "title": "董卓余孽散落",
+    "description": "董卓虽死，其凉州旧部李傕郭汜仍在关中，长安洛阳一片焦土。",
+    "turn": 1,
+    "probability": 100,
+    "effects": {
+      "chaos": 10
+    },
+    "type": "residual_threat"
+  },
+  {
+    "id": "seed_guandong_lianmeng",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn_range",
+      "min": 2,
+      "max": 4
+    },
+    "title": "关东诸侯动态",
+    "description": "关东诸侯各怀鬼胎，袁绍曹操刘备孙权势力消长不定。",
+    "turn": 2,
+    "probability": 70,
+    "effects": {
+      "random": true
+    },
+    "type": "political_forecast"
+  },
+  {
+    "id": "seed_hanjin_fuyuan",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn_range",
+      "min": 3,
+      "max": 6
+    },
+    "title": "汉室旧臣暗流",
+    "description": "部分忠于汉室的旧臣暗中联络，图谋恢复汉室权威。",
+    "turn": 3,
+    "probability": 50,
+    "effects": {
+      "han_authority": 5
+    },
+    "type": "political_forecast"
+  },
+  {
+    "id": "seed_liubeixiangmin",
+    "trigger": "turn",
+    "condition": {
+      "type": "character_alive",
+      "target": "liubei"
+    },
+    "title": "刘备流亡",
+    "description": "刘备在新野寄人篱下，携民渡江，屡败屡战，人心所向。",
+    "turn": 2,
+    "probability": 80,
+    "effects": {
+      "liubei_power": 5,
+      "public_support": 5
+    },
+    "type": "character_event"
+  },
+  {
+    "id": "seed_sunquan_jiangkou",
+    "trigger": "game_start",
+    "condition": {
+      "type": "character_alive",
+      "target": "sunquan"
+    },
+    "title": "孙权据江东",
+    "description": "孙权继兄孙策之业，据有江东六郡，兵精粮足。",
+    "turn": 1,
+    "probability": 100,
+    "effects": {
+      "sunquan_power": 15
+    },
+    "type": "power_rise"
+  },
+  {
+    "id": "seed_yuan_shu_jini",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 3
+    },
+    "title": "袁术败亡",
+    "description": "袁术称帝失败，成为众矢之的，其淮南势力迅速瓦解。",
+    "turn": 3,
+    "probability": 60,
+    "effects": {
+      "yuanshu_power": -30,
+      "caowei_power": 10
+    },
+    "type": "power_fall"
+  },
+  {
+    "id": "seed_liubei_xinzhou",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 4
+    },
+    "title": "刘备得荆州",
+    "description": "刘表病逝，刘备得诸葛亮隆中对策，计划夺取荆州为根基。",
+    "turn": 4,
+    "probability": 55,
+    "effects": {
+      "liubei_power": 15
+    },
+    "type": "power_rise"
+  },
+  {
+    "id": "seed_zhouyu_chibi",
+    "trigger": "turn",
+    "condition": {
+      "type": "character_alive",
+      "target": "zhouyu"
+    },
+    "title": "周瑜谋划",
+    "description": "周瑜向孙权献策，联刘抗曹，在赤壁与曹操决战。",
+    "turn": 5,
+    "probability": 65,
+    "effects": {
+      "sunquan_military": 10
+    },
+    "type": "character_event"
+  },
+  {
+    "id": "seed_caowei_jipo",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 5
+    },
+    "title": "曹操南征",
+    "description": "曹操统一北方后率大军南征，意图一统天下。",
+    "turn": 5,
+    "probability": 75,
+    "effects": {
+      "caowei_power": 20
+    },
+    "type": "military_crisis"
+  },
+  {
+    "id": "seed_chibi_fus",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 6
+    },
+    "title": "赤壁战后",
+    "description": "赤壁之战后，三分天下格局初定，曹孙刘三家鼎立。",
+    "turn": 6,
+    "probability": 85,
+    "effects": {
+      "sunquan_power": 10,
+      "liubei_power": 15,
+      "caowei_power": -20
+    },
+    "type": "geopolitical_shift"
+  },
+  {
+    "id": "seed_hanzhong_zhan",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 7
+    },
+    "title": "汉中争夺",
+    "description": "曹操刘备争夺汉中，夏侯渊战死定军山。",
+    "turn": 7,
+    "probability": 60,
+    "effects": {
+      "caowei_power": -10,
+      "liubei_power": 10
+    },
+    "type": "military_crisis"
+  },
+  {
+    "id": "seed_fengchuan",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 8
+    },
+    "title": "关羽围襄樊",
+    "description": "关羽北伐，水淹七军，威震华夏，曹操欲迁都以避其锋。",
+    "turn": 8,
+    "probability": 55,
+    "effects": {
+      "liubei_power": 20,
+      "caowei_power": -15
+    },
+    "type": "military_crisis"
+  },
+  {
+    "id": "seed_guanyu_dies",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 9
+    },
+    "title": "关羽失荆州",
+    "description": "孙权吕蒙白衣渡江，关羽败走麦城，被擒杀。",
+    "turn": 9,
+    "probability": 70,
+    "effects": {
+      "liubei_power": -30,
+      "sunquan_power": 10
+    },
+    "type": "character_event"
+  },
+  {
+    "id": "seed_yiling_zhan",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 10
+    },
+    "title": "夷陵之战",
+    "description": "刘备东征复仇，陆逊火烧连营，蜀汉元气大伤。",
+    "turn": 10,
+    "probability": 80,
+    "effects": {
+      "liubei_power": -40,
+      "sunquan_power": 10
+    },
+    "type": "military_crisis"
+  },
+  {
+    "id": "seed_zhugeliang_fuquan",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 11
+    },
+    "title": "诸葛亮辅政",
+    "description": "刘备白帝城托孤，诸葛亮辅政，开始北伐。",
+    "turn": 11,
+    "probability": 90,
+    "effects": {
+      "shuhan_authority": 15
+    },
+    "type": "political_change"
+  },
+  {
+    "id": "seed_beifa_chu",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 12
+    },
+    "title": "北伐中原",
+    "description": "诸葛亮连年北伐，虽有街亭之败，仍矢志不渝。",
+    "turn": 12,
+    "probability": 70,
+    "effects": {
+      "shuhan_military": 5
+    },
+    "type": "military_campaign"
+  },
+  {
+    "id": "seed_xundi_shantan",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 13
+    },
+    "title": "献帝禅让",
+    "description": "献帝被迫禅让于曹丕，汉朝正式终结，天下进入曹魏时代。",
+    "turn": 13,
+    "probability": 85,
+    "effects": {
+      "han_authority": -100,
+      "caowei_power": -80
+    },
+    "type": "political_collapse"
+  },
+  {
+    "id": "seed_sima_fub",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 15
+    },
+    "title": "司马氏专权",
+    "description": "司马懿高平陵之变后，司马氏专权，曹魏名存实亡。",
+    "turn": 15,
+    "probability": 80,
+    "effects": {
+      "caowei_power": -60
+    },
+    "type": "political_change"
+  },
+  {
+    "id": "seed_jin_daiwei",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn",
+      "min": 17
+    },
+    "title": "晋朝建立",
+    "description": "司马炎代魏建晋，三国时代即将结束。",
+    "turn": 17,
+    "probability": 85,
+    "effects": {
+      "caowei_power": -100
+    },
+    "type": "political_change"
+  },
+  {
+    "id": "seed_caowei_tuntian",
+    "trigger": "game_start",
+    "condition": {
+      "type": "character_alive",
+      "target": "caocao"
+    },
+    "title": "曹操推行屯田",
+    "description": "曹操在许昌推行屯田，招募流民开垦，粮草渐足。",
+    "turn": 1,
+    "probability": 100,
+    "effects": {
+      "caowei_fiscal": 10
+    },
+    "type": "political_reform"
+  },
+  {
+    "id": "seed_yuan_dead",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn_range",
+      "min": 4,
+      "max": 8
+    },
+    "title": "袁绍忧死",
+    "description": "袁绍官渡战败后忧郁成疾而亡，河北袁氏分裂。",
+    "turn": 5,
+    "probability": 70,
+    "effects": {
+      "yuanshao_power": -100
+    },
+    "type": "character_event"
+  },
+  {
+    "id": "seed_fengxian_cao",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn_range",
+      "min": 4,
+      "max": 6
+    },
+    "title": "献帝密诏",
+    "description": "献帝暗中书写衣带诏，密令刘备等勤王。",
+    "turn": 4,
+    "probability": 60,
+    "effects": {
+      "han_authority": 5,
+      "caowei_authority": -5
+    },
+    "type": "political_secret"
+  },
+  {
+    "id": "seed_xunyu_cao",
+    "trigger": "turn",
+    "condition": {
+      "type": "character_alive",
+      "target": "xunyu"
+    },
+    "title": "荀彧之忠",
+    "description": "荀彧内心忠于汉室，但辅佐曹操统一北方，矛盾重重。",
+    "turn": 5,
+    "probability": 70,
+    "effects": {
+      "han_authority": 5
+    },
+    "type": "character_event"
+  },
+  {
+    "id": "seed_chibi_qianxi",
+    "trigger": "turn",
+    "condition": {
+      "type": "turn_range",
+      "min": 5,
+      "max": 7
+    },
+    "title": "赤壁议战",
+    "description": "周瑜向孙权分析曹军弱点，决心联合刘备抗曹。",
+    "turn": 6,
+    "probability": 75,
+    "effects": {
+      "sunquan_military": 10
+    },
+    "type": "military_preparation"
   }
 ]

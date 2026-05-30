@@ -110,5 +110,237 @@
     "status": "active",
     "last_action": "占据徐州，与曹操对峙",
     "aliases": "吕布/徐州"
+  },
+  {
+    "id": "gongsund",
+    "name": "辽东公孙",
+    "type": "warlord",
+    "leader": "公孙度",
+    "territory": [
+      "辽东",
+      "玄菟",
+      "乐浪"
+    ],
+    "strength": 35,
+    "allies": [],
+    "enemies": [],
+    "status": "active",
+    "summary": "割据辽东，偏安一隅。"
+  },
+  {
+    "id": "yangzhou",
+    "name": "扬州势力",
+    "type": "warlord",
+    "leader": "刘繇",
+    "territory": [
+      "扬州"
+    ],
+    "strength": 25,
+    "allies": [],
+    "enemies": [
+      "caowei"
+    ],
+    "status": "active",
+    "summary": "扬州豪族，割据寿春。"
+  },
+  {
+    "id": "zhanglu",
+    "name": "张鲁汉中",
+    "type": "warlord",
+    "leader": "张鲁",
+    "territory": [
+      "汉中"
+    ],
+    "strength": 30,
+    "allies": [
+      "shuhan"
+    ],
+    "enemies": [
+      "caowei"
+    ],
+    "status": "active",
+    "summary": "五斗米道教主，割据汉中。"
+  },
+  {
+    "id": "mateng",
+    "name": "西凉马氏",
+    "type": "warlord",
+    "leader": "马腾",
+    "territory": [
+      "凉州",
+      "槐里"
+    ],
+    "strength": 40,
+    "allies": [
+      "hansui"
+    ],
+    "enemies": [
+      "caowei"
+    ],
+    "status": "dead",
+    "summary": "马腾韩遂西凉联军。"
+  },
+  {
+    "id": "hansui",
+    "name": "韩遂",
+    "type": "warlord",
+    "leader": "韩遂",
+    "territory": [
+      "金城",
+      "凉州"
+    ],
+    "strength": 35,
+    "allies": [
+      "mateng"
+    ],
+    "enemies": [
+      "caowei"
+    ],
+    "status": "dead",
+    "summary": "韩遂割据金城，后降曹操。"
+  },
+  {
+    "id": "gongsunzan",
+    "name": "公孙瓒",
+    "type": "warlord",
+    "leader": "公孙瓒",
+    "territory": [
+      "幽州"
+    ],
+    "strength": 40,
+    "allies": [
+      "han"
+    ],
+    "enemies": [
+      "yuanshao"
+    ],
+    "status": "dead",
+    "summary": "公孙瓒割据幽州，以白马义从著称。"
+  },
+  {
+    "id": "yuanshu",
+    "name": "袁术",
+    "type": "warlord",
+    "leader": "袁术",
+    "territory": [
+      "扬州",
+      "淮南"
+    ],
+    "strength": 30,
+    "allies": [
+      "lvbu"
+    ],
+    "enemies": [
+      "caowei",
+      "liubei"
+    ],
+    "status": "dead",
+    "summary": "袁术称帝失败后迅速败亡。"
+  },
+  {
+    "id": "liubei",
+    "name": "刘备",
+    "type": "warlord",
+    "leader": "刘备",
+    "territory": [
+      "荆州",
+      "益州"
+    ],
+    "strength": 50,
+    "allies": [
+      "shuhan",
+      "dongwu"
+    ],
+    "enemies": [
+      "caowei"
+    ],
+    "status": "active",
+    "summary": "刘备屡败屡战，终建蜀汉。"
+  },
+  {
+    "id": "zhangxian",
+    "name": "张玄",
+    "type": "warlord",
+    "leader": "张玄",
+    "territory": [
+      "南阳"
+    ],
+    "strength": 20,
+    "allies": [],
+    "enemies": [],
+    "status": "dead",
+    "summary": "南阳太守，起兵讨董卓。"
+  },
+  {
+    "id": "taoqian",
+    "name": "陶谦",
+    "type": "warlord",
+    "leader": "陶谦",
+    "territory": [
+      "徐州"
+    ],
+    "strength": 25,
+    "allies": [
+      "han"
+    ],
+    "enemies": [
+      "caowei"
+    ],
+    "status": "dead",
+    "summary": "陶谦礼遇名士，后将徐州让给刘备。"
+  },
+  {
+    "id": "yuanshao_fenzi",
+    "name": "袁尚袁熙",
+    "type": "warlord",
+    "leader": "袁尚",
+    "territory": [
+      "黎阳"
+    ],
+    "strength": 15,
+    "allies": [
+      "wuhuan"
+    ],
+    "enemies": [
+      "caowei"
+    ],
+    "status": "dead",
+    "summary": "袁绍败亡后袁尚袁熙投奔乌丸，被曹操所破。"
+  },
+  {
+    "id": "zhangyan",
+    "name": "黑山军",
+    "type": "warlord",
+    "leader": "张燕",
+    "territory": [
+      "太行山"
+    ],
+    "strength": 25,
+    "allies": [
+      "yuanshao"
+    ],
+    "enemies": [
+      "caowei"
+    ],
+    "status": "active",
+    "summary": "黑山军黄巾降将，后降曹操。"
+  },
+  {
+    "id": "zhongnans",
+    "name": "关中诸将",
+    "type": "warlord",
+    "leader": "李傕",
+    "territory": [
+      "长安三辅"
+    ],
+    "strength": 30,
+    "allies": [
+      "dongzhuo"
+    ],
+    "enemies": [
+      "han"
+    ],
+    "status": "active",
+    "summary": "董卓余部占据关中。"
   }
 ]
