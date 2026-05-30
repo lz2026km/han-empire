@@ -17,6 +17,7 @@ from han_sim.paths import user_data_path
 from han_sim.session import GameSession
 from han_sim.conversation import get_recent_exchanges
 from han_sim.simulation import run_monthly_simulation
+from han_sim.map_view import render_map_html as _render_svg_map
 
 # ── API Key ─────────────────────────────────────────────────────────────
 def _get_api_key() -> str:
@@ -287,9 +288,48 @@ class GameUI:
         return "\n".join(lines)
 
     def _render_map_html(self) -> str:
-        """【🗺️ 地图】ASCII 地图视图：8州 + 司隶，每州按势力 stance 着色。"""
+        """【🗺️ 地图】SVG 十三州地图，动态标注势力与献帝位置。"""
         if not self.session:
-            return "<p>请先点击「新游戏」初始化</p>"
+            return "<p style='text-align:center;color:#9ca3af;padding:40px'>请先点击「新游戏」初始化</p>"
+
+        s = self.session.state
+        capital = getattr(s, 'capital', '洛阳')
+        year = getattr(s, 'year', 189)
+        period = getattr(s, 'period', '春')
+        turn = getattr(s, 'turn', 1)
+
+        # 转换 powers 为 map_view 需要的格式
+        powers_raw = self.session.db.list_powers()
+        powers = []
+        for p in powers_raw:
+            # 收集该势力控制的所有州
+            regions = self.session.db.list_regions()
+            controlled = []
+            for r in regions:
+                if r.get("controlled_by", "") == p.get("id", ""):
+                    # region id → 州名映射（简化处理）
+                    rid = r.get("id", "")
+                    name_map = {
+                        "youzhou": "幽州", "bingzhou": "并州", "yanzhou": "兖州",
+                        "yuzhou": "豫州", "jiujiang": "扬州", "jingzhou": "荆州",
+                        "yizhou": "益州", "liangzhou": "凉州", "silu": "司隶",
+                    }
+                    controlled.append(name_map.get(rid, rid))
+
+            powers.append({
+                "name": p.get("name", ""),
+                "leader": p.get("leader", ""),
+                "stance": p.get("stance", "neutral"),
+                "controlled_states": controlled,
+            })
+
+        return _render_svg_map(
+            capital=capital,
+            year=year,
+            period=period,
+            turn=turn,
+            powers=powers,
+        )
 
         # 8州 + 司隶的 region_id 映射
         PROVINCE_ORDER = [
