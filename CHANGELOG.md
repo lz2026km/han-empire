@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.9.6] - 2026-05-31
+
+### Step2 - 威权机制
+
+#### Added
+- **威权等级系统** (`han_sim/models.py`)
+  - `AuthorityLevel` dataclass：等级标签、诏书倍率、召对倍率、诸侯稳定性、派系事件修正、可用恢复行动
+  - `AUTHORITY_LEVELS` 字典：0/10/20/30/40/50/60/70/80/90/100 共11个等级节点
+  - 5档分类：形同虚设(0-19) / 阳奉阴违(20-49) / 诏书有效(50-79) / 号令四方(80-100)
+  - `get_authority_level()` 函数：根据威权值返回对应等级信息
+
+- **威权机制核心** (`han_sim/flows.py` 新增 `apply_authority_effects()`)
+  - 威权>=50：每回合藩镇-1（抑制效果）
+  - 威权>=60：每回合声望+1（天子有底气则民心稳）
+  - 威权<=10：每回合藩镇+2（诸侯坐大）
+  - 威权等级变化时触发日志提示
+
+- **威权驱动忠诚度衰减** (`han_sim/flows.py` `apply_loyalty_decay()` 重写)
+  - 威权>=80：忠诚度几乎不衰减
+  - 威权50-79：标准衰减
+  - 威权20-49：衰减加速
+  - 威权<20：衰减最快
+
+- **威权恢复行动系统** (`han_sim/flows.py`)
+  - `AUTHORITY_RECOVERY_ACTIONS` 字典：13种恢复行动（求情示弱/笼络近臣/朝会演讲等）
+  - 每种行动有效果、内库消耗、威权等级要求
+  - `execute_authority_recovery()` 函数：检查威权等级可用性+内库足够+执行效果
+
+- **威权对诏书/召对效果折扣**
+  - `decree.py` `issue_decree()`：诏书效果乘以 `auth_level.decree_mult`
+  - `session.py` `summon_minister()`：prompt注入威权等级上下文，召对agent获知天子威权状态
+
+- **simulation.py 威权效果调用**：每月末推演调用 `apply_authority_effects()`
+
 ## [0.9.4] - 2026-05-30
 
 > ⚠️ **版本说明**：远程分支标注为"v0.2.0"，本地已统一为 v0.9.4。
