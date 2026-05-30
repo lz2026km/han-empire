@@ -89,16 +89,12 @@ def get_state_color(state_name: str, powers: List[Dict]) -> str:
 
 
 def _build_state(state_name: str, color: str, label: str, capital: str, power: Optional[str] = None) -> str:
-    """生成单个州的 SVG 元素。"""
+    """生成单个州的 SVG 元素，州名可点击显示详情。"""
     info = STATE_INFO.get(state_name, {"cx": 400, "cy": 300})
     cx, cy = info["cx"], info["cy"]
     path = STATE_PATHS.get(state_name, "")
-
-    # 州名坐标
     name_x = cx
     name_y = cy + 5
-
-    # 州名颜色（深色背景用白色文字，浅色用深色文字）
     is_dark = color.lower() in ("#7c3aed", "#ef4444", "#3b82f6")
     text_color = "#ffffff" if is_dark else "#1a1a2e"
     font_size = 11
@@ -106,19 +102,25 @@ def _build_state(state_name: str, color: str, label: str, capital: str, power: O
     parts = []
     if path:
         parts.append(
-            f'<path d="{path}" fill="{color}" fill-opacity="0.3" '
-            f'stroke="{color}" stroke-width="1.5" stroke-opacity="0.8"/>'
+            '<path d="%s" fill="%s" fill-opacity="0.3" '
+            'stroke="%s" stroke-width="1.5" stroke-opacity="0.8"/>'
+            % (path, color, color)
         )
+    # 州名文字，加入 onclick 句柄
     parts.append(
-        f'<text x="{name_x}" y="{name_y}" text-anchor="middle" '
-        f'font-size="{font_size}" font-weight="bold" fill="{text_color}" '
-        f'font-family="system-ui, sans-serif">{label}</text>'
+        '<text x="%d" y="%d" text-anchor="middle" '
+        'font-size="%d" font-weight="bold" fill="%s" '
+        'font-family="system-ui, sans-serif" '
+        'style="cursor:pointer" '
+        'onclick="window.showStateInfo && window.showStateInfo(\'%s\')">%s</text>'
+        % (name_x, name_y, font_size, text_color, state_name, label)
     )
     if power:
         parts.append(
-            f'<text x="{name_x}" y="{name_y + 13}" text-anchor="middle" '
-            f'font-size="9" fill="{text_color}" fill-opacity="0.8" '
-            f'font-family="system-ui, sans-serif">{power}</text>'
+            '<text x="%d" y="%d" text-anchor="middle" '
+            'font-size="9" fill="%s" fill-opacity="0.8" '
+            'font-family="system-ui, sans-serif">%s</text>'
+            % (name_x, name_y + 13, text_color, power)
         )
     return "\n    ".join(parts)
 
@@ -171,13 +173,15 @@ def _build_legend() -> str:
 
 def _build_title(year: int, period: str, turn: int) -> str:
     """生成标题栏。"""
-    return f"""
+    return """
     <text x="450" y="28" text-anchor="middle" font-size="16" font-weight="bold"
           fill="#1a1a2e" font-family="system-ui, sans-serif">
-        🏯 东汉末年局势图 · {year}年{period}月 · 第{turn}回合
+        🏯 东汉末年局势图 · %s年%s月 · 第%s回合
     </text>
     """
 
+
+import random
 
 def render_map_html(
     capital: str = "洛阳",
@@ -214,13 +218,42 @@ def render_map_html(
     legend = _build_legend()
 
     # ── 标题 ──
-    title = _build_title(year, period, turn)
+    title = _build_title(year, period, turn) % (year, period, turn)
 
-    svg = f"""<div style="font-family:system-ui,sans-serif;background:#f8f9fa;border-radius:12px;padding:8px">
+    # 生成唯一ID，用于州名点击后的信息显示
+    _map_uid = str(id(random.random()))[:12]
+
+    svg_template = """<div style="font-family:system-ui,sans-serif;background:#f8f9fa;border-radius:12px;padding:8px">
+<script>
+function showStateInfo(state) {{
+    var info = {{
+"司隶": "洛阳一带，汉室首都，初期被董卓控制",
+"凉州": "西北边疆，武威、张掖等郡，马腾韩遂盘踞",
+"并州": "山西高原，吕布曾据此，雁门郡接匈奴",
+"幽州": "河北北部，公孙瓒地盘，北接乌桓鲜卑",
+"冀州": "河北南部，袁绍发家地，粮丰兵强",
+"青州": "山东半岛，黄巾余党活动区",
+"兖州": "河南东部，曹操起家地，四战之地",
+"豫州": "河南南部，汝南郡，士族集中地",
+"徐州": "江苏北部，陶谦/刘备曾据，北海相孔融",
+"荆州": "两湖地区，刘表单方伯，袁术曾窥伺",
+"扬州": "江南地区，刘繇/王朗占据，孙策渡江",
+"益州": "四川盆地，刘焉刘璋父子，汉中郡接褒斜道",
+"交州": "岭南地区，土著势力，远离中原"
+    }};
+    var msg = info[state] || "东汉十三州之一";
+    var el = document.getElementById('state-info-{uid}');
+    if (el) el.textContent = state + '：' + msg;
+}}
+</script>
+<style>
+.state-label {{cursor:pointer}}
+</style>
+<div id="state-info-{uid}" style="margin-bottom:8px;padding:8px;background:#eef2ff;border-radius:6px;font-size:13px;color:#1e40af;min-height:20px">点击州名查看详情</div>
 <svg viewBox="0 0 900 700" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px">
     <!-- 背景 -->
     <rect width="900" height="700" fill="#f0ece0" rx="8"/>
-    
+
     <!-- 标题 -->
     {title}
 
@@ -237,11 +270,11 @@ def render_map_html(
     <rect x="2" y="2" width="896" height="696" fill="none" stroke="#c9a96e" stroke-width="3" rx="8"/>
 </svg>
 <p style="font-size:12px;color:#9ca3af;text-align:center;margin-top:4px">
-    🟦 蓝色=忠汉  🟫 金色=汉室  🟣 紫色=董卓  🟥 红色=敌对  ⬜ 灰色=中立  |  👑 标记=献帝御驾
+    🟦 蓝色=忠汉  🟫 金色=汉室  🟣 紫色=董卓  🟥 红色=敌对  ⬜ 灰色=中立  |  👑 标记=献帝御驾  |  点击州名查看详情
 </p>
 </div>"""
 
-    return svg
+    return svg_template.format(uid=_map_uid, title=title, states_svg=states_svg, emperor_marker=emperor_marker, legend=legend)
 
 
 if __name__ == "__main__":

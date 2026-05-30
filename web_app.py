@@ -878,7 +878,7 @@ class GameUI:
 def build_ui():
     ui = GameUI()
 
-    with gr.Blocks(title="汉献帝之末路", css=get_theme_css()) as demo:
+    with gr.Blocks(title="汉献帝之末路") as demo:
         gr.Markdown("# 👑 汉献帝之末路")
         gr.Markdown("_189年，董卓进京，废少帝立献帝。名为天子，实为阶下囚。_")
         gr.Markdown(HELP)
@@ -891,7 +891,8 @@ def build_ui():
                 refresh_dashboard_btn = gr.Button("🔄 刷新总览")
 
                 gr.Markdown("### 🏛️ 迁都")
-                gr.Markdown("*当前都城：**洛阳** — 选择目标迁都（消耗金钱和时间）*")
+                capital_label = gr.HTML("<span id='capital-display'>**当前都城：洛阳**</span>")
+                gr.Markdown("*选择目标迁都（消耗金钱和时间）*")
                 with gr.Row():
                     relocate_btn洛阳 = gr.Button("🏯 洛阳", variant="primary")
                     relocate_btn许昌 = gr.Button("⚔️ 许昌（+威权+藩镇）")
@@ -1108,12 +1109,13 @@ def build_ui():
         def do_relocate(capital_name: str):
             result = ui.cmd_relocate_capital(capital_name)
             dash = ui._render_dashboard_html()
-            return result, dash
+            capital_display = f"<b style='color:#3b82f6'>当前都城：{ui.session.state.capital}</b>"
+            return result, dash, capital_display
 
-        relocate_btn洛阳.click(fn=lambda: do_relocate("洛阳"), outputs=[relocate_output, dashboard_display])
-        relocate_btn许昌.click(fn=lambda: do_relocate("许昌"), outputs=[relocate_output, dashboard_display])
-        relocate_btn长安.click(fn=lambda: do_relocate("长安"), outputs=[relocate_output, dashboard_display])
-        relocate_btn邺城.click(fn=lambda: do_relocate("邺城"), outputs=[relocate_output, dashboard_display])
+        relocate_btn洛阳.click(fn=lambda: do_relocate("洛阳"), outputs=[relocate_output, dashboard_display, capital_label])
+        relocate_btn许昌.click(fn=lambda: do_relocate("许昌"), outputs=[relocate_output, dashboard_display, capital_label])
+        relocate_btn长安.click(fn=lambda: do_relocate("长安"), outputs=[relocate_output, dashboard_display, capital_label])
+        relocate_btn邺城.click(fn=lambda: do_relocate("邺城"), outputs=[relocate_output, dashboard_display, capital_label])
 
         # 初始化
         demo.load(
@@ -1132,4 +1134,5 @@ if __name__ == "__main__":
         server_name="0.0.0.0",
         server_port=5199,
         share=False,
+        css=get_theme_css(),
     )
