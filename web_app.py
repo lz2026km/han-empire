@@ -197,7 +197,7 @@ class GameUI:
         </div>"""
 
     def _render_powers_html(self) -> str:
-        """【势力】势力视图 HTML，按 stance 着色。"""
+        """【势力】势力视图 HTML，按 stance 着色，含忠诚度。"""
         powers = self.session.db.list_powers()
         colors = {"loyal": "#3b82f6", "neutral": "#6b7280", "hostile": "#ef4444"}
         labels = {"loyal": "忠", "neutral": "中", "hostile": "敌"}
@@ -205,12 +205,20 @@ class GameUI:
         for p in powers:
             color = colors.get(p.get("stance", "neutral"), "#6b7280")
             badge = labels.get(p.get("stance", "neutral"), "?")
+            loyalty = p.get("loyalty", p.get("leverage", 50))
+            if loyalty >= 70:
+                loyalty_color = "#22c55e"
+            elif loyalty >= 40:
+                loyalty_color = "#f59e0b"
+            else:
+                loyalty_color = "#ef4444"
             rows.append(f"""<tr style="color:{color}">
                 <td style="padding:4px 8px;font-weight:bold">{p.get('name','?')}</td>
                 <td style="padding:4px 8px">{p.get('leader','?')}</td>
                 <td style="padding:4px 8px;text-align:center">{badge}</td>
                 <td style="padding:4px 8px;text-align:right">{p.get('military_strength',0)}</td>
                 <td style="padding:4px 8px;text-align:right">{p.get('leverage',0)}</td>
+                <td style="padding:4px 8px;text-align:center;font-weight:bold;color:{loyalty_color}">{loyalty}</td>
                 <td style="padding:4px 8px;font-size:12px;color:#9ca3af">{p.get('last_action','按兵不动') or '按兵不动'}</td>
             </tr>""")
 
@@ -220,6 +228,7 @@ class GameUI:
             <th style="padding:4px 8px;text-align:center">立场</th>
             <th style="padding:4px 8px;text-align:right">军力</th>
             <th style="padding:4px 8px;text-align:right">威势</th>
+            <th style="padding:4px 8px;text-align:center">忠诚度</th>
             <th style="padding:4px 8px;text-align:left">近动</th>
         </tr>"""
 
@@ -229,7 +238,7 @@ class GameUI:
             {"".join(rows)}
         </table>
         <p style="font-size:12px;color:#9ca3af;margin-top:8px">
-            🟦 忠 · 🟪 中立 · 🟥 敌对 · 军力/威势越高威胁越大 · 近动为各镇最新行动
+            🟦 忠 · 🟪 中立 · 🟥 敌对 · 军力/威势越高威胁越大 · 忠诚度：🟩70+ 🟨40-69 🟥<40
         </p>
         </div>"""
 
@@ -690,6 +699,148 @@ class GameUI:
         except Exception as e:
             return f"❗ 月末推演失败：{str(e)}"
 
+    def cmd_relocate_capital(self, new_capital: str):
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        from han_sim.flows import relocate_capital, _CAPITAL_EFFECTS
+        old = self.session.state.capital
+        if old == new_capital:
+            return f"ℹ️ 当前就在 **洛阳**，无需迁都。"
+        # 迁都费用：50万两
+        cost = 50
+        han_ku = self.session.state.metrics.get("汉室库", 0)
+        if han_ku < cost:
+            return f"❗ 迁都需要 {cost} 万两，汉室库仅剩 {han_ku} 万两，不足以迁都。"
+        delta = relocate_capital(self.session.state, new_capital)
+        self.session.state.metrics["汉室库"] -= cost
+        effects_desc = "，".join([f"{k}{v:+d}" for k, v in delta.items() if v != 0])
+        return f"🏛️ **迁都成功**：{old} → **{new_capital}**，消耗 {cost} 万两。指标变化：{effects_desc}"
+
+    def cmd_inspect_power(self, power_name: str):
+        if not self.session:
+            return "❗ 请先点击 **新游戏**。"
+        if not power_name:
+            return "ℹ️ 请输入势力名称（如：曹操）。"
+        from han_sim.tools import inspect_warlord_alliances
+        powers = self.session.db.list_powers()
+        matched = [p for p in powers if power_name in p.get("name", "") or power_name in p.get("leader", "")]
+        if not matched:
+            return f"❗ 未找到势力「{power_name}」。可用势力：{'、'.join(p['name'] for p in powers[:10])}"
+        p = matched[0]
+        alliances = inspect_warlord_alliances(self.session.db, p["name"])
+        loyalty = p.get("loyalty", p.get("leverage", 50))
+        loyalty_color = "#22c55e" if loyalty >= 70 else "#f59e0b" if loyalty >= 40 else "#ef4444"
+        alliance_text = ""
+        if alliances.get("alliances"):
+            alliance_text = "<br>".join([f"与 **{a['name']}**（{a['type']}）" for a in alliances["alliances"][:5]])
+        elif alliances.get("enemies"):
+            alliance_text = "<br>".join([f"敌视 **{e['name']}**" for e in alliances["enemies"][:5]])
+        return f"""<div style="font-family:system-ui,sans-serif;padding:12px;background:#f9fafb;border-radius:8px">
+            <h4 style="margin:0 0 8px">{p['name']} — {p.get('leader','?')}</h4>
+            <table style="width:100%;font-size:13px">
+                <tr><td style="padding:4px"><b>立场</b></td><td>{p.get('stance','?')}</td></tr>
+                <tr><td style="padding:4px"><b>军力</b></td><td>{p.get('military_strength',0)}</td></tr>
+                <tr><td style="padding:4px"><b>威势</b></td><td>{p.get('leverage',0)}</td></tr>
+                <tr><td style="padding:4px"><b>忠诚度</b></td><td style="color:{loyalty_color};font-weight:bold">{loyalty}</td></tr>
+                <tr><td style="padding:4px"><b>据点</b></td><td>{p.get('base','?')}</td></tr>
+                <tr><td style="padding:4px"><b>近动</b></td><td>{p.get('last_action','按兵不动')}</td></tr>
+            </table>
+            <h5 style="margin:8px 0 4px">关系</h5>
+            <p style="font-size:13px">{alliance_text or '暂无结盟/敌对信息'}</p>
+        </div>"""
+
+    def _render_skills_html(self):
+        """【技能Tab】技能列表HTML，含已学/未学状态。"""
+        from han_sim.content import load_game_content
+        all_skills = load_game_content().load_emperor_skills()
+        acquired = {s["skill_id"] for s in self.session.db.list_acquired_skills(self.session.campaign_id)}
+        pts = self.session.state.metrics.get("skill_points", 0)
+        pts_html = f"<div style='font-size:16px;font-weight:bold;color:#3b82f6'>剩余技能点：{pts}</div>"
+
+        categories = {}
+        for s in all_skills:
+            cat = s.get("category", "其他")
+            categories.setdefault(cat, []).append(s)
+
+        rows_html = ""
+        for cat, skills in categories.items():
+            rows_html += f"<tr style='background:#1e293b;color:#94a3b8;font-size:12px'><td colspan=4 style='padding:4px 8px'>{cat}</td></tr>"
+            for s in skills:
+                sid = s["id"]
+                learned = sid in acquired
+                cost = s.get("cost", 0)
+                can_learn = not learned and pts >= cost
+                row_color = "#166534" if learned else ("#854d0e" if can_learn else "#1f2937")
+                row_bg = "#14532d" if learned else ("#713f12" if can_learn else "#111")
+                name = s.get("name", "?")
+                desc = s.get("description", "")
+                if len(desc) > 60:
+                    desc = desc[:60] + "…"
+                status = "✅ 已学" if learned else (f"📖 {cost}点可学" if can_learn else f"🔒 需{cost}点")
+                rows_html += f"""<tr style="background:{row_bg};color:#e2e8f0">
+                    <td style="padding:6px 8px;font-weight:bold;color:#fbbf24">{name}</td>
+                    <td style="padding:6px 8px;font-size:12px">{desc}</td>
+                    <td style="padding:6px 8px;text-align:center">{cost}点</td>
+                    <td style="padding:6px 8px;text-align:center">{status}</td>
+                </tr>"""
+
+        skills_html = f"""<div style="font-family:system-ui,sans-serif">
+            {pts_html}
+            <table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px">
+                <tr style="background:#1e293b;color:#94a3b8;font-size:12px">
+                    <th style="padding:6px 8px;text-align:left">技能名</th>
+                    <th style="padding:6px 8px;text-align:left">效果</th>
+                    <th style="padding:6px 8px;text-align:center">消耗</th>
+                    <th style="padding:6px 8px;text-align:center">状态</th>
+                </tr>
+                {rows_html}
+            </table>
+        </div>"""
+        return pts_html, skills_html
+
+    def cmd_learn_skill(self, skill_name: str):
+        if not self.session:
+            return "❗ 请先点击 **新游戏**。"
+        from han_sim.content import load_game_content
+        all_skills = load_game_content().load_emperor_skills()
+        matched = [s for s in all_skills if skill_name == s.get("name", "")]
+        if not matched:
+            return f"❗ 未找到技能「{skill_name}」。可用：{'、'.join(s['name'] for s in all_skills[:15])}"
+        s = matched[0]
+        sid = s["id"]
+        cost = s.get("cost", 0)
+        pts = self.session.state.metrics.get("skill_points", 0)
+        if pts < cost:
+            return f"❗ 技能「{s['name']}」需要 {cost} 点，当前仅剩 {pts} 点。"
+        acquired = {x["skill_id"] for x in self.session.db.list_acquired_skills(self.session.campaign_id)}
+        if sid in acquired:
+            return f"ℹ️ 技能「{s['name']}」已经学会了。"
+        ok = self.session.db.activate_skill(self.session.campaign_id, sid, self.session.state.turn)
+        if ok:
+            self.session.state.metrics["skill_points"] -= cost
+            return f"✅ 学会了 **{s['name']}**（消耗 {cost} 点，剩余 {pts - cost} 点）。"
+        return f"❗ 学习失败。"
+
+    def cmd_forget_skill(self, skill_name: str):
+        if not self.session:
+            return "❗ 请先点击 **新游戏**。"
+        from han_sim.content import load_game_content
+        all_skills = load_game_content().load_emperor_skills()
+        matched = [s for s in all_skills if skill_name == s.get("name", "")]
+        if not matched:
+            return f"❗ 未找到技能「{skill_name}」。"
+        s = matched[0]
+        sid = s["id"]
+        acquired = {x["skill_id"] for x in self.session.db.list_acquired_skills(self.session.campaign_id)}
+        if sid not in acquired:
+            return f"ℹ️ 技能「{s['name']}」尚未学会，无需遗忘。"
+        ok = self.session.db.deactivate_skill(self.session.campaign_id, sid)
+        if ok:
+            refund = s.get("cost", 0)
+            self.session.state.metrics["skill_points"] += refund
+            return f"🔄 遗忘了 **{s['name']}**（返还 {refund} 点）。"
+        return f"❗ 遗忘失败。"
+
 
 # ── Gradio UI ──────────────────────────────────────────────────────────
 def build_ui():
@@ -706,6 +857,15 @@ def build_ui():
                 gr.Markdown("### 📊 汉室国势")
                 dashboard_display = gr.HTML("*点击「新游戏」初始化*")
                 refresh_dashboard_btn = gr.Button("🔄 刷新总览")
+
+                gr.Markdown("### 🏛️ 迁都")
+                gr.Markdown("*当前都城：**洛阳** — 选择目标迁都（消耗金钱和时间）*")
+                with gr.Row():
+                    relocate_btn洛阳 = gr.Button("🏯 洛阳", variant="primary")
+                    relocate_btn许昌 = gr.Button("⚔️ 许昌（+威权+藩镇）")
+                    relocate_btn长安 = gr.Button("🗼 长安（-威权-藩镇）")
+                    relocate_btn邺城 = gr.Button("🏰 邺城（-威权）")
+                relocate_output = gr.HTML()
 
             # ── Tab2: 召对（现用召见大臣）────────────────────
             with gr.TabItem("🎙️ 召对"):
@@ -738,8 +898,12 @@ def build_ui():
             # ── Tab4: 势力视图 ───────────────────────────────
             with gr.TabItem("⚔️ 势力"):
                 gr.Markdown("### ⚔️ 天下诸侯")
+                with gr.Row():
+                    power_name_input = gr.Textbox(label="输入势力名称查看详情", placeholder="如：曹操", scale=1)
+                    inspect_power_btn = gr.Button("🔍 详情", scale=0)
                 powers_display = gr.HTML("*点击「新游戏」初始化*")
                 refresh_powers_btn = gr.Button("🔄 刷新势力")
+                power_detail_display = gr.HTML("")
 
             # ── Tab5: 历史 ─────────────────────────────────
             with gr.TabItem("📖 历史"):
@@ -764,6 +928,17 @@ def build_ui():
                 gr.Markdown("### 🗺️ 天下大势（点击州名查看详情）")
                 map_display = gr.HTML("*点击「新游戏」初始化地图*")
                 refresh_map_btn = gr.Button("🔄 刷新地图")
+
+            # ── Tab9: 天子技能 ────────────────────────────────────────
+            with gr.TabItem("⚡ 技能"):
+                gr.Markdown("### ⚡ 天子技能")
+                skill_points_display = gr.HTML("*点击「新游戏」加载*")
+                skill_list_display = gr.HTML("*点击「新游戏」加载*")
+                with gr.Row():
+                    learn_skill_btn = gr.Button("📖 学习技能", variant="primary")
+                    forget_skill_btn = gr.Button("❌ 遗忘技能")
+                skill_action_output = gr.HTML("")
+                skill_name_input = gr.Textbox(label="输入技能名（精确）学习或遗忘", placeholder="如：知己知彼", scale=1)
 
         gr.Markdown("---")
 
@@ -791,7 +966,8 @@ def build_ui():
             powers = ui._render_powers_html()
             intel = ui._render_intel_html()
             map_html = ui._render_map_html()
-            return out, ministers, history, diary, dash, powers, intel, map_html
+            pts_html, skills_html = ui._render_skills_html()
+            return out, ministers, history, diary, dash, powers, intel, map_html, pts_html, skills_html
 
         def do_refresh_dashboard():
             return ui._render_dashboard_html()
@@ -810,6 +986,24 @@ def build_ui():
 
         def do_refresh_map():
             return ui._render_map_html()
+
+        def do_refresh_skills():
+            return ui._render_skills_html()
+
+        def do_learn_skill(name: str):
+            result = ui.cmd_learn_skill(name)
+            pts, skills = ui._render_skills_html()
+            return result, pts, skills
+
+        def do_forget_skill(name: str):
+            result = ui.cmd_forget_skill(name)
+            pts, skills = ui._render_skills_html()
+            return result, pts, skills
+
+        learn_skill_btn.click(fn=do_learn_skill, inputs=[skill_name_input],
+                             outputs=[skill_action_output, skill_points_display, skill_list_display])
+        forget_skill_btn.click(fn=do_forget_skill, inputs=[skill_name_input],
+                               outputs=[skill_action_output, skill_points_display, skill_list_display])
 
         summon_btn.click(
             fn=ui.cmd_summon,
@@ -842,6 +1036,11 @@ def build_ui():
             inputs=[],
             outputs=powers_display,
         )
+        inspect_power_btn.click(
+            fn=ui.cmd_inspect_power,
+            inputs=[power_name_input],
+            outputs=power_detail_display,
+        )
         refresh_history_btn.click(
             fn=do_refresh_history,
             inputs=[],
@@ -863,12 +1062,22 @@ def build_ui():
             outputs=map_display,
         )
 
+        def do_relocate(capital_name: str):
+            result = ui.cmd_relocate_capital(capital_name)
+            dash = ui._render_dashboard_html()
+            return result, dash
+
+        relocate_btn洛阳.click(fn=lambda: do_relocate("洛阳"), outputs=[relocate_output, dashboard_display])
+        relocate_btn许昌.click(fn=lambda: do_relocate("许昌"), outputs=[relocate_output, dashboard_display])
+        relocate_btn长安.click(fn=lambda: do_relocate("长安"), outputs=[relocate_output, dashboard_display])
+        relocate_btn邺城.click(fn=lambda: do_relocate("邺城"), outputs=[relocate_output, dashboard_display])
+
         # 初始化
         demo.load(
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, skill_points_display, skill_list_display],
         )
 
     return demo
