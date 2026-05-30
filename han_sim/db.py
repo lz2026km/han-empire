@@ -474,6 +474,8 @@ class GameDB:
         ).fetchall()
         return self._rows_to_dicts(rows)
 
+    # ── 事项追踪（Issues）──────────────────────────────
+
     # ── 工具 ─────────────────────────────────────────────────
 
     def _rows_to_dicts(self, rows) -> List[Dict]:

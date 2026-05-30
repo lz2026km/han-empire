@@ -18,9 +18,11 @@ from agno.agent import Agent
 from han_sim.agents import create_minister_agent
 from han_sim.flows import apply_monthly_flow, calc_faction_delta
 from han_sim.issues import (
-    apply_event_effect,
-    filter_triggered_events,
-    sample_random_events,
+    apply_issue_tracker_output,
+    apply_issue_inertia_and_ongoing,
+    event_to_issue,
+    gather_candidate_events,
+    get_active_issues,
 )
 from han_sim.llm_config import load_llm_config
 from han_sim.llm_model import create_chat_model, extract_agent_text
@@ -128,29 +130,26 @@ def run_monthly_simulation(
     # ── 2. 藩镇变化 ────────────────────────────────────────────
     faction_delta = calc_faction_delta(state, db)
 
-    # ── 3. 事件聚合 ────────────────────────────────────────────
-    historical, threshold_crisis = filter_triggered_events(
-        state, db, already_triggered
-    )
-    random_events = sample_random_events(state, db, already_triggered)
+    # ── 3. 事件聚合（issues 新 API） ─────────────────────────────
+    candidates = gather_candidate_events(state, db)
+    triggered_this_round = list(already_triggered or [])
+    historical: List[Dict] = []
+    threshold_crisis: List[Dict] = []
+    random_events: List[Dict] = []
 
-    # 记录本次已触发 id
-    triggered_this_round = already_triggered + [
-        e["id"] for e in historical + threshold_crisis + random_events
-    ]
+    for ev in candidates:
+        iid = event_to_issue(db, state, ev)
+        if iid is not None:
+            triggered_this_round.append(ev.id)
 
-    # ── 4. 事件效果结算 ────────────────────────────────────────
-    metrics_delta: Dict[str, int] = {}
-    log_entries: List[str] = []
-    for e in historical + threshold_crisis + random_events:
-        before = {k: state.metrics.get(k, 0) for k in ("汉室库", "声望", "威权", "藩镇")}
-        effects = apply_event_effect(e, state, db)
-        after = {k: state.metrics.get(k, 0) for k in before}
-        for k in before:
-            delta = after[k] - before[k]
-            if delta != 0:
-                metrics_delta[k] = metrics_delta.get(k, 0) + delta
-        log_entries.extend(effects)
+    # 一次性结算所有活跃 issues
+    tracker_output = apply_issue_tracker_output(db, state)
+    historical = tracker_output.get("historical_events", [])
+    threshold_crisis = tracker_output.get("threshold_crises", [])
+    random_events = tracker_output.get("random_events", [])
+
+    # 惯性漂移
+    apply_issue_inertia_and_ongoing(db, state)
 
     # ── 5. 时间推进 ────────────────────────────────────────────
     state.next_period()
@@ -163,6 +162,8 @@ def run_monthly_simulation(
 
     # ── 7. 记忆提取（LLM + 规则） ─────────────────────────────
     triggered_event_titles = [e["title"] for e in historical + threshold_crisis + random_events]
+    metrics_delta = tracker_output.get("metrics_delta", {})
+    log_entries = tracker_output.get("log_entries", [])
     try:
         llm_cfg = load_llm_config(
             base_url="https://api.minimax.chat/v1",
