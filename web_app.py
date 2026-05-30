@@ -705,7 +705,7 @@ class GameUI:
         from han_sim.flows import relocate_capital, _CAPITAL_EFFECTS
         old = self.session.state.capital
         if old == new_capital:
-            return f"ℹ️ 当前就在 **洛阳**，无需迁都。"
+            return f"ℹ️ 当前就在 **{old}**，无需迁都。"
         # 迁都费用：50万两
         cost = 50
         han_ku = self.session.state.metrics.get("汉室库", 0)
@@ -1006,7 +1006,7 @@ def build_ui():
             intel = ui._render_intel_html()
             map_html = ui._render_map_html()
             pts_html, skills_html = ui._render_skills_html()
-            return out, ministers, history, diary, dash, powers, intel, map_html, pts_html, skills_html
+            return out, ministers, history, diary, dash, powers, intel, map_html, pts_html, skills_html, f"<b style='color:#3b82f6'>当前都城：{ui.session.state.capital}</b>"
 
         def do_refresh_dashboard():
             return ui._render_dashboard_html()
@@ -1122,7 +1122,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, skill_points_display, skill_list_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, skill_points_display, skill_list_display, capital_label],
         )
 
     return demo

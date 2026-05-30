@@ -155,11 +155,11 @@ def _build_legend() -> str:
         ("#6b7280", "中立"),
     ]
     labels = []
-    for color, name in items:
+    for i, (color, name) in enumerate(items):
         labels.append(
-            f'<rect x="0" y="{items.index((color, name)) * 18}" width="12" height="12" '
+            f'<rect x="0" y="{i * 18}" width="12" height="12" '
             f'rx="2" fill="{color}" fill-opacity="0.7"/>'
-            f'<text x="16" y="{items.index((color, name)) * 18 + 10}" '
+            f'<text x="16" y="{i * 18 + 10}" '
             f'font-size="11" fill="#374151" font-family="system-ui, sans-serif">{name}</text>'
         )
     return f"""
@@ -172,11 +172,10 @@ def _build_legend() -> str:
 
 
 def _build_title(year: int, period: str, turn: int) -> str:
-    """生成标题栏。"""
-    return """
+    return f"""
     <text x="450" y="28" text-anchor="middle" font-size="16" font-weight="bold"
           fill="#1a1a2e" font-family="system-ui, sans-serif">
-        🏯 东汉末年局势图 · %s年%s月 · 第%s回合
+        🏯 东汉末年局势图 · {year}年{period}月 · 第{turn}回合
     </text>
     """
 
@@ -218,7 +217,7 @@ def render_map_html(
     legend = _build_legend()
 
     # ── 标题 ──
-    title = _build_title(year, period, turn) % (year, period, turn)
+    title = _build_title(year, period, turn)
 
     # 生成唯一ID，用于州名点击后的信息显示
     _map_uid = str(id(random.random()))[:12]
