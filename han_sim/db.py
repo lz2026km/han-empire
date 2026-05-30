@@ -442,6 +442,39 @@ class GameDB:
                 value TEXT NOT NULL DEFAULT '',
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS emperor_skills (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                emperor_skill_id TEXT NOT NULL,
+                acquired_turn INTEGER NOT NULL DEFAULT 0,
+                UNIQUE(campaign_id, emperor_skill_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS minister_skill_grants (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                minister_name TEXT NOT NULL,
+                skill_id TEXT NOT NULL,
+                granted_turn INTEGER NOT NULL DEFAULT 0,
+                status TEXT NOT NULL DEFAULT 'active',
+                UNIQUE(campaign_id, minister_name, skill_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS directives (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                type TEXT NOT NULL DEFAULT 'decree',
+                kind TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'draft',
+                content TEXT NOT NULL DEFAULT '',
+                issued_turn INTEGER NOT NULL DEFAULT 0,
+                expires_turn INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_directives_campaign ON directives(campaign_id, status);
+            CREATE INDEX IF NOT EXISTS idx_directives_turn ON directives(issued_turn, status);
         """)
         self.conn.commit()
 
@@ -909,6 +942,41 @@ class GameDB:
     def list_regions(self) -> List[Dict]:
         rows = self.conn.execute("SELECT * FROM regions").fetchall()
         return self._rows_to_dicts(rows)
+
+    # ── 建筑 CRUD ─────────────────────────────────────────────────
+
+    def upsert_building(self, b: dict) -> None:
+        self.conn.execute(
+            """INSERT OR REPLACE INTO buildings
+               (id, region_id, name, category, level, condition, maintenance, risk,
+                output_metric, output_amount, status, origin, created_turn)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                b.get("id", ""),
+                b.get("region_id", ""),
+                b.get("name", b.get("id", "")),
+                b.get("category", ""),
+                b.get("level", 1),
+                b.get("condition", 100),
+                b.get("maintenance", 0),
+                b.get("risk", 0),
+                b.get("output_metric", ""),
+                b.get("output_amount", 0),
+                b.get("status", "正常"),
+                b.get("origin", "preset"),
+                b.get("created_turn", 0),
+            ),
+        )
+
+    def list_buildings(self) -> List[Dict]:
+        rows = self.conn.execute("SELECT * FROM buildings").fetchall()
+        return self._rows_to_dicts(rows)
+
+    def inspect_building(self, building_id: str) -> Optional[Dict]:
+        row = self.conn.execute(
+            "SELECT * FROM buildings WHERE id=?", (building_id,)
+        ).fetchone()
+        return dict(row) if row else None
 
     # ── 军队 CRUD ────────────────────────────────────────────────
 
@@ -1418,6 +1486,41 @@ class GameDB:
         ).fetchall()
         return self._rows_to_dicts(rows)
 
+    def get_active_issues_by_kind(self, kind: str) -> List[Dict]:
+        """按 kind 筛选进行中的事项。"""
+        rows = self.conn.execute(
+            "SELECT * FROM issues WHERE status='active' AND kind=? ORDER BY severity DESC, id",
+            (kind,),
+        ).fetchall()
+        return self._rows_to_dicts(rows)
+
+    def get_issue_deadline(self, issue_id: int) -> Optional[int]:
+        """返回事项的 deadline_turn，不存在则返回 None。"""
+        row = self.conn.execute(
+            "SELECT deadline_turn FROM issues WHERE id=?", (int(issue_id),)
+        ).fetchone()
+        return int(row["deadline_turn"]) if row and row["deadline_turn"] else None
+
+    def advance_issue_with_deadline(self, state: "GameState") -> List[Dict]:
+        """检查所有进行中事项的 deadline，超时则应用 fail_effect 并关闭事项。
+        返回被超时关闭的事项列表。"""
+        expired: List[Dict] = []
+        rows = self.conn.execute(
+            "SELECT * FROM issues WHERE status='active' AND deadline_turn > 0 AND deadline_turn <= ?",
+            (state.turn,),
+        ).fetchall()
+        for row in rows:
+            effect = json.loads(row["effect_on_fail"] or "{}")
+            for k, v in (effect.get("metrics") or {}).items():
+                if k in state.metrics and isinstance(v, (int, float)):
+                    state.metrics[k] = max(0, min(100, state.metrics.get(k, 0) + int(v)))
+            new_row = self.close_issue(state, int(row["id"]), reason="failed",
+                                      narrative=f"截止月份已过，事项自动失败。")
+            if new_row:
+                expired.append({"issue_id": int(row["id"]), "title": row["title"],
+                                "effect_applied": effect})
+        return expired
+
     def find_any_issue_by_origin(self, origin_kind: str, origin_ref: str) -> Optional[Dict]:
         row = self.conn.execute(
             "SELECT * FROM issues WHERE origin_kind=? AND origin_ref=?",
@@ -1461,6 +1564,233 @@ class GameDB:
         return int(row["value"]) if row else default
 
     def commit(self) -> None:
+        self.conn.commit()
+
+    # ── 天子技能树 ─────────────────────────────────────────────────
+
+    def activate_skill(self, campaign_id: str, skill_id: str, turn: int) -> bool:
+        """激活（学习）一个天子技能。返回是否成功。"""
+        self.conn.execute(
+            """INSERT OR IGNORE INTO emperor_skills
+               (campaign_id, emperor_skill_id, acquired_turn)
+               VALUES (?, ?, ?)""",
+            (campaign_id, skill_id, turn),
+        )
+        self.conn.commit()
+        row = self.conn.execute(
+            "SELECT id FROM emperor_skills WHERE campaign_id=? AND emperor_skill_id=?",
+            (campaign_id, skill_id),
+        ).fetchone()
+        return row is not None
+
+    def deactivate_skill(self, campaign_id: str, skill_id: str) -> bool:
+        """删除已学的天子技能（遗忘）。返回是否成功。"""
+        cur = self.conn.execute(
+            "SELECT id FROM emperor_skills WHERE campaign_id=? AND emperor_skill_id=?",
+            (campaign_id, skill_id),
+        ).fetchone()
+        if not cur:
+            return False
+        self.conn.execute(
+            "DELETE FROM emperor_skills WHERE campaign_id=? AND emperor_skill_id=?",
+            (campaign_id, skill_id),
+        )
+        self.conn.commit()
+        return True
+
+    def list_acquired_skills(self, campaign_id: str) -> List[Dict]:
+        """返回当前已学的所有天子技能。"""
+        rows = self.conn.execute(
+            "SELECT emperor_skill_id, acquired_turn FROM emperor_skills WHERE campaign_id=?",
+            (campaign_id,),
+        ).fetchall()
+        return [{"skill_id": str(r["emperor_skill_id"]), "acquired_turn": int(r["acquired_turn"])} for r in rows]
+
+    # ── 大臣技能授权 ───────────────────────────────────────────────
+
+    def grant_skill_to_minister(self, campaign_id: str, minister_name: str, skill_id: str, turn: int) -> bool:
+        """授权技能给大臣。返回是否成功。"""
+        self.conn.execute(
+            """INSERT OR IGNORE INTO minister_skill_grants
+               (campaign_id, minister_name, skill_id, granted_turn, status)
+               VALUES (?, ?, ?, ?, 'active')""",
+            (campaign_id, minister_name, skill_id, turn),
+        )
+        self.conn.commit()
+        row = self.conn.execute(
+            "SELECT id FROM minister_skill_grants WHERE campaign_id=? AND minister_name=? AND skill_id=?",
+            (campaign_id, minister_name, skill_id),
+        ).fetchone()
+        return row is not None
+
+    def revoke_minister_skill(self, campaign_id: str, minister_name: str, skill_id: str) -> bool:
+        """撤销大臣的某项技能授权。返回是否成功。"""
+        cur = self.conn.execute(
+            "SELECT id FROM minister_skill_grants WHERE campaign_id=? AND minister_name=? AND skill_id=? AND status='active'",
+            (campaign_id, minister_name, skill_id),
+        ).fetchone()
+        if not cur:
+            return False
+        self.conn.execute(
+            "UPDATE minister_skill_grants SET status='revoked' WHERE campaign_id=? AND minister_name=? AND skill_id=?",
+            (campaign_id, minister_name, skill_id),
+        )
+        self.conn.commit()
+        return True
+
+    def active_skill_grants(self, campaign_id: str, minister_name: str) -> List[str]:
+        """返回大臣当前有效的技能授权列表。"""
+        rows = self.conn.execute(
+            "SELECT skill_id FROM minister_skill_grants WHERE campaign_id=? AND minister_name=? AND status='active'",
+            (campaign_id, minister_name),
+        ).fetchall()
+        return [str(r["skill_id"]) for r in rows]
+
+    # ── 指令状态机（诏书/密令）────────────────────────────────────────────
+
+    def create_directive(
+        self,
+        campaign_id: str,
+        kind: str,
+        status: str = "draft",
+        content: str = "",
+        issued_turn: int = 0,
+        expires_turn: int = 0,
+    ) -> int:
+        """创建一条指令（如诏书），返回新记录 id。"""
+        self.conn.execute(
+            """INSERT INTO directives
+               (campaign_id, type, kind, status, content, issued_turn, expires_turn)
+               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            (campaign_id, "decree", kind, status, content, issued_turn, expires_turn),
+        )
+        self.conn.commit()
+        row = self.conn.execute("SELECT last_insert_rowid()").fetchone()
+        return int(row[0]) if row else 0
+
+    def update_directive_status(self, directive_id: int, status: str) -> bool:
+        """更新指令状态。返回是否成功。"""
+        self.conn.execute(
+            "UPDATE directives SET status=?, updated_at=CURRENT_TIMESTAMP WHERE id=?",
+            (status, directive_id),
+        )
+        self.conn.commit()
+        row = self.conn.execute("SELECT id FROM directives WHERE id=?", (directive_id,)).fetchone()
+        return row is not None
+
+    def list_active_directives(self, campaign_id: str) -> List[Dict]:
+        """列出当前有效的指令（draft/issued/approved，不含 expired/rejected）。"""
+        rows = self.conn.execute(
+            """SELECT * FROM directives
+               WHERE campaign_id=? AND status IN ('draft','issued','approved')
+               ORDER BY issued_turn DESC, id DESC""",
+            (campaign_id,),
+        ).fetchall()
+        return self._rows_to_dicts(rows)
+
+    def expire_old_directives(self, current_turn: int) -> List[Dict]:
+        """将已过期的指令标记为 expired，返回被过期的指令列表。"""
+        rows = self.conn.execute(
+            """SELECT * FROM directives
+               WHERE expires_turn > 0 AND expires_turn < ? AND status NOT IN ('expired','rejected')
+               ORDER BY id""",
+            (int(current_turn),),
+        ).fetchall()
+        expired = []
+        for row in rows:
+            self.conn.execute(
+                "UPDATE directives SET status='expired', updated_at=CURRENT_TIMESTAMP WHERE id=?",
+                (int(row["id"]),),
+            )
+            expired.append(dict(row))
+        if expired:
+            self.conn.commit()
+        return expired
+
+    def get_directive(self, directive_id: int) -> Optional[Dict]:
+        row = self.conn.execute("SELECT * FROM directives WHERE id=?", (directive_id,)).fetchone()
+        return dict(row) if row else None
+
+    # ── 财政账目查询 ───────────────────────────────────────────────────────────
+
+    def inspect_treasury(self, state: "GameState") -> Dict:
+        """返回汉室库/内库收支细目。"""
+        rows = self.conn.execute(
+            """SELECT account, delta, category, reason, turn, year, period
+               FROM economy_ledger ORDER BY turn DESC, id DESC LIMIT 30"""
+        ).fetchall()
+        entries = [dict(r) for r in rows]
+        return {
+            "汉室库": state.metrics.get("汉室库", 0),
+            "内库": state.metrics.get("内库", 0),
+            "recent_entries": entries,
+        }
+
+    # ── 天子日记 ─────────────────────────────────────────────────────────────
+
+    def init_emperor_diary_schema(self) -> None:
+        """创建 emperor_diary 表（如不存在）。"""
+        self.conn.execute("""
+            CREATE TABLE IF NOT EXISTS emperor_diary (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                turn INTEGER NOT NULL,
+                year INTEGER NOT NULL,
+                period INTEGER NOT NULL,
+                content TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )""")
+        self.conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_diary_campaign
+            ON emperor_diary(campaign_id, turn)""")
+        self.conn.commit()
+
+    def write_diary(
+        self,
+        campaign_id: str,
+        turn: int,
+        year: int,
+        period: int,
+        content: str,
+    ) -> None:
+        """写入一条天子日记。"""
+        self.init_emperor_diary_schema()
+        self.conn.execute(
+            """INSERT INTO emperor_diary
+               (campaign_id, turn, year, period, content)
+               VALUES (?, ?, ?, ?, ?)""",
+            (campaign_id, turn, year, period, str(content)[:200]),
+        )
+        self.conn.commit()
+
+    def list_diary(self, campaign_id: str, limit: int = 20) -> List[Dict]:
+        """返回天子日记列表（最近 limit 条）。"""
+        self.init_emperor_diary_schema()
+        rows = self.conn.execute(
+            """SELECT id, turn, year, period, content
+               FROM emperor_diary
+               WHERE campaign_id=?
+               ORDER BY turn DESC, id DESC
+               LIMIT ?""",
+            (campaign_id, limit),
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+    # ── 派系影响力更新 ───────────────────────────────────────────────────
+
+    def update_faction_influence(self, state: "GameState") -> None:
+        """根据当前大臣派系和指标，计算并写入 factions 表的影响力量。"""
+        from han_sim.flows import calc_faction_influence
+        influences = calc_faction_influence(state, self)
+        for fname, influence in influences.items():
+            self.conn.execute(
+                """INSERT INTO factions (name, satisfaction, leverage, agenda)
+                   VALUES (?, ?, ?, ?)
+                   ON CONFLICT(name) DO UPDATE SET
+                       leverage=excluded.leverage,
+                       updated_at=CURRENT_TIMESTAMP""",
+                (fname, 50, int(influence), f"{fname}影响力{influence}"),
+            )
         self.conn.commit()
 
     def close(self) -> None:

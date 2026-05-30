@@ -286,6 +286,244 @@ class GameUI:
             lines.append(f"第{row['turn']}回合 {row['phase']}：{row['entry'][:60]}")
         return "\n".join(lines)
 
+    def _render_map_html(self) -> str:
+        """【🗺️ 地图】ASCII 地图视图：8州 + 司隶，每州按势力 stance 着色。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+
+        # 8州 + 司隶的 region_id 映射
+        PROVINCE_ORDER = [
+            "youzhou", "bingzhou", "yanzhou", "yuzhou",
+            "jiujiang", "jingzhou", "yizhou", "liangzhou",
+        ]
+        PROVINCE_NAMES = {
+            "youzhou": "幽", "bingzhou": "并", "yanzhou": "兖", "yuzhou": "豫",
+            "jiujiang": "扬", "jingzhou": "荆", "yizhou": "益", "liangzhou": "凉",
+        }
+
+        regions = {r["id"]: r for r in self.session.db.list_regions()}
+        powers = {p["id"]: p for p in self.session.db.list_powers()}
+
+        def get_color(region_id: str) -> str:
+            r = regions.get(region_id, {})
+            controller = r.get("controlled_by", "")
+            if controller == "han":
+                return "#3b82f6"  # 忠蓝
+            p = powers.get(controller, {})
+            stance = p.get("stance", "neutral")
+            return {"loyal": "#3b82f6", "neutral": "#6b7280", "hostile": "#ef4444"}.get(stance, "#6b7280")
+
+        def get_label(region_id: str) -> str:
+            r = regions.get(region_id, {})
+            controller = r.get("controlled_by", "")
+            if controller == "han":
+                return "汉室"
+            p = powers.get(controller, {})
+            leader = p.get("leader", "")
+            return leader[:2] if leader else controller[:2]
+
+        # 8州 ASCII 行
+        top_labels = "    " + "    ".join(PROVINCE_NAMES.get(pid, "") for pid in PROVINCE_ORDER)
+        cell_colors = [get_color(pid) for pid in PROVINCE_ORDER]
+        cell_labels = [get_label(pid) for pid in PROVINCE_ORDER]
+
+        # 上边框
+        border_row = "  ┌" + "───┬" * 7 + "───┐"
+        # 数据行：每个格子两行（名字+驻军）
+        name_row = "  │" + "│".join(f"{cell_labels[i]:^3}" for i in range(8)) + "│"
+        garrison_row = "  │" + "│".join(f"  {PROVINCE_NAMES[PROVINCE_ORDER[i]]} " for i in range(8)) + "│"
+        bottom_row = "  └" + "───┴" * 7 + "───┘"
+
+        # 驻军数字：找 armies 里 station 为该州的
+        armies = self.session.db.list_armies()
+        garrison_info = {}
+        for a in armies:
+            station = a.get("station", "")
+            if station:
+                garrison_info[station] = garrison_info.get(station, 0) + a.get("manpower", 0)
+
+        cells_html = []
+        for i, pid in enumerate(PROVINCE_ORDER):
+            color = cell_colors[i]
+            label = cell_labels[i]
+            region_name = PROVINCE_NAMES.get(pid, pid)
+            garrison = garrison_info.get(pid, 0)
+            cells_html.append(
+                f"<td style='border:1px solid #e5e7eb;padding:6px 4px;text-align:center;background:#f9fafb'>"
+                f"<div style='font-weight:bold;color:{color}'>{label}</div>"
+                f"<div style='font-size:11px;color:#9ca3af'>{region_name}州</div>"
+                f"<div style='font-size:11px'>兵:{garrison}</div>"
+                f"</td>"
+            )
+
+        # 司隶
+        sili_region = regions.get("luoyang", {})
+        sili_controller = sili_region.get("controlled_by", "")
+        sili_color = get_color("luoyang")
+        sili_power = powers.get(sili_controller, {})
+        sili_label = sili_power.get("leader", "")[:2] if sili_power else "未知"
+
+        sili_html = (
+            f"<div style='margin-top:12px;text-align:center'>"
+            f"<div style='font-size:13px;font-weight:bold'>司隶（长安/洛阳）</div>"
+            f"<div style='color:{sili_color}'>[{sili_label} 控制]</div>"
+            f"</div>"
+        )
+
+        table_html = (
+            "<pre style='font-family:monospace;font-size:13px;line-height:1.4'>"
+            f"{top_labels}\n"
+            f"{border_row}\n"
+            f"{name_row}\n"
+            f"{garrison_row}\n"
+            f"{bottom_row}"
+            "</pre>"
+        )
+
+        # 州份详细信息
+        detail_rows = []
+        for pid in PROVINCE_ORDER:
+            r = regions.get(pid, {})
+            controller = r.get("controlled_by", "")
+            p = powers.get(controller, {})
+            stance = p.get("stance", "neutral")
+            color = get_color(pid)
+            stance_label = {"loyal": "忠", "neutral": "中", "hostile": "敌"}.get(stance, "?")
+            name = PROVINCE_NAMES.get(pid, pid)
+            garrison = garrison_info.get(pid, 0)
+            pop = r.get("population", 0)
+            detail_rows.append(
+                f"<tr style='color:{color}'>"
+                f"<td style='padding:4px 8px'>{name}州</td>"
+                f"<td style='padding:4px 8px'>{p.get('leader', '无') or '无'}</td>"
+                f"<td style='padding:4px 8px;text-align:center'>{stance_label}</td>"
+                f"<td style='padding:4px 8px;text-align:right'>{garrison}</td>"
+                f"<td style='padding:4px 8px;text-align:right'>{pop}</td>"
+                f"</tr>"
+            )
+
+        legend_html = (
+            "<div style='margin-top:8px;font-size:12px'>"
+            "<span style='color:#3b82f6'>🟦 忠</span> · "
+            "<span style='color:#6b7280'>🟪 中立</span> · "
+            "<span style='color:#ef4444'>🟥 敌对</span>"
+            "</div>"
+        )
+
+        return (
+            "<div style='font-family:system-ui,sans-serif'>"
+            f"<h4 style='margin:8px 0 4px'>🗺️ 天下大势</h4>"
+            f"{table_html}"
+            f"{sili_html}"
+            "<table style='width:100%;border-collapse:collapse;font-size:13px;margin-top:12px'>"
+            "<tr style='background:#f3f4f6;font-size:12px'>"
+            "<th style='padding:4px 8px;text-align:left'>州</th>"
+            "<th style='padding:4px 8px;text-align:left'>太守/控制者</th>"
+            "<th style='padding:4px 8px;text-align:center'>立场</th>"
+            "<th style='padding:4px 8px;text-align:right'>驻军</th>"
+            "<th style='padding:4px 8px;text-align:right'>人口</th>"
+            "</tr>"
+            + "".join(detail_rows)
+            + "</table>"
+            + legend_html
+            + "</div>"
+        )
+
+    def _render_intel_html(self) -> str:
+        """【情报】视图 HTML：军力排行 ASCII 条形图 + 联盟关系 + 密探情报（威权≥40解锁）。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+        from han_sim.tools import (
+            estimate_military_strength,
+            inspect_warlord_alliances,
+            check_dongzhuo_trap_status,
+            audit_imperial_treasury,
+        )
+
+        s = self.session.state
+        db = self.session.db
+        authority = s.metrics.get("威权", 0)
+        intel_unlocked = authority >= 40
+
+        # 军力排行榜
+        powers = db.list_powers()
+        # 按军力排序
+        sorted_powers = sorted(
+            [p for p in powers if p.get("id") != "han"],
+            key=lambda x: int(x.get("military_strength", 0)),
+            reverse=True,
+        )
+        max_mil = max(int(p.get("military_strength", 0)) for p in sorted_powers) if sorted_powers else 100
+
+        rows_html = []
+        for p in sorted_powers[:8]:
+            mil = int(p.get("military_strength", 0))
+            lev = int(p.get("leverage", 0))
+            bar_len = max(1, int(mil / max_mil * 20)) if max_mil else 0
+            bar = "█" * bar_len + "░" * (20 - bar_len)
+            stance_color = {"loyal": "#3b82f6", "neutral": "#6b7280", "hostile": "#ef4444"}.get(p.get("stance", "neutral"), "#6b7280")
+            rows_html.append(f"""<tr style="color:{stance_color}">
+                <td style="padding:4px 8px;font-weight:bold">{p.get('name','')}</td>
+                <td style="padding:4px 8px;font-family:monospace;color:#22c55e">{bar}</td>
+                <td style="padding:4px 8px;text-align:right">{mil}</td>
+                <td style="padding:4px 8px;text-align:right">{lev}</td>
+            </tr>""")
+
+        intel_section = ""
+        if intel_unlocked:
+            intel_section += f"<p style='color:#22c55e'>🔓 密探已解锁（威权{authority}≥40）</p>"
+        else:
+            intel_section += f"<p style='color:#9ca3af'>🔒 密探未解锁（威权需≥40，当前{authority}）</p>"
+
+        # 董卓伏诛线状态
+        trap_status = check_dongzhuo_trap_status(s)
+        trap_desc = trap_status.get("description", "")
+        trap_color = "#22c55e" if trap_status.get("status") == "伏诛成功" else ("#f59e0b" if trap_status.get("status") == "围困中" else "#6b7280")
+        intel_section += f"<p style='font-size:13px'>📍 董卓伏诛线：<span style='color:{trap_color}'>{trap_desc}</span></p>"
+
+        # 财政账目
+        treasury = audit_imperial_treasury(db, s)
+        han_ku = treasury.get("汉室库", 0)
+        nei_ku = treasury.get("内库", 0)
+        intel_section += f"<p style='font-size:13px'>💰 汉室库：{han_ku}万两 · 内库：{nei_ku}万两</p>"
+
+        return f"""<div style="font-family:system-ui,sans-serif">
+        <h4 style="margin:8px 0 4px">⚔️ 诸侯军力排行</h4>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <tr style="background:#f3f4f6;font-size:12px">
+                <th style="padding:4px 8px;text-align:left">势力</th>
+                <th style="padding:4px 8px;text-align:left">军力条</th>
+                <th style="padding:4px 8px;text-align:right">军力</th>
+                <th style="padding:4px 8px;text-align:right">威势</th>
+            </tr>
+            {"".join(rows_html)}
+        </table>
+        <h4 style="margin:12px 0 4px">🕵️ 情报摘要</h4>
+        {intel_section}
+        <p style="font-size:12px;color:#9ca3af">🟦 忠诚 · 🟪 中立 · 🟥 敌对</p>
+        </div>"""
+
+    def _render_diary_html(self) -> str:
+        """【日志】天子日记视图：日记体显示。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+        entries = self.session.db.list_diary(self.session.campaign_id, limit=15)
+        if not entries:
+            return "<p style='color:#9ca3af'>暂无天子日记</p>"
+        lines = []
+        for e in entries:
+            turn = e.get("turn", 0)
+            year = e.get("year", 0)
+            period = e.get("period", 0)
+            content = e.get("content", "")
+            lines.append(
+                f"<p style='margin:4px 0'><b>第{turn}回合 · {year}年{period}月</b>：{content[:80]}</p>"
+            )
+        return f"""<div style="font-family:system-ui,sans-serif">
+        <h4 style="margin:8px 0 6px">📖 天子日记</h4>
+        {"".join(lines)}
+        </div>"""
+
     def cmd_summon(self, minister_name: str, question: str):
         if not self.session:
             return "❗ 请先点击 **新游戏** 开始。"
@@ -456,11 +694,23 @@ def build_ui():
                 history_display = gr.Markdown("*召对记录将显示在这里*")
                 refresh_history_btn = gr.Button("🔄 刷新召对记录")
 
-            # ── Tab6: 日志 ──────────────────────────────────
+            # ── Tab6: 日志/日记 ──────────────────────────────────
             with gr.TabItem("📋 日志"):
-                gr.Markdown("### 📋 游戏日志")
-                log_display = gr.Markdown("*游戏日志将显示在这里*")
-                refresh_log_btn = gr.Button("🔄 刷新日志")
+                gr.Markdown("### 📖 天子日记")
+                diary_display = gr.HTML("*天子日记将显示在这里*")
+                refresh_diary_btn = gr.Button("🔄 刷新日记")
+
+            # ── Tab7: 情报 ────────────────────────────────────────────
+            with gr.TabItem("🕵️ 情报"):
+                gr.Markdown("### 🕵️ 军情/情报系统")
+                intel_display = gr.HTML("*点击「新游戏」初始化情报视图*")
+                refresh_intel_btn = gr.Button("🔄 刷新情报")
+
+            # ── Tab8: 地图 ────────────────────────────────────────────
+            with gr.TabItem("🗺️ 地图"):
+                gr.Markdown("### 🗺️ 天下大势（点击州名查看详情）")
+                map_display = gr.HTML("*点击「新游戏」初始化地图*")
+                refresh_map_btn = gr.Button("🔄 刷新地图")
 
         gr.Markdown("---")
 
@@ -483,10 +733,12 @@ def build_ui():
             out = ui.new_game()
             ministers = ui._render_ministers()
             history = ui._render_history()
-            log = ui._render_log()
+            diary = ui._render_diary_html()
             dash = ui._render_dashboard_html()
             powers = ui._render_powers_html()
-            return out, ministers, history, log, dash, powers
+            intel = ui._render_intel_html()
+            map_html = ui._render_map_html()
+            return out, ministers, history, diary, dash, powers, intel, map_html
 
         def do_refresh_dashboard():
             return ui._render_dashboard_html()
@@ -497,8 +749,14 @@ def build_ui():
         def do_refresh_history():
             return ui._render_history()
 
-        def do_refresh_log():
-            return ui._render_log()
+        def do_refresh_diary():
+            return ui._render_diary_html()
+
+        def do_refresh_intel():
+            return ui._render_intel_html()
+
+        def do_refresh_map():
+            return ui._render_map_html()
 
         summon_btn.click(
             fn=ui.cmd_summon,
@@ -519,7 +777,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     log_display, dashboard_display, powers_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display],
         )
         refresh_dashboard_btn.click(
             fn=do_refresh_dashboard,
@@ -536,10 +794,20 @@ def build_ui():
             inputs=[],
             outputs=history_display,
         )
-        refresh_log_btn.click(
-            fn=do_refresh_log,
+        refresh_diary_btn.click(
+            fn=do_refresh_diary,
             inputs=[],
-            outputs=log_display,
+            outputs=diary_display,
+        )
+        refresh_intel_btn.click(
+            fn=do_refresh_intel,
+            inputs=[],
+            outputs=intel_display,
+        )
+        refresh_map_btn.click(
+            fn=do_refresh_map,
+            inputs=[],
+            outputs=map_display,
         )
 
         # 初始化
@@ -547,7 +815,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     log_display, dashboard_display, powers_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display],
         )
 
     return demo

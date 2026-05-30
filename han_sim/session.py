@@ -17,7 +17,7 @@ from han_sim.conversation import (
     save_message,
 )
 from han_sim.db import GameDB
-from han_sim.flows import apply_monthly_flow
+from han_sim.flows import apply_monthly_flow, apply_skill_points
 from han_sim.models import Character, CourtContext, GameState
 from han_sim.paths import user_data_path
 from han_sim.registry import build_memory_brief, build_context_for_minister
@@ -82,6 +82,38 @@ class GameSession:
             self.db.upsert_power(p)
         for e in content.load_seed_events():
             self.db.upsert_event(e)
+        # 初始化建筑（按简化版配置）
+        initial_buildings = [
+            {"id": "changan_weiyang", "region_id": "京兆尹", "name": "未央宫", "category": "内廷",
+             "level": 4, "condition": 70, "maintenance": 10, "risk": 20,
+             "output_metric": "威权", "output_amount": 3, "status": "正常"},
+            {"id": "luoyang_wuku", "region_id": "河南尹", "name": "洛阳武库", "category": "军事",
+             "level": 2, "condition": 15, "maintenance": 8, "risk": 70,
+             "output_metric": "军备", "output_amount": 15, "status": "废墟"},
+            {"id": "xuchang_palace", "region_id": "颍川郡", "name": "许昌行宫", "category": "内廷",
+             "level": 3, "condition": 80, "maintenance": 12, "risk": 15,
+             "output_metric": "威权", "output_amount": 2, "status": "正常"},
+            {"id": "luoyang_taicang", "region_id": "河南尹", "name": "洛阳太仓", "category": "财政",
+             "level": 2, "condition": 20, "maintenance": 5, "risk": 65,
+             "output_metric": "汉室库", "output_amount": 3, "status": "残存"},
+            {"id": "changan_taicang", "region_id": "京兆尹", "name": "长安太仓", "category": "财政",
+             "level": 3, "condition": 65, "maintenance": 5, "risk": 25,
+             "output_metric": "汉室库", "output_amount": 4, "status": "正常"},
+            {"id": "xuchang_taicang", "region_id": "颍川郡", "name": "许昌太仓", "category": "财政",
+             "level": 2, "condition": 75, "maintenance": 5, "risk": 20,
+             "output_metric": "汉室库", "output_amount": 3, "status": "正常"},
+            {"id": "jiujiang_taicang", "region_id": "豫章郡", "name": "九江粮仓", "category": "财政",
+             "level": 1, "condition": 55, "maintenance": 5, "risk": 35,
+             "output_metric": "汉室库", "output_amount": 2, "status": "正常"},
+            {"id": "nanyang_taicang", "region_id": "南阳郡", "name": "南阳粮仓", "category": "财政",
+             "level": 1, "condition": 55, "maintenance": 5, "risk": 40,
+             "output_metric": "汉室库", "output_amount": 2, "status": "正常"},
+            {"id": "jingzhou_taicang", "region_id": "南阳郡", "name": "荆州粮仓", "category": "财政",
+             "level": 1, "condition": 60, "maintenance": 5, "risk": 30,
+             "output_metric": "汉室库", "output_amount": 2, "status": "正常"},
+        ]
+        for b in initial_buildings:
+            self.db.upsert_building(b)
         self.db.commit()
 
     # ── 召见大臣 ─────────────────────────────────────────────
@@ -93,8 +125,12 @@ class GameSession:
             return SummonResult(chat_text=f"找不到大臣：{minister_name}")
 
         # ── 召见前：忠诚度上下文注入 ─────────────────────────
-        from han_sim.flows import get_minister_loyalty_context
+        from han_sim.flows import get_minister_loyalty_context, calc_faction_influence
         loyalty_ctx = get_minister_loyalty_context(self.db, minister["name"])
+
+        # ── 召见前：派系上下文注入 ─────────────────────────────
+        influences = calc_faction_influence(self.state, self.db)
+        faction_ctx = "当前各派系影响力：" + "、".join([f"{k}={v:.0f}" for k, v in influences.items()])
 
         # ── 召见前：记忆召回 ───────────────────────────────────
         memory_brief = build_memory_brief(
@@ -116,7 +152,8 @@ class GameSession:
             f"{context}\n"
             f"【天子此次询问】{instruction}\n\n"
             f"请以{minister['name']}的身份回应天子。\n"
-            f"【忠诚度提示】{loyalty_ctx}"
+            f"【忠诚度提示】{loyalty_ctx}\n"
+            f"【派系态势】{faction_ctx}"
         )
         response = agent.run(prompt)
         text = response.content if hasattr(response, "content") else str(response)
@@ -139,6 +176,8 @@ class GameSession:
     def run_review(self) -> ReviewResult:
         """月末推演：数值结算 + 事件生成。"""
         fiscal = apply_monthly_flow(self.state, self.db)
+        # 月末发放天子技能点：威权≥40每回合+1，威权≥60每回合+2，上限10点
+        apply_skill_points(self.state, self.db)
         log_entries = [f"【{self.state.year}年{self.state.period}月结算】{fiscal['net']:+d}万两"]
 
         self.state.next_period()

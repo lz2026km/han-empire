@@ -64,14 +64,27 @@ def skill_unlock_met(skill: Dict, authority: int, acquired_ids: List[str]) -> bo
 
 
 def available_emperor_skills(authority: int, acquired_ids: List[str]) -> List[Dict]:
-    """返回当前可学习的全部技能（含已解锁和未解锁但可预览）。"""
+    """返回当前可学习的全部技能（含已解锁和未解锁但可预览）。
+
+    返回结构化技能状态列表，每项含：
+      - id/name/tree/cost/unlock/req 等原始字段
+      - status: "acquired" | "available" | "locked"
+      - tree_label: 如"经略系"
+    """
     all_skills = _ctx().emperor_skills
     result = []
     for skill in all_skills:
+        skill_id = skill.get("id", "")
         unlocked = skill_unlock_met(skill, authority, acquired_ids)
+        if skill_id in acquired_ids:
+            status = "acquired"
+        elif unlocked:
+            status = "available"
+        else:
+            status = "locked"
         result.append({
             **skill,
-            "available": unlocked,
+            "status": status,
             "tree_label": f"{skill['tree']}系",
         })
     return result
@@ -190,25 +203,50 @@ def build_skill_card_text(character: Dict, db=None) -> str:
 
 # ── 天子技能树展示 ──────────────────────────────────────────────────────────
 
-def print_emperor_skill_tree(authority: int, acquired_ids: List[str]) -> str:
-    """构建天子技能树展示文本。"""
-    lines = ["【天子技能树】（威权影响解锁，需花费技能点学习）", ""]
-    for tree in get_skill_trees():
-        skills = get_skills_by_tree(tree)
-        lines.append(f"━━━ {tree}系 ━━━")
-        for skill in skills:
-            unlocked = skill_unlock_met(skill, authority, acquired_ids)
-            cost = skill.get("cost", 1)
-            req = skill.get("req", "")
-            prereq_name = skill_display_name(req) if req else ""
-            status = "✓已学" if skill["id"] in acquired_ids else ("☆可学" if unlocked else "○未解锁")
-            prereq_part = f"（前置：{prereq_name}）" if prereq_name else ""
-            lines.append(
-                f"  {status} {skill['name']}（{cost}点）{prereq_part}\n"
-                f"         {skill.get('desc', '')}"
-            )
-        lines.append("")
-    return "\n".join(lines)
+def print_emperor_skill_tree(authority: int, acquired_ids: List[str]) -> Dict[str, object]:
+    """构建天子技能树结构化数据。
+
+    返回 dict，含：
+      - trees: 按技能树分组的结构化技能列表
+      - total_points: 当前可用技能点
+      - authority: 当前威权
+    每项技能含：id/name/cost/desc/status/unlock/req/tree_label
+    """
+    c = _ctx()
+    total_points = c.skill_points if hasattr(c, "skill_points") else 0
+
+    trees_data: Dict[str, List[Dict]] = {tree: [] for tree in get_skill_trees()}
+
+    for skill in c.emperor_skills:
+        skill_id = skill.get("id", "")
+        unlocked = skill_unlock_met(skill, authority, acquired_ids)
+        if skill_id in acquired_ids:
+            status = "acquired"
+        elif unlocked:
+            status = "available"
+        else:
+            status = "locked"
+        req = skill.get("req", "")
+        prereq_name = skill_display_name(req) if req else ""
+        trees_data[skill.get("tree", "")].append({
+            "id": skill_id,
+            "name": skill.get("name", ""),
+            "tree": skill.get("tree", ""),
+            "tree_label": f"{skill['tree']}系",
+            "cost": skill.get("cost", 1),
+            "desc": skill.get("desc", ""),
+            "unlock": skill.get("unlock", ""),
+            "req": req,
+            "prereq_name": prereq_name,
+            "status": status,
+        })
+
+    return {
+        "authority": authority,
+        "acquired_ids": list(acquired_ids),
+        "trees": trees_data,
+        "total_points": total_points,
+    }
 
 
 # ── 诏令工具模板 ──────────────────────────────────────────────────────────────

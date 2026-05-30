@@ -457,3 +457,99 @@ def build_simulator_tools(context: "CourtContext"):
 
     tools.append(submit_report)
     return tools
+
+
+# ── 军情/情报系统工具 ─────────────────────────────────────────────────────────
+
+def estimate_military_strength(db: "GameDB", power_name: str) -> Dict:
+    """估算某诸侯军力。返回估算结果 dict，含军力等级和说明。"""
+    powers = db.list_powers()
+    for p in powers:
+        if power_name in (p.get("name", ""), p.get("id", "")):
+            mil = int(p.get("military_strength", 0))
+            leverage = int(p.get("leverage", 0))
+            # 军力等级评估
+            if mil >= 80:
+                grade = "精锐"
+            elif mil >= 60:
+                grade = "较强"
+            elif mil >= 40:
+                grade = "中等"
+            elif mil >= 20:
+                grade = "较弱"
+            else:
+                grade = "虚弱"
+            return {
+                "power": p.get("name", p.get("id", "")),
+                "military_strength": mil,
+                "leverage": leverage,
+                "grade": grade,
+                "description": f"{p.get('name', '')}军力.mil={mil}，威势={leverage}，评估为'{grade}'",
+            }
+    return {"error": f"未找到势力 '{power_name}'"}
+
+
+def inspect_warlord_alliances(db: "GameDB", power_name: str) -> Dict:
+    """查询某诸侯的联盟关系。返回该势力对其他势力的态度。"""
+    powers = db.list_powers()
+    target = None
+    for p in powers:
+        if power_name in (p.get("name", ""), p.get("id", "")):
+            target = p
+            break
+    if not target:
+        return {"error": f"未找到势力 '{power_name}'"}
+
+    stance_map = {"loyal": "忠诚", "neutral": "中立", "hostile": "敌对"}
+    allies = []
+    rivals = []
+    neutrals = []
+    for p in powers:
+        if p.get("id") == target.get("id") or p.get("id") == "han":
+            continue
+        stance = p.get("stance", "neutral")
+        entry = {"name": p.get("name", ""), "stance": stance_map.get(stance, stance)}
+        if stance == "loyal":
+            allies.append(entry)
+        elif stance == "hostile":
+            rivals.append(entry)
+        else:
+            neutrals.append(entry)
+    return {
+        "power": target.get("name", ""),
+        "allies": allies,
+        "rivals": rivals,
+        "neutrals": neutrals,
+    }
+
+
+def check_dongzhuo_trap_status(state: "GameState") -> Dict:
+    """董卓伏诛线详情。返回伏诛线当前状态。"""
+    trapped = state.dong_zhuo_trapped_turn > 0 and state.dong_zhuo_killed_turn == 0
+    killed = state.dong_zhuo_killed_turn > 0
+    if killed:
+        return {
+            "status": "伏诛成功",
+            "killed_turn": state.dong_zhuo_killed_turn,
+            "description": "董卓已被诛杀，伏诛线完成。",
+        }
+    if trapped:
+        turns_elapsed = state.turn - state.dong_zhuo_trapped_turn
+        turns_remaining = max(0, 6 - turns_elapsed)
+        return {
+            "status": "围困中",
+            "trapped_turn": state.dong_zhuo_trapped_turn,
+            "turns_elapsed": turns_elapsed,
+            "turns_remaining": turns_remaining,
+            "deadline_turns": 6,
+            "description": f"董卓被困于郿坞，已过{turns_elapsed}回合，剩余{turns_remaining}回合需诛杀，否则游戏失败。",
+        }
+    return {
+        "status": "未触发",
+        "description": "董卓伏诛线尚未触发。",
+    }
+
+
+def audit_imperial_treasury(db: "GameDB", state: "GameState") -> Dict:
+    """汉室库收支细目（来自 db.inspect_treasury）。"""
+    return db.inspect_treasury(state)

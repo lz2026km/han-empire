@@ -203,12 +203,33 @@ def _apply_decree_effects(
     state: GameState,
     db: GameDB,
 ) -> tuple[Dict[str, int], List[str]]:
-    """应用诏书效果，返回 (delta_dict, log_entries)。"""
+    """应用诏书效果，返回 (delta_dict, log_entries)。
+
+    派系修正：忠汉派大臣执行诏书效果×1.2，离心派×0.8。
+    """
+    # 获取当前派系影响力，用于计算修正系数
+    from han_sim.flows import calc_faction_influence
+    influences = calc_faction_influence(state, db)
+    total_ministers = len(db.list_characters(status="active"))
+    if total_ministers == 0:
+        total_ministers = 1
+
+    # 忠汉派大臣占比
+    loyal_count = sum(1 for c in db.list_characters(status="active") if c.get("loyalty", 0) >= 70)
+    离心_count = sum(1 for c in db.list_characters(status="active") if 10 <= c.get("loyalty", 0) < 40)
+
+    # 忠汉派修正 1.2，离心派修正 0.8，叠加影响
+    faction_mod = 1.0
+    if loyal_count > 0:
+        faction_mod *= 1.0 + 0.2 * (loyal_count / total_ministers)
+    if 离心_count > 0:
+        faction_mod *= 1.0 - 0.2 * (离心_count / total_ministers)
+
     delta: Dict[str, int] = {}
     logs: List[str] = []
     for e in effects:
         metric = e["metric"]
-        d = e["delta"]
+        d = int(e["delta"] * faction_mod)
         state.metrics[metric] = max(0, state.metrics.get(metric, 0) + d)
         delta[metric] = delta.get(metric, 0) + d
         logs.append(e["description"])
@@ -286,9 +307,10 @@ def issue_decree(
     intent: str,
     state: GameState,
     db: GameDB,
+    campaign_id: str = "",
     minister_advice: Optional[str] = None,
 ) -> DecreeResult:
-    """执行"拟旨"行动：生成诏书并结算效果。"""
+    """执行"拟旨"行动：生成诏书并写入指令表（待批准/已发布）。"""
     decree_type = _resolve_decree_type(intent)
     effects = _get_decree_effects(intent)
     cost = sum(abs(e["delta"]) for e in effects if e["metric"] in ("汉室库", "内库"))
@@ -298,7 +320,6 @@ def issue_decree(
         if state.metrics.get("汉室库", 0) >= cost:
             state.metrics["汉室库"] -= cost
         else:
-            # 钱不够，效果减半但不拒绝（天子处境艰难）
             effects = [
                 {**e, "delta": e["delta"] // 2}
                 for e in effects
@@ -307,8 +328,26 @@ def issue_decree(
     # LLM 生成诏书文本
     full_text = _generate_decree_text(intent, decree_type, state)
 
-    # 应用效果
-    metrics_delta, log_entries = _apply_decree_effects(effects, state, db)
+    # 效果预计算（派系修正后，用于返回和记录）
+    from han_sim.flows import calc_faction_influence
+    influences = calc_faction_influence(state, db)
+    total_ministers = len(db.list_characters(status="active")) or 1
+    loyal_count = sum(1 for c in db.list_characters(status="active") if c.get("loyalty", 0) >= 70)
+    离心_count = sum(1 for c in db.list_characters(status="active") if 10 <= c.get("loyalty", 0) < 40)
+    faction_mod = 1.0
+    if loyal_count > 0:
+        faction_mod *= 1.0 + 0.2 * (loyal_count / total_ministers)
+    if 离心_count > 0:
+        faction_mod *= 1.0 - 0.2 * (离心_count / total_ministers)
+
+    # 计算指标变化
+    metrics_delta: Dict[str, int] = {}
+    for e in effects:
+        metric = e["metric"]
+        d = int(e["delta"] * faction_mod)
+        metrics_delta[metric] = metrics_delta.get(metric, 0) + d
+
+    log_entries = [e["description"] for e in effects]
 
     decree = Decree(
         intent=intent,
@@ -323,14 +362,18 @@ def issue_decree(
         f"{'；'.join(log_entries[:2]) or '已布告天下'}。"
     )
 
-    # 写入 db
-    db.save_state("last_decree", {
-        "intent": intent,
-        "type": decree_type,
-        "turn": state.turn,
-        "year": state.year,
-        "period": state.period,
-    })
+    # 写入 directives 表（状态机：draft→issued→approved）
+    if campaign_id:
+        directive_id = db.create_directive(
+            campaign_id=campaign_id,
+            kind=decree_type,
+            status="issued",
+            content=full_text,
+            issued_turn=state.turn,
+            expires_turn=state.turn + 3,  # 3回合后过期
+        )
+
+    db.append_log(state.turn, "issued", f"拟旨：{effects[0]['description'] if effects else '诏令已下'}")
     db.commit()
 
     return DecreeResult(
