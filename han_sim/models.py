@@ -174,6 +174,7 @@ class GameState:
     period: int = 1
     turn: int = 1
     turn_phase: str = "summoning"  # summoning / reviewing / issued
+    capital: str = "洛阳"          # 汉室当前都城
     metrics: Dict[str, int] = field(
         default_factory=lambda: {
             "汉室库": 200,    # 财政
@@ -184,6 +185,11 @@ class GameState:
             "skill_points": 0,
         }
     )
+    # 特殊历史线状态
+    dong_zhuo_trapped_turn: int = 0   # 董卓被困回合（>0表示触发伏诛线）
+    dong_zhuo_killed_turn: int = 0    # 董卓被诛回合（>0表示已伏诛）
+    emperor_escaped_turn: int = 0     # 献帝出逃回合（>0表示触发东归线）
+    emperor_safe_turn: int = 0        # 献帝抵达许昌回合（>0表示东归完成）
     log: List[str] = field(default_factory=list)
 
     def clamp(self) -> None:

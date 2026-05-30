@@ -74,14 +74,137 @@ def apply_monthly_flow(state: GameState, db: GameDB) -> Dict:
 
 
 def calc_faction_delta(state: GameState, db: GameDB) -> List[Dict]:
-    """计算派系变化：藩镇割据程度年度变化。"""
+    """计算派系变化：藩镇根据威权/诏书/事件动态消长。"""
     powers = db.list_powers()
     deltas = []
+
     for p in powers:
-        # 藩镇越大，汉室威权越低
         if p.get("kind") == "warlord":
             strength = p.get("military_strength", 0)
             delta = round(strength / 50)
             deltas.append({"power": p["name"], "威权冲击": -delta})
             state.metrics["威权"] = max(0, state.metrics.get("威权", 0) - delta)
+
+    # 威权反作用于藩镇：威权高则藩镇削弱
+    authority = state.metrics.get("威权", 0)
+    if authority >= 70:
+        state.metrics["藩镇"] = max(0, state.metrics.get("藩镇", 0) - 2)
+    elif authority <= 10:
+        state.metrics["藩镇"] = min(100, state.metrics.get("藩镇", 0) + 1)
+
     return deltas
+
+
+# ── 期4 新增机制 ──────────────────────────────────────────────────────────
+
+def apply_loyalty_decay(state: GameState, db: GameDB) -> List[Dict]:
+    """每月忠诚度衰减：威权低则加速衰减，权臣麾下角色衰减更快。"""
+    characters = db.list_characters()
+    decays = []
+    authority = state.metrics.get("威权", 0)
+    # 威权越低，基础衰减越大
+    base_decay = max(0, (30 - authority) // 10)  # 威权30时base_decay=0，威权0时base_decay=3
+
+    for char in characters:
+        if char.get("status") != "active":
+            continue
+        lid = char["id"]
+        power_id = char.get("power_id", "")
+        loyalty = char.get("loyalty", 50)
+
+        # 权臣麾下：跟随其主公的势力状态
+        decay = base_decay
+        if power_id in ("dongzhuo", "caocao", "lvbu"):
+            decay += 1  # 权臣麾下衰减更快
+
+        new_loyalty = max(0, loyalty - decay)
+        char["loyalty"] = new_loyalty
+        db.upsert_character(char)
+        decays.append({"character": char["name"], "from": loyalty, "to": new_loyalty, "decay": decay})
+
+    return decays
+
+
+# 迁都效果表
+_CAPITAL_EFFECTS = {
+    "洛阳": {"声望": 0, "威权": 0, "藩镇": 0},
+    "长安": {"声望": -5, "威权": -3, "藩镇": -5},   # 西迁避难，人心涣散
+    "许昌": {"声望": +2, "威权": +5, "藩镇": +3},   # 曹操控制下，形式统一
+    "邺城": {"声望": -3, "威权": -5, "藩镇": -8},   # 袁绍地盘，藩镇不服
+    "南阳": {"声望": -2, "威权": -2, "藩镇": -3},
+}
+
+
+def relocate_capital(state: GameState, new_capital: str) -> Dict[str, int]:
+    """迁都：返回指标变化量。调用前需验证合法性。"""
+    old = state.capital
+    if old == new_capital:
+        return {}
+    effects = _CAPITAL_EFFECTS.get(new_capital, {})
+    delta = {}
+    for key, val in effects.items():
+        state.metrics[key] = state.metrics.get(key, 50) + val
+        delta[key] = val
+    state.capital = new_capital
+    state.log.append(f"【迁都】汉室迁都：{old} → {new_capital}，威权{'+' if delta.get('威权',0)>=0 else ''}{delta.get('威权',0)}")
+    return delta
+
+
+def check_dongzhuo_trap(state: GameState) -> bool:
+    """董卓伏诛线检测。
+    若 dong_zhuo_trapped_turn > 0 且距被困已满6回合仍未诛董卓 → 游戏失败。
+    若 dong_zhuo_killed_turn > 0 → 伏诛成功。
+    返回 True 表示触发游戏失败。
+    """
+    if state.dong_zhuo_killed_turn > 0:
+        return False  # 已伏诛，正常继续
+    if state.dong_zhuo_trapped_turn > 0:
+        trapped_turns = state.turn - state.dong_zhuo_trapped_turn
+        if trapped_turns >= 6:
+            # 游戏失败：董卓未被诛，天子彻底沦为傀儡
+            state.log.append("【游戏失败】董卓围攻未解，汉室名存实亡……")
+            return True
+    return False
+
+
+def check_emperor_escape(state: GameState) -> str:
+    """献帝东归线检测。
+    若 emperor_escaped_turn > 0 且 emperor_safe_turn = 0：
+      - 5回合内到达许昌 → 设置 emperor_safe_turn，返回 'success'
+      - 超过5回合未到达 → 东归失败，返回 'failed'
+    若 emperor_safe_turn > 0 → 东归已完成
+    返回状态: 'ongoing' | 'success' | 'failed' | 'none'
+    """
+    if state.emperor_safe_turn > 0:
+        return "success"
+    if state.emperor_escaped_turn == 0:
+        return "none"
+
+    escape_turns = state.turn - state.emperor_escaped_turn
+    if escape_turns >= 5:
+        if state.emperor_safe_turn == 0:
+            state.log.append("【东归失败】献帝未能抵达许昌，被李傕郭汜追回。")
+            return "failed"
+    return "ongoing"
+
+
+def detect_tragic_events(state: GameState) -> List[Dict]:
+    """检测威权崩溃导致的悲剧性事件（每回合最多触发一个）。"""
+    events = []
+    authority = state.metrics.get("威权", 0)
+
+    if authority <= 5 and state.turn % 3 == 0:
+        events.append({
+            "title": "天子形同虚设",
+            "kind": "threshold_crisis",
+            "summary": "威权降至5以下，朝廷大事皆由权臣决断，天子沦为摆设。",
+            "effects": {"威权": -2, "声望": -3}
+        })
+    if state.metrics.get("声望", 0) <= 5 and state.turn % 2 == 0:
+        events.append({
+            "title": "民心尽失",
+            "kind": "threshold_crisis",
+            "summary": "汉室民心崩溃，百姓不再以汉室为正朔。",
+            "effects": {"声望": -5, "藩镇": +5}
+        })
+    return events

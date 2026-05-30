@@ -39,7 +39,13 @@ def create_minister_agent(minister: Dict, state: GameState, memory_brief: str = 
         "- 汉室库：" + str(state.metrics.get("汉室库", 0)) + "万两\n"
         "- 声望：" + str(state.metrics.get("声望", 0)) + "\n"
         "- 威权：" + str(state.metrics.get("威权", 0)) + "\n"
-        "- 藩镇：" + str(state.metrics.get("藩镇", 0)) + "\n\n"
+        "- 藩镇：" + str(state.metrics.get("藩镇", 0)) + "\n"
+        "- 都城：" + state.capital + "\n\n"
+        "【威权影响】威权决定天子诏书效力：\n"
+        "  威权≥80：诏书如山，大臣俯首听命\n"
+        "  威权≥50：诏书有效，大臣谨慎遵从\n"
+        "  威权≥20：诏书无力，大臣阳奉阴违\n"
+        "  威权<20：天子的声音无人理会\n\n"
     )
     if memory_brief:
         system_prompt += memory_brief + "\n\n"

@@ -16,7 +16,15 @@ from typing import Dict, List, Optional
 from agno.agent import Agent
 
 from han_sim.agents import create_minister_agent
-from han_sim.flows import apply_monthly_flow, calc_faction_delta
+from han_sim.flows import (
+    apply_monthly_flow,
+    apply_loyalty_decay,
+    calc_faction_delta,
+    check_dongzhuo_trap,
+    check_emperor_escape,
+    detect_tragic_events,
+    relocate_capital,
+)
 from han_sim.issues import (
     apply_issue_tracker_output,
     apply_issue_inertia_and_ongoing,
@@ -130,6 +138,9 @@ def run_monthly_simulation(
     # ── 2. 藩镇变化 ────────────────────────────────────────────
     faction_delta = calc_faction_delta(state, db)
 
+    # ── 2b. 期4：忠诚度衰减 ──────────────────────────────────
+    loyalty_decays = apply_loyalty_decay(state, db)
+
     # ── 3. 事件聚合（issues 新 API） ─────────────────────────────
     candidates = gather_candidate_events(state, db)
     triggered_this_round = list(already_triggered or [])
@@ -151,9 +162,43 @@ def run_monthly_simulation(
     # 惯性漂移
     apply_issue_inertia_and_ongoing(db, state)
 
-    # ── 5. 时间推进 ────────────────────────────────────────────
+    # ── 3b. 期4：威权崩溃悲剧事件 ─────────────────────────────
+    tragic_events = detect_tragic_events(state)
+    for ev in tragic_events:
+        for key, delta in ev.get("effects", {}).items():
+            state.metrics[key] = state.metrics.get(key, 0) + delta
+        if ev.get("kind") == "threshold_crisis":
+            threshold_crisis.append(ev)
+
+    # ── 3c. 期4：献帝东归线 ──────────────────────────────────
+    escape_status = check_emperor_escape(state)
+    if escape_status == "failed":
+        threshold_crisis.append({
+            "title": "东归失败",
+            "kind": "threshold_crisis",
+            "summary": "献帝出逃未成，被李傕郭汜追回。",
+        })
+    elif escape_status == "success":
+        state.emperor_safe_turn = state.turn
+        historical.append({
+            "title": "献帝东归",
+            "kind": "historical",
+            "summary": "献帝历经艰辛，抵达许昌，曹操迎奉天子。",
+        })
+
+    # ── 4. 时间推进 ────────────────────────────────────────────
     state.next_period()
     state.clamp()
+
+    # ── 4b. 期4：董卓伏诛线检测 ─────────────────────────────
+    if check_dongzhuo_trap(state):
+        return SimulationResult(
+            fiscal=fiscal, faction_delta=faction_delta,
+            historical=historical, threshold_crisis=threshold_crisis,
+            random_events=random_events,
+            narrative="【游戏结束】董卓伏诛线失败，汉室名存实亡……",
+            metrics_delta={}, log_entries=["游戏失败：董卓未被诛"],
+        )
 
     # ── 6. LLM 叙事生成 ────────────────────────────────────────
     narrative = _generate_narration(
