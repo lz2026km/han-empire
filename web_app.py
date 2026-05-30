@@ -18,6 +18,7 @@ from han_sim.session import GameSession
 from han_sim.conversation import get_recent_exchanges
 from han_sim.simulation import run_monthly_simulation
 from han_sim.map_view import render_map_html as _render_svg_map
+from han_sim.portraits import render_avatar_grid_html, render_portrait_with_name_html
 
 # ── API Key ─────────────────────────────────────────────────────────────
 def _get_api_key() -> str:
@@ -232,15 +233,11 @@ class GameUI:
         </div>"""
 
     def _render_ministers(self):
+        """在朝大臣列表：带头像网格视图。"""
         ministers = self.session.get_active_ministers()
         if not ministers:
-            return "_（无可用大臣）_"
-        lines = ["| 姓名 | 官职 | 忠诚 | 能力 |", "|------|------|------|------|"]
-        for m in ministers:
-            lines.append(
-                f"| {m['name']} | {m.get('office','无')} | {m.get('loyalty',0)} | {m.get('ability',0)} |"
-            )
-        return "\n".join(lines)
+            return "<p style='color:#9ca3af;text-align:center'>无可用大臣</p>"
+        return render_avatar_grid_html(ministers, cols=4, size=64)
 
     def _render_history(self):
         """召对历史：最近10回合，每回合展示关键对话。"""
@@ -572,7 +569,22 @@ class GameUI:
         q = question.strip() or "本月局势如何？"
         try:
             result = self.session.summon_minister(minister_name, q)
+            # 查找大臣头像
+            ministers = self.session.get_active_ministers()
+            minister_data = next((m for m in ministers if m["name"] == minister_name), {})
+            portrait_html = ""
+            if minister_data:
+                portrait_html = render_portrait_with_name_html(
+                    name=minister_data.get("name", ""),
+                    office=minister_data.get("office", ""),
+                    office_type=minister_data.get("office_type", "default"),
+                    portrait_id=minister_data.get("portrait_id", ""),
+                    show_name=False,
+                    size=80,
+                )
             lines = [f"**【{minister_name}】**", "", result.chat_text]
+            if portrait_html:
+                lines = [portrait_html] + lines
             if result.refresh_ministers:
                 lines.append("")
                 lines.append(f"_（{minister_name} 离开，改日再召。）_")
