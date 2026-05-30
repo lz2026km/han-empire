@@ -1,0 +1,50 @@
+[
+  {
+    "id": "seed_dongzhuo_tyrant",
+    "title": "董卓暴政",
+    "kind": "opening_crisis",
+    "summary": "董卓进京后废少帝立献帝，自封相国，肆意杀戮异己，烧毁洛阳，汉室威严扫地，天下人心尽失。",
+    "urgency": 95,
+    "severity": 90,
+    "credibility": 100,
+    "interests": ["朝堂", "天下"],
+    "audiences": ["皇帝", "百官"],
+    "resolve_condition": "董卓死亡或被驱逐",
+    "fail_condition": "汉室威权降至0",
+    "event_type": "situation",
+    "trigger_gate": {},
+    "trigger_condition": {}
+  },
+  {
+    "id": "seed_empire_collapsing",
+    "title": "汉室倾颓",
+    "kind": "opening_crisis",
+    "summary": "外戚、宦官轮流专权，黄巾起义震动天下，董卓进京后汉室权威荡然无存，各地诸侯蠢蠢欲动。",
+    "urgency": 80,
+    "severity": 85,
+    "credibility": 100,
+    "interests": ["天下", "藩镇"],
+    "audiences": ["皇帝", "诸侯"],
+    "resolve_condition": "威权恢复至60以上",
+    "fail_condition": "藩镇威胁达到100",
+    "event_type": "situation",
+    "trigger_gate": {},
+    "trigger_condition": {}
+  },
+  {
+    "id": "seed_liucheng_traitors",
+    "title": "诸侯割据",
+    "kind": "opening_crisis",
+    "summary": "十八路诸侯讨董卓，但实际上各怀鬼胎，无意真正护汉，只想借机扩充地盘，汉室复兴无望。",
+    "urgency": 75,
+    "severity": 75,
+    "credibility": 100,
+    "interests": ["藩镇", "天下"],
+    "audiences": ["皇帝", "诸侯"],
+    "resolve_condition": "三分天下格局稳定",
+    "fail_condition": "藩镇失控",
+    "event_type": "situation",
+    "trigger_gate": {},
+    "trigger_condition": {}
+  }
+]

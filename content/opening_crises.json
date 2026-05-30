@@ -1,0 +1,18 @@
+[
+  {
+    "id": "seed_dongzhuo_tyrant",
+    "title": "董卓暴政",
+    "kind": "opening_crisis",
+    "summary": "董卓进京后废少帝立献帝，自封相国，肆意杀戮异己，烧毁洛阳，汉室威严扫地，天下人心尽失。",
+    "urgency": 95,
+    "severity": 90,
+    "credibility": 100,
+    "interests": ["朝堂", "天下"],
+    "audiences": ["皇帝", "百官"],
+    "resolve_condition": "董卓死亡或被驱逐",
+    "fail_condition": "汉室威权降至0",
+    "event_type": "situation",
+    "trigger_gate": {},
+    "trigger_condition": {}
+  }
+]
