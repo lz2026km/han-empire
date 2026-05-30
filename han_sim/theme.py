@@ -3,7 +3,7 @@
 汉献帝之末路 P1 升级：玄黑/朱红/古金 主题配色。
 适用于 Gradio 全部 UI 组件。
 
-Version: 0.9.4
+Version: 0.9.5
 """
 
 from pathlib import Path
