@@ -1,6 +1,6 @@
 """LLM Agent 工厂与文本解析。L4。"""
 
-from __future__ import annotations
+
 
 import json
 import re

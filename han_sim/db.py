@@ -1,6 +1,6 @@
 """SQLite 游戏数据库。L3。"""
 
-from __future__ import annotations
+
 
 import json
 import os

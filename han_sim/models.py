@@ -1,6 +1,6 @@
 """数据类：游戏实体与状态容器。L0 叶子模块。"""
 
-from __future__ import annotations
+
 
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional

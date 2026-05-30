@@ -1,6 +1,6 @@
 """LLM 提供商配置：base_url 规范化、提供商检测、LLMConfig 加载。L1。"""
 
-from __future__ import annotations
+
 
 import getpass
 import json

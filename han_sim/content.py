@@ -1,6 +1,6 @@
 """游戏内容加载：人物/省份/事件/初始数据。L2。"""
 
-from __future__ import annotations
+
 
 import json
 import os

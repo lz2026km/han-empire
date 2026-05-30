@@ -1,6 +1,6 @@
 """季节/年度财政流与数值/经济/派系 delta 应用。L6。"""
 
-from __future__ import annotations
+
 
 import json
 from typing import Dict, List, Optional, Tuple

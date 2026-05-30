@@ -1,6 +1,6 @@
 """游戏会话：回合流转层。L8。"""
 
-from __future__ import annotations
+
 
 import uuid
 from dataclasses import dataclass, field
