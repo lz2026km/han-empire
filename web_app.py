@@ -841,6 +841,38 @@ class GameUI:
             return f"🔄 遗忘了 **{s['name']}**（返还 {refund} 点）。"
         return f"❗ 遗忘失败。"
 
+    def cmd_inspect_issue(self, issue_name: str):
+        if not self.session:
+            return "❗ 请先点击 **新游戏**。"
+        if not issue_name:
+            return "ℹ️ 请输入事项名称。"
+        issues = self.session.db.get_active_issues()
+        matched = [i for i in issues if issue_name in i.get("title", "")]
+        if not matched:
+            # 搜索所有活跃事项的标题
+            all_active = self.session.db.get_active_issues()
+            matched = [i for i in all_active if issue_name.lower() in i.get("title", "").lower()]
+        if not matched:
+            return f"❗ 未找到事项「{issue_name}」。可用：{'、'.join(i['title'][:10] for i in issues[:8])}"
+        iss = matched[0]
+        sev = iss.get("severity", 50)
+        sev_color = "#ef4444" if sev >= 70 else "#f59e0b" if sev >= 40 else "#6b7280"
+        bar = int(iss.get("bar_value", 40))
+        kind = iss.get("kind", "?")
+        status = iss.get("status", "active")
+        inertia = iss.get("inertia", 0)
+        return f"""<div style="font-family:system-ui,sans-serif;padding:12px;background:#f9fafb;border-radius:8px">
+            <h4 style="margin:0 0 8px">{iss.get('title','')}</h4>
+            <table style="width:100%;font-size:13px">
+                <tr><td style="padding:4px"><b>类型</b></td><td>{kind}</td></tr>
+                <tr><td style="padding:4px"><b>状态</b></td><td>{status}</td></tr>
+                <tr><td style="padding:4px"><b>严重度</b></td><td style="color:{sev_color};font-weight:bold">{sev}</td></tr>
+                <tr><td style="padding:4px"><b>进度</b></td><td>{self._bar(bar)} {bar}%</td></tr>
+                <tr><td style="padding:4px"><b>惯性</b></td><td>{inertia}</td></tr>
+            </table>
+            <p style="font-size:13px;color:#374151;margin-top:8px">{iss.get('summary', iss.get('description', '无描述'))}</p>
+        </div>"""
+
 
 # ── Gradio UI ──────────────────────────────────────────────────────────
 def build_ui():
@@ -866,6 +898,12 @@ def build_ui():
                     relocate_btn长安 = gr.Button("🗼 长安（-威权-藩镇）")
                     relocate_btn邺城 = gr.Button("🏰 邺城（-威权）")
                 relocate_output = gr.HTML()
+
+                gr.Markdown("### 📋 事项追踪")
+                with gr.Row():
+                    issue_name_input = gr.Textbox(label="输入事项名查看详情", placeholder="如：董卓进京", scale=1)
+                    inspect_issue_btn = gr.Button("🔍 详情", scale=0)
+                issue_detail_display = gr.HTML("")
 
             # ── Tab2: 召对（现用召见大臣）────────────────────
             with gr.TabItem("🎙️ 召对"):
@@ -1040,6 +1078,11 @@ def build_ui():
             fn=ui.cmd_inspect_power,
             inputs=[power_name_input],
             outputs=power_detail_display,
+        )
+        inspect_issue_btn.click(
+            fn=ui.cmd_inspect_issue,
+            inputs=[issue_name_input],
+            outputs=issue_detail_display,
         )
         refresh_history_btn.click(
             fn=do_refresh_history,
