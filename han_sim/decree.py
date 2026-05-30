@@ -13,6 +13,7 @@
 
 
 import json
+import random
 import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
@@ -77,6 +78,25 @@ DECREE_EFFECT_TEMPLATES: Dict[str, List[Dict]] = {
         {"metric": "声望", "delta": +10, "description": "天下知汉室未亡"},
         {"metric": "藩镇", "delta": -10, "description": "各镇响应讨伐"},
     ],
+    "衣带密诏": [
+        {"metric": "威权", "delta": +8, "description": "密诏已下，忠臣暗通款曲"},
+        {"metric": "威权", "delta": -5, "description": "秘密外泄风险"},
+        {"metric": "声望", "delta": +3, "description": "忠义之心天下知"},
+    ],
+    "东归诏": [
+        {"metric": "威权", "delta": +5, "description": "颁布东归诏令，人心振奋"},
+        {"metric": "声望", "delta": +5, "description": "天下望天子归正朔"},
+    ],
+}
+
+
+# 诏书类型枚举（含特殊诏书）
+DECREE_KINDS = {
+    "normal_edict": "普通诏书",
+    "secret_edict": "衣带密诏",
+    "moving_edict": "迁都诏书",
+    "campaign_edict": "讨伐诏书",
+    "east_return_edict": "东归诏书",
 }
 
 
@@ -95,6 +115,63 @@ class DecreeResult:
     decree: Decree
     metrics_delta: Dict[str, int]
     log_entries: List[str]
+
+
+def issue_secret_edict(state: GameState, db: GameDB) -> DecreeResult:
+    """发布衣带密诏。威权≥30且忠诚大臣≥3人时可发布，
+    成功率=威权/100，失败则威权额外-10。"""
+    authority = state.metrics.get("威权", 0)
+    if authority < 30:
+        return _decree_fail_result("威权不足30，衣带诏外泄风险过大，不宜发布")
+
+    loyal_count = db.conn.execute(
+        "SELECT COUNT(*) FROM characters WHERE loyalty>=70 AND status='active'").fetchone()[0]
+    if loyal_count < 3:
+        return _decree_fail_result(f"忠诚大臣仅{loyal_count}人，不足三人，密诏难以推行")
+
+    intent = "衣带密诏：密召忠义之臣，暗图除贼"
+    decree_type = "衣带密诏"
+    effects = _get_decree_effects(intent)
+
+    # 成功与否由威权决定
+    success = random.random() < (authority / 100)
+    if success:
+        state.metrics["威权"] = min(100, authority + 8)
+        # 在 issues 中建立高优先权"密谋讨贼"事项
+        db.insert_issue(
+            state,
+            title="密谋讨贼",
+            description="忠臣暗通款曲，共谋除贼大计",
+            origin_kind="decree",
+            origin_ref="secret_edict",
+            severity=80,
+            kind="political",
+            bar_value=30,
+            tags=["衣带诏", "除贼"],
+            resolve_condition="董卓伏诛",
+            ongoing_effects={"metrics": {"威权": -1}},
+            effect_on_resolve={"metrics": {"威权": 15, "声望": 10}},
+            effect_on_fail={"metrics": {"威权": -10, "声望": -5}},
+        )
+        full_text = _generate_decree_text(intent, decree_type, state)
+        decree = Decree(intent=intent, full_text=full_text, decree_type=decree_type,
+                       effects=effects, cost=0, narrative="衣带密诏已下，忠臣暗通款曲。")
+        db.append_log(state.turn, "issued", "衣带密诏成功，密谋讨贼进行中")
+        return DecreeResult(decree=decree, metrics_delta={"威权": +8}, log_entries=["衣带密诏成功，忠臣暗通款曲"])
+    else:
+        state.metrics["威权"] = max(0, authority - 10)
+        decree = Decree(intent=intent, full_text="", decree_type=decree_type,
+                       effects=[{"metric": "威权", "delta": -10, "description": "密谋外泄"}],
+                       cost=0, narrative="衣带密诏外泄，帝威权大损")
+        db.append_log(state.turn, "issued", "衣带密诏外泄，威权受损")
+        return DecreeResult(decree=decree, metrics_delta={"威权": -10}, log_entries=["衣带密诏外泄，帝威权大损"])
+
+
+def _decree_fail_result(reason: str) -> DecreeResult:
+    """返回一个表示失败的 DecreeResult（不生成诏书文本）。"""
+    decree = Decree(intent=reason, full_text="", decree_type="failed",
+                   effects=[], cost=0, narrative=reason)
+    return DecreeResult(decree=decree, metrics_delta={}, log_entries=[reason])
 
 
 def _resolve_decree_type(intent: str) -> str:

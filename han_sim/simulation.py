@@ -19,6 +19,7 @@ from han_sim.agents import create_minister_agent
 from han_sim.flows import (
     apply_monthly_flow,
     apply_loyalty_decay,
+    apply_warlord_actions,
     calc_faction_delta,
     check_dongzhuo_trap,
     check_emperor_escape,
@@ -138,7 +139,10 @@ def run_monthly_simulation(
     # ── 2. 藩镇变化 ────────────────────────────────────────────
     faction_delta = calc_faction_delta(state, db)
 
-    # ── 2b. 期4：忠诚度衰减 ──────────────────────────────────
+    # ── 2b. 藩镇动态：各路诸侯自动行动 ──────────────────────────
+    warlord_changes = apply_warlord_actions(state, db)
+
+    # ── 2c. 期4：忠诚度衰减 ──────────────────────────────────
     loyalty_decays = apply_loyalty_decay(state, db)
 
     # ── 3. 事件聚合（issues 新 API） ─────────────────────────────

@@ -3,11 +3,35 @@
 
 
 import json
+import random
 from typing import Dict, List, Optional, Tuple
 
 from han_sim.constants import TURN_UNIT
 from han_sim.db import GameDB
 from han_sim.models import GameState, monthly_amount
+
+
+def loyalty_multiplier(loyalty: int) -> float:
+    """忠诚度修正系数，决定诏书/召对效果折扣。"""
+    if loyalty >= 70: return 1.0
+    if loyalty >= 40: return 0.8
+    if loyalty >= 10: return 0.5
+    return 0.2
+
+
+def get_minister_loyalty_context(db: GameDB, name: str) -> str:
+    """返回大臣忠诚度描述词，供召对 prompt 使用。"""
+    row = db.conn.execute("SELECT loyalty FROM characters WHERE name=?", (name,)).fetchone()
+    if not row:
+        return "忠诚度未知。"
+    loyalty = int(row["loyalty"])
+    if loyalty >= 70:
+        return f"忠诚度{loyalty}（忠诚可靠，愿为陛下效死）。"
+    if loyalty >= 40:
+        return f"忠诚度{loyalty}（持观望之心，行事保留）。"
+    if loyalty >= 10:
+        return f"忠诚度{loyalty}（离心离德，阳奉阴违）。"
+    return f"忠诚度{loyalty}（心怀异志，必欲取而代之）。"
 
 
 def _province_efficiency(fiscal: dict, gentry_resistance: int, unrest: int) -> float:
@@ -71,6 +95,72 @@ def apply_monthly_flow(state: GameState, db: GameDB) -> Dict:
         "treasury": state.metrics.get("汉室库", 0),
         "provinces": provinces,
     }
+
+
+def apply_warlord_actions(state: GameState, db: GameDB) -> List[Dict]:
+    """每回合各路诸侯自动行动：写入 powers.last_action，推进藩镇值。
+    参照 ming_sim/db.apply_power_deltas() + power_payload()。
+    """
+    changes: List[Dict] = []
+    # 含汉室自身，取除汉室外所有势力
+    powers = db.list_powers()
+    faction_leverage_delta = 0  # 所有势力的 leverage 变化汇总
+
+    for p in powers:
+        pid = p.get("id", "")
+        if pid == "han":
+            continue
+        stance = p.get("stance", "neutral")
+        mil = int(p.get("military_strength", 0))
+        leverage = int(p.get("leverage", 0))
+        last_action = p.get("last_action", "")
+
+        delta_leverage = 0
+        delta_mil = 0
+        narrative = last_action or "按兵不动"
+
+        if stance == "hostile":
+            delta_leverage = min(8, mil // 15)
+            delta_mil = min(5, mil // 20)
+            narratives = [
+                "整军经武，窥伺中原", "遣使联络诸侯，图谋共伐",
+                "扩充军队，实力渐涨", "割据自守，不奉朝命",
+                "虎视眈眈，伺机而动",
+            ]
+            narrative = random.choice(narratives)
+        elif stance == "neutral":
+            if random.random() < 0.35:
+                delta_leverage = random.choice([-1, 0, 1])
+                narratives = ["观望待变", "遣使入朝探听虚实", "整饬内政"]
+                narrative = random.choice(narratives)
+        elif stance == "loyal":
+            if state.metrics.get("威权", 0) < 20:
+                narrative = "人心渐离，忠诚难恃"
+
+        new_lev = max(0, min(100, leverage + delta_leverage))
+        new_mil = max(0, min(100, mil + delta_mil))
+        faction_leverage_delta += new_lev - leverage
+
+        if delta_leverage or delta_mil:
+            db.conn.execute(
+                "UPDATE powers SET leverage=?, military_strength=?, last_action=? WHERE id=?",
+                (new_lev, new_mil, narrative[:80], pid))
+            changes.append({"id": pid, "last_action": narrative, "leverage": new_lev})
+
+    if changes:
+        db.conn.commit()
+
+    # 藩镇值 = 所有敌对/中立势力 leverage 总和，映射到 0-100
+    hostile_total = sum(
+        int(p["leverage"]) for p in powers
+        if p["id"] != "han" and p["stance"] in ("hostile", "neutral"))
+    new_fanzhen = min(100, max(0, hostile_total // 10 + 20))
+    old_fanzhen = state.metrics.get("藩镇", 80)
+    if new_fanzhen != old_fanzhen:
+        state.metrics["藩镇"] = new_fanzhen
+        state.log.append(f"【藩镇动态】天下诸侯动作频繁，藩镇值：{old_fanzhen} → {new_fanzhen}")
+
+    return changes
 
 
 def calc_faction_delta(state: GameState, db: GameDB) -> List[Dict]:

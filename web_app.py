@@ -28,7 +28,6 @@ def _get_api_key() -> str:
             return d.get("apiKey", "")
     return ""
 
-
 # ── 帮助文本 ────────────────────────────────────────────────────────────
 HELP = """
 **游戏目标**：在东汉末年的乱局中复兴汉室。
@@ -65,28 +64,170 @@ class GameUI:
         self.decree_log = []
         return self._render_state()
 
-    def _render_state(self):
-            s = self.session.state
-            authority = s.metrics.get('威权', 0)
-            if authority >= 80:
-                auth_label = "🔴 诏书如山"
-            elif authority >= 50:
-                auth_label = "🟡 诏书有效"
-            elif authority >= 20:
-                auth_label = "🟠 阳奉阴违"
-            else:
-                auth_label = "⚫ 无人理会"
-            lines = [
-                f"**【{s.year}年{s.period}月 · 第{s.turn}回合 · {s.capital}】**",
-                "",
-                f"📦 汉室库：{s.metrics.get('汉室库', 0)}万两",
-                f"💰 内库：{s.metrics.get('内库', 0)}万两",
-                f"⭐ 声望：{s.metrics.get('声望', 0)}/100",
-                f"👑 威权：{authority}/100 — {auth_label}",
-                f"⚔️  藩镇：{s.metrics.get('藩镇', 0)}/100",
-                "",
-            ]
-            return "\n".join(lines)
+    def _bar(self, value: int, total: int = 100, width: int = 12) -> str:
+        """渲染进度条 emoji。"""
+        filled = max(0, min(width, int(value / total * width)))
+        empty = width - filled
+        return "▓" * filled + "░" * empty
+
+    def _render_state(self) -> str:
+        s = self.session.state
+        authority = s.metrics.get('威权', 0)
+        if authority >= 80:
+            auth_label = "🔴 诏书如山"
+        elif authority >= 50:
+            auth_label = "🟡 诏书有效"
+        elif authority >= 20:
+            auth_label = "🟠 阳奉阴违"
+        else:
+            auth_label = "⚫ 无人理会"
+        lines = [
+            f"**【{s.year}年{s.period}月 · 第{s.turn}回合 · {s.capital}】**",
+            "",
+            f"📦 汉室库：{s.metrics.get('汉室库', 0)}万两",
+            f"💰 内库：{s.metrics.get('内库', 0)}万两",
+            f"⭐ 声望：{s.metrics.get('声望', 0)}/100",
+            f"👑 威权：{authority}/100 — {auth_label}",
+            f"⚔️  藩镇：{s.metrics.get('藩镇', 0)}/100",
+            "",
+        ]
+        return "\n".join(lines)
+
+    def _render_dashboard_html(self) -> str:
+        """【总览】仪表盘 HTML：数值卡片 + 历史线进度 + 活跃事项。"""
+        s = self.session.state
+        authority = s.metrics.get('威权', 0)
+        shengwang = s.metrics.get('声望', 0)
+        fanzhen = s.metrics.get('藩镇', 0)
+        han_ku = s.metrics.get('汉室库', 0)
+
+        # 威权颜色
+        if authority >= 50:
+            auth_color = "#3b82f6"
+        elif authority >= 20:
+            auth_color = "#f59e0b"
+        else:
+            auth_color = "#ef4444"
+
+        # 历史线进度
+        dong_trapped = s.dong_zhuo_trapped_turn > 0 and s.dong_zhuo_killed_turn == 0
+        dong_killed = s.dong_zhuo_killed_turn > 0
+        dong_pct = 100 if dong_killed else (20 if dong_trapped else 0)
+        dong_label = "已伏诛 ✓" if dong_killed else ("围困中" if dong_trapped else "未触发")
+
+        escape_ongoing = s.emperor_escaped_turn > 0 and s.emperor_safe_turn == 0
+        escape_done = s.emperor_safe_turn > 0
+        if escape_done:
+            esc_pct = 100
+            esc_label = "已东归 ✓"
+        elif escape_ongoing:
+            esc_turns = s.turn - s.emperor_escaped_turn
+            esc_pct = min(100, int((esc_turns / 5) * 100))
+            esc_label = f"逃难中 · {esc_turns}/5回合"
+        else:
+            esc_pct = 0
+            esc_label = "未触发"
+
+        # 活跃事项
+        issues = self.session.db.get_active_issues()
+        issues_html = ""
+        if issues:
+            for iss in issues[:6]:
+                pct = int(iss.get("bar_value", 0))
+                sev = iss.get("severity", 50)
+                sev_color = "#ef4444" if sev >= 70 else "#f59e0b" if sev >= 40 else "#6b7280"
+                issues_html += f"""<tr>
+                    <td style="color:{sev_color};font-weight:bold">{iss.get('title','')[:14]}</td>
+                    <td>{self._bar(pct)} {pct}%</td>
+                    <td style="color:{sev_color}">{sev}</td>
+                </tr>"""
+        else:
+            issues_html = "<tr><td colspan=3 style='color:#6b7280'>本回合无活跃事项</td></tr>"
+
+        return f"""<div style="font-family:system-ui,sans-serif">
+        <table style="width:100%;border-collapse:collapse">
+            <tr>
+                <td style="padding:8px;border:1px solid #e5e7eb;text-align:center">
+                    <div style="font-size:12px;color:#6b7280">汉室库（万两）</div>
+                    <div style="font-size:24px;font-weight:bold">{han_ku}</div>
+                </td>
+                <td style="padding:8px;border:1px solid #e5e7eb;text-align:center">
+                    <div style="font-size:12px;color:#6b7280">声望</div>
+                    <div style="font-size:24px;font-weight:bold">{shengwang}</div>
+                    <div style="font-size:11px">{self._bar(shengwang)}</div>
+                </td>
+                <td style="padding:8px;border:1px solid #e5e7eb;text-align:center">
+                    <div style="font-size:12px;color:#6b7280">威权</div>
+                    <div style="font-size:24px;font-weight:bold;color:{auth_color}">{authority}</div>
+                    <div style="font-size:11px">{self._bar(authority)}</div>
+                </td>
+                <td style="padding:8px;border:1px solid #e5e7eb;text-align:center">
+                    <div style="font-size:12px;color:#6b7280">藩镇</div>
+                    <div style="font-size:24px;font-weight:bold">{fanzhen}</div>
+                    <div style="font-size:11px">{self._bar(fanzhen)}</div>
+                </td>
+            </tr>
+        </table>
+
+        <h4 style="margin:12px 0 6px">📜 历史线</h4>
+        <table style="width:100%;border-collapse:collapse">
+            <tr>
+                <td style="padding:4px 8px;font-size:13px">董卓伏诛线</td>
+                <td style="padding:4px 8px">{self._bar(dong_pct)} {dong_label}</td>
+            </tr>
+            <tr>
+                <td style="padding:4px 8px;font-size:13px">献帝东归线</td>
+                <td style="padding:4px 8px">{self._bar(esc_pct)} {esc_label}</td>
+            </tr>
+        </table>
+
+        <h4 style="margin:12px 0 6px">📋 待办事项</h4>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <tr style="background:#f9fafb">
+                <th style="padding:4px 8px;text-align:left">事项</th>
+                <th style="padding:4px 8px;text-align:left">进度</th>
+                <th style="padding:4px 8px;text-align:center">严重度</th>
+            </tr>
+            {issues_html}
+        </table>
+        </div>"""
+
+    def _render_powers_html(self) -> str:
+        """【势力】势力视图 HTML，按 stance 着色。"""
+        powers = self.session.db.list_powers()
+        colors = {"loyal": "#3b82f6", "neutral": "#6b7280", "hostile": "#ef4444"}
+        labels = {"loyal": "忠", "neutral": "中", "hostile": "敌"}
+        rows = []
+        for p in powers:
+            color = colors.get(p.get("stance", "neutral"), "#6b7280")
+            badge = labels.get(p.get("stance", "neutral"), "?")
+            rows.append(f"""<tr style="color:{color}">
+                <td style="padding:4px 8px;font-weight:bold">{p.get('name','?')}</td>
+                <td style="padding:4px 8px">{p.get('leader','?')}</td>
+                <td style="padding:4px 8px;text-align:center">{badge}</td>
+                <td style="padding:4px 8px;text-align:right">{p.get('military_strength',0)}</td>
+                <td style="padding:4px 8px;text-align:right">{p.get('leverage',0)}</td>
+                <td style="padding:4px 8px;font-size:12px;color:#9ca3af">{p.get('last_action','按兵不动') or '按兵不动'}</td>
+            </tr>""")
+
+        header = """<tr style="background:#f3f4f6;font-size:12px">
+            <th style="padding:4px 8px;text-align:left">势力</th>
+            <th style="padding:4px 8px;text-align:left">首领</th>
+            <th style="padding:4px 8px;text-align:center">立场</th>
+            <th style="padding:4px 8px;text-align:right">军力</th>
+            <th style="padding:4px 8px;text-align:right">威势</th>
+            <th style="padding:4px 8px;text-align:left">近动</th>
+        </tr>"""
+
+        return f"""<div style="font-family:system-ui,sans-serif">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+            {header}
+            {"".join(rows)}
+        </table>
+        <p style="font-size:12px;color:#9ca3af;margin-top:8px">
+            🟦 忠 · 🟪 中立 · 🟥 敌对 · 军力/威势越高威胁越大 · 近动为各镇最新行动
+        </p>
+        </div>"""
 
     def _render_ministers(self):
         ministers = self.session.get_active_ministers()
@@ -103,7 +244,6 @@ class GameUI:
         """召对历史：最近10回合，每回合展示关键对话。"""
         if not self.session:
             return "_暂无召对记录_"
-        # 读取全局召对记录（按turn聚合）
         rows = self.session.db.conn.execute(
             """SELECT turn, period, role, content, minister_name
                FROM conversation_history
@@ -113,7 +253,6 @@ class GameUI:
         ).fetchall()
         if not rows:
             return "_暂无召对记录_"
-        # 按turn分组
         by_turn: Dict[tuple, Dict] = {}
         for row in reversed(rows):
             turn, period, role, content, minister = row[0], row[1], row[2], row[3], row[4]
@@ -245,23 +384,20 @@ def build_ui():
         gr.Markdown("_189年，董卓进京，废少帝立献帝。名为天子，实为阶下囚。_")
         gr.Markdown(HELP)
 
-        with gr.Row():
-            with gr.Column(scale=2):
-                gr.Markdown("### 📊 当前状态")
-                state_display = gr.Markdown("*点击「新游戏」查看初始状态*")
+        with gr.Tabs():
+            # ── Tab1: 总览仪表盘 ────────────────────────────────
+            with gr.TabItem("📊 总览"):
+                gr.Markdown("### 📊 汉室国势")
+                dashboard_display = gr.HTML("*点击「新游戏」初始化*")
+                refresh_dashboard_btn = gr.Button("🔄 刷新总览")
 
-            with gr.Column(scale=1):
-                gr.Markdown("### 👥 大臣列表")
-                ministers_display = gr.Markdown("*点击「新游戏」查看*")
-
-        gr.Markdown("---")
-
-        with gr.Row():
-            with gr.Column(scale=2):
+            # ── Tab2: 召对（现用召见大臣）────────────────────
+            with gr.TabItem("🎙️ 召对"):
                 gr.Markdown("### 🎙️ 召见大臣")
+                gr.Markdown("*选择或输入大臣姓名，与其对话。*")
                 with gr.Row():
                     minister_input = gr.Textbox(
-                        label="大臣姓名", placeholder="如：张昭", scale=1
+                        label="大臣姓名", placeholder="如：杨彪", scale=1
                     )
                     summon_btn = gr.Button("召见", variant="primary", scale=0)
                 question_input = gr.Textbox(
@@ -271,11 +407,9 @@ def build_ui():
                 )
                 summon_output = gr.Markdown()
 
-        gr.Markdown("---")
-
-        gr.Markdown("### 🗓️ 事务面板")
-        with gr.Tabs():
-            with gr.TabItem("📜 拟旨"):
+            # ── Tab3: 诏书 ─────────────────────────────────
+            with gr.TabItem("📜 诏书"):
+                gr.Markdown("### 📜 拟旨")
                 intent_input = gr.Dropdown(
                     label="选择或输入拟旨意图",
                     choices=DECREE_TYPES,
@@ -285,13 +419,28 @@ def build_ui():
                 decree_btn = gr.Button("拟旨", variant="primary")
                 decree_output = gr.Markdown()
 
-            with gr.TabItem("📖 召对历史"):
+            # ── Tab4: 势力视图 ───────────────────────────────
+            with gr.TabItem("⚔️ 势力"):
+                gr.Markdown("### ⚔️ 天下诸侯")
+                powers_display = gr.HTML("*点击「新游戏」初始化*")
+                refresh_powers_btn = gr.Button("🔄 刷新势力")
+
+            # ── Tab5: 历史 ─────────────────────────────────
+            with gr.TabItem("📖 历史"):
+                gr.Markdown("### 📖 召对历史")
                 history_display = gr.Markdown("*召对记录将显示在这里*")
                 refresh_history_btn = gr.Button("🔄 刷新召对记录")
 
-            with gr.TabItem("📋 游戏日志"):
+            # ── Tab6: 日志 ──────────────────────────────────
+            with gr.TabItem("📋 日志"):
+                gr.Markdown("### 📋 游戏日志")
                 log_display = gr.Markdown("*游戏日志将显示在这里*")
                 refresh_log_btn = gr.Button("🔄 刷新日志")
+
+        gr.Markdown("---")
+
+        gr.Markdown("### 👥 在朝大臣")
+        ministers_display = gr.Markdown("*点击「新游戏」查看*")
 
         gr.Markdown("---")
 
@@ -310,7 +459,15 @@ def build_ui():
             ministers = ui._render_ministers()
             history = ui._render_history()
             log = ui._render_log()
-            return out, ministers, history, log
+            dash = ui._render_dashboard_html()
+            powers = ui._render_powers_html()
+            return out, ministers, history, log, dash, powers
+
+        def do_refresh_dashboard():
+            return ui._render_dashboard_html()
+
+        def do_refresh_powers():
+            return ui._render_powers_html()
 
         def do_refresh_history():
             return ui._render_history()
@@ -336,7 +493,18 @@ def build_ui():
         new_game_btn.click(
             fn=do_new_game,
             inputs=[],
-            outputs=[state_display, ministers_display, history_display, log_display],
+            outputs=[ministers_display, history_display,
+                     log_display, dashboard_display, powers_display],
+        )
+        refresh_dashboard_btn.click(
+            fn=do_refresh_dashboard,
+            inputs=[],
+            outputs=dashboard_display,
+        )
+        refresh_powers_btn.click(
+            fn=do_refresh_powers,
+            inputs=[],
+            outputs=powers_display,
         )
         refresh_history_btn.click(
             fn=do_refresh_history,
@@ -353,7 +521,8 @@ def build_ui():
         demo.load(
             fn=do_new_game,
             inputs=[],
-            outputs=[state_display, ministers_display, history_display, log_display],
+            outputs=[ministers_display, history_display,
+                     log_display, dashboard_display, powers_display],
         )
 
     return demo
