@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [0.2.0] - 2026-05-30
+## [0.9.3] - 2026-05-30
+
+> ⚠️ **版本说明**：远程分支（acb86df/3d346be）标注为"v0.2.0"，本地已统一为 v0.9.3。
+> 本文件为唯一真实版本记录，版本号以 git tag 为准。
 
 ### Added
 - **人物头像系统** (`han_sim/portraits.py`)
