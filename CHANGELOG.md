@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [0.9.4] - 2026-05-30
 
+### Added
+- **古风主题系统** (`han_sim/theme.py` 新建)
+  - 古风配色常量（玄黑/朱红/古金/暗青）
+  - `get_theme_css()` - 完整 Gradio CSS（含 Google Fonts）
+  - 全局样式：按钮/Tab/输入框/表格/滚动条
+  - 古风字体（Noto Serif SC 标题 / Noto Sans SC 正文）
+
+### Changed
+- `web_app.py` - 集成古风主题（`css=get_theme_css()`）
+- `pyproject.toml` version: 0.9.3 → 0.9.4
+
+## [0.9.3] - 2026-05-30
+
 > ⚠️ **版本说明**：远程分支（acb86df/3d346be）标注为"v0.2.0"，本地已统一为 v0.9.3。
 > 本文件为唯一真实版本记录，版本号以 git tag 为准。
 
