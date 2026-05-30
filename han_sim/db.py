@@ -5,7 +5,9 @@
 import json
 import os
 import sqlite3
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+    from han_sim.models import GameState
 
 from han_sim.paths import user_data_path
 
@@ -88,6 +90,25 @@ class GameDB:
             CREATE INDEX IF NOT EXISTS idx_memories_sources_memory ON event_memory_sources(memory_id);
             CREATE UNIQUE INDEX IF NOT EXISTS idx_memories_dedup
                 ON event_memories(subject_type, subject_id, event_type, source_kind, source_id);
+            CREATE TABLE IF NOT EXISTS issues (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL, description TEXT,
+                status TEXT DEFAULT 'active',
+                proposed_by TEXT, progress INT DEFAULT 0,
+                total_steps INT DEFAULT 1, current_step INT DEFAULT 0,
+                deadline_turn INT, created_turn INT,
+                closed_turn INT, success INT,
+                origin_kind TEXT, origin_ref TEXT,
+                tags TEXT DEFAULT '[]',
+                cancellable TEXT DEFAULT 'never',
+                ongoing_effects TEXT DEFAULT '{}',
+                effect_on_resolve TEXT DEFAULT '{}',
+                effect_on_fail TEXT DEFAULT '{}',
+                resolve_condition TEXT, fail_condition TEXT,
+                last_updated_turn INT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+            );
         """)
 
     # ── 状态读写 ─────────────────────────────────────────────
@@ -475,6 +496,99 @@ class GameDB:
         return self._rows_to_dicts(rows)
 
     # ── 事项追踪（Issues）──────────────────────────────
+
+    def insert_issue(
+        self,
+        state: GameState,
+        title: str,
+        description: str = "",
+        origin_kind: str = "",
+        origin_ref: str = "",
+        progress: int = 0,
+        proposed_by: str = "",
+        tags: Optional[List[str]] = None,
+        ongoing_effects: Optional[Dict] = None,
+        cancellable: str = "never",
+        effect_on_resolve: Optional[Dict] = None,
+        effect_on_fail: Optional[Dict] = None,
+        resolve_condition: str = "",
+        fail_condition: str = "",
+        total_steps: int = 1,
+        deadline_turn: Optional[int] = None,
+    ) -> int:
+        """新建事项，返回 issue id。"""
+        tags = tags or []
+        self.conn.execute(
+            """INSERT INTO issues
+            (title,description,status,proposed_by,progress,total_steps,deadline_turn,
+             created_turn,origin_kind,origin_ref,tags,cancellable,
+             ongoing_effects,effect_on_resolve,effect_on_fail,
+             resolve_condition,fail_condition,last_updated_turn)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (
+                title, description, "active", proposed_by, progress, total_steps,
+                deadline_turn, state.turn, origin_kind, origin_ref,
+                json.dumps(tags, ensure_ascii=False),
+                cancellable,
+                json.dumps(ongoing_effects or {}, ensure_ascii=False),
+                json.dumps(effect_on_resolve or {}, ensure_ascii=False),
+                json.dumps(effect_on_fail or {}, ensure_ascii=False),
+                resolve_condition, fail_condition, state.turn,
+            ),
+        )
+        self.commit()
+        row = self.conn.execute("SELECT last_insert_rowid()").fetchone()
+        return row[0] if row else 0
+
+    def advance_issue(self, issue_id: int, steps: int = 1, state: Optional[GameState] = None) -> None:
+        """推进事项 steps 步。"""
+        turn = state.turn if state else self.load_state("turn", 1)
+        self.conn.execute(
+            "UPDATE issues SET current_step=current_step+?, progress=progress+?, "
+            "last_updated_turn=? WHERE id=?",
+            (steps, steps * (100 // max(1, self._issue_total_steps(issue_id))), turn, issue_id),
+        )
+        self.commit()
+
+    def _issue_total_steps(self, issue_id: int) -> int:
+        row = self.conn.execute("SELECT total_steps FROM issues WHERE id=?", (issue_id,)).fetchone()
+        return row["total_steps"] if row else 1
+
+    def close_issue(self, issue_id: int, success: bool, state: Optional[GameState] = None) -> None:
+        """结案，success=True为解决，False为失败。"""
+        turn = state.turn if state else self.load_state("turn", 1)
+        self.conn.execute(
+            "UPDATE issues SET status='closed', closed_turn=?, success=? WHERE id=?",
+            (turn, 1 if success else 0, issue_id),
+        )
+        self.commit()
+
+    def get_active_issues(self, tag: str = "") -> List[Dict]:
+        """查询进行中事项，可按 tag 过滤。"""
+        if tag:
+            rows = self.conn.execute(
+                "SELECT * FROM issues WHERE status='active' AND tags LIKE ? ORDER BY id",
+                (f"%{tag}%",),
+            ).fetchall()
+        else:
+            rows = self.conn.execute(
+                "SELECT * FROM issues WHERE status='active' ORDER BY id"
+            ).fetchall()
+        return self._rows_to_dicts(rows)
+
+    def get_issues_by_tag(self, tag: str) -> List[Dict]:
+        rows = self.conn.execute(
+            "SELECT * FROM issues WHERE tags LIKE ? ORDER BY id", (f"%{tag}%",)
+        ).fetchall()
+        return self._rows_to_dicts(rows)
+
+    def find_any_issue_by_origin(self, origin_kind: str, origin_ref: str) -> Optional[Dict]:
+        """按 origin 查询是否已立项。"""
+        row = self.conn.execute(
+            "SELECT * FROM issues WHERE origin_kind=? AND origin_ref=?",
+            (origin_kind, origin_ref),
+        ).fetchone()
+        return dict(row) if row else None
 
     # ── 工具 ─────────────────────────────────────────────────
 
