@@ -35,6 +35,11 @@ class GameDB:
             from han_sim.content import load_game_content
             self.content = load_game_content()
 
+    @classmethod
+    def new(cls, path: str) -> "GameDB":
+        """工厂方法：创建新数据库实例（兼容 session.py 调用）"""
+        return cls(path)
+
     # ── Schema ───────────────────────────────────────────────────────
 
     def init_schema(self) -> None:
