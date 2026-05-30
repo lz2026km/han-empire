@@ -13,8 +13,8 @@ from han_sim.llm_model import create_chat_model, extract_agent_text, verify_llm_
 from han_sim.models import GameState
 
 
-def create_minister_agent(minister: Dict, state: GameState) -> Agent:
-    """创建大臣对话 agent。"""
+def create_minister_agent(minister: Dict, state: GameState, memory_brief: str = "") -> Agent:
+    """创建大臣对话 agent。memory_brief 会注入到 system prompt 末尾。"""
     llm_cfg = load_llm_config(
         base_url="https://api.minimax.chat/v1",
         model="MiniMax-M2.7-highspeed",
@@ -40,8 +40,11 @@ def create_minister_agent(minister: Dict, state: GameState) -> Agent:
         "- 声望：" + str(state.metrics.get("声望", 0)) + "\n"
         "- 威权：" + str(state.metrics.get("威权", 0)) + "\n"
         "- 藩镇：" + str(state.metrics.get("藩镇", 0)) + "\n\n"
-        "请用符合你人物身份的方式回应天子。"
     )
+    if memory_brief:
+        system_prompt += memory_brief + "\n\n"
+
+    system_prompt += "请用符合你人物身份的方式回应天子。"
 
     return Agent(
         name="大臣-" + minister["name"],

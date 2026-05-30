@@ -24,6 +24,10 @@ from han_sim.issues import (
 )
 from han_sim.llm_config import load_llm_config
 from han_sim.llm_model import create_chat_model, extract_agent_text
+from han_sim.memories import (
+    extract_event_memories_with_agent,
+    record_event_memories_from_resolution,
+)
 from han_sim.models import GameState
 from han_sim.db import GameDB
 
@@ -157,7 +161,40 @@ def run_monthly_simulation(
         state, fiscal, historical, threshold_crisis, random_events
     )
 
-    # ── 7. 写入 db ─────────────────────────────────────────────
+    # ── 7. 记忆提取（LLM + 规则） ─────────────────────────────
+    triggered_event_titles = [e["title"] for e in historical + threshold_crisis + random_events]
+    try:
+        llm_cfg = load_llm_config(
+            base_url="https://api.minimax.chat/v1",
+            model="MiniMax-M2.7-highspeed",
+            api_key="",
+        )
+        agent = Agent(
+            name="记忆提取",
+            model=create_chat_model(llm_cfg, temperature=0.5, max_tokens=800),
+            instructions=["你是汉末史官，根据输入提取结构化记忆卡，格式为JSON。"],
+            markdown=False,
+        )
+        extract_event_memories_with_agent(
+            agent, db, state,
+            decree_text="",  # 诏书内容可后续补入
+            narrative=narrative,
+            metrics_delta=metrics_delta,
+            log_entries=log_entries,
+            triggered_event_titles=triggered_event_titles,
+        )
+    except Exception:
+        pass  # 记忆提取失败不影响推演主流程
+    record_event_memories_from_resolution(
+        db, state,
+        decree_text="",
+        narrative=narrative,
+        metrics_delta=metrics_delta,
+        log_entries=log_entries,
+        triggered_event_titles=triggered_event_titles,
+    )
+
+    # ── 8. 写入 db ─────────────────────────────────────────────
     db.save_state("turn", state.turn)
     db.save_state("year", state.year)
     db.save_state("period", state.period)

@@ -20,6 +20,7 @@ from han_sim.db import GameDB
 from han_sim.flows import apply_monthly_flow
 from han_sim.models import Character, CourtContext, GameState
 from han_sim.paths import user_data_path
+from han_sim.registry import build_memory_brief, build_context_for_minister
 
 
 AUTO_SAVE_PREFIX = "auto_"
@@ -86,19 +87,29 @@ class GameSession:
     # ── 召见大臣 ─────────────────────────────────────────────
 
     def summon_minister(self, minister_name: str, instruction: str) -> SummonResult:
-        """天子召见大臣，大臣回应。"""
+        """天子召见大臣，大臣回应（记忆召回注入 + 召对记忆提取）。"""
         minister = self.db.get_character(minister_name)
         if not minister:
             return SummonResult(chat_text=f"找不到大臣：{minister_name}")
+
+        # ── 召见前：记忆召回 ───────────────────────────────────
+        memory_brief = build_memory_brief(
+            character_name=minister["name"],
+            faction=minister.get("faction", ""),
+            office_type=minister.get("office_type", ""),
+            turn=self.state.turn,
+            db=self.db,
+            limit=5,
+        )
 
         # 加载历史对话，构建上下文
         recent = get_recent_exchanges(self.db, self.campaign_id, minister_name, n=6)
         context = build_context_prompt(recent)
 
-        agent = create_minister_agent(minister, self.state)
+        agent = create_minister_agent(minister, self.state, memory_brief=memory_brief)
 
         prompt = (
-            f"【近日对话记录】\n{context}\n"
+            f"{context}\n"
             f"【天子此次询问】{instruction}\n\n"
             f"请以{minister['name']}的身份回应天子。"
         )
