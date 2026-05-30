@@ -43,7 +43,7 @@ han-empire/
 │   ├── events.json
 │   ├── powers.json
 │   └── armies.json
-├── web_app.py         # Web 界面（待开发）
+├── web_app.py         # Web 界面
 └── launcher.py        # 启动器
 ```
 
