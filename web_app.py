@@ -1085,12 +1085,20 @@ class GameUI:
                 continue
             items = []
             for bid, name, cost, maint, unlvl, effect, loc in avail_in:
-                items.append(f"""<div style="background:#2d2d1a;border-radius:6px;padding:6px 8px;margin:2px 0">
-                    <span style="font-size:13px;color:#f59e0b">{bid}</span>
-                    <span style="font-size:13px;color:#e8d5b7;font-weight:bold">{name}</span>
-                    <span style="font-size:11px;color:#9ca3af">（{loc}）</span>
-                    <span style="font-size:10px;color:#ef4444">费用:{cost} | 威权≥{unlvl}</span>
-                    <span style="font-size:10px;color:#22c55e">{effect}</span>
+                items.append(f"""<div style="background:#1a1a2e;border-radius:8px;padding:10px;margin:4px 0;border-left:3px solid #f59e0b">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                        <div style="display:flex;align-items:center;gap:6px">
+                            <span style="font-size:12px;background:#2d2d44;padding:2px 6px;border-radius:4px;color:#f59e0b">{bid}</span>
+                            <span style="font-size:14px;color:#e8d5b7;font-weight:bold">{name}</span>
+                        </div>
+                        <span style="font-size:10px;color:#9ca3af">（{loc}）</span>
+                    </div>
+                    <div style="display:flex;gap:8px;font-size:10px;flex-wrap:wrap">
+                        <span style="color:#ef4444">费用:<span style="font-weight:bold">{cost}</span></span>
+                        <span style="color:#f59e0b">威权:<span style="font-weight:bold">{unlvl}</span></span>
+                        <span style="color:#22c55e">维护:<span style="font-weight:bold">{maint}/年</span></span>
+                        <span style="color:#9ca3af">效果:{effect}</span>
+                    </div>
                 </div>""")
             avail_html += f"""<div style="margin-bottom:10px">
                 <div style="color:{color};font-weight:bold;font-size:13px;margin-bottom:4px">{btype}类（可建）</div>
@@ -1118,22 +1126,24 @@ class GameUI:
             "<span style='color:#3b82f6'>【权谋】</span>",
             "<span style='color:#22c55e'>【文治】</span>",
         ])
-        header = f"""<div style="background:#1a2d1a;border:1px solid #22c55e;border-radius:8px;padding:12px;margin-bottom:12px">
+        authority = state.metrics.get("威权", 50)
+        auth_color = "#22c55e" if authority >= 60 else "#f59e0b" if authority >= 30 else "#ef4444"
+        header = f"""<div style="background:linear-gradient(135deg,#1a2d1a 0%,#1a1a2e 100%);border:1px solid #c9a96e;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 4px 16px rgba(201,169,110,0.1)">
             <div style="display:flex;justify-content:space-between;align-items:center">
                 <div>
                     <span style="font-size:16px;font-weight:bold;color:#c9a96e">🌳 天子技能树</span>
-                    <span style="font-size:12px;color:#9ca3af;margin-left:12px">威权：{auth}</span>
+                    <span style="font-size:11px;color:#9ca3af;margin-left:8px">威权：<span style="color:{auth_color};font-weight:bold">{authority}</span></span>
                 </div>
                 <div style="text-align:right">
                     <span style="font-size:24px;font-weight:bold;color:#f59e0b">{sp}</span>
                     <span style="font-size:12px;color:#9ca3af"> 技能点</span>
                 </div>
             </div>
-            <div style="font-size:12px;color:#9ca3af;margin-top:4px">
-                已激活：{status["activated_count"]}/{status["total_skills"]} &nbsp;
-                可用：{len(status["available"])}
+            <div style="display:flex;gap:12px;font-size:11px;margin-top:6px;flex-wrap:wrap">
+                <span style="color:#9ca3af">已激活：<span style="color:#22c55e;font-weight:bold">{status["activated_count"]}</span>/{status["total_skills"]}</span>
+                <span style="color:#9ca3af">可用：<span style="color:#3b82f6;font-weight:bold">{len(status["available"])}</span></span>
+                <span style="color:#9ca3af">{source_legend}</span>
             </div>
-            <div style="font-size:10px;color:#9ca3af;margin-top:4px">{source_legend}</div>
         </div>"""
 
         # 四系技能树
