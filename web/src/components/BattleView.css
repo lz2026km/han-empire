@@ -33,4 +33,4 @@
 .damage-attacker { color: var(--color-accent-red); }
 .damage-defender { color: var(--color-gold); }
 .log-narrative { grid-column: 1 / -1; color: var(--color-text-secondary); font-size: 12px; line-height: 1.4; padding-top: 4px; border-top: 1px dashed var(--color-border); margin-top: 4px; }
-@media (max-width: 768px) { .battle-field { grid-template-columns: 1fr; gap: 16px; } .battle-center { order: -1; } .log-entry { grid-template-columns: 1fr; gap: 8px; } }
+ .battle-center { order: -1; } .log-entry { grid-template-columns: 1fr; gap: 8px; } }

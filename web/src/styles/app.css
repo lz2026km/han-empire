@@ -855,8 +855,6 @@ input:focus, select:focus {
   font-size: 12px;
 }
 
-@media (max-width: 1200px) {
-  .grid-3 { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* ---- Emperor Sidebar ---- */

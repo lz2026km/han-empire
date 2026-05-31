@@ -22,4 +22,4 @@
 .stat-row { display: flex; justify-content: space-between; font-size: 13px; }
 .stat-row span:first-child { color: var(--color-text-muted); }
 .stat-row span:last-child { color: var(--color-gold); font-weight: 600; }
-@media (max-width: 768px) { .faction-info-panel { position: static; width: 100%; margin-top: 16px; } }
+ }

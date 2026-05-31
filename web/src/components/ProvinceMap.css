@@ -29,4 +29,4 @@
 .tooltip-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px; }
 .tooltip-row span:last-child { color: var(--color-text-primary); font-weight: 500; }
 .tooltip-row .text-danger { color: var(--color-accent-red-bright); }
-@media (max-width: 768px) { .map-header { flex-direction: column; gap: 12px; align-items: flex-start; } .color-mode-toggle { width: 100%; } .toggle-btn { flex: 1; text-align: center; } .province-tooltip { position: static; margin-top: 12px; width: 100%; } }
+ .color-mode-toggle { width: 100%; } .toggle-btn { flex: 1; text-align: center; } .province-tooltip { position: static; margin-top: 12px; width: 100%; } }
