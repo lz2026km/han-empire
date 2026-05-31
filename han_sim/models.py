@@ -67,7 +67,7 @@ class Skill:
     effect: str        # 效果描述
     unlock_level: int  # 威权等级要求（威权>=此值才能激活）
     tier: int          # 层阶（1-3，层阶越高越强）
-    branch: str         # 所属流派
+    branch: str = ""    # 所属流派（允许空字符串兼容旧调用）
     requires: List[str] = field(default_factory=list)  # 前置技能（需先激活）
     source: str = ""        # 技能来源标签：system/military/politics/culture
     tags: List[str] = field(default_factory=list)  # 标签列表
