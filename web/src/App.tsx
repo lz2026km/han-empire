@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react'
 import { Header } from './components/Header'
 import { useGame } from './hooks/useGame'
 import { MinisterChat } from './components/MinisterChat'
+import { EmperorPanel } from './components/EmperorPanel'
+import { SceneTransition } from './components/SceneTransition'
 import type { GameState, MinisterStats, FactionStats } from './types'
 import './styles/app.css'
 import { api } from './api'
@@ -90,33 +92,42 @@ export default function App() {
                 ))}
               </div>
 
-              {activeTab === 'overview' && (
-                <OverviewTab gameState={gameState} ministers={ministers} factions={factions} onNextTurn={nextTurn} />
-              )}
-              {activeTab === 'decree' && (
-                <DecreeTab gameState={gameState} ministers={ministers} onIssue={issueDecree} />
-              )}
-              {activeTab === 'chat' && campaignId && (
-                <MinisterChat campaignId={campaignId} ministers={ministers} />
-              )}
-              {activeTab === 'ministers' && (
-                <MinisterTab ministers={ministers} />
-              )}
-              {activeTab === 'factions' && (
-                <FactionTab factions={factions} />
-              )}
-              {activeTab === 'skills' && (
-                <SkillTab campaignId={campaignId} />
-              )}
-              {activeTab === 'buildings' && (
-                <BuildingTab campaignId={campaignId} />
-              )}
-              {activeTab === 'log' && (
-                <LogTab entries={log} />
-              )}
+              <SceneTransition key={activeTab} type="fade" duration={400}>
+                {activeTab === 'overview' && (
+                  <OverviewTab gameState={gameState} ministers={ministers} factions={factions} onNextTurn={nextTurn} />
+                )}
+                {activeTab === 'decree' && (
+                  <DecreeTab gameState={gameState} ministers={ministers} onIssue={issueDecree} />
+                )}
+                {activeTab === 'chat' && campaignId && (
+                  <MinisterChat campaignId={campaignId} ministers={ministers} />
+                )}
+                {activeTab === 'ministers' && (
+                  <MinisterTab ministers={ministers} />
+                )}
+                {activeTab === 'factions' && (
+                  <FactionTab factions={factions} />
+                )}
+                {activeTab === 'skills' && (
+                  <SkillTab campaignId={campaignId} />
+                )}
+                {activeTab === 'buildings' && (
+                  <BuildingTab campaignId={campaignId} />
+                )}
+                {activeTab === 'log' && (
+                  <LogTab entries={log} />
+                )}
+              </SceneTransition>
             </>
           )}
         </div>
+
+        {/* Right sidebar - Emperor Panel */}
+        {campaignId && (
+          <aside className="emperor-sidebar">
+            <EmperorPanel gameState={gameState} />
+          </aside>
+        )}
       </main>
 
       {/* New Game Modal */}

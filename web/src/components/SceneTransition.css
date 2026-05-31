@@ -1,0 +1,90 @@
+.scene-transition {
+  position: relative;
+  overflow: hidden;
+}
+
+.scene-transition__curtain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.scene-transition--fade .scene-transition__curtain {
+  background: var(--color-bg-primary);
+  animation: curtainFade 400ms ease-out forwards;
+}
+
+.scene-transition--wipe-left .scene-transition__curtain {
+  background: linear-gradient(90deg, var(--color-accent-red-dim) 0%, var(--color-bg-primary) 100%);
+  animation: wipeLeft 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.scene-transition--wipe-right .scene-transition__curtain {
+  background: linear-gradient(-90deg, var(--color-accent-red-dim) 0%, var(--color-bg-primary) 100%);
+  animation: wipeRight 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.scene-transition--curtain-up .scene-transition__curtain {
+  background: linear-gradient(0deg, var(--color-gold-dim) 0%, var(--color-bg-primary) 100%);
+  animation: curtainUp 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.scene-transition--curtain-down .scene-transition__curtain {
+  background: linear-gradient(180deg, var(--color-gold-dim) 0%, var(--color-bg-primary) 100%);
+  animation: curtainDown 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.scene-transition__content {
+  animation: contentReveal 400ms ease-out 200ms forwards;
+  opacity: 0;
+}
+
+@keyframes curtainFade {
+  0% { opacity: 1; }
+  60% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes wipeLeft {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes wipeRight {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes curtainUp {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes curtainDown {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes contentReveal {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.scene-transition--slide-left .scene-transition__content {
+  animation: slideInFromRight 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.scene-transition--slide-right .scene-transition__content {
+  animation: slideInFromLeft 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideInFromRight {
+  0% { opacity: 0; transform: translateX(30px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInFromLeft {
+  0% { opacity: 0; transform: translateX(-30px); }
+  100% { opacity: 1; transform: translateX(0); }
+}

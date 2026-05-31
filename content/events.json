@@ -1548,5 +1548,60 @@
       "黄盖",
       "火攻"
     ]
+  },
+  {
+    "id": "e_189_hejin_death",
+    "year": 189,
+    "month": 8,
+    "title": "何进遇害",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "何进欲诛宦官，反为宦官所杀，京师大乱。",
+    "impact": { "han_authority": -15, "chaos": 20 },
+    "tags": ["何进", "宦官", "洛阳"]
+  },
+  {
+    "id": "e_189_tenchangshi",
+    "year": 189,
+    "month": 8,
+    "title": "十常侍乱政",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "十常侍杀何进后把持朝政，何后之兄何进部将攻入宫中。",
+    "impact": { "han_authority": -20, "chaos": 25 },
+    "tags": ["十常侍", "宦官"]
+  },
+  {
+    "id": "e_196_xu_chang_capital",
+    "year": 196,
+    "month": 8,
+    "title": "迁都许昌",
+    "type": "political",
+    "location": "许昌",
+    "summary": "曹操迎献帝迁都许昌，从此汉室名存实亡，曹操挟天子以令诸侯。",
+    "impact": { "han_authority": -10, "caowei_power": 20, "xundi_authority": 5 },
+    "tags": ["曹操", "献帝", "许昌"]
+  },
+  {
+    "id": "e_193_yongnian",
+    "year": 193,
+    "month": 3,
+    "title": "曹操报仇屠徐州",
+    "type": "military",
+    "location": "徐州",
+    "summary": "曹操为报父仇，攻陷徐州后屠城，泗水为之不流。",
+    "impact": { "caowei_reputation": -20, "xuzhou_unrest": 30 },
+    "tags": ["曹操", "徐州", "屠杀"]
+  },
+  {
+    "id": "e_198_pangxi",
+    "year": 194,
+    "month": 8,
+    "title": "曹操任兖州牧",
+    "type": "political",
+    "location": "兖州",
+    "summary": "曹操击败黄巾军，被朝廷任为兖州牧，势力大增。",
+    "impact": { "caowei_power": 15 },
+    "tags": ["曹操", "兖州"]
   }
 ]

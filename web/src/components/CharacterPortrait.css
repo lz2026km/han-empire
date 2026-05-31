@@ -1,0 +1,201 @@
+.character-portrait {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: portraitFadeIn 0.5s ease-out forwards;
+}
+
+@keyframes portraitFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.character-portrait:hover {
+  transform: translateY(-4px);
+}
+
+.portrait-mode {
+  flex-direction: row;
+  gap: 16px;
+}
+
+.portrait--small { --portrait-size: 48px; --frame-width: 3px; }
+.portrait--medium { --portrait-size: 80px; --frame-width: 4px; }
+.portrait--large { --portrait-size: 140px; --frame-width: 6px; }
+
+.cp__frame {
+  position: relative;
+  width: var(--portrait-size);
+  height: var(--portrait-size);
+}
+
+.cp__ink-border {
+  position: absolute;
+  inset: -4px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: 
+    linear-gradient(135deg, var(--color-gold) 0%, transparent 30%, transparent 70%, var(--color-gold-dim) 100%) padding-box,
+    linear-gradient(225deg, var(--color-ink-dark) 0%, transparent 40%, transparent 60%, var(--color-ink) 100%) padding-box;
+  background-size: 100% 100%;
+}
+
+.cp__gold-trim {
+  position: absolute;
+  inset: -2px;
+  border: var(--frame-width) solid var(--color-gold-dim);
+  border-radius: 50%;
+  background: 
+    linear-gradient(135deg, var(--color-bg-ink-wash) 0%, var(--color-bg-tertiary) 50%, var(--color-bg-ink-wash) 100%);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 0, 0, 0.5),
+    0 0 8px rgba(201, 168, 76, 0.2);
+}
+
+.cp__portrait-bg {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 30% 20%, rgba(139, 26, 26, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(0, 0, 0, 0.3) 0%, transparent 50%),
+    linear-gradient(180deg, var(--color-bg-ink-wash) 0%, var(--color-bg-tertiary) 100%);
+  border-radius: 50%;
+}
+
+.cp__inner-frame {
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--color-gold-dim);
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.cp__image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cp__initials {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--portrait-size) * 0.38);
+  color: var(--color-gold);
+  background: 
+    radial-gradient(ellipse at 30% 20%, rgba(139, 26, 26, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, var(--color-bg-ink-wash) 0%, var(--color-bg-tertiary) 100%);
+  border-radius: 50%;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.cp__selected-ring {
+  position: absolute;
+  inset: -8px;
+  border: 2px solid var(--color-gold);
+  border-radius: 50%;
+  animation: pulseGlow 1.5s ease-in-out infinite;
+}
+
+.cp__info {
+  text-align: center;
+  max-width: 140px;
+}
+
+.cp__name {
+  font-size: 15px;
+  color: var(--color-gold);
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.cp__office {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.cp__faction-badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-gold-dim);
+}
+
+.cp__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.cp__stat-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.cp__stat-label {
+  color: var(--color-text-muted);
+  width: 20px;
+  text-align: center;
+}
+
+.cp__stat-track {
+  flex: 1;
+  height: 6px;
+  background: var(--color-bg-primary);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.cp__stat-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cp__stat-fill--loyalty { background: linear-gradient(90deg, var(--color-gold-dim), var(--color-gold)); }
+.cp__stat-fill--ability { background: linear-gradient(90deg, var(--color-accent-red-dim), var(--color-accent-red)); }
+.cp__stat-fill--command { background: linear-gradient(90deg, var(--color-ink-dark), var(--color-ink)); }
+.cp__stat-fill--courage { background: linear-gradient(90deg, #b45309, #f59e0b); }
+
+.cp__stat-value {
+  width: 24px;
+  text-align: right;
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+
+.cp--clickable:hover .cp__gold-trim {
+  border-color: var(--color-gold);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(201, 168, 76, 0.4);
+}
+
+.cp--selected .cp__gold-trim {
+  border-color: var(--color-gold-bright);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 0, 0, 0.5),
+    0 0 25px rgba(201, 168, 76, 0.6);
+}

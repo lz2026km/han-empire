@@ -1,0 +1,297 @@
+.emperor-panel {
+  background: linear-gradient(180deg, var(--color-bg-ink-wash) 0%, var(--color-bg-tertiary) 100%);
+  border: 2px solid var(--color-gold-dim);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  animation: emperorPanelFadeIn 0.6s ease-out forwards;
+}
+
+@keyframes emperorPanelFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.emperor-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(201, 168, 76, 0.03) 2px,
+      rgba(201, 168, 76, 0.03) 4px
+    );
+  pointer-events: none;
+  animation: throneRoomShimmer 4s ease-in-out infinite;
+}
+
+@keyframes throneRoomShimmer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.emperor-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-gold-dim);
+}
+
+.emperor-panel__title {
+  font-size: 14px;
+  color: var(--color-gold);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.emperor-panel__seal {
+  width: 32px;
+  height: 32px;
+  background: var(--color-accent-red);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--color-gold-bright);
+  animation: sealPulse 2s ease-in-out infinite;
+  margin-left: auto;
+}
+
+@keyframes sealPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(139, 26, 26, 0.6);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 0 15px 3px rgba(139, 26, 26, 0.4);
+  }
+}
+
+.emperor-panel__portrait {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.emperor-panel__portrait-frame {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.emperor-panel__portrait-inner {
+  position: absolute;
+  inset: 0;
+  border: 4px solid var(--color-gold);
+  border-radius: 50%;
+  background: 
+    radial-gradient(ellipse at 30% 20%, rgba(139, 26, 26, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(0, 0, 0, 0.4) 0%, transparent 50%),
+    linear-gradient(180deg, var(--color-bg-ink-wash) 0%, var(--color-bg-tertiary) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: var(--color-gold);
+  box-shadow: 
+    0 0 30px rgba(201, 168, 76, 0.3),
+    inset 0 0 30px rgba(0, 0, 0, 0.5);
+  animation: throneGlow 3s ease-in-out infinite;
+}
+
+@keyframes throneGlow {
+  0%, 100% { 
+    box-shadow: 
+      0 0 20px rgba(201, 168, 76, 0.2),
+      inset 0 0 30px rgba(0, 0, 0, 0.5);
+  }
+  50% { 
+    box-shadow: 
+      0 0 40px rgba(201, 168, 76, 0.5),
+      inset 0 0 30px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.emperor-panel__portrait-ring {
+  position: absolute;
+  inset: -8px;
+  border: 2px solid var(--color-gold-dim);
+  border-radius: 50%;
+  animation: pulseBorder 2s ease-in-out infinite;
+}
+
+.emperor-panel__name {
+  font-size: 18px;
+  color: var(--color-gold);
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.emperor-panel__era {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.emperor-panel__date {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: var(--color-bg-primary);
+  border-radius: 8px;
+  border: 1px solid var(--color-gold-dim);
+}
+
+.emperor-panel__date-item {
+  text-align: center;
+}
+
+.emperor-panel__date-label {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.emperor-panel__date-value {
+  font-size: 16px;
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+.emperor-panel__date-lunar {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.emperor-panel__metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.emperor-panel__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.emperor-panel__metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.emperor-panel__metric-label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.emperor-panel__metric-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.emperor-panel__metric-value {
+  font-size: 14px;
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+.emperor-panel__metric-track {
+  height: 8px;
+  background: var(--color-bg-primary);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  position: relative;
+}
+
+.emperor-panel__metric-track::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 4px,
+    rgba(201, 168, 76, 0.05) 4px,
+    rgba(201, 168, 76, 0.05) 8px
+  );
+}
+
+.emperor-panel__metric-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.emperor-panel__metric-fill--authority {
+  background: linear-gradient(90deg, var(--color-accent-red-dim), var(--color-accent-red));
+}
+
+.emperor-panel__metric-fill--prestige {
+  background: linear-gradient(90deg, var(--color-gold-dim), var(--color-gold));
+}
+
+.emperor-panel__metric-fill--warlords {
+  background: linear-gradient(90deg, var(--color-ink-dark), var(--color-ink));
+}
+
+.emperor-panel__metric-fill--treasury {
+  background: linear-gradient(90deg, #065f46, #10b981);
+}
+
+.emperor-panel__decorative {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  opacity: 0.1;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      var(--color-gold) 0px,
+      var(--color-gold) 1px,
+      transparent 1px,
+      transparent 8px
+    );
+}
+
+.emperor-panel__dragon {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(0deg, rgba(139, 26, 26, 0.1) 0%, transparent 100%);
+  pointer-events: none;
+}

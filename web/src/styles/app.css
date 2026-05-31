@@ -46,6 +46,16 @@
   --border-radius: 4px;
 }
 
+/* ---- Portrait Frame Variables ---- */
+:root {
+  --portrait-frame-gold: #c9a84c;
+  --portrait-frame-gold-bright: #e8c86d;
+  --portrait-frame-gold-dim: #8a7034;
+  --portrait-ink-wash: #1a1612;
+  --portrait-ink: #2a2420;
+  --portrait-ink-dark: #1a1410;
+}
+
 /* ---- Reset ---- */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -847,4 +857,82 @@ input:focus, select:focus {
 
 @media (max-width: 1200px) {
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---- Emperor Sidebar ---- */
+.emperor-sidebar {
+  width: 280px;
+  background: var(--color-bg-secondary);
+  border-left: 1px solid var(--color-border-gold);
+  padding: 16px;
+  overflow-y: auto;
+}
+
+/* ---- Chinese Pattern Borders ---- */
+.chinese-border {
+  position: relative;
+}
+
+.chinese-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--color-gold-dim);
+  border-radius: var(--border-radius);
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(201, 168, 76, 0.05) 2px,
+      rgba(201, 168, 76, 0.05) 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 2px,
+      rgba(201, 168, 76, 0.05) 2px,
+      rgba(201, 168, 76, 0.05) 4px
+    );
+  pointer-events: none;
+}
+
+.chinese-border-gold {
+  border: 2px solid var(--color-gold-dim);
+  border-radius: var(--border-radius);
+  box-shadow: 
+    inset 0 0 20px rgba(201, 168, 76, 0.1),
+    0 0 10px rgba(201, 168, 76, 0.1);
+}
+
+.chinese-border-gold:hover {
+  border-color: var(--color-gold);
+  box-shadow: 
+    inset 0 0 30px rgba(201, 168, 76, 0.15),
+    0 0 20px rgba(201, 168, 76, 0.2);
+}
+
+/* ---- Decorative Corner ---- */
+.decorative-corner {
+  position: relative;
+}
+
+.decorative-corner::before,
+.decorative-corner::after {
+  content: '❧';
+  position: absolute;
+  font-size: 24px;
+  color: var(--color-gold-dim);
+  opacity: 0.3;
+}
+
+.decorative-corner::before {
+  top: 4px;
+  left: 4px;
+}
+
+.decorative-corner::after {
+  bottom: 4px;
+  right: 4px;
+  transform: rotate(180deg);
 }
