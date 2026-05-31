@@ -396,63 +396,6 @@ def apply_intel_expense(state: GameState, db: GameDB) -> Dict:
     }
 
 
-def apply_building_maintenance(state: GameState, db: GameDB) -> Dict:
-    """每月维护费扣除 + 建筑效果结算。
-    - 未央宫（长安）：威权+3/年
-    - 洛阳武库：军事效果+15%
-    - 许昌行宫：都城威权衰减-50%
-    - 各州粮仓：税收+10%
-    """
-    buildings = db.list_buildings()
-    total_maintenance = 0
-    effects: Dict[str, Dict[str, int]] = {}
-    authority_decay_modifier = 1.0  # 许昌行宫效果
-
-    for b in buildings:
-        if b.get("status") != "正常":
-            continue
-        maintenance = b.get("maintenance", 0)
-        total_maintenance += maintenance
-
-        metric = b.get("output_metric", "")
-        amount = b.get("output_amount", 0)
-        category = b.get("category", "")
-
-        # 维护费扣除（从内库支付）
-        if maintenance > 0:
-            state.metrics["内库"] = state.metrics.get("内库", 0) - maintenance
-
-        # 建筑效果结算
-        if metric and amount:
-            if metric == "威权":
-                state.metrics["威权"] = state.metrics.get("威权", 0) + amount
-            elif metric == "汉室库":
-                state.metrics["汉室库"] = state.metrics.get("汉室库", 0) + amount
-            elif metric == "声望":
-                state.metrics["声望"] = state.metrics.get("声望", 0) + amount
-            elif metric == "军备":
-                # 军事调度效果通过 effect_pct 记录
-                pass
-            effects[b.get("name", b["id"])] = {metric: amount}
-
-        # 许昌行宫：都城威权衰减-50%
-        if category == "内廷" and b.get("output_metric") == "威权" and b.get("level", 0) >= 3:
-            authority_decay_modifier = 0.5
-
-        # 各州粮仓：税收+10%
-        if category == "财政" and "粮仓" in b.get("name", ""):
-            # 在 calc_province_fiscal 里通过效率系数体现，这里记录
-            effects[b.get("name", b["id"])] = {"税收": 10}
-
-    state.clamp()
-    return {
-        "total_maintenance": total_maintenance,
-        "effects": effects,
-        "authority_decay_modifier": authority_decay_modifier,
-        "net": -total_maintenance,
-    }
-
-
 def apply_monthly_flow(state: GameState, db: GameDB) -> Dict:
     """月度结算：税收 - 支出，记录日志。"""
     tax, expense, provinces = calc_province_fiscal(state, db)

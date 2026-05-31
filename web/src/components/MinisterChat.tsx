@@ -56,7 +56,7 @@ export function MinisterChat({ campaignId, ministers, onMinisterSelect }: Minist
     setLoading(true)
 
     try {
-      const response = await api.receiveMinister(campaignId)
+      const response = await api.chatWithMinister(campaignId, selectedMinister, input)
       const ministerMessage: Message = {
         id: Date.now() + 1,
         role: 'minister',

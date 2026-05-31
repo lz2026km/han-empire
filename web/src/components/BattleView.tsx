@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import './BattleView.css'
 
 export interface BattleUnit { id: string; name: string; faction: string; troops: number; morale: number; strength: number; position: 'left' | 'right' }
@@ -11,6 +11,8 @@ export function BattleView({ attacker, defender, onBattleEnd, autoPlay = false }
   const [rounds, setRounds] = useState<BattleRound[]>([])
   const [ended, setEnded] = useState(false)
   const [winner, setWinner] = useState<'attacker' | 'defender' | 'draw' | null>(null)
+  // Use ref to avoid infinite loop from rounds in dependency array
+  const roundsRef = useRef<BattleRound[]>([])
 
   const simRound = useCallback((r: number, att: BattleUnit, def: BattleUnit): BattleRound => {
     const ar = Math.floor(Math.random() * 20) + 1 + Math.floor(att.morale / 20) + Math.floor(att.strength / 30)
@@ -23,23 +25,27 @@ export function BattleView({ attacker, defender, onBattleEnd, autoPlay = false }
   useEffect(() => {
     if (!playing || ended) return
     const t = setTimeout(() => {
-      const attTroops = Math.max(0, attacker.troops - rounds.reduce((s, r) => s + r.defenderDamage, 0))
-      const defTroops = Math.max(0, defender.troops - rounds.reduce((s, r) => s + r.attackerDamage, 0))
+      const currentRounds = roundsRef.current
+      const attTroops = Math.max(0, attacker.troops - currentRounds.reduce((s, r) => s + r.defenderDamage, 0))
+      const defTroops = Math.max(0, defender.troops - currentRounds.reduce((s, r) => s + r.attackerDamage, 0))
       if (attTroops <= 0 || defTroops <= 0 || round >= 10) {
         let w: 'attacker' | 'defender' | 'draw' = 'draw'
         if (attTroops > defTroops) w = 'attacker'
         else if (defTroops > attTroops) w = 'defender'
+        const finalRounds = roundsRef.current
         setWinner(w); setEnded(true); setPlaying(false)
-        onBattleEnd?.({ attacker, defender, rounds, winner: w, casualties: { attacker: attacker.troops - attTroops, defender: defender.troops - defTroops } })
+        onBattleEnd?.({ attacker, defender, rounds: finalRounds, winner: w, casualties: { attacker: attacker.troops - attTroops, defender: defender.troops - defTroops } })
         return
       }
-      setRounds(prev => [...prev, simRound(round + 1, attacker, defender)])
+      const newRound = simRound(round + 1, attacker, defender)
+      roundsRef.current = [...currentRounds, newRound]
+      setRounds(roundsRef.current)
       setRound(prev => prev + 1)
     }, 1500)
     return () => clearTimeout(t)
-  }, [playing, round, ended, attacker, defender, onBattleEnd, rounds, simRound])
+  }, [playing, round, ended, attacker, defender, onBattleEnd, simRound])
 
-  const start = () => { setRounds([]); setRound(0); setEnded(false); setWinner(null); setPlaying(true) }
+  const start = () => { roundsRef.current = []; setRounds([]); setRound(0); setEnded(false); setWinner(null); setPlaying(true) }
 
   return (
     <div className="battle-view">
@@ -79,7 +85,7 @@ export function BattleView({ attacker, defender, onBattleEnd, autoPlay = false }
           <h3>战斗经过</h3>
           <div className="log-entries">
             {rounds.map((r, i) => (
-              <div key={r.round} className={`log-entry ${i === rounds.length - 1 ? 'log-entry--latest' : ''}`}>
+              <div key={`round-${r.round}-${i}`} className={`log-entry ${i === rounds.length - 1 ? 'log-entry--latest' : ''}`}>
                 <div className="log-round">第{r.round}回合</div>
                 <div className="log-dice"><span className="dice-roll">🎲 {r.attackerRoll}</span><span className="dice-vs">vs</span><span className="dice-roll">🎲 {r.defenderRoll}</span></div>
                 <div className="log-damage">

@@ -133,15 +133,19 @@ def issue_decree(campaign_id):
         GAMES[campaign_id] = GameSession.load(campaign_id)
 
     session = GAMES[campaign_id]
-    result = issue_secret_edict(session.state, session.db)
+
+    # 根据 decree_type 分发到正确的诏书处理函数
+    if decree_type == 'secret_edict':
+        result = issue_secret_edict(session.state, session.db)
+    else:
+        intent = data.get('intent', '')
+        result = issue_decree(intent, session.state, session.db, campaign_id)
 
     return jsonify({
         'result': {
-            'success': result.success,
-            'message': result.narrative or result.reason,
-            'authority_delta': result.authority_delta,
-            'faction_delta': result.faction_delta,
-            'minister_changes': result.minister_changes,
+            'success': result.decree is not None and result.decree.decree_type != 'failed',
+            'message': result.decree.narrative if result.decree else (result.log_entries[0] if result.log_entries else ''),
+            'metrics_delta': result.metrics_delta,
         },
         'game_state': _state_to_dict(session.state)
     })
