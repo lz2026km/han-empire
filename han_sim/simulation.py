@@ -18,8 +18,12 @@ from agno.agent import Agent
 from han_sim.agents import create_minister_agent
 from han_sim.flows import (
     apply_monthly_flow,
+    apply_authority_effects,
     apply_loyalty_decay,
-    apply_warlord_actions,
+    apply_warlord_loyalty_decay,
+    check_betrayal_events,
+    trigger_dongzhuo_trap,
+    execute_emperor_escape_check,
     calc_faction_delta,
     check_dongzhuo_trap,
     check_emperor_escape,
@@ -28,6 +32,7 @@ from han_sim.flows import (
     apply_graduated_fiscal,
     collect_tribute,
     apply_intel_expense,
+    LOYALTY_RECOVERY_ACTIONS,
 )
 from han_sim.issues import (
     apply_issue_tracker_output,
@@ -386,11 +391,23 @@ def run_monthly_simulation(
     # ── 2. 藩镇变化 ────────────────────────────────────────────
     faction_delta = calc_faction_delta(state, db)
 
-    # ── 2b. 藩镇动态：各路诸侯自动行动 ──────────────────────────
+    # ── 2b. 威权机制效果（Step2新增）────────────────────────────
+    # 根据威权等级影响藩镇、声望、派系事件频率
+    authority_changes = apply_authority_effects(state, db)
+
+    # ── 2b2. 董卓伏诛线触发（威权>=40时自动触发，Step6新增）─────────
+    if state.dong_zhuo_trapped_turn == 0 and state.dong_zhuo_killed_turn == 0:
+        if state.metrics.get("威权", 0) >= 40:
+            trigger_dongzhuo_trap(state)
+
+    # ── 2c. 藩镇动态：各路诸侯自动行动 ──────────────────────────
     warlord_changes = apply_warlord_actions(state, db)
 
-    # ── 2c. 期4：忠诚度衰减 ──────────────────────────────────
+    # ── 2d. 期4：忠诚度衰减 ──────────────────────────────────
     loyalty_decays = apply_loyalty_decay(state, db)
+
+    # ── 2e. 诸侯忠诚度衰减（Step5新增）────────────────────────
+    warlord_loyalty_decays = apply_warlord_loyalty_decay(state, db)
 
     # ── 3. 事件聚合（issues 新 API） ─────────────────────────────
     # 先检查指标阈值，注入危机事项
@@ -433,23 +450,33 @@ def run_monthly_simulation(
         if ev.get("kind") == "threshold_crisis":
             threshold_crisis.append(ev)
 
-    # ── 3c. 期4：献帝东归线 ──────────────────────────────────
+    # ── 3c. 叛逃事件检测（Step5新增）─────────────────────────
+    betrayal_events = check_betrayal_events(state, db)
+    if betrayal_events:
+        for ev in betrayal_events:
+            for key, delta in ev.get("effects", {}).items():
+                state.metrics[key] = state.metrics.get(key, 0) + delta
+            threshold_crisis.append(ev)
+
+    # ── 3d. 期4：献帝东归线 ──────────────────────────────────
     escape_status = check_emperor_escape(state)
     if escape_status == "failed":
         threshold_crisis.append({
             "title": "东归失败",
             "kind": "threshold_crisis",
-            "summary": "献帝出逃未成，被李傕郭汜追回。",
+            "summary": "献帝未能抵达许昌，被李傕郭汜追回。",
+            "effects": {"威权": -10, "声望": -5, "藩镇": +5}
         })
     elif escape_status == "success":
         state.emperor_safe_turn = state.turn
+        state.log.append("【献帝东归成功】献帝已平安抵达许昌！")
         historical.append({
             "title": "献帝东归",
             "kind": "historical",
             "summary": "献帝历经艰辛，抵达许昌，曹操迎奉天子。",
         })
 
-    # ── 3d. 指令状态机：过期诏书处理 ───────────────────────────
+    # ── 3e. 指令状态机：过期诏书处理 ───────────────────────────
     try:
         expired = db.expire_old_directives(state.turn)
         for exp_d in expired:

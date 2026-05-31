@@ -146,6 +146,12 @@ class GameSession:
         recent = get_recent_exchanges(self.db, self.campaign_id, minister_name, n=6)
         context = build_context_prompt(recent)
 
+        # ── 召见前：威权等级上下文注入（Step2新增）─────────────────
+        from han_sim.models import get_authority_level
+        authority = self.state.metrics.get("威权", 0)
+        auth_level = get_authority_level(authority)
+        authority_ctx = f"当前天子威权：{authority}/100（{auth_level.label}），召对效果倍率：{auth_level.summon_mult:.0%}"
+
         agent = create_minister_agent(minister, self.state, memory_brief=memory_brief, loyalty_ctx=loyalty_ctx)
 
         prompt = (
@@ -153,7 +159,8 @@ class GameSession:
             f"【天子此次询问】{instruction}\n\n"
             f"请以{minister['name']}的身份回应天子。\n"
             f"【忠诚度提示】{loyalty_ctx}\n"
-            f"【派系态势】{faction_ctx}"
+            f"【派系态势】{faction_ctx}\n"
+            f"【天子威权】{authority_ctx}"
         )
         response = agent.run(prompt)
         text = response.content if hasattr(response, "content") else str(response)

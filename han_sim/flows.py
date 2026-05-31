@@ -393,6 +393,237 @@ def apply_warlord_actions(state: GameState, db: GameDB) -> List[Dict]:
     return changes
 
 
+# ── 威权机制（Step2）─────────────────────────────────────────────
+
+# ── 威权恢复行动（Step2新增）────────────────────────────────────
+
+AUTHORITY_RECOVERY_ACTIONS: Dict[str, Dict] = {
+    "求情示弱": {"effects": {"威权": +3, "声望": -2}, "cost": 5, "description": "向权臣示弱，以求保全"},
+    "笼络近臣": {"effects": {"威权": +2, "内库": -5}, "cost": 5, "description": "赏赐近臣，收买人心"},
+    "施恩示好": {"effects": {"威权": +4, "内库": -10}, "cost": 10, "description": "对大臣施恩，培养忠诚"},
+    "朝会演讲": {"effects": {"威权": +5, "声望": +3}, "cost": 0, "description": "在朝会上演讲，提振天子威权"},
+    "处理政务": {"effects": {"威权": +3, "声望": +1}, "cost": 0, "description": "亲力亲为处理政务，展现勤政姿态"},
+    "颁布诏书": {"effects": {"威权": +2, "藩镇": -1}, "cost": 5, "description": "正常颁布诏书，维护天子权威"},
+    "召见贤才": {"effects": {"威权": +4, "声望": +2}, "cost": 10, "description": "召见民间贤才，提振朝野信心"},
+    "整饬吏治": {"effects": {"威权": +5, "声望": +3, "藩镇": -2}, "cost": 15, "description": "整饬吏治，打击贪腐"},
+    "祭天祈福": {"effects": {"威权": +6, "声望": +4}, "cost": 20, "description": "祭天祈福，宣称天命所归"},
+    "军事演练": {"effects": {"威权": +4, "藩镇": -3}, "cost": 20, "description": "举行军事演练，展示武力"},
+    "册封功臣": {"effects": {"威权": +5, "内库": -15}, "cost": 15, "description": "册封有功之臣，激励忠义"},
+    "颁布罪己诏": {"effects": {"威权": -3, "声望": +8, "藩镇": -2}, "cost": 0, "description": "颁布罪己诏，挽回民心"},
+    "大赦天下": {"effects": {"威权": +3, "声望": +6, "藩镇": -1}, "cost": 10, "description": "大赦天下，收揽人心"},
+}
+
+
+def execute_authority_recovery(state: GameState, action: str) -> Dict[str, int]:
+    """执行威权恢复行动。返回指标变化 dict。"""
+    from han_sim.models import get_authority_level
+
+    action_info = AUTHORITY_RECOVERY_ACTIONS.get(action)
+    if not action_info:
+        return {}
+
+    authority = state.metrics.get("威权", 0)
+    auth_level = get_authority_level(authority)
+
+    # 检查行动是否在当前威权等级的可用行动列表中
+    if action not in auth_level.recovery_actions:
+        state.log.append(f"【威权不足】当前威权等级「{auth_level.label}」无法执行「{action}」")
+        return {}
+
+    # 检查内库是否足够
+    cost = action_info.get("cost", 0)
+    if cost > 0 and state.metrics.get("内库", 0) < cost:
+        state.log.append(f"【内库不足】执行「{action}」需要{cost}万两，当前内库{state.metrics.get('内库',0)}万两")
+        return {}
+
+    # 扣除内库
+    if cost > 0:
+        state.metrics["内库"] -= cost
+
+    # 应用效果
+    delta = {}
+    for metric, change in action_info.get("effects", {}).items():
+        old_val = state.metrics.get(metric, 0)
+        new_val = old_val + change
+        # 约束范围
+        if metric in ("汉室库", "内库"):
+            new_val = max(0, new_val)
+        else:
+            new_val = max(0, min(100, new_val))
+        state.metrics[metric] = new_val
+        delta[metric] = new_val - old_val
+
+    state.log.append(f"【威权恢复】执行「{action}」，{'，'.join([f'{k}{v:+d}' for k,v in delta.items()])}")
+    return delta
+
+
+# ── 忠诚度恢复行动（Step5新增）──────────────────────────────────────
+
+LOYALTY_RECOVERY_ACTIONS: Dict[str, Dict] = {
+    "施恩": {"effects": {"忠诚度": +5}, "cost": 10, "description": "对大臣施恩，提升忠诚"},
+    "嘉奖": {"effects": {"忠诚度": +8}, "cost": 15, "description": "嘉奖功臣，提升忠诚"},
+    "笼络": {"effects": {"忠诚度": +6}, "cost": 8, "description": "笼络人心，提升忠诚"},
+    "赦免": {"effects": {"忠诚度": +10, "声望": +2}, "cost": 5, "description": "赦免过失，提升忠诚"},
+    "晋升": {"effects": {"忠诚度": +12}, "cost": 20, "description": "晋升官职，提升忠诚"},
+}
+
+
+def apply_loyalty_recovery(state: GameState, char_id: str, action: str) -> int:
+    """对指定角色执行忠诚度恢复行动。返回忠诚度变化量。"""
+    action_info = LOYALTY_RECOVERY_ACTIONS.get(action)
+    if not action_info:
+        return 0
+    char = state.db.conn.execute(
+        "SELECT * FROM characters WHERE id=?", (char_id,)
+    ).fetchone()
+    if not char:
+        return 0
+    cost = action_info.get("cost", 0)
+    if cost > 0 and state.metrics.get("内库", 0) < cost:
+        state.log.append(f"【内库不足】{action}需要{cost}万两")
+        return 0
+    if cost > 0:
+        state.metrics["内库"] -= cost
+    old_loyal = char["loyalty"]
+    new_loyal = min(100, old_loyal + action_info["effects"].get("忠诚度", 0))
+    new_loyal = max(0, new_loyal)
+    state.db.upsert_character(dict(char, loyalty=new_loyal))
+    state.log.append(f"【忠诚度恢复】{char['name']} {action}，忠诚度{old_loyal}→{new_loyal}")
+    return new_loyal - old_loyal
+
+
+def check_betrayal_events(state: GameState, db: GameDB) -> List[Dict]:
+    """检测叛逃事件：
+    - 忠诚度<30且威权<20的大臣，有概率叛逃
+    - 藩镇>=80且威权<15的势力，有概率脱离
+    返回触发的事件列表（每回合最多1个）。
+    """
+    events = []
+    authority = state.metrics.get("威权", 0)
+    fanzhen = state.metrics.get("藩镇", 0)
+
+    # 检查大臣叛逃
+    if authority < 20:
+        for char in db.list_characters(status="active"):
+            if char.get("loyalty", 50) < 30 and char.get("power_id") not in ("", None):
+                # 威权低+忠诚度低+有势力归属 → 3%概率叛逃
+                import random
+                if random.random() < 0.03:
+                    char["loyalty"] = max(0, char["loyalty"] - 10)
+                    db.upsert_character(char)
+                    events.append({
+                        "title": f"{char['name']}叛逃",
+                        "kind": "threshold_crisis",
+                        "summary": f"{char['name']}见天子威权扫地，改投{char.get('power_id','权臣')}。",
+                        "effects": {"威权": -2, "声望": -1}
+                    })
+                    state.log.append(f"【叛逃】{char['name']}见威权尽失，叛逃而去！")
+                    break  # 每回合最多1个
+
+    # 检查藩镇脱离（威权<15且藩镇>=80）
+    if authority < 15 and fanzhen >= 80:
+        import random
+        if random.random() < 0.05:
+            old_fz = state.metrics.get("藩镇", 0)
+            state.metrics["藩镇"] = min(100, old_fz + 5)
+            state.log.append("【藩镇脱离】藩镇见天子威权扫地，纷纷脱离！")
+            events.append({
+                "title": "藩镇脱离",
+                "kind": "threshold_crisis",
+                "summary": "威权扫地，藩镇纷纷脱离汉室控制。",
+                "effects": {"藩镇": +5, "声望": -3}
+            })
+
+    return events
+
+
+# ── 诸侯忠诚度衰减（Step5新增）────────────────────────────────────────
+
+def apply_warlord_loyalty_decay(state: GameState, db: GameDB) -> List[Dict]:
+    """诸侯忠诚度每月衰减：
+    - 威权>=80：稳定，忠诚度几乎不衰减
+    - 威权50-79：标准衰减（-2到-3）
+    - 威权20-49：加速衰减（-4到-6）
+    - 威权<20：最快衰减（-6到-10）
+    衰减受 warlord_stability 修正（威权越高修正越大）。
+    """
+    from han_sim.models import get_authority_level
+
+    authority = state.metrics.get("威权", 0)
+    auth_level = get_authority_level(authority)
+    stability = auth_level.warlord_stability
+
+    powers = db.list_powers()
+    decays = []
+    for p in powers:
+        if p.get("id") in ("han", ""):
+            continue
+        lid = p.get("id", "")
+        loyalty = p.get("loyalty", 50)
+        stance = p.get("stance", "neutral")
+
+        # 敌对势力衰减更快
+        decay_base = {"loyal": 1, "neutral": 2, "hostile": 3}.get(stance, 2)
+        # 威权修正：stability 0-1，越高衰减越慢
+        decay = int(decay_base * (1 - stability * 0.5))
+
+        new_loyalty = max(0, min(100, loyalty - decay))
+        p["loyalty"] = new_loyalty
+        db.upsert_power(p)
+        if decay > 0:
+            decays.append({"power": p.get("name", lid), "from": loyalty, "to": new_loyalty, "decay": decay})
+
+    return decays
+
+
+def apply_authority_effects(state: GameState, db: GameDB) -> Dict[str, int]:
+    """威权机制核心：每回合根据威权等级影响各项游戏数值。
+
+    影响范围：
+    1. 诸侯稳定性：威权高则诸侯不易叛，忠诚度衰减减半
+    2. 派系事件强度：威权低则派系事件更频繁
+    3. 诏书执行折扣：威权低则诏书效果打折
+    4. 声望恢复：威权高则每回合声望自然+1
+    5. 藩镇抑制：威权>=50时每回合藩镇-1
+
+    返回本回合威权相关指标变化 dict。
+    """
+    from han_sim.models import get_authority_level
+
+    authority = state.metrics.get("威权", 0)
+    level = get_authority_level(authority)
+    changes: Dict[str, int] = {}
+
+    # 1. 威权>=50时，藩镇自然-1（抑制效果）
+    if authority >= 50:
+        old = state.metrics.get("藩镇", 0)
+        state.metrics["藩镇"] = max(0, old - 1)
+        changes["藩镇"] = state.metrics["藩镇"] - old
+
+    # 2. 威权>=60时，声望自然+1（天子有底气则民心稳）
+    if authority >= 60:
+        old_rep = state.metrics.get("声望", 0)
+        state.metrics["声望"] = min(100, old_rep + 1)
+        changes["声望"] = state.metrics["声望"] - old_rep
+
+    # 3. 威权<=10时，藩镇+2（天子形同虚设则诸侯坐大）
+    if authority <= 10:
+        old_fz = state.metrics.get("藩镇", 0)
+        state.metrics["藩镇"] = min(100, old_fz + 2)
+        changes["藩镇"] = state.metrics["藩镇"] - old_fz
+        state.log.append("【威权危机】天子形同虚设，诸侯日益坐大！")
+
+    # 4. 记录威权等级变化（威权跨越等级时触发提示）
+    if state.turn > 1:
+        prev_auth = state.metrics.get("_prev_authority", authority)
+        prev_level = get_authority_level(prev_auth)
+        if prev_level.label != level.label:
+            state.log.append(f"【威权变化】从「{prev_level.label}」（{prev_auth}）变为「{level.label}」（{authority}）")
+    state.metrics["_prev_authority"] = authority
+
+    return changes
+
+
 def calc_faction_delta(state: GameState, db: GameDB) -> List[Dict]:
     """计算派系变化：藩镇根据威权/诏书/事件动态消长。"""
     powers = db.list_powers()
@@ -418,12 +649,32 @@ def calc_faction_delta(state: GameState, db: GameDB) -> List[Dict]:
 # ── 期4 新增机制 ──────────────────────────────────────────────────────────
 
 def apply_loyalty_decay(state: GameState, db: GameDB) -> List[Dict]:
-    """每月忠诚度衰减：威权低则加速衰减，权臣麾下角色衰减更快。"""
+    """每月忠诚度衰减：威权低则加速衰减，威权高则衰减减半（威权机制）。
+
+    衰减规则：
+    - 威权>=80：忠诚度几乎不衰减（warlord_stability=0.9，基础衰减极低）
+    - 威权50-79：标准衰减
+    - 威权20-49：衰减加速
+    - 威权<20：衰减最快，权臣麾下角色衰减最严重
+
+    威权对忠诚度衰减的影响通过 base_decay 的幂函数实现。
+    """
     characters = db.list_characters()
     decays = []
     authority = state.metrics.get("威权", 0)
-    # 威权越低，基础衰减越大
-    base_decay = max(0, (30 - authority) // 10)  # 威权30时base_decay=0，威权0时base_decay=3
+
+    # 威权驱动的基础衰减率（0-30区间，越高衰减越慢）
+    # 威权0 → decay_base=3（最大衰减）
+    # 威权30 → decay_base=0（无衰减）
+    # 威权>30 → 额外惩罚，威权100时衰减最轻
+    if authority >= 80:
+        # 威权高时，忠诚度稳定，几乎不衰减
+        base_decay = max(0, (30 - authority) // 10)  # 80→0, 90→0, 100→0
+    elif authority >= 50:
+        base_decay = max(0, (30 - authority) // 8)   # 50→0, 60→0, 70→0
+    else:
+        # 威权低时，衰减加速
+        base_decay = max(1, (40 - authority) // 10)  # 40→0, 30→1, 20→2, 10→3, 0→4
 
     for char in characters:
         if char.get("status") != "active":
@@ -432,10 +683,10 @@ def apply_loyalty_decay(state: GameState, db: GameDB) -> List[Dict]:
         power_id = char.get("power_id", "")
         loyalty = char.get("loyalty", 50)
 
-        # 权臣麾下：跟随其主公的势力状态
+        # 权臣麾下角色衰减更快
         decay = base_decay
         if power_id in ("dongzhuo", "caocao", "lvbu"):
-            decay += 1  # 权臣麾下衰减更快
+            decay += 1
 
         new_loyalty = max(0, loyalty - decay)
         char["loyalty"] = new_loyalty
@@ -468,6 +719,66 @@ def relocate_capital(state: GameState, new_capital: str) -> Dict[str, int]:
     state.capital = new_capital
     state.log.append(f"【迁都】汉室迁都：{old} → {new_capital}，威权{'+' if delta.get('威权',0)>=0 else ''}{delta.get('威权',0)}")
     return delta
+
+
+# ── 董卓伏诛系统（Step6新增）────────────────────────────────────────
+
+DONGZHUO_BASE_MILITARY = 40   # 董卓基础军力（伏诛所需最低值）
+
+
+def trigger_dongzhuo_trap(state: GameState) -> None:
+    """触发董卓伏诛线：设置 trapped_turn，标志围困开始。"""
+    if state.dong_zhuo_trapped_turn > 0:
+        return  # 已触发，不再重复
+    state.dong_zhuo_trapped_turn = state.turn
+    state.log.append("【董卓伏诛线触发】董卓被围，诸侯攻守之势已成！")
+
+
+def execute_dongzhuo_elimination(state: GameState, military_strength: int) -> Dict:
+    """执行董卓伏诛判定：
+    - 成功条件：军力 >= 董卓基础军力 + 威权修正
+    - 威权修正：威权越高，所需军力越低（威权>=60时-10）
+    返回结果 dict：{success, narrative, effects}
+    """
+    authority = state.metrics.get("威权", 0)
+    required = DONGZHUO_BASE_MILITARY
+    if authority >= 60:
+        required -= 10  # 威权高则降低难度
+    elif authority >= 40:
+        required -= 5
+
+    # 军力不足则失败
+    success = military_strength >= required
+    if success:
+        state.dong_zhuo_killed_turn = state.turn
+        state.dong_zhuo_trapped_turn = 0
+        effects = {
+            "威权": 30,
+            "声望": 20,
+            "藩镇": -15,
+            "汉室库": 50,  # 抄没董卓家产
+        }
+        narrative = f"董卓伏诛！诸侯联军攻入长安，董卓死于乱军之中。汉室重光，威权大增！"
+        state.log.append("【董卓伏诛】董卓已死，汉室重光！")
+    else:
+        effects = {
+            "威权": -10,
+            "声望": -5,
+        }
+        narrative = f"联军攻打长安未克（需军力{required}，实际{military_strength}），董卓依然坐镇，局势更加危急。"
+        state.log.append(f"【董卓伏诛失败】联军未克，军力不足（需{required}，实际{military_strength}）")
+
+    # 应用效果
+    for k, v in effects.items():
+        state.metrics[k] = max(0, min(100, state.metrics.get(k, 50) + v))
+
+    return {
+        "success": success,
+        "narrative": narrative,
+        "effects": effects,
+        "required": required,
+        "actual": military_strength,
+    }
 
 
 def check_dongzhuo_trap(state: GameState) -> bool:
@@ -506,6 +817,58 @@ def check_emperor_escape(state: GameState) -> str:
             state.log.append("【东归失败】献帝未能抵达许昌，被李傕郭汜追回。")
             return "failed"
     return "ongoing"
+
+
+# ── 献帝东归系统（Step7新增）────────────────────────────────────────
+
+def initiate_emperor_escape(state: GameState, target: str = "许昌") -> Dict:
+    """发起献帝东归：从长安逃往许昌，设定 emperor_escaped_turn。
+    需董卓已伏诛才能安全出逃。
+    返回结果 dict。
+    """
+    if state.emperor_escaped_turn > 0:
+        return {"success": False, "narrative": "献帝已在东归途中", "effects": {}}
+
+    state.emperor_escaped_turn = state.turn
+    authority = state.metrics.get("威权", 0)
+    shengwang = state.metrics.get("声望", 0)
+
+    # 威权>=60：天子有威信，沿途诸侯不敢为难
+    # 威权<60：风险较高，诸侯态度不确定
+    if authority >= 60:
+        success_prob = 0.8
+        effects = {"威权": 15, "声望": 10}
+        narrative = f"献帝出长安东归，诸侯见天子威权复振（{authority}），无人敢阻拦，顺利抵达{target}！"
+        state.emperor_safe_turn = state.turn  # 直接成功
+        state.log.append(f"【献帝东归成功】天子威权复振，诸侯不敢为难！")
+    else:
+        success_prob = 0.5
+        effects = {"威权": 5, "声望": 3}
+        narrative = f"献帝出长安东归，但威权不足（{authority}），诸侯态度暧昧，东归之路充满变数。"
+        state.log.append("【献帝东归启动】威权不足，诸侯态度不明，东归充满风险")
+
+    return {
+        "success": True,
+        "narrative": narrative,
+        "effects": effects,
+        "turns_left": 5,
+        "target": target,
+    }
+
+
+def execute_emperor_escape_check(state: GameState) -> Dict:
+    """每回合检查东归状态：成功/失败/进行中。返回结果 dict。"""
+    if state.emperor_escaped_turn == 0 or state.emperor_safe_turn > 0:
+        return {"status": "none"}
+
+    if state.emperor_safe_turn > 0:
+        return {"status": "success", "turns": state.turn - state.emperor_escaped_turn}
+
+    escape_turns = state.turn - state.emperor_escaped_turn
+    if escape_turns >= 5:
+        if state.emperor_safe_turn == 0:
+            return {"status": "failed", "turns": 5}
+    return {"status": "ongoing", "turns": escape_turns, "turns_left": max(0, 5 - escape_turns)}
 
 
 def detect_tragic_events(state: GameState) -> List[Dict]:

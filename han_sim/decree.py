@@ -980,11 +980,17 @@ def issue_decree(
     if 离心_count > 0:
         faction_mod *= 1.0 - 0.2 * (离心_count / total_ministers)
 
-    # 计算指标变化
+    # 计算指标变化（先派系修正，再威权修正）
+    from han_sim.models import get_authority_level
+    authority = state.metrics.get("威权", 0)
+    auth_level = get_authority_level(authority)
+
     metrics_delta: Dict[str, int] = {}
     for e in effects:
         metric = e["metric"]
         d = int(e["delta"] * faction_mod)
+        # 威权修正：apply authority decree_mult
+        d = int(d * auth_level.decree_mult)
         metrics_delta[metric] = metrics_delta.get(metric, 0) + d
 
     log_entries = [e["description"] for e in effects]

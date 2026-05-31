@@ -7,6 +7,57 @@ from typing import Dict, List, Optional
 
 
 @dataclass
+class AuthorityLevel:
+    level: int          # 威权数值
+    label: str          # 标签：如"诏书如山"
+    decree_mult: float  # 诏书效果倍率
+    summon_mult: float   # 召对效果倍率
+    warlord_stability: float  # 诸侯稳定性加成（威权高则不易叛）
+    faction_event_mod: float  # 派系事件强度修正
+    recovery_actions: List[str]  # 可用恢复行动
+
+# 威权等级表（0-100分5档）
+AUTHORITY_LEVELS: Dict[int, AuthorityLevel] = {
+    # 0-19：形同虚设
+    0: AuthorityLevel(0, "形同虚设", 0.3, 0.3, 0.0, 1.5,
+                      ["求情示弱", "笼络近臣"]),
+    10: AuthorityLevel(10, "权臣操弄", 0.4, 0.4, 0.1, 1.4,
+                       ["求情示弱", "笼络近臣", "施恩示好"]),
+    # 20-49：阳奉阴违
+    20: AuthorityLevel(20, "阳奉阴违", 0.6, 0.6, 0.3, 1.2,
+                       ["施恩示好", "笼络近臣", "朝会演讲", "处理政务"]),
+    30: AuthorityLevel(30, "勉强维持", 0.7, 0.7, 0.4, 1.1,
+                       ["施恩示好", "笼络近臣", "朝会演讲", "处理政务", "颁布诏书"]),
+    # 50-79：诏书有效
+    40: AuthorityLevel(40, "诏书有效", 0.8, 0.8, 0.5, 1.0,
+                       ["朝会演讲", "处理政务", "颁布诏书", "召见贤才"]),
+    50: AuthorityLevel(50, "朝纲初振", 0.9, 0.9, 0.6, 0.9,
+                       ["朝会演讲", "处理政务", "颁布诏书", "召见贤才", "整饬吏治"]),
+    60: AuthorityLevel(60, "略有起色", 1.0, 1.0, 0.7, 0.8,
+                       ["朝会演讲", "处理政务", "颁布诏书", "召见贤才", "整饬吏治", "军事演练"]),
+    # 80-100：诏书如山
+    70: AuthorityLevel(70, "威权渐张", 1.1, 1.1, 0.8, 0.7,
+                       ["朝会演讲", "处理政务", "颁布诏书", "召见贤才", "整饬吏治", "军事演练", "祭天祈福"]),
+    80: AuthorityLevel(80, "号令四方", 1.2, 1.2, 0.9, 0.6,
+                       ["朝会演讲", "颁布诏书", "召见贤才", "整饬吏治", "军事演练", "祭天祈福", "册封功臣"]),
+    90: AuthorityLevel(90, "天下归心", 1.3, 1.3, 1.0, 0.5,
+                       ["朝会演讲", "颁布诏书", "召见贤才", "整饬吏治", "军事演练", "祭天祈福", "册封功臣", "颁布罪己诏"]),
+    100: AuthorityLevel(100, "至高无上", 1.5, 1.5, 1.2, 0.3,
+                        ["朝会演讲", "颁布诏书", "召见贤才", "整饬吏治", "军事演练", "祭天祈福", "册封功臣", "颁布罪己诏", "大赦天下"]),
+}
+
+
+def get_authority_level(authority: int) -> AuthorityLevel:
+    """根据威权值返回对应等级信息。"""
+    # 向下取整到最近的已知等级
+    levels = sorted(AUTHORITY_LEVELS.keys())
+    for lvl in reversed(levels):
+        if authority >= lvl:
+            return AUTHORITY_LEVELS[lvl]
+    return AUTHORITY_LEVELS[0]
+
+
+@dataclass
 class ChatResult:
     action: str
     next_minister: str = ""
