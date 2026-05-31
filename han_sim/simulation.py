@@ -20,7 +20,8 @@ from han_sim.flows import (
     apply_monthly_flow,
     apply_authority_effects,
     apply_loyalty_decay,
-    apply_warlord_actions,
+    apply_warlord_loyalty_decay,
+    check_betrayal_events,
     calc_faction_delta,
     check_dongzhuo_trap,
     check_emperor_escape,
@@ -29,6 +30,7 @@ from han_sim.flows import (
     apply_graduated_fiscal,
     collect_tribute,
     apply_intel_expense,
+    LOYALTY_RECOVERY_ACTIONS,
 )
 from han_sim.issues import (
     apply_issue_tracker_output,
@@ -397,6 +399,9 @@ def run_monthly_simulation(
     # ── 2d. 期4：忠诚度衰减 ──────────────────────────────────
     loyalty_decays = apply_loyalty_decay(state, db)
 
+    # ── 2e. 诸侯忠诚度衰减（Step5新增）────────────────────────
+    warlord_loyalty_decays = apply_warlord_loyalty_decay(state, db)
+
     # ── 3. 事件聚合（issues 新 API） ─────────────────────────────
     # 先检查指标阈值，注入危机事项
     _inject_crisis_by_metrics(state, db)
@@ -438,7 +443,15 @@ def run_monthly_simulation(
         if ev.get("kind") == "threshold_crisis":
             threshold_crisis.append(ev)
 
-    # ── 3c. 期4：献帝东归线 ──────────────────────────────────
+    # ── 3c. 叛逃事件检测（Step5新增）─────────────────────────
+    betrayal_events = check_betrayal_events(state, db)
+    if betrayal_events:
+        for ev in betrayal_events:
+            for key, delta in ev.get("effects", {}).items():
+                state.metrics[key] = state.metrics.get(key, 0) + delta
+            threshold_crisis.append(ev)
+
+    # ── 3d. 期4：献帝东归线 ──────────────────────────────────
     escape_status = check_emperor_escape(state)
     if escape_status == "failed":
         threshold_crisis.append({
