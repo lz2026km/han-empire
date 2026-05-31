@@ -858,6 +858,12 @@ class GameUI:
         activated = state.metrics.get("activated_skills", [])
 
         # 技能点
+        source_legend = " | ".join([
+            "<span style='color:#c9a96e'>【制度】</span>",
+            "<span style='color:#ef4444'>【武功】</span>",
+            "<span style='color:#3b82f6'>【权谋】</span>",
+            "<span style='color:#22c55e'>【文治】</span>",
+        ])
         header = f"""<div style="background:#1a2d1a;border:1px solid #22c55e;border-radius:8px;padding:12px;margin-bottom:12px">
             <div style="display:flex;justify-content:space-between;align-items:center">
                 <div>
@@ -873,6 +879,7 @@ class GameUI:
                 已激活：{status["activated_count"]}/{status["total_skills"]} &nbsp;
                 可用：{len(status["available"])}
             </div>
+            <div style="font-size:10px;color:#9ca3af;margin-top:4px">{source_legend}</div>
         </div>"""
 
         # 四系技能树
@@ -904,12 +911,22 @@ class GameUI:
                 tier_badge = f"<span style='background:{color};color:white;padding:1px 4px;border-radius:3px;font-size:10px'>{skill.tier}阶</span>"
                 req_note = f" <span style='color:#ef4444;font-size:10px'>需{skill.requires[0] if skill.requires else ''}</span>" if skill.requires and not is_act else ""
 
+                # Source label
+                source = getattr(skill, 'source', '') or skill.branch
+                source_color = {"system": "#c9a96e", "military": "#ef4444", "politics": "#3b82f6", "culture": "#22c55e"}.get(source, "#9ca3af")
+                source_label = {"system": "制度", "military": "武功", "politics": "权谋", "culture": "文治"}.get(source, source)
+                tags = getattr(skill, 'tags', []) or []
+                tag_str = " | ".join([f"<span style='font-size:9px;color:#9ca3af'>{t}</span>" for t in tags[:3]])
+
                 tree_items.append(f"""<div style="background:{bg};border-radius:6px;padding:6px 8px;margin:2px 0;opacity:{opacity};display:flex;align-items:center;gap:6px">
                     <span>{icon}</span>
                     <span style="font-size:12px;color:#e8d5b7;font-weight:bold">{sid}</span>
                     <span style="font-size:12px;color:#e8d5b7">{skill.name}</span>
                     {tier_badge}
-                    <span style="font-size:10px;color:#9ca3af">消耗:{skill.cost} | 威权≥{skill.unlock_level}</span>
+                    <span style='font-size:10px;color:{source_color};font-weight:bold'>【{source_label}】</span>
+                    <span style='font-size:10px;color:#9ca3af'>威权≥{skill.unlock_level}</span>
+                    {req_note}
+                    <div style='margin-left:auto'>{tag_str}</div>
                 </div>""")
 
             trees_html += f"""<div style="margin-bottom:12px">
