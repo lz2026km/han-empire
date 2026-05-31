@@ -1,41 +1,38 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
+
+# Distribution / packaging
 .Python
-*.egg-info/
-.eggs/
-dist/
 build/
+dist/
+*.egg-info/
 
 # Virtual environments
-.env
-.venv
 venv/
-ENV/
+.venv/
+env/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
 # Database
 *.db
 *.db-journal
-*.db-wal
-*.db-shm
 
 # Logs
 *.log
-logs/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Local config (contains API keys)
-config_local.py
-runtime_llm.json
+# Project specific
+孔明灯/
+memory/
+output/
+CLAUDE.md
