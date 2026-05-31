@@ -605,22 +605,47 @@ class GameUI:
         han_ku = treasury.get("汉室库", 0)
         nei_ku = treasury.get("内库", 0)
 
+        auth_color = "#22c55e" if authority >= 40 else "#f59e0b" if authority >= 20 else "#ef4444"
+        treasury_color = "#22c55e" if han_ku >= 1000 else "#f59e0b" if han_ku >= 500 else "#ef4444"
         return f"""<div style="font-family:system-ui,sans-serif">
-        <h4 style="margin:8px 0 4px;color:#c9a96e">⚔️ 诸侯军力排行</h4>
-        <table style="width:100%;border-collapse:collapse;font-size:13px">
-            <tr style="background:#16213e;font-size:12px">
-                <th style="padding:4px 8px;text-align:left;color:#c9a96e">势力</th>
-                <th style="padding:4px 8px;text-align:left;color:#c9a96e">军力条</th>
-                <th style="padding:4px 8px;text-align:right;color:#c9a96e">军力</th>
-                <th style="padding:4px 8px;text-align:right;color:#c9a96e">威势</th>
-            </tr>
-            {"".join(rows_html)}
-        </table>
-        <h4 style="margin:12px 0 4px;color:#c9a96e">🕵️ 情报摘要</h4>
-        <p style='font-size:13px'>{'🔓 密探已解锁（威权≥40）' if intel_unlocked else f'🔒 密探未解锁（威权需≥40，当前{authority}）'}</p>
-        <p style='font-size:13px'>📍 董卓伏诛线：<span style='color:{trap_color}'>{trap_desc}</span></p>
-        <p style='font-size:13px'>💰 汉室库：{han_ku}万两 · 内库：{nei_ku}万两</p>
-        <p style="font-size:12px;color:#9ca3af">🟦 忠诚 · 🟪 中立 · 🟥 敌对</p>
+        <!-- 情报总览大明风header -->
+        <div style="background:linear-gradient(135deg,#1a2d1a 0%,#1a1a2e 100%);border:1px solid #c9a96e;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 4px 16px rgba(201,169,110,0.1)">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                    <span style="font-size:16px;font-weight:bold;color:#c9a96e">🕵️ 情报系统</span>
+                    <span style="font-size:11px;color:#9ca3af;margin-left:8px">威权：<span style="color:{auth_color};font-weight:bold">{authority}</span></span>
+                </div>
+                <div style="display:flex;gap:10px;font-size:11px">
+                    <span style="color:#9ca3af">💰 <span style="color:{treasury_color};font-weight:bold">{han_ku}</span>万两</span>
+                    <span style="color:#22c55e">内库<span style="font-weight:bold">{nei_ku}</span></span>
+                </div>
+            </div>
+            <div style="margin-top:6px;font-size:11px">
+                {'🔓 密探已解锁' if intel_unlocked else f'🔒 威权不足（需≥40，当前{authority}）'}
+            </div>
+        </div>
+
+        <!-- 诸侯军力排行 -->
+        <h4 style="margin:8px 0 6px;color:#c9a96e">⚔️ 诸侯军力排行</h4>
+        <div style="background:#1a1a2e;border-radius:8px;overflow:hidden">
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+                <tr style="background:#16213e;font-size:11px">
+                    <th style="padding:6px 8px;text-align:left;color:#c9a96e">势力</th>
+                    <th style="padding:6px 8px;text-align:left;color:#c9a96e">军力</th>
+                    <th style="padding:6px 8px;text-align:right;color:#c9a96e">军</th>
+                    <th style="padding:6px 8px;text-align:right;color:#c9a96e">威</th>
+                </tr>
+                {"".join(rows_html)}
+            </table>
+        </div>
+
+        <!-- 情报摘要卡 -->
+        <div style="background:#1a1a2e;border-radius:8px;padding:12px;margin-top:10px">
+            <div style="font-size:12px;color:#e8d5b7;margin-bottom:6px">📍 董卓伏诛线</div>
+            <div style="font-size:13px;color:{trap_color};font-weight:bold">{trap_desc}</div>
+        </div>
+
+        <p style="font-size:11px;color:#9ca3af;margin-top:8px">🟦 忠诚 · 🟪 中立 · 🟥 敌对</p>
         </div>"""
 
     def _render_diary_html(self) -> str:
@@ -638,7 +663,10 @@ class GameUI:
             content = e.get("content", "")
             lines.append(f"<p style='margin:4px 0;font-size:13px'><b>第{turn}回合 · {year}年{period}月</b>：{content[:80]}</p>")
         return f"""<div style="font-family:system-ui,sans-serif">
-        <h4 style="margin:8px 0 6px;color:#c9a96e">📖 天子日记</h4>
+        <div style="background:linear-gradient(135deg,#1a2d1a 0%,#1a1a2e 100%);border:1px solid #c9a96e;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 4px 16px rgba(201,169,110,0.1)">
+            <span style="font-size:16px;font-weight:bold;color:#c9a96e">📖 天子日记</span>
+            <span style="font-size:11px;color:#9ca3af;margin-left:8px">最近{len(entries)}条记录</span>
+        </div>
         {"".join(lines)}
         </div>"""
 
