@@ -4,10 +4,20 @@
 
 from typing import Dict, Optional
 
-from agno.agent import Agent
-from agno.db.sqlite import SqliteDb
-from agno.models.openai import OpenAIChat
-from openai import APIConnectionError, APIStatusError, APITimeoutError
+try:
+    from agno.agent import Agent
+    from agno.db.sqlite import SqliteDb
+    from agno.models.openai import OpenAIChat
+except ImportError:
+    Agent = None  # type: ignore
+    SqliteDb = None  # type: ignore
+    OpenAIChat = None  # type: ignore
+try:
+    from openai import APIConnectionError, APIStatusError, APITimeoutError
+except ImportError:
+    APIConnectionError = Exception  # type: ignore
+    APIStatusError = Exception      # type: ignore
+    APITimeoutError = Exception     # type: ignore
 
 from han_sim.exceptions import LLMUnavailable
 from han_sim.llm_config import (
@@ -98,10 +108,14 @@ def create_chat_model(
         kwargs["extra_body"] = extra_body
     if supports_openai_reasoning_effort(llm_config.model):
         kwargs["reasoning_effort"] = "medium" if enable_thinking else "minimal"
+    if OpenAIChat is None:
+        raise LLMUnavailable("agno未安装，无法创建LLM模型")
     return OpenAIChat(**kwargs)
 
 
 def create_agno_db(sqlite_path: str) -> SqliteDb:
+    if SqliteDb is None:
+        raise LLMUnavailable("agno未安装，无法创建Agno DB")
     return SqliteDb(
         db_file=sqlite_path,
         session_table="agno_sessions",
@@ -120,6 +134,8 @@ def extract_agent_text(run_output: object) -> str:
 
 
 def verify_llm_available(llm_config: LLMConfig) -> None:
+    if Agent is None:
+        raise LLMUnavailable("agno未安装，无法验证LLM")
     agent = Agent(
         name="LLM连通性检查",
         id="llm-smoke-test",

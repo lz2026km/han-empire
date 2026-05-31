@@ -6,7 +6,10 @@ import json
 import re
 from typing import Any, Dict, Optional
 
-from agno.agent import Agent
+try:
+    from agno.agent import Agent
+except ImportError:
+    Agent = None  # type: ignore
 
 from han_sim.llm_config import load_llm_config
 from han_sim.llm_model import create_chat_model, extract_agent_text, verify_llm_available
@@ -23,6 +26,8 @@ def create_minister_agent(minister: Dict, state: GameState, memory_brief: str = 
         api_key=_api_key,
         timeout_seconds=180.0,
     )
+    if Agent is None:
+        raise LLMUnavailable("agno未安装，无法创建大臣Agent")
     verify_llm_available(llm_cfg)
 
     skills = ", ".join(minister.get("personal_skills", []))
@@ -56,6 +61,8 @@ def create_minister_agent(minister: Dict, state: GameState, memory_brief: str = 
 
     system_prompt += "请用符合你人物身份的方式回应天子。"
 
+    if Agent is None:
+        raise LLMUnavailable("agno未安装，无法创建大臣Agent")
     return Agent(
         name="大臣-" + minister["name"],
         model=create_chat_model(llm_cfg, temperature=0.7),

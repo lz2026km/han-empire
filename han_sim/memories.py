@@ -4,7 +4,10 @@ import json
 import re
 from typing import Any, Dict, List, Optional
 
-from agno.agent import Agent
+try:
+    from agno.agent import Agent
+except ImportError:
+    Agent = None  # type: ignore
 
 from han_sim.agents import parse_agent_json, run_agent_text
 from han_sim.db import GameDB

@@ -13,7 +13,10 @@
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
-from agno.agent import Agent
+try:
+    from agno.agent import Agent
+except ImportError:
+    Agent = None  # type: ignore
 
 from han_sim.agents import create_minister_agent
 from han_sim.flows import (
@@ -304,12 +307,15 @@ def _generate_narration(state: GameState, fiscal: Dict,
             api_key=_api_key,
             timeout_seconds=180.0,
         )
-        agent = Agent(
-            name="月度叙事生成",
-            model=create_chat_model(llm_cfg, temperature=0.7, max_tokens=600),
-            instructions=[prompt],
-            markdown=False,
-        )
+        if Agent is None:
+            narrative = "（月末推演：LLM未启用，数值结算完成）"
+        else:
+            agent = Agent(
+                name="月度叙事生成",
+                model=create_chat_model(llm_cfg, temperature=0.7, max_tokens=600),
+                instructions=[prompt],
+                markdown=False,
+            )
         text = extract_agent_text(agent.run(prompt))
         return text.strip()
     except Exception as exc:
@@ -359,12 +365,15 @@ def _generate_emperor_diary(state: GameState, fiscal: Dict,
             api_key=_api_key,
             timeout_seconds=180.0,
         )
-        agent = Agent(
-            name="天子日记生成",
-            model=create_chat_model(llm_cfg, temperature=0.8, max_tokens=150),
-            instructions=[prompt],
-            markdown=False,
-        )
+        if Agent is None:
+            event_narrative = f"「{e_name}」事件触发。"
+        else:
+            agent = Agent(
+                name="天子日记生成",
+                model=create_chat_model(llm_cfg, temperature=0.8, max_tokens=150),
+                instructions=[prompt],
+                markdown=False,
+            )
         text = extract_agent_text(agent.run(prompt))
         diary = text.strip()
         # 保证格式前缀
@@ -545,13 +554,16 @@ def run_monthly_simulation(
             api_key=_api_key,
             timeout_seconds=180.0,
         )
-        agent = Agent(
-            name="记忆提取",
-            model=create_chat_model(llm_cfg, temperature=0.5, max_tokens=800),
-            instructions=["你是汉末史官，根据输入提取结构化记忆卡，格式为JSON。"],
-            markdown=False,
-        )
-        extract_event_memories_with_agent(
+        if Agent is None:
+            pass  # LLM unavailable, skip memory extraction
+        else:
+            agent = Agent(
+                name="记忆提取",
+                model=create_chat_model(llm_cfg, temperature=0.5, max_tokens=800),
+                instructions=["你是汉末史官，根据输入提取结构化记忆卡，格式为JSON。"],
+                markdown=False,
+            )
+            extract_event_memories_with_agent(
             agent, db, state,
             decree_text="",  # 诏书内容可后续补入
             narrative=narrative,

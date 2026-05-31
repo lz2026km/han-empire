@@ -25,7 +25,10 @@ import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
-from agno.agent import Agent
+try:
+    from agno.agent import Agent
+except ImportError:
+    Agent = None  # type: ignore
 
 from han_sim.db import GameDB
 from han_sim.llm_config import load_llm_config
@@ -528,6 +531,8 @@ def _parse_natural_language_intent(user_input: str, llm_cfg: Optional[LLMConfig]
         )
 
     try:
+        if Agent is None:
+            return _infer_intent_fallback(user_input)
         agent = Agent(
             name="意图解析",
             model=create_chat_model(llm_cfg, temperature=0.3, max_tokens=600),
@@ -890,6 +895,8 @@ def _generate_decree_text(intent: str, decree_type: str, state: GameState) -> st
     )
     try:
         llm_cfg = _get_llm_config()
+        if Agent is None:
+            return _generate_decree_text_fallback(intent, state)
         agent = Agent(
             name="诏书起草",
             model=create_chat_model(llm_cfg, temperature=0.7, max_tokens=800),
