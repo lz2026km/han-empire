@@ -471,6 +471,82 @@ class GameUI:
         {"".join(lines)}
         </div>"""
 
+    def _render_loyalty_html(self) -> str:
+        """【忠诚度】忠诚度系统HTML：大臣列表+诸侯忠诚度+恢复行动。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+        from han_sim.flows import LOYALTY_RECOVERY_ACTIONS
+        db = self.session.db
+        authority = self.session.state.metrics.get("威权", 0)
+
+        # 大臣忠诚度列表
+        characters = db.list_characters(status="active")
+        char_rows = ""
+        for c in characters[:10]:
+            loyal = c.get("loyalty", 50)
+            bar = self._bar(loyal, 100, 10)
+            color = "#22c55e" if loyal >= 70 else ("#f59e0b" if loyal >= 40 else "#ef4444")
+            char_rows += f"""<tr>
+                <td style="padding:4px 6px;font-weight:bold;font-size:12px">{c.get('name','?')}</td>
+                <td style="padding:4px 6px;font-size:12px">{c.get('office','?')}</td>
+                <td style="padding:4px 6px;color:{color};font-weight:bold">{loyal}</td>
+                <td style="padding:4px 6px">{bar}</td>
+            </tr>"""
+
+        # 诸侯忠诚度列表
+        powers = db.list_powers()
+        power_rows = ""
+        for p in powers:
+            if p.get("id") == "han":
+                continue
+            loyal = p.get("loyalty", 50)
+            bar = self._bar(loyal, 100, 10)
+            stance = p.get("stance", "neutral")
+            stance_color = {"loyal": "#3b82f6", "neutral": "#6b7280", "hostile": "#ef4444"}.get(stance, "#6b7280")
+            power_rows += f"""<tr>
+                <td style="padding:4px 6px;font-weight:bold;font-size:12px;color:{stance_color}">{p.get('name','?')}</td>
+                <td style="padding:4px 6px;font-size:12px">{p.get('leader','?')}</td>
+                <td style="padding:4px 6px;color:{stance_color};font-weight:bold">{loyal}</td>
+                <td style="padding:4px 6px">{bar}</td>
+            </tr>"""
+
+        # 恢复行动选项
+        recovery_options = list(LOYALTY_RECOVERY_ACTIONS.keys())
+        recovery_html = ""
+        for act, info in LOYALTY_RECOVERY_ACTIONS.items():
+            recovery_html += f"""<button onclick="this.parentElement.querySelector('.loyalty-action-input').value='{act}'" 
+                style="margin:2px;padding:3px 8px;font-size:11px;background:#16213e;color:#e8d5b7;border:1px solid #c9a96e;border-radius:4px;cursor:pointer">
+                {act}({info['cost']}万两)
+            </button>"""
+
+        return f"""<div style="font-family:system-ui,sans-serif">
+        <h4 style="margin:8px 0 4px;color:#c9a96e">👤 大臣忠诚度</h4>
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+            <tr style="background:#16213e">
+                <th style="padding:4px 6px;text-align:left;color:#c9a96e;font-size:11px">大臣</th>
+                <th style="padding:4px 6px;text-align:left;color:#c9a96e;font-size:11px">官职</th>
+                <th style="padding:4px 6px;text-align:center;color:#c9a96e;font-size:11px">忠诚</th>
+                <th style="padding:4px 6px;text-align:left;color:#c9a96e;font-size:11px">状态</th>
+            </tr>
+            {char_rows}
+        </table>
+
+        <h4 style="margin:12px 0 4px;color:#c9a96e">⚔️ 诸侯忠诚度</h4>
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+            <tr style="background:#16213e">
+                <th style="padding:4px 6px;text-align:left;color:#c9a96e;font-size:11px">势力</th>
+                <th style="padding:4px 6px;text-align:left;color:#c9a96e;font-size:11px">首领</th>
+                <th style="padding:4px 6px;text-align:center;color:#c9a96e;font-size:11px">忠诚</th>
+                <th style="padding:4px 6px;text-align:left;color:#c9a96e;font-size:11px">状态</th>
+            </tr>
+            {power_rows}
+        </table>
+
+        <h4 style="margin:12px 0 4px;color:#c9a96e">🆕 忠诚度恢复行动</h4>
+        <div style="font-size:11px;color:#9ca3af;margin-bottom:4px">点击按钮选择，然后从下方下拉菜单选择目标大臣执行</div>
+        <div style="margin-bottom:6px" class="loyalty-recovery-buttons">{recovery_html}</div>
+        """
+
     def _render_relocate_html(self) -> str:
         """【迁都】迁都系统HTML：当前都城 + 可选都城 + 迁都效果预览。"""
         if not self.session:
@@ -629,6 +705,26 @@ class GameUI:
             return "\n".join(lines)
         except Exception as e:
             return f"❗ 拟旨失败：{str(e)}"
+
+    def cmd_loyalty_recovery(self, char_name: str, action: str):
+        """对指定大臣执行忠诚度恢复行动。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        if not char_name or not action:
+            return "❗ 请填写大臣姓名和恢复行动。"
+        try:
+            from han_sim.flows import apply_loyalty_recovery, LOYALTY_RECOVERY_ACTIONS
+            chars = self.session.db.list_characters(status="active")
+            char = next((c for c in chars if c.get("name") == char_name), None)
+            if not char:
+                return f"❗ 未找到大臣「{char_name}」，请检查姓名。"
+            delta = apply_loyalty_recovery(self.session.state, char["id"], action)
+            if delta == 0:
+                return f"❗ 忠诚度恢复失败（内库不足或行动无效）"
+            effect = LOYALTY_RECOVERY_ACTIONS.get(action, {}).get("effects", {})
+            return f"**【忠诚度恢复】{char_name} {action}，忠诚度{delta:+d}**"
+        except Exception as e:
+            return f"❗ 忠诚度恢复失败：{str(e)}"
 
     def cmd_relocate_capital(self, new_capital: str):
         """执行迁都。"""
@@ -864,7 +960,25 @@ def build_ui():
                         diary_display = gr.HTML("*天子日记将显示在这里*")
                         refresh_diary_btn = gr.Button("🔄 刷新日记")
 
-                    # Tab8: 迁都
+                    # Tab8: 忠诚度
+                    with gr.TabItem("💗 忠诚度"):
+                        gr.Markdown("### 💗 忠诚度系统")
+                        loyalty_display = gr.HTML("*点击「新游戏」初始化*")
+                        with gr.Row():
+                            loyalty_char_input = gr.Textbox(
+                                label="目标大臣姓名",
+                                placeholder="如：杨彪",
+                                lines=1,
+                            )
+                            loyalty_action_input = gr.Dropdown(
+                                label="恢复行动",
+                                choices=["施恩", "嘉奖", "笼络", "赦免", "晋升"],
+                                value="",
+                            )
+                            loyalty_btn = gr.Button("执行", variant="primary")
+                        loyalty_output = gr.Markdown()
+
+                    # Tab9: 迁都
                     with gr.TabItem("🏰 迁都"):
                         gr.Markdown("### 🏰 迁都系统")
                         relocate_display = gr.HTML("*点击「新游戏」初始化*")
@@ -950,6 +1064,9 @@ def build_ui():
         def do_refresh_relocate():
             return ui._render_relocate_html()
 
+        def do_refresh_loyalty():
+            return ui._render_loyalty_html()
+
         # 召对
         summon_btn.click(
             fn=ui.cmd_summon,
@@ -996,6 +1113,12 @@ def build_ui():
             inputs=[relocate_input],
             outputs=relocate_output,
         )
+        # 忠诚度恢复
+        loyalty_btn.click(
+            fn=ui.cmd_loyalty_recovery,
+            inputs=[loyalty_char_input, loyalty_action_input],
+            outputs=loyalty_output,
+        )
         # 威权恢复
         recovery_btn.click(
             fn=ui.cmd_authority_recovery,
@@ -1013,7 +1136,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display],
         )
         # 刷新按钮
         refresh_dashboard_btn.click(fn=do_refresh_dashboard, inputs=[], outputs=[dashboard_display])
@@ -1021,6 +1144,7 @@ def build_ui():
         refresh_history_btn.click(fn=do_refresh_history, inputs=[], outputs=[history_display])
         refresh_diary_btn.click(fn=do_refresh_diary, inputs=[], outputs=[diary_display])
         refresh_relocate_btn.click(fn=do_refresh_relocate, inputs=[], outputs=[relocate_display])
+        refresh_loyalty_btn.click(fn=do_refresh_loyalty, inputs=[], outputs=[loyalty_display])
         refresh_intel_btn.click(fn=do_refresh_intel, inputs=[], outputs=[intel_display])
         refresh_map_btn.click(fn=do_refresh_map, inputs=[], outputs=[map_display])
 
@@ -1029,7 +1153,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display],
         )
 
     return demo

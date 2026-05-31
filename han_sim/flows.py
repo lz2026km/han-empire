@@ -457,6 +457,125 @@ def execute_authority_recovery(state: GameState, action: str) -> Dict[str, int]:
     return delta
 
 
+# ── 忠诚度恢复行动（Step5新增）──────────────────────────────────────
+
+LOYALTY_RECOVERY_ACTIONS: Dict[str, Dict] = {
+    "施恩": {"effects": {"忠诚度": +5}, "cost": 10, "description": "对大臣施恩，提升忠诚"},
+    "嘉奖": {"effects": {"忠诚度": +8}, "cost": 15, "description": "嘉奖功臣，提升忠诚"},
+    "笼络": {"effects": {"忠诚度": +6}, "cost": 8, "description": "笼络人心，提升忠诚"},
+    "赦免": {"effects": {"忠诚度": +10, "声望": +2}, "cost": 5, "description": "赦免过失，提升忠诚"},
+    "晋升": {"effects": {"忠诚度": +12}, "cost": 20, "description": "晋升官职，提升忠诚"},
+}
+
+
+def apply_loyalty_recovery(state: GameState, char_id: str, action: str) -> int:
+    """对指定角色执行忠诚度恢复行动。返回忠诚度变化量。"""
+    action_info = LOYALTY_RECOVERY_ACTIONS.get(action)
+    if not action_info:
+        return 0
+    char = state.db.conn.execute(
+        "SELECT * FROM characters WHERE id=?", (char_id,)
+    ).fetchone()
+    if not char:
+        return 0
+    cost = action_info.get("cost", 0)
+    if cost > 0 and state.metrics.get("内库", 0) < cost:
+        state.log.append(f"【内库不足】{action}需要{cost}万两")
+        return 0
+    if cost > 0:
+        state.metrics["内库"] -= cost
+    old_loyal = char["loyalty"]
+    new_loyal = min(100, old_loyal + action_info["effects"].get("忠诚度", 0))
+    new_loyal = max(0, new_loyal)
+    state.db.upsert_character(dict(char, loyalty=new_loyal))
+    state.log.append(f"【忠诚度恢复】{char['name']} {action}，忠诚度{old_loyal}→{new_loyal}")
+    return new_loyal - old_loyal
+
+
+def check_betrayal_events(state: GameState, db: GameDB) -> List[Dict]:
+    """检测叛逃事件：
+    - 忠诚度<30且威权<20的大臣，有概率叛逃
+    - 藩镇>=80且威权<15的势力，有概率脱离
+    返回触发的事件列表（每回合最多1个）。
+    """
+    events = []
+    authority = state.metrics.get("威权", 0)
+    fanzhen = state.metrics.get("藩镇", 0)
+
+    # 检查大臣叛逃
+    if authority < 20:
+        for char in db.list_characters(status="active"):
+            if char.get("loyalty", 50) < 30 and char.get("power_id") not in ("", None):
+                # 威权低+忠诚度低+有势力归属 → 3%概率叛逃
+                import random
+                if random.random() < 0.03:
+                    char["loyalty"] = max(0, char["loyalty"] - 10)
+                    db.upsert_character(char)
+                    events.append({
+                        "title": f"{char['name']}叛逃",
+                        "kind": "threshold_crisis",
+                        "summary": f"{char['name']}见天子威权扫地，改投{char.get('power_id','权臣')}。",
+                        "effects": {"威权": -2, "声望": -1}
+                    })
+                    state.log.append(f"【叛逃】{char['name']}见威权尽失，叛逃而去！")
+                    break  # 每回合最多1个
+
+    # 检查藩镇脱离（威权<15且藩镇>=80）
+    if authority < 15 and fanzhen >= 80:
+        import random
+        if random.random() < 0.05:
+            old_fz = state.metrics.get("藩镇", 0)
+            state.metrics["藩镇"] = min(100, old_fz + 5)
+            state.log.append("【藩镇脱离】藩镇见天子威权扫地，纷纷脱离！")
+            events.append({
+                "title": "藩镇脱离",
+                "kind": "threshold_crisis",
+                "summary": "威权扫地，藩镇纷纷脱离汉室控制。",
+                "effects": {"藩镇": +5, "声望": -3}
+            })
+
+    return events
+
+
+# ── 诸侯忠诚度衰减（Step5新增）────────────────────────────────────────
+
+def apply_warlord_loyalty_decay(state: GameState, db: GameDB) -> List[Dict]:
+    """诸侯忠诚度每月衰减：
+    - 威权>=80：稳定，忠诚度几乎不衰减
+    - 威权50-79：标准衰减（-2到-3）
+    - 威权20-49：加速衰减（-4到-6）
+    - 威权<20：最快衰减（-6到-10）
+    衰减受 warlord_stability 修正（威权越高修正越大）。
+    """
+    from han_sim.models import get_authority_level
+
+    authority = state.metrics.get("威权", 0)
+    auth_level = get_authority_level(authority)
+    stability = auth_level.warlord_stability
+
+    powers = db.list_powers()
+    decays = []
+    for p in powers:
+        if p.get("id") in ("han", ""):
+            continue
+        lid = p.get("id", "")
+        loyalty = p.get("loyalty", 50)
+        stance = p.get("stance", "neutral")
+
+        # 敌对势力衰减更快
+        decay_base = {"loyal": 1, "neutral": 2, "hostile": 3}.get(stance, 2)
+        # 威权修正：stability 0-1，越高衰减越慢
+        decay = int(decay_base * (1 - stability * 0.5))
+
+        new_loyalty = max(0, min(100, loyalty - decay))
+        p["loyalty"] = new_loyalty
+        db.upsert_power(p)
+        if decay > 0:
+            decays.append({"power": p.get("name", lid), "from": loyalty, "to": new_loyalty, "decay": decay})
+
+    return decays
+
+
 def apply_authority_effects(state: GameState, db: GameDB) -> Dict[str, int]:
     """威权机制核心：每回合根据威权等级影响各项游戏数值。
 
