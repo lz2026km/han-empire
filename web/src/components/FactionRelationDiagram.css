@@ -1,0 +1,25 @@
+.faction-diagram { position: relative; background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 16px; }
+.diagram-svg { width: 100%; height: auto; max-height: 400px; }
+.faction-node { transition: all 0.3s ease; }
+.faction-node:hover { transform: scale(1.05); }
+.faction-circle { transition: all 0.3s ease; }
+.faction-node:hover .faction-circle { filter: brightness(1.2); }
+.faction-node.selected .faction-circle { stroke: #FFD700; stroke-width: 4; }
+.faction-name { pointer-events: none; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); }
+.influence-fill { transition: width 0.5s ease; }
+.relation-stroke.alliance { animation: pulseAlliance 2s ease-in-out infinite; }
+.relation-stroke.hostile { animation: pulseHostile 1.5s ease-in-out infinite; }
+@keyframes pulseAlliance { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.6; } }
+@keyframes pulseHostile { 0%, 100% { stroke-opacity: 1; stroke-width: 3; } 50% { stroke-opacity: 0.7; stroke-width: 4; } }
+.diagram-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-border); }
+.legend-title { font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100%; margin-bottom: 4px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--color-text-secondary); }
+.faction-info-panel { position: absolute; top: 16px; right: 16px; width: 180px; padding: 16px; background: var(--color-bg-secondary); border: 1px solid var(--color-border-gold); border-radius: var(--border-radius); z-index: 10; }
+.info-header { border-left: 4px solid var(--color-gold); padding-left: 12px; margin-bottom: 12px; }
+.info-header h3 { font-size: 16px; color: var(--color-gold); margin: 0 0 4px 0; }
+.leader { font-size: 12px; color: var(--color-text-secondary); margin: 0; }
+.info-stats { display: flex; flex-direction: column; gap: 8px; }
+.stat-row { display: flex; justify-content: space-between; font-size: 13px; }
+.stat-row span:first-child { color: var(--color-text-muted); }
+.stat-row span:last-child { color: var(--color-gold); font-weight: 600; }
+@media (max-width: 768px) { .faction-info-panel { position: static; width: 100%; margin-top: 16px; } }

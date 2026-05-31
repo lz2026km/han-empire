@@ -4,6 +4,36 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.9.9] - 2026-05-31
+
+### Animation Expansion & New UI Components
+
+#### Added
+- **40+ New CSS Animations** (`web/src/styles/animations.css`)
+  - Imperial seal stamp, scroll reveal, war drum pulse, fire glow
+  - Ink wash effect, notification toast slides, dragon pulse
+  - Lantern float, earthquake shake, banner unfurl, sword glint
+  - Arrow rain, fan unfold, silk flow, pearl glow effects
+
+- **New React Components**
+  - `Notification.tsx/.css` - Real-time toast notification system (7 types)
+  - `MinisterPortrait.tsx/.css` - Character portrait with faction colors
+  - `BattleView.tsx/.css` - Turn-based battle visualization
+  - `FactionRelationDiagram.tsx/.css` - SVG faction relationship diagram
+  - `ProvinceMap.css` - Enhanced map with terrain, tooltip, season indicator
+
+- **ProvinceMap Enhancements** (`web/src/components/ProvinceMap.tsx`)
+  - Terrain types for each province
+  - Adjacent province connections
+  - Hover tooltip with detailed stats
+  - Season indicator animation
+  - Critical unrest pulse animations
+
+#### Changed
+- Updated HanEmpireSim.spec for Windows 10/11 desktop packaging
+
+---
+
 ## [0.9.6] - 2026-05-31
 
 ### Step7 - 献帝东归

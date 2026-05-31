@@ -1,0 +1,32 @@
+.province-map { background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 16px; position: relative; }
+.map-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--color-border); }
+.map-header h3 { font-size: 18px; color: var(--color-gold); margin: 0; display: flex; align-items: center; gap: 8px; }
+.color-mode-toggle { display: flex; gap: 8px; }
+.toggle-btn { padding: 6px 14px; background: var(--color-bg-tertiary); border: 1px solid var(--color-border); border-radius: var(--border-radius); color: var(--color-text-secondary); font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+.toggle-btn:hover { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+.toggle-btn.active { background: var(--color-accent-red-dim); border-color: var(--color-accent-red); color: var(--color-gold); }
+.map-container-enhanced { position: relative; background: var(--color-bg-secondary); border-radius: var(--border-radius); overflow: hidden; }
+.map-svg { width: 100%; height: auto; display: block; }
+.province-group { cursor: pointer; transition: all 0.3s ease; }
+.province-group:hover { filter: brightness(1.1); }
+.province-path { transition: all 0.3s ease; }
+.province-path.clickable:hover { cursor: pointer; }
+.province-path.unrest-critical { animation: criticalPulse 2s ease-in-out infinite; }
+.province-path.military-pressure { animation: militaryAlert 1.5s ease-in-out infinite; }
+.province-shadow { opacity: 0.5; }
+.province-label { font-size: 14px; font-weight: 600; fill: #e8dcc8; pointer-events: none; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+.province-stat { font-size: 11px; fill: var(--color-text-muted); pointer-events: none; }
+.terrain-indicator { font-size: 10px; fill: rgba(232,220,200,0.5); font-style: italic; }
+.province-connection { transition: opacity 0.3s ease; }
+.province-group:hover .province-connection { opacity: 0.6; }
+.selection-crown { animation: crownAppear 0.5s ease-out forwards; }
+.crown-icon { stroke-linejoin: round; filter: drop-shadow(0 0 4px rgba(255,215,0,0.8)); }
+@keyframes crownAppear { 0% { transform: scale(0) translateY(10px); opacity: 0; } 50% { transform: scale(1.2) translateY(-5px); opacity: 1; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+@keyframes criticalPulse { 0%, 100% { stroke-width: 2; stroke-opacity: 1; } 50% { stroke-width: 4; stroke-opacity: 0.7; } }
+@keyframes militaryAlert { 0%, 100% { stroke: #ef4444; stroke-width: 2; } 50% { stroke: #ff6b6b; stroke-width: 4; } }
+.province-tooltip { position: fixed; z-index: 1000; background: var(--color-bg-card); border: 1px solid var(--color-gold-dim); border-radius: var(--border-radius); padding: 12px 16px; min-width: 160px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); pointer-events: none; }
+.tooltip-header { font-size: 15px; font-weight: 600; color: var(--color-gold); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--color-border); }
+.tooltip-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.tooltip-row span:last-child { color: var(--color-text-primary); font-weight: 500; }
+.tooltip-row .text-danger { color: var(--color-accent-red-bright); }
+@media (max-width: 768px) { .map-header { flex-direction: column; gap: 12px; align-items: flex-start; } .color-mode-toggle { width: 100%; } .toggle-btn { flex: 1; text-align: center; } .province-tooltip { position: static; margin-top: 12px; width: 100%; } }
