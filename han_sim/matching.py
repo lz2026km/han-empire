@@ -3,7 +3,6 @@
 接受 regions/armies/characters 字典作参数——不持全局态，db 与 context 都可调用。
 """
 
-from __future__ import annotations
 
 import re
 from typing import Dict, List, Optional, Tuple, TYPE_CHECKING

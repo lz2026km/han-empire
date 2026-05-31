@@ -4,7 +4,6 @@
 通过 bind_content() 注入 GameContent（取 EVENTS/SEED_EVENTS/EVENT_BY_ID）。
 """
 
-from __future__ import annotations
 
 import json
 import re

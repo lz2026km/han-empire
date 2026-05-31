@@ -3,7 +3,6 @@
 通过 bind_content() 注入 GameContent；汉末特色：技能树分为经略/权谋/武功/文治四系。
 """
 
-from __future__ import annotations
 
 from typing import Dict, List, Optional, TYPE_CHECKING
 

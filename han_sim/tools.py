@@ -3,7 +3,6 @@
 基于 ming_sim/tools.py 改编为汉末版本。
 """
 
-from __future__ import annotations
 
 import difflib
 import json

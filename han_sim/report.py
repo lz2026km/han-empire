@@ -3,7 +3,6 @@
 回合末总结奏章格式，用于 Gradio 界面和日志输出。
 """
 
-from __future__ import annotations
 
 from typing import Dict, List, Optional
 

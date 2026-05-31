@@ -3,7 +3,6 @@
 只读 content/ 下设定文件；不持有任何全局态。
 """
 
-from __future__ import annotations
 
 import json
 import os

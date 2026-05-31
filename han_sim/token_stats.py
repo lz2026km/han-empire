@@ -4,7 +4,6 @@ TOKEN_STATS 是进程级遥测，留模块级单例。
 _TOKEN_PATCH_INSTALLED 守卫保证补丁只打一次。
 """
 
-from __future__ import annotations
 
 from datetime import datetime
 from typing import Dict

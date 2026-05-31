@@ -4,7 +4,6 @@
 通过 bind_content() 注入 GameContent（过渡期）。
 """
 
-from __future__ import annotations
 
 import json
 import re
