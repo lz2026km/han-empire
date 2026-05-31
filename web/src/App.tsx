@@ -2,32 +2,155 @@
    App.tsx - Main Application Component
    汉献帝之末路 - React Frontend
    ============================================= */
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Header } from './components/Header'
 import { useGame } from './hooks/useGame'
 import { MinisterChat } from './components/MinisterChat'
 import { EmperorPanel } from './components/EmperorPanel'
 import { SceneTransition } from './components/SceneTransition'
-import type { GameState, MinisterStats, FactionStats } from './types'
-import './styles/app.css'
+import { ChatModal } from './components/ChatModal'
+import { EdictModal } from './components/EdictModal'
+import { SettlementLock } from './components/SettlementLock'
+import { SecretOrdersModal } from './components/SecretOrdersModal'
+import { CheatConsole } from './components/CheatConsole'
+import { GrandMap } from './components/GrandMap'
+import { ProvinceMap } from './components/ProvinceMap'
+import { BattleView } from './components/BattleView'
+import { FactionRelationDiagram } from './components/FactionRelationDiagram'
+import type { GameState, MinisterStats, FactionStats, Minister } from './types'
+import type { SecretOrder } from './api'
 import { api } from './api'
+import { CourtLayout } from './components/CourtLayout'
+import { MinisterPortrait } from './components/MinisterPortrait'
+import './styles/app.css'
 
-type Tab = 'overview' | 'decree' | 'ministers' | 'factions' | 'skills' | 'buildings' | 'log' | 'chat'
+type Tab = 'overview' | 'decree' | 'ministers' | 'factions' | 'skills' | 'buildings' | 'log' | 'chat' | 'map' | 'orders'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [showNewGameModal, setShowNewGameModal] = useState(false)
   const [emperorName, setEmperorName] = useState('刘协')
 
+  // Modal states
+  const [showChatModal, setShowChatModal] = useState(false)
+  const [showEdictModal, setShowEdictModal] = useState(false)
+  const [showSettlement, setShowSettlement] = useState(false)
+  const [showSecretOrders, setShowSecretOrders] = useState(false)
+  const [showCheatConsole, setShowCheatConsole] = useState(false)
+  const [showGrandMap, setShowGrandMap] = useState(false)
+  const [selectedMinister, setSelectedMinister] = useState<Minister | null>(null)
+  const [secretOrders, setSecretOrders] = useState<SecretOrder[]>([])
+  const [settlementStages, setSettlementStages] = useState<{ id: string; name: string; status: string }[]>([
+    { id: 'fiscal', name: '财政结算', status: 'pending' },
+    { id: 'faction', name: '藩镇变化', status: 'pending' },
+    { id: 'events', name: '事件触发', status: 'pending' },
+    { id: 'narrative', name: '叙事生成', status: 'pending' },
+  ])
+  const [currentSettlementStage, setCurrentSettlementStage] = useState('fiscal')
+
   const {
     campaignId, gameState, ministers, factions, loading, error, log,
     createCampaign, saveGame, issueDecree, nextTurn
   } = useGame()
 
+  // Cheat console keyboard shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === '`') {
+        e.preventDefault()
+        setShowCheatConsole(prev => !prev)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
   const handleNewGame = async () => {
     setShowNewGameModal(false)
     await createCampaign(emperorName, [])
   }
+
+  const handleMinisterSelect = useCallback((name: string) => {
+    const m = ministers.find(min => min.name === name)
+    if (m) {
+      setSelectedMinister(m)
+      setShowChatModal(true)
+    }
+  }, [ministers])
+
+  const handleSendMessage = useCallback(async (message: string): Promise<string> => {
+    if (!campaignId || !selectedMinister) return '请先选择大臣'
+    try {
+      const res = await api.chatWithMinister(campaignId, selectedMinister.name, message)
+      return res.result || '臣...遵旨。'
+    } catch {
+      return '臣...有事上奏。（网络异常）'
+    }
+  }, [campaignId, selectedMinister])
+
+  const handleExecuteCheat = useCallback(async (command: string): Promise<{ success: boolean; output: string }> => {
+    if (!campaignId) return { success: false, output: '无活动战役' }
+    try {
+      const [cmd, ...args] = command.split(' ')
+      const res = await api.executeCheat(campaignId, cmd, args.length > 0 ? { args } : undefined)
+      return res
+    } catch (e: any) {
+      return { success: false, output: `执行失败: ${e.message}` }
+    }
+  }, [campaignId])
+
+  const handleStreamSettlement = useCallback(async () => {
+    if (!campaignId) return
+    setShowSettlement(true)
+    setSettlementStages([
+      { id: 'fiscal', name: '财政结算', status: 'pending' },
+      { id: 'faction', name: '藩镇变化', status: 'pending' },
+      { id: 'events', name: '事件触发', status: 'pending' },
+      { id: 'narrative', name: '叙事生成', status: 'pending' },
+    ])
+    setCurrentSettlementStage('fiscal')
+
+    try {
+      const eventSource = api.streamSettlement(campaignId)
+      
+      eventSource.addEventListener('stage', (e) => {
+        const data = JSON.parse(e.data)
+        if (data.stage === 'thinking') {
+          setCurrentSettlementStage(data.stage)
+        } else {
+          setCurrentSettlementStage(data.stage.replace('_done', ''))
+          setSettlementStages(prev => prev.map(s => 
+            s.id === data.stage.replace('_done', '') ? { ...s, status: 'done' } : s
+          ))
+        }
+      })
+
+      eventSource.addEventListener('thinking', (e) => {
+        // Handle thinking state
+      })
+
+      eventSource.addEventListener('text', (e) => {
+        // Handle text output
+      })
+
+      eventSource.addEventListener('done', () => {
+        eventSource.close()
+        setShowSettlement(false)
+      })
+
+      eventSource.addEventListener('error', (e) => {
+        eventSource.close()
+        setShowSettlement(false)
+      })
+    } catch (e) {
+      setShowSettlement(false)
+    }
+  }, [campaignId])
+
+  const handleEdictPublish = useCallback(async (content: string, isSecret: boolean) => {
+    if (!campaignId) return
+    await issueDecree('edict')
+  }, [campaignId, issueDecree])
 
   const tabs: { id: Tab; label: string }[] = [
     { id: 'overview', label: '🏠 总览' },
@@ -37,6 +160,8 @@ export default function App() {
     { id: 'factions', label: '⚔️ 派系' },
     { id: 'skills', label: '🌲 技能' },
     { id: 'buildings', label: '🏛️ 建筑' },
+    { id: 'map', label: '🗺️ 地图' },
+    { id: 'orders', label: '🔐 密令' },
     { id: 'log', label: '📋 日志' },
   ]
 
@@ -94,13 +219,13 @@ export default function App() {
 
               <SceneTransition key={activeTab} type="fade" duration={400}>
                 {activeTab === 'overview' && (
-                  <OverviewTab gameState={gameState} ministers={ministers} factions={factions} onNextTurn={nextTurn} />
+                  <OverviewTab gameState={gameState} ministers={ministers} factions={factions} onNextTurn={handleStreamSettlement} />
                 )}
                 {activeTab === 'decree' && (
                   <DecreeTab gameState={gameState} ministers={ministers} onIssue={issueDecree} />
                 )}
                 {activeTab === 'chat' && campaignId && (
-                  <MinisterChat campaignId={campaignId} ministers={ministers} />
+                  <MinisterChat campaignId={campaignId} ministers={ministers} onMinisterSelect={handleMinisterSelect} />
                 )}
                 {activeTab === 'ministers' && (
                   <MinisterTab ministers={ministers} />
@@ -113,6 +238,12 @@ export default function App() {
                 )}
                 {activeTab === 'buildings' && (
                   <BuildingTab campaignId={campaignId} />
+                )}
+                {activeTab === 'map' && campaignId && (
+                  <MapTab />
+                )}
+                {activeTab === 'orders' && campaignId && (
+                  <OrdersTab secretOrders={secretOrders} onRefresh={() => api.getSecretOrders(campaignId).then(r => setSecretOrders(r.orders))} />
                 )}
                 {activeTab === 'log' && (
                   <LogTab entries={log} />
@@ -167,6 +298,71 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Chat Modal */}
+      <ChatModal
+        isOpen={showChatModal}
+        onClose={() => setShowChatModal(false)}
+        campaignId={campaignId || ''}
+        minister={selectedMinister}
+        onSendMessage={handleSendMessage}
+      />
+
+      {/* Edict Modal */}
+      <EdictModal
+        isOpen={showEdictModal}
+        onClose={() => setShowEdictModal(false)}
+        onPublish={handleEdictPublish}
+        edictTypes={[
+          { id: 'edict', name: '颁布政令', description: '提升威权，降低忠诚', authorityCost: 6 },
+          { id: 'appoint', name: '任命诏书', description: '任命大臣，提升忠诚', authorityCost: 5 },
+          { id: 'dismiss', name: '贬谪诏书', description: '贬谪大臣，降低其威权', authorityCost: 8 },
+          { id: 'inspect', name: '巡视州郡', description: '提升威权，降低派系影响', authorityCost: 3 },
+          { id: 'recruit', name: '招贤纳士', description: '随机获得大臣', authorityCost: 10 },
+          { id: 'grant', name: '封赏功臣', description: '提升大臣忠诚，降低威权', authorityCost: 7 },
+        ]}
+      />
+
+      {/* Settlement Lock Modal */}
+      <SettlementLock
+        isOpen={showSettlement}
+        onClose={() => setShowSettlement(false)}
+        month={gameState?.month || 1}
+        year={gameState?.year || 189}
+        stages={settlementStages.map(s => ({ id: s.id, name: s.name, status: s.status as any }))}
+        currentStage={currentSettlementStage}
+        onStageComplete={() => {}}
+        changes={{}}
+      />
+
+      {/* Secret Orders Modal */}
+      <SecretOrdersModal
+        isOpen={showSecretOrders}
+        onClose={() => setShowSecretOrders(false)}
+        orders={secretOrders}
+        onCancelOrder={(orderId) => {
+          if (campaignId) {
+            api.cancelSecretOrder(campaignId, orderId).then(() => {
+              api.getSecretOrders(campaignId).then(r => setSecretOrders(r.orders))
+            })
+          }
+        }}
+      />
+
+      {/* Cheat Console */}
+      <CheatConsole
+        isOpen={showCheatConsole}
+        onClose={() => setShowCheatConsole(false)}
+        onExecuteCommand={handleExecuteCheat}
+      />
+
+      {/* Grand Map */}
+      <GrandMap
+        isOpen={showGrandMap}
+        onClose={() => setShowGrandMap(false)}
+        provinces={[]}
+        onProvinceClick={() => {}}
+      />
     </div>
   )
 }
@@ -308,63 +504,151 @@ function DecreeCard({
 }
 
 function MinisterTab({ ministers }: { ministers: MinisterStats[] }) {
+  const [courtMode, setCourtMode] = useState<'grid' | 'court'>('grid')
+
+  const handleMinisterClick = (m: MinisterStats) => {
+    // TODO: Open chat with minister
+    console.log('Selected minister:', m.name)
+  }
+
+  const courtMinisters = ministers.map(m => ({
+    id: String(m.id),
+    name: m.name,
+    office: m.position,
+    faction: m.faction,
+    status: 'active' as const,
+    status_label: '在朝',
+    summary: `忠诚${m.loyalty} | 能力${m.ability}`,
+    portrait_id: m.portrait,
+  }))
+
   return (
     <div className="fade-in">
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '12px' }}>
-        {ministers.map(m => (
-          <div key={m.id} className="minister-card">
-            <div className="minister-card__portrait">
-              {m.name.charAt(0)}
-            </div>
-            <div className="minister-card__info">
-              <div className="minister-card__name">{m.name}</div>
-              <div className="minister-card__stats">
-                <span>{m.position}</span>
-                <span className="minister-card__faction" style={{ background: `var(--faction-${m.faction})` }}>
-                  {m.faction}
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: '12px', marginTop: '6px' }}>
-                <div className="minister-stat-bar">
-                  <span className="minister-stat-bar__label">忠</span>
-                  <div className="minister-stat-bar__track">
-                    <div className="minister-stat-bar__fill" style={{ width: `${m.loyalty}%`, background: 'var(--color-gold)' }} />
-                  </div>
-                </div>
-                <div className="minister-stat-bar">
-                  <span className="minister-stat-bar__label">能</span>
-                  <div className="minister-stat-bar__track">
-                    <div className="minister-stat-bar__fill" style={{ width: `${m.ability}%`, background: 'var(--color-accent-red)' }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="minister-tab-header">
+        <div className="minister-tab-tabs">
+          <button
+            className={`minister-tab-btn ${courtMode === 'grid' ? 'active' : ''}`}
+            onClick={() => setCourtMode('grid')}
+          >
+            网格视图
+          </button>
+          <button
+            className={`minister-tab-btn ${courtMode === 'court' ? 'active' : ''}`}
+            onClick={() => setCourtMode('court')}
+          >
+            朝会视图
+          </button>
+        </div>
       </div>
+
+      {courtMode === 'grid' ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '12px' }}>
+          {ministers.map(m => (
+            <div key={m.id} className="minister-card">
+              <div className="minister-card-portrait-wrap">
+                <MinisterPortrait
+                  primary={m.portrait ? `/portraits/minister_${m.id}.png` : undefined}
+                  name={m.name}
+                  size="medium"
+                />
+              </div>
+              <div className="minister-card__info">
+                <div className="minister-card__name">{m.name}</div>
+                <div className="minister-card__stats">
+                  <span>{m.position}</span>
+                  <span className="minister-card__faction" style={{ background: `var(--faction-${m.faction})` }}>
+                    {m.faction}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '12px', marginTop: '6px' }}>
+                  <div className="minister-stat-bar">
+                    <span className="minister-stat-bar__label">忠</span>
+                    <div className="minister-stat-bar__track">
+                      <div className="minister-stat-bar__fill" style={{ width: `${m.loyalty}%`, background: 'var(--color-gold)' }} />
+                    </div>
+                  </div>
+                  <div className="minister-stat-bar">
+                    <span className="minister-stat-bar__label">能</span>
+                    <div className="minister-stat-bar__track">
+                      <div className="minister-stat-bar__fill" style={{ width: `${m.ability}%`, background: 'var(--color-accent-red)' }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <CourtLayout
+          ministers={courtMinisters}
+          selectedMinister=""
+          onOpenChat={handleMinisterClick as any}
+          courtMode="grid"
+        />
+      )}
     </div>
   )
 }
 
 function FactionTab({ factions }: { factions: FactionStats[] }) {
+  const [showDiagram, setShowDiagram] = useState(false)
+
+  const factionNodes = factions.map(f => ({
+    id: f.id,
+    name: f.name,
+    influence: f.influence,
+    color: f.color || 'var(--color-gold)',
+    ministers: [],
+    description: f.description || `${f.name} - 影响力: ${f.influence}`,
+  }))
+
+  const mockRelations = [
+    { source: 'dong', target: 'cao', type: 'rival' as const, strength: 80 },
+    { source: 'yuan', target: 'cao', type: 'rival' as const, strength: 60 },
+    { source: 'han', target: 'dong', type: 'alliance' as const, strength: 70 },
+    { source: 'han', target: 'cao', type: 'rival' as const, strength: 90 },
+  ]
+
   return (
     <div className="fade-in">
-      <div className="faction-panel">
-        {factions.map(f => (
-          <div key={f.id} className="faction-card">
-            <div className="faction-card__header">
-              <span className="faction-card__name">{f.name}</span>
-              <span className="faction-card__influence">{f.influence}</span>
-            </div>
-            <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-              首领: {f.leader_name}
-            </div>
-            <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-              影响力 {f.influence}，{f.dominant_ministers}名大臣
-            </div>
-          </div>
-        ))}
+      <div className="faction-tab-header">
+        <button
+          className={`faction-view-btn ${showDiagram ? 'active' : ''}`}
+          onClick={() => setShowDiagram(!showDiagram)}
+        >
+          {showDiagram ? '返回列表' : '派系关系图'}
+        </button>
       </div>
+
+      {showDiagram ? (
+        <div className="faction-diagram-container">
+          <FactionRelationDiagram
+            factions={factionNodes}
+            relations={mockRelations}
+            width={700}
+            height={450}
+          />
+        </div>
+      ) : (
+        <div className="faction-panel">
+          {factions.map(f => (
+            <div key={f.id} className="faction-card">
+              <div className="faction-card__header">
+                <span className="faction-card__name" style={{ color: f.color || 'var(--color-gold)' }}>
+                  {f.name}
+                </span>
+                <span className="faction-card__influence">{f.influence}</span>
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                首领: {f.leader_name}
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '4px' }}>
+                影响力 {f.influence}，{f.dominant_ministers}名大臣
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -535,6 +819,73 @@ function LogTab({ entries }: { entries: { time: string; text: string; important?
             <span className="log-entry__text">{entry.text}</span>
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+function MapTab() {
+  const [selectedRegion, setSelectedRegion] = useState<any>(null)
+
+  const mockRegions = [
+    { id: 'luoyang', name: '洛阳', kind: 'capital', unrest: 45, public_support: 60, controlled_by: 'caowei', status: 'controlled' },
+    { id: 'chang_an', name: '长安', kind: 'capital', unrest: 70, public_support: 40, controlled_by: 'liubei', status: 'controlled' },
+    { id: 'yuzhou', name: '豫州', kind: 'province', unrest: 30, public_support: 70, controlled_by: 'caowei', status: 'controlled' },
+    { id: 'yanzhou', name: '兖州', kind: 'province', unrest: 55, public_support: 50, controlled_by: 'caowei', status: 'controlled' },
+    { id: 'jingzhou', name: '荆州', kind: 'province', unrest: 40, public_support: 65, controlled_by: 'sunquan', status: 'allied' },
+    { id: 'yangzhou', name: '扬州', kind: 'province', unrest: 25, public_support: 75, controlled_by: 'sunquan', status: 'allied' },
+    { id: 'xuzhou', name: '徐州', kind: 'province', unrest: 60, public_support: 45, controlled_by: 'caowei', status: 'controlled' },
+    { id: 'yizhou', name: '益州', kind: 'province', unrest: 35, public_support: 68, controlled_by: 'liubei', status: 'allied' },
+  ]
+
+  return (
+    <div className="fade-in">
+      <ProvinceMap
+        regions={mockRegions}
+        onProvinceClick={(region) => setSelectedRegion(region)}
+        selectedProvinceId={selectedRegion?.id}
+      />
+      {selectedRegion && (
+        <div className="map-region-detail">
+          <h4>{selectedRegion.name}</h4>
+          <div className="region-detail-stats">
+            <div>动荡程度: {selectedRegion.unrest}%</div>
+            <div>民心: {selectedRegion.public_support}%</div>
+            <div>控制势力: {selectedRegion.controlled_by}</div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function OrdersTab({ secretOrders, onRefresh }: { secretOrders: SecretOrder[]; onRefresh: () => void }) {
+  useEffect(() => {
+    onRefresh()
+  }, [onRefresh])
+
+  return (
+    <div className="fade-in">
+      <div className="card">
+        <div style={{ marginBottom: '16px', color: 'var(--color-gold)' }}>密令追踪</div>
+        {secretOrders.length === 0 ? (
+          <div className="empty-state">暂无密令</div>
+        ) : (
+          <div>
+            {secretOrders.map(order => (
+              <div key={order.id} className="secret-order" style={{ marginBottom: '12px' }}>
+                <div className="secret-order__header">
+                  <span className="secret-order__title">{order.title}</span>
+                  <span className="secret-order__status">{order.status}</span>
+                </div>
+                <div className="secret-order__meta">
+                  <span>对象: {order.targetName}</span>
+                  <span>{order.issuedAt}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

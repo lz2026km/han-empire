@@ -1,57 +1,211 @@
-import { useState } from 'react'
-import './MinisterPortrait.css'
+/* =============================================
+   MinisterPortrait Component - 人物头像组件
+   支持专属立绘 / 池头像 / 占位符三级fallback
+   ============================================= */
+
+import React, { useState } from 'react';
 
 interface MinisterPortraitProps {
-  name: string
-  faction?: string
-  loyalty?: number
-  ability?: number
-  portraitId?: string
-  size?: 'small' | 'medium' | 'large'
-  showStats?: boolean
-  onClick?: () => void
-  selected?: boolean
+  primary?: string;
+  fallback?: string;
+  name: string;
+  size?: 'small' | 'medium' | 'large';
+  className?: string;
 }
 
-const FACTION_COLORS: Record<string, string> = {
-  '汉室': '#4a2c2c', '曹魏': '#2c4a4a', '蜀汉': '#2D5A27',
-  '东吴': '#5C4033', '袁氏': '#4a235a', '吕布': '#8B4513',
-  '公孙瓒': '#2c4a6a', '董卓': '#5a2c2c', '凉州集团': '#6b4513', '中立': '#4a4a4a',
-}
+export function MinisterPortrait({
+  primary,
+  fallback,
+  name,
+  size = 'medium',
+  className = ''
+}: MinisterPortraitProps) {
+  const [stage, setStage] = useState<"primary" | "fallback" | "placeholder">(
+    primary ? "primary" : (fallback ? "fallback" : "placeholder")
+  );
 
-export function MinisterPortrait({ name, faction = '中立', loyalty = 50, ability = 50, portraitId, size = 'medium', showStats = true, onClick, selected = false }: MinisterPortraitProps) {
-  const [imgError, setImgError] = useState(false)
-  const sizeClass = `portrait--${size}`
-  const factionColor = FACTION_COLORS[faction] || FACTION_COLORS['中立']
-  const getStatColor = (v: number) => v >= 80 ? '#22c55e' : v >= 60 ? '#84cc16' : v >= 40 ? '#eab308' : v >= 20 ? '#f97316' : '#ef4444'
+  const sizeClasses = {
+    small: 'portrait-small',
+    medium: 'portrait-medium',
+    large: 'portrait-large'
+  };
+
+  const src = stage === "primary" ? primary : stage === "fallback" ? fallback : "";
+
+  if (stage === "placeholder") {
+    return (
+      <div className={`minister-portrait-placeholder ${sizeClasses[size]} ${className}`}>
+        <span className="portrait-initial">{name.charAt(0)}</span>
+      </div>
+    );
+  }
 
   return (
-    <div className={`minister-portrait ${sizeClass} ${selected ? 'portrait--selected' : ''} ${onClick ? 'portrait--clickable' : ''}`} onClick={onClick} style={{ '--faction-color': factionColor } as React.CSSProperties}>
-      <div className="portrait__frame">
-        <div className="portrait__border"></div>
-        {portraitId && !imgError ? (
-          <img src={`/portraits/${portraitId}.png`} alt={name} className="portrait__image" onError={() => setImgError(true)} />
-        ) : (
-          <div className="portrait__initials">{name.charAt(0)}</div>
-        )}
-        {selected && <div className="portrait__selected-ring"></div>}
-      </div>
-      {showStats && (
-        <div className="portrait__stats">
-          <div className="portrait__name">{name}</div>
-          <div className="portrait__faction" style={{ backgroundColor: factionColor }}>{faction}</div>
-          <div className="portrait__bars">
-            <div className="stat-bar">
-              <span className="stat-bar__label">忠</span>
-              <div className="stat-bar__track"><div className="stat-bar__fill" style={{ width: `${loyalty}%`, backgroundColor: getStatColor(loyalty) }} /></div>
-            </div>
-            <div className="stat-bar">
-              <span className="stat-bar__label">能</span>
-              <div className="stat-bar__track"><div className="stat-bar__fill" style={{ width: `${ability}%`, backgroundColor: getStatColor(ability) }} /></div>
-            </div>
-          </div>
+    <img
+      className={`minister-portrait ${sizeClasses[size]} ${className}`}
+      src={src}
+      alt={name}
+      onError={() => {
+        if (stage === "primary" && fallback) {
+          setStage("fallback");
+        } else {
+          setStage("placeholder");
+        }
+      }}
+    />
+  );
+}
+
+/* =============================================
+   CharacterPortrait - 角色全身立绘组件
+   用于展示重要角色的高清立绘
+   ============================================= */
+
+interface CharacterPortraitProps {
+  characterId: string;
+  name: string;
+  faction?: string;
+  status?: 'active' | 'dismissed' | 'imprisoned' | 'exiled' | 'dead';
+  onClick?: () => void;
+  selected?: boolean;
+}
+
+export function CharacterPortrait({
+  characterId,
+  name,
+  faction,
+  status = 'active',
+  onClick,
+  selected = false
+}: CharacterPortraitProps) {
+  const portraitUrl = `/portraits/minister_${characterId}.png`;
+
+  const getStatusClass = () => {
+    switch (status) {
+      case 'active': return '';
+      case 'dismissed': return 'portrait-dismissed';
+      case 'imprisoned': return 'portrait-imprisoned';
+      case 'exiled': return 'portrait-exiled';
+      case 'dead': return 'portrait-dead';
+      default: return '';
+    }
+  };
+
+  return (
+    <button
+      className={`character-portrait ${getStatusClass()} ${selected ? 'portrait-selected' : ''}`}
+      onClick={onClick}
+      title={name}
+    >
+      <div className="portrait-frame">
+        <img
+          src={portraitUrl}
+          alt={name}
+          className="portrait-image"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+        <div className="portrait-overlay">
+          <span className="portrait-name">{name}</span>
+          {faction && <span className="portrait-faction">{faction}</span>}
         </div>
-      )}
+      </div>
+    </button>
+  );
+}
+
+/* =============================================
+   PortraitUploadButton - 头像上传按钮
+   ============================================= */
+
+interface PortraitUploadButtonProps {
+  ministerName: string;
+  onUpload: (ministerName: string, file: File) => Promise<void>;
+  disabled?: boolean;
+}
+
+export function PortraitUploadButton({
+  ministerName,
+  onUpload,
+  disabled = false
+}: PortraitUploadButtonProps) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setBusy(true);
+    try {
+      await onUpload(ministerName, file);
+    } catch (err) {
+      window.alert(`上传失败：${(err as Error).message}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        className="portrait-upload-btn"
+        title="上传立绘"
+        disabled={disabled || busy}
+        onClick={(e) => {
+          e.stopPropagation();
+          inputRef.current?.click();
+        }}
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17,8 12,3 7,8" />
+          <line x1="12" y1="3" x2="12" y2="15" />
+        </svg>
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        style={{ display: "none" }}
+        onClick={(e) => e.stopPropagation()}
+        onChange={handleUpload}
+      />
+    </>
+  );
+}
+
+/* =============================================
+   Portrait Gallery - 头像选择画廊
+   ============================================= */
+
+interface PortraitGalleryProps {
+  portraits: Array<{
+    id: string;
+    name: string;
+    url: string;
+    faction?: string;
+  }>;
+  selectedId?: string;
+  onSelect: (id: string) => void;
+}
+
+export function PortraitGallery({ portraits, selectedId, onSelect }: PortraitGalleryProps) {
+  return (
+    <div className="portrait-gallery">
+      {portraits.map((portrait) => (
+        <button
+          key={portrait.id}
+          className={`portrait-gallery-item ${selectedId === portrait.id ? 'selected' : ''}`}
+          onClick={() => onSelect(portrait.id)}
+        >
+          <img src={portrait.url} alt={portrait.name} />
+          <span>{portrait.name}</span>
+        </button>
+      ))}
     </div>
-  )
+  );
 }

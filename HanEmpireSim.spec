@@ -1,30 +1,33 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""PyInstaller spec for 汉献帝之末路 桌面包。
-
-打 onedir（首选）：
-    pyinstaller HanEmpireSim.spec
-
-打 onefile（单文件，启动慢）：
-    pyinstaller --onefile HanEmpireSim.spec
-
-产物：dist/HanEmpireSim/HanEmpireSim.exe
+"""汉献帝之末路 PyInstaller 打包配置。
+   目标: Windows exe桌面程序
 """
 
-from PyInstaller.utils.hooks import collect_all, collect_submodules
+import os
+import sys
 from pathlib import Path
+from PyInstaller.utils.hooks import collect_all, collect_submodules
 
-# agno / openai / tiktoken
+block_cipher = None
+
+project_root = Path(__file__).parent
+assets_path = project_root / 'web' / 'public'
+han_sim_path = project_root / 'han_sim'
+content_path = project_root / 'content'
+
+# 收集所有动态导入的模块
 _agno_data, _agno_bin, _agno_hidden = collect_all("agno")
 _openai_data, _openai_bin, _openai_hidden = collect_all("openai")
 _tiktoken_data, _tiktoken_bin, _tiktoken_hidden = collect_all("tiktoken")
-# pywebview
 _webview_data, _webview_bin, _webview_hidden = collect_all("webview")
 
 
 def tree_datas(root: str, dest: str, exclude_parts=()):
-    """Collect files under root while excluding dev-only backup/cache folders."""
+    """收集目录下的文件，排除指定部分"""
     root_path = Path(root)
     rows = []
+    if not root_path.exists():
+        return rows
     for path in root_path.rglob("*"):
         if not path.is_file():
             continue
@@ -45,23 +48,40 @@ hiddenimports = (
     + collect_submodules("fastapi")
     + collect_submodules("anyio")
     + collect_submodules("starlette")
-    + collect_submodules("flask")
-    + collect_submodules("flask_cors")
     + [
         "han_sim",
-        "han_sim.cli.terminal",
-        "uvicorn.logging",
-        "uvicorn.loops",
-        "uvicorn.loops.auto",
-        "uvicorn.protocols",
-        "uvicorn.protocols.http",
-        "uvicorn.protocols.http.auto",
-        "uvicorn.protocols.websockets",
-        "uvicorn.protocols.websockets.auto",
-        "uvicorn.lifespan",
-        "uvicorn.lifespan.on",
+        "flask",
+        "jinja2",
+        "werkzeug",
+        "markupsafe",
+        "click",
+        "itsdangerous",
+        "colorama",
+        "PIL",
         "PIL._imaging",
-        "sqlalchemy.sql.defaults",
+        "ctypes",
+        "socket",
+        "threading",
+        "json",
+        "random",
+        "shutil",
+        "re",
+        "sqlite3",
+        "uuid",
+        "unicodedata",
+        "struct",
+        "subprocess",
+        "inspect",
+        "traceback",
+        "functools",
+        "collections",
+        "itertools",
+        "operator",
+        "builtins",
+        "typing",
+        "dataclasses",
+        "types",
+        "pathlib",
     ]
 )
 
@@ -70,37 +90,28 @@ datas = (
     + _openai_data
     + _tiktoken_data
     + _webview_data
-    + tree_datas("web/dist", "web/dist", exclude_parts={"_backup_rgb", "_original_before_cutout"})
-    + tree_datas("web/public", "web/public", exclude_parts={"_backup_rgb", "_original_before_cutout"})
+    + tree_datas(str(assets_path / 'portraits'), 'web/public/portraits')
+    + tree_datas(str(assets_path / 'images'), 'web/public/images')
+    + tree_datas(str(assets_path / 'animations'), 'web/public/animations')
     + [
-        ("content", "content"),
-        (str(Path(__file__).parent / "content"), "content"),
+        (str(assets_path / 'icons.svg'), 'web/public'),
+        (str(assets_path / 'favicon.svg'), 'web/public'),
     ]
+    + tree_datas(str(content_path), 'content')
 )
 
 binaries = _agno_bin + _openai_bin + _tiktoken_bin + _webview_bin
 
-block_cipher = None
-
 a = Analysis(
-    ["main.py"],
-    pathex=["."],
+    ['launcher.py'],
+    pathex=[str(project_root)],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=[],
-    excludes=[
-        "pytest",
-        "PyQt5",
-        "PyQt6",
-        "PySide2",
-        "PySide6",
-        "matplotlib",
-        "pandas",
-        "numpy.tests",
-    ],
+    keys=[],
+    exclusionplugins=[],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -114,19 +125,18 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="HanEmpireSim",
+    name='HanEmpireSim',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=False,
     console=False,
     disable_windowed_traceback=False,
+    argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=None,
-    version=None,
-    resource_type=None,
+    icon=str(assets_path / 'favicon.svg') if (assets_path / 'favicon.svg').exists() else None,
 )
 
 coll = COLLECT(
@@ -137,5 +147,5 @@ coll = COLLECT(
     strip=False,
     upx=False,
     upx_exclude=[],
-    name="HanEmpireSim",
+    name='HanEmpireSim',
 )

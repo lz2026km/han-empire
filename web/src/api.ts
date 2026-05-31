@@ -115,4 +115,54 @@ export const api = {
     request<{ message: string }>(`/campaigns/${campaignId}/saves/${slot}`, {
       method: 'DELETE',
     }),
+
+  // ---- SSE Streaming ----
+
+  streamSettlement: (campaignId: string) =>
+    new EventSource(`${API_BASE}/campaigns/${campaignId}/stream_settlement`),
+
+  // ---- Chat ----
+
+  chatWithMinister: (campaignId: string, ministerName: string, message: string) =>
+    request<{ result: string; chat_history?: { role: string; text: string }[] }>(
+      `/campaigns/${campaignId}/chat/${encodeURIComponent(ministerName)}`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ message }),
+      }
+    ),
+
+  // ---- Secret Orders ----
+
+  getSecretOrders: (campaignId: string) =>
+    request<{ orders: SecretOrder[] }>(`/campaigns/${campaignId}/secret_orders`),
+
+  createSecretOrder: (campaignId: string, order: { title: string; content: string; assignee: string; deadline_months?: number }) =>
+    request<{ order: SecretOrder }>(`/campaigns/${campaignId}/secret_orders`, {
+      method: 'POST',
+      body: JSON.stringify(order),
+    }),
+
+  cancelSecretOrder: (campaignId: string, orderId: string) =>
+    request<{ message: string }>(`/campaigns/${campaignId}/secret_orders/${orderId}`, {
+      method: 'DELETE',
+    }),
+
+  // ---- Cheat Commands ----
+
+  executeCheat: (campaignId: string, command: string, args?: Record<string, any>) =>
+    request<{ success: boolean; output: string }>(`/campaigns/${campaignId}/cheat`, {
+      method: 'POST',
+      body: JSON.stringify({ command, args }),
+    }),
+}
+
+export interface SecretOrder {
+  id: string
+  title: string
+  content: string
+  targetName: string
+  issuedAt: string
+  status: 'pending' | 'executing' | 'completed' | 'failed' | 'exposed'
+  result?: string
 }

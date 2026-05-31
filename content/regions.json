@@ -1,5 +1,30 @@
 [
   {
+    "id": "sili",
+    "name": "司隶",
+    "kind": "province",
+    "population": 200,
+    "public_support": 20,
+    "unrest": 80,
+    "natural_disaster": "董卓焚城",
+    "human_disaster": "军阀混战",
+    "registered_land": 400,
+    "hidden_land": 150,
+    "tax_per_turn": 8,
+    "grain_security": 25,
+    "gentry_resistance": 55,
+    "military_pressure": 85,
+    "status": "ming",
+    "controlled_by": "caowei",
+    "fiscal": {
+      "corruption": 70
+    },
+    "on_restore": {
+      "public_support": 60,
+      "unrest": 35
+    }
+  },
+  {
     "id": "jingzhou",
     "name": "荆州",
     "kind": "province",

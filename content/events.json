@@ -611,6 +611,83 @@
     ]
   },
   {
+    "id": "e_190_liugong_tongmeng",
+    "year": 190,
+    "month": 1,
+    "title": "十八路诸侯讨董卓",
+    "type": "military",
+    "location": "酸枣",
+    "summary": "关东各州郡起兵讨伐董卓，推袁绍为盟主，曹操、孙坚等响应，联军十余万人会师酸枣。",
+    "impact": {
+      "han_authority": 5,
+      "dongzhuo_power": -10,
+      "chaos": 10
+    },
+    "tags": [
+      "袁绍",
+      "曹操",
+      "孙坚",
+      "讨董"
+    ]
+  },
+  {
+    "id": "e_192_wangyun_diaochan",
+    "year": 192,
+    "month": 4,
+    "title": "王允献貂蝉",
+    "type": "political",
+    "location": "长安",
+    "summary": "司徒王允利用貂蝉施连环计，离间董卓与吕布，终成诛董之功。",
+    "impact": {
+      "dongzhuo_power": -20,
+      "han_authority": 10
+    },
+    "tags": [
+      "王允",
+      "貂蝉",
+      "董卓",
+      "吕布"
+    ]
+  },
+  {
+    "id": "e_207_san.gu.maoliu",
+    "year": 207,
+    "month": 12,
+    "title": "刘备三顾茅庐",
+    "type": "character",
+    "location": "隆中",
+    "summary": "刘备三次拜访诸葛亮，诸葛亮提出隆中对策，建议刘备取荆益二州，联合孙权，抗击曹操。",
+    "impact": {
+      "liubei_strategy": 25,
+      "shu_cohesion": 20
+    },
+    "tags": [
+      "刘备",
+      "诸葛亮",
+      "隆中对"
+    ]
+  },
+  {
+    "id": "e_219_hanzhong_battle",
+    "year": 219,
+    "month": 5,
+    "title": "汉中之战",
+    "type": "military",
+    "location": "汉中",
+    "summary": "刘备与曹操争夺汉中，黄忠定军山斩夏侯渊，刘备夺汉中，进位汉中王。",
+    "impact": {
+      "caowei_power": -15,
+      "shuhan_power": 20
+    },
+    "tags": [
+      "刘备",
+      "曹操",
+      "黄忠",
+      "夏侯渊",
+      "汉中"
+    ]
+  },
+  {
     "id": "e_211_mateng",
     "year": 211,
     "month": 3,
@@ -647,6 +724,25 @@
   },
   {
     "id": "e_219_yiling",
+  {
+    "id": "e_220_caopi_zhouyan",
+    "year": 220,
+    "month": 12,
+    "title": "曹丕篡汉",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "曹丕逼迫汉献帝禅让，代汉建魏，改元黄初，汉朝正式终结。",
+    "impact": {
+      "han_authority": -100,
+      "caowei_faction": 100
+    },
+    "tags": [
+      "曹丕",
+      "汉献帝",
+      "禅让",
+      "魏"
+    ]
+  },
     "year": 222,
     "month": 6,
     "title": "夷陵之战",

@@ -6,8 +6,9 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory, Response
 from flask_cors import CORS
+import os
 from han_sim.session import GameSession
 from han_sim.simulation import run_monthly_simulation
 from han_sim.decree import issue_secret_edict
@@ -42,6 +43,18 @@ def _state_to_dict(state):
 @app.route('/api/health', methods=['GET'])
 def health():
     return jsonify({'status': 'ok', 'game': 'han-empire'})
+
+
+@app.route('/')
+def serve_index():
+    dist_path = os.path.join(os.path.dirname(__file__), 'web', 'dist')
+    return send_from_directory(dist_path, 'index.html')
+
+
+@app.route('/<path:filename>')
+def serve_static(filename):
+    dist_path = os.path.join(os.path.dirname(__file__), 'web', 'dist')
+    return send_from_directory(dist_path, filename)
 
 
 # ---- Campaign Management ----
@@ -458,6 +471,229 @@ def _generate_formal_decree(directives: List[Dict], state) -> str:
     lines.append("布告天下，咸使闻知。")
 
     return "\n".join(lines)
+
+
+@app.route('/api/campaigns/<campaign_id>/stream_settlement', methods=['POST'])
+def stream_settlement(campaign_id):
+    """SSE流式月末结算端点"""
+    from han_sim.simulation import run_monthly_simulation
+    from han_sim.flows import apply_monthly_flow, calc_faction_delta
+
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    def generate():
+        try:
+            yield f"event: stage\ndata: stage:settling\n\n"
+
+            fiscal = apply_monthly_flow(session.state, db)
+            yield f"event: stage\ndata: stage:fiscal_done\ndata: text:财政结算完成\n\n"
+
+            faction_delta = calc_faction_delta(session.state, db)
+            yield f"event: stage\ndata: stage:faction_done\ndata: text:藩镇变化完成\n\n"
+
+            yield f"event: stage\ndata: stage:thinking\ndata: text:推演中...\n\n"
+
+            sim_result = run_monthly_simulation(session.state, session.db)
+
+            yield f"event: stage\ndata: stage:events\ndata: text:事件结算完成\n\n"
+
+            yield f"event: stage\ndata: stage:writing\ndata: text:撰写叙事...\n\n"
+
+            yield f"event: thinking\ndata: text:生成月末叙事...\n\n"
+
+            yield f"event: text\ndata: {sim_result.narration}\n\n"
+
+            session.save()
+            GAMES[campaign_id] = session
+
+            yield f"event: done\ndata: done:true\n\n"
+
+        except Exception as e:
+            yield f"event: error\ndata: {str(e)}\n\n"
+
+    return Response(generate(), mimetype='text/event-stream')
+
+
+@app.route('/api/campaigns/<campaign_id>/chat/<minister_name>', methods=['POST'])
+def chat_with_minister(campaign_id, minister_name):
+    """大臣召对聊天端点"""
+    data = request.get_json() or {}
+    message = data.get('message', '')
+
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    ministers = session.get_active_ministers()
+    minister = next((m for m in ministers if m.get('name') == minister_name), None)
+
+    if not minister:
+        return jsonify({'result': f'未找到大臣{minister_name}'})
+
+    from han_sim.agents import create_minister_agent
+    from han_sim.memories import extract_chat_memories_for_minister
+
+    try:
+        agent = create_minister_agent(minister, session.state, "", "")
+        response = agent.run(message)
+        text = response.content if hasattr(response, 'content') else str(response)
+
+        return jsonify({
+            'result': text,
+            'chat_history': [
+                {'role': 'emperor', 'text': message},
+                {'role': 'minister', 'text': text}
+            ]
+        })
+    except Exception as e:
+        return jsonify({'result': f'召对失败: {str(e)}'})
+
+
+@app.route('/api/campaigns/<campaign_id>/secret_orders', methods=['GET'])
+def get_secret_orders(campaign_id):
+    """获取密令列表"""
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    try:
+        rows = db.conn.execute(
+            "SELECT * FROM directives WHERE campaign_id = ? AND kind = 'secret' ORDER BY issued_turn DESC",
+            (campaign_id,),
+        ).fetchall()
+    except Exception:
+        rows = []
+
+    orders = []
+    for row in rows:
+        d = dict(row)
+        orders.append({
+            'id': str(d.get('id', '')),
+            'title': d.get('title', '密令'),
+            'content': d.get('content', ''),
+            'targetName': d.get('actor', ''),
+            'issuedAt': f"{session.state.year}年{session.state.period}月",
+            'status': d.get('status', 'pending'),
+            'result': d.get('notes', ''),
+        })
+
+    return jsonify({'orders': orders})
+
+
+@app.route('/api/campaigns/<campaign_id>/secret_orders', methods=['POST'])
+def create_secret_order(campaign_id):
+    """创建密令"""
+    data = request.get_json() or {}
+    title = data.get('title', '')
+    content = data.get('content', '')
+    assignee = data.get('assignee', '')
+    deadline_months = data.get('deadline_months', 3)
+
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    turn = session.state.turn
+    issued_turn = turn
+    expires_turn = turn + deadline_months
+
+    cursor = db.conn.execute(
+        """INSERT INTO directives (campaign_id, type, kind, status, content, issued_turn, expires_turn, actor, title)
+           VALUES (?, 'secret_order', 'secret', 'pending', ?, ?, ?, ?, ?)""",
+        (campaign_id, content, issued_turn, expires_turn, assignee, title),
+    )
+    db.conn.commit()
+    order_id = cursor.lastrowid
+
+    return jsonify({
+        'order': {
+            'id': str(order_id),
+            'title': title,
+            'content': content,
+            'targetName': assignee,
+            'issuedAt': f"{session.state.year}年{session.state.period}月",
+            'status': 'pending',
+        }
+    })
+
+
+@app.route('/api/campaigns/<campaign_id>/secret_orders/<order_id>', methods=['DELETE'])
+def cancel_secret_order(campaign_id, order_id):
+    """取消密令"""
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    db.conn.execute(
+        "UPDATE directives SET status = 'cancelled' WHERE id = ? AND campaign_id = ?",
+        (order_id, campaign_id),
+    )
+    db.conn.commit()
+
+    return jsonify({'message': '密令已取消'})
+
+
+@app.route('/api/campaigns/<campaign_id>/cheat', methods=['POST'])
+def execute_cheat(campaign_id):
+    """执行作弊命令"""
+    data = request.get_json() or {}
+    command = data.get('command', '')
+    args = data.get('args', {})
+
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+
+    session = GAMES[campaign_id]
+    state = session.state
+
+    output = ''
+    success = True
+
+    if command == 'status':
+        output = f"""当前状态：
+年份：{state.year}年 {state.period}月
+威权：{state.metrics.get('威权', 0)}
+声望：{state.metrics.get('声望', 0)}
+藩镇：{state.metrics.get('藩镇', 0)}
+汉室库：{state.metrics.get('汉室库', 0)}万两
+回合：{state.turn}"""
+    elif command == 'add-authority':
+        n = int(args.get('n', 10))
+        state.metrics['威权'] = state.metrics.get('威权', 0) + n
+        output = f'威权 +{n}，当前：{state.metrics.get("威权", 0)}'
+    elif command == 'set-authority':
+        n = int(args.get('n', 50))
+        state.metrics['威权'] = n
+        output = f'威权已设置为：{n}'
+    elif command == 'add-loyalty':
+        n = int(args.get('n', 10))
+        state.metrics['声望'] = state.metrics.get('声望', 0) + n
+        output = f'声望 +{n}，当前：{state.metrics.get("声望", 0)}'
+    elif command == 'unlock-skills':
+        output = '技能已解锁（模拟）'
+    elif command == 'skip-month':
+        state.next_period()
+        output = f'进入{state.year}年{state.period}月'
+    else:
+        output = f'未知命令: {command}'
+        success = False
+
+    session.save()
+    GAMES[campaign_id] = session
+
+    return jsonify({'success': success, 'output': output})
 
 
 if __name__ == '__main__':

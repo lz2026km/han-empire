@@ -936,3 +936,107 @@ input:focus, select:focus {
   right: 4px;
   transform: rotate(180deg);
 }
+
+/* ---- Minister Tab ---- */
+.minister-tab-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.minister-tab-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--border-radius);
+}
+
+.minister-tab-btn {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-main);
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+}
+
+.minister-tab-btn.active {
+  background: var(--color-accent-red-dim);
+  color: var(--color-gold);
+}
+
+.minister-tab-btn:hover:not(.active) {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+/* ---- Faction Tab ---- */
+.faction-tab-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.faction-view-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-main);
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+}
+
+.faction-view-btn.active {
+  background: var(--color-accent-red-dim);
+  border-color: var(--color-gold-dim);
+  color: var(--color-gold);
+}
+
+.faction-view-btn:hover:not(.active) {
+  border-color: var(--color-gold-dim);
+  color: var(--color-text-primary);
+}
+
+.faction-diagram-container {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-top: 12px;
+}
+
+/* ---- Map Region Detail ---- */
+.map-region-detail {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+}
+
+.map-region-detail h4 {
+  color: var(--color-gold);
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.region-detail-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.region-detail-stats > div {
+  padding: 8px 12px;
+  background: var(--color-bg-tertiary);
+  border-radius: var(--border-radius);
+}

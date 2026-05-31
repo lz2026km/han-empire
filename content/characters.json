@@ -3841,5 +3841,377 @@
     "status": "dead",
     "summary": "建安七子之一，为曹操五官将文学，以清玄著称。",
     "portrait_id": "scholar_pool_7"
+  },
+  {
+    "id": "dengai",
+    "name": "邓艾",
+    "office": "太尉/太傅",
+    "office_type": "general",
+    "faction": "曹魏",
+    "aliases": [
+      "士载",
+      "邓艾"
+    ],
+    "personal_skills": [
+      "偷渡阴平",
+      "灭蜀功臣"
+    ],
+    "loyalty": 65,
+    "ability": 92,
+    "integrity": 55,
+    "courage": 90,
+    "style": "果敢",
+    "power_id": "caowei",
+    "location": "长安",
+    "birth_year": 197,
+    "historical_death_year": 264,
+    "debut_year": 244,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "曹魏名将，263年偷渡阴平，直捣成都，灭蜀汉，居功至伟，后被钟会陷害而死。",
+    "portrait_id": "general_pool_39"
+  },
+  {
+    "id": "zhonghui",
+    "name": "钟会",
+    "office": "镇西将军/司徒",
+    "office_type": "general",
+    "faction": "曹魏",
+    "aliases": [
+      "士季",
+      "钟会"
+    ],
+    "personal_skills": [
+      "谋反",
+      "灭蜀之功"
+    ],
+    "loyalty": 30,
+    "ability": 90,
+    "integrity": 30,
+    "courage": 70,
+    "style": "阴狡",
+    "power_id": "caowei",
+    "location": "长安",
+    "birth_year": 225,
+    "historical_death_year": 264,
+    "debut_year": 244,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "钟繇之子，曹魏重臣，与邓艾灭蜀后谋反，欲割据蜀地，被乱兵所杀。",
+    "portrait_id": "general_pool_40"
+  },
+  {
+    "id": "lusu",
+    "name": "鲁肃",
+    "office": "中都督/汉亭侯",
+    "office_type": "minister",
+    "faction": "东吴",
+    "aliases": [
+      "子敬",
+      "鲁肃"
+    ],
+    "personal_skills": [
+      "榻上策",
+      "联刘抗曹"
+    ],
+    "loyalty": 85,
+    "ability": 88,
+    "integrity": 80,
+    "courage": 75,
+    "style": "忠厚",
+    "power_id": "dongwu",
+    "location": "建业",
+    "birth_year": 172,
+    "historical_death_year": 217,
+    "debut_year": 200,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "东吴重臣，榻上策建议孙权鼎足江东，联刘抗曹，赤壁之战前主张抵抗曹操，为东吴柱石。",
+    "portrait_id": "minister_pool_55"
+  },
+  {
+    "id": "zhangzhao",
+    "name": "张昭",
+    "office": "辅吴将军/娄侯",
+    "office_type": "minister",
+    "faction": "东吴",
+    "aliases": [
+      "子布",
+      "张昭"
+    ],
+    "personal_skills": [
+      "江东辅臣",
+      "直言敢谏"
+    ],
+    "loyalty": 88,
+    "ability": 82,
+    "integrity": 85,
+    "courage": 70,
+    "style": "刚直",
+    "power_id": "dongwu",
+    "location": "建业",
+    "birth_year": 156,
+    "historical_death_year": 236,
+    "debut_year": 200,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "东吴重臣，孙策临终以弟孙权相托，张昭忠勤尽职，直言敢谏，为东吴文臣之首。",
+    "portrait_id": "minister_pool_56"
+  },
+  {
+    "id": "lumeng",
+    "name": "吕蒙",
+    "office": "南郡太守/孱陵侯",
+    "office_type": "general",
+    "faction": "东吴",
+    "aliases": [
+      "子明",
+      "吕蒙"
+    ],
+    "personal_skills": [
+      "白衣渡江",
+      "袭取荆州"
+    ],
+    "loyalty": 75,
+    "ability": 88,
+    "integrity": 55,
+    "courage": 90,
+    "style": "智勇",
+    "power_id": "dongwu",
+    "location": "江陵",
+    "birth_year": 178,
+    "historical_death_year": 220,
+    "debut_year": 200,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "东吴名将，初为猛将，后发奋读书，鲁肃卒后接掌荆州，白衣渡江袭取荆州，擒杀关羽。",
+    "portrait_id": "general_pool_41"
+  },
+  {
+    "id": "lu Kang",
+    "name": "陆抗",
+    "office": "大司马/荆州牧",
+    "office_type": "general",
+    "faction": "东吴",
+    "aliases": [
+      "幼节",
+      "陆抗"
+    ],
+    "personal_skills": [
+      "西陵破晋",
+      "守将"
+    ],
+    "loyalty": 90,
+    "ability": 92,
+    "integrity": 80,
+    "courage": 85,
+    "style": "稳重",
+    "power_id": "dongwu",
+    "location": "江陵",
+    "birth_year": 226,
+    "historical_death_year": 274,
+    "debut_year": 258,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "陆逊之子，东吴末年名将，西陵大破晋军，父子为东吴柱石。",
+    "portrait_id": "general_pool_42"
+  },
+  {
+    "id": "liushan",
+    "name": "刘禅",
+    "office": "蜀汉后主",
+    "office_type": "emperor",
+    "faction": "蜀汉",
+    "aliases": [
+      "公嗣",
+      "刘禅"
+    ],
+    "personal_skills": [
+      "乐不思蜀"
+    ],
+    "loyalty": 0,
+    "ability": 45,
+    "integrity": 35,
+    "courage": 40,
+    "style": "庸懦",
+    "power_id": "shuhan",
+    "location": "成都",
+    "birth_year": 207,
+    "historical_death_year": 271,
+    "debut_year": 223,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "刘备之子，蜀汉后主，在位四十余年，宠信黄皓，263年降魏，封安乐公。",
+    "portrait_id": "emperor_pool_3"
+  },
+  {
+    "id": "wei yan",
+    "name": "魏延",
+    "office": "镇北将军/南郑侯",
+    "office_type": "general",
+    "faction": "蜀汉",
+    "aliases": [
+      "文长",
+      "魏延"
+    ],
+    "personal_skills": [
+      "子午谷奇谋",
+      "勇冠三军"
+    ],
+    "loyalty": 70,
+    "ability": 85,
+    "integrity": 40,
+    "courage": 95,
+    "style": "骄狂",
+    "power_id": "shuhan",
+    "location": "汉中",
+    "birth_year": 169,
+    "historical_death_year": 234,
+    "debut_year": 211,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "蜀汉名将，镇守汉中，屡建战功，提出子午谷奇谋不被诸葛亮采纳，后因谋反被诛。",
+    "portrait_id": "general_pool_43"
+  },
+  {
+    "id": "jiangwan",
+    "name": "蒋琬",
+    "office": "大将军/安阳亭侯",
+    "office_type": "minister",
+    "faction": "蜀汉",
+    "aliases": [
+      "公琰",
+      "蒋琬"
+    ],
+    "personal_skills": [
+      "诸葛亮继承人",
+      "镇北足食"
+    ],
+    "loyalty": 88,
+    "ability": 85,
+    "integrity": 80,
+    "courage": 65,
+    "style": "稳重",
+    "power_id": "shuhan",
+    "location": "成都",
+    "birth_year": ?,
+    "historical_death_year": 246,
+    "debut_year": 234,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "诸葛亮身后继承人，与费祎共录尚书事，镇北将军，足食足兵以供北伐。",
+    "portrait_id": "minister_pool_57"
+  },
+  {
+    "id": "feizhi",
+    "name": "费祎",
+    "office": "大将军/成乡侯",
+    "office_type": "minister",
+    "faction": "蜀汉",
+    "aliases": [
+      "文伟",
+      "费祎"
+    ],
+    "personal_skills": [
+      "联吴抗魏",
+      "辅政"
+    ],
+    "loyalty": 85,
+    "ability": 83,
+    "integrity": 78,
+    "courage": 62,
+    "style": "温和",
+    "power_id": "shuhan",
+    "location": "成都",
+    "birth_year": ?,
+    "historical_death_year": 253,
+    "debut_year": 234,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "蜀汉重臣，与蒋琬并录尚书事，主张联吴抗魏，后被魏降将郭循刺杀。",
+    "portrait_id": "minister_pool_58"
+  },
+  {
+    "id": "guojia",
+    "name": "郭嘉",
+    "office": "军师祭酒/洧阳亭侯",
+    "office_type": "minister",
+    "faction": "曹魏",
+    "aliases": [
+      "奉孝",
+      "郭嘉"
+    ],
+    "personal_skills": [
+      "十胜十败",
+      "遗计定辽东"
+    ],
+    "loyalty": 60,
+    "ability": 95,
+    "integrity": 45,
+    "courage": 70,
+    "style": "放达",
+    "power_id": "caowei",
+    "location": "许昌",
+    "birth_year": 170,
+    "historical_death_year": 207,
+    "debut_year": 196,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "曹操谋士，提出十胜十败说，遗计定辽东，助曹操统一北方，死时年仅三十八岁。",
+    "portrait_id": "minister_pool_59"
+  },
+  {
+    "id": "xunxun",
+    "name": "荀颍",
+    "office": "太尉",
+    "office_type": "minister",
+    "faction": "曹魏",
+    "aliases": [
+      "荀颍"
+    ],
+    "personal_skills": [
+      "魏晋重臣"
+    ],
+    "loyalty": 55,
+    "ability": 78,
+    "integrity": 65,
+    "courage": 58,
+    "style": "谨慎",
+    "power_id": "caowei",
+    "location": "洛阳",
+    "birth_year": ?,
+    "historical_death_year": 263,
+    "debut_year": 220,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "荀彧从父弟，魏晋之际重臣，司马氏亲信。",
+    "portrait_id": "minister_pool_60"
+  },
+  {
+    "id": "zhangiao",
+    "name": "张iao",
+    "office": "征西将军",
+    "office_type": "general",
+    "faction": "曹魏",
+    "aliases": [
+      "张iao"
+    ],
+    "personal_skills": [
+      "关右将"
+    ],
+    "loyalty": 70,
+    "ability": 80,
+    "integrity": 55,
+    "courage": 82,
+    "style": "勇猛",
+    "power_id": "caowei",
+    "location": "关中",
+    "birth_year": ?,
+    "historical_death_year": 230,
+    "debut_year": 211,
+    "debut_month": 1,
+    "status": "dead",
+    "summary": "曹操部将，镇守关右，屡次抵御蜀军。",
+    "portrait_id": "general_pool_44"
   }
 ]

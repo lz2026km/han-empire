@@ -1,99 +1,375 @@
-import { useState } from 'react'
-import './FactionRelationDiagram.css'
+/* =============================================
+   FactionRelationDiagram Component
+   派系关系图 - 可视化派系势力和关系
+   ============================================= */
 
-export interface FactionNode { id: string; name: string; influence: number; leader?: string; color: string }
-export type RelationType = 'alliance' | 'neutral' | 'hostile' | 'dominated'
-export interface FactionRelation { from: string; to: string; type: RelationType; strength?: number }
+import React, { useState, useEffect } from 'react';
 
-const REL_STYLES: Record<RelationType, { color: string; dash: string; w: number }> = {
-  alliance: { color: '#22c55e', dash: '0', w: 3 },
-  neutral: { color: '#6b7280', dash: '5,5', w: 2 },
-  hostile: { color: '#ef4444', dash: '10,5', w: 3 },
-  dominated: { color: '#f59e0b', dash: '3,3', w: 2 },
+interface FactionNode {
+  id: string;
+  name: string;
+  influence: number;
+  color: string;
+  ministers: string[];
+  description?: string;
 }
 
-const FACTION_COLORS: Record<string, string> = {
-  '忠汉派': '#8b2a2a', '务实派': '#2a4a4a', '离心派': '#4a2a4a', '叛逆派': '#5a1a1a',
-  '汉室': '#4a2c2c', '曹魏': '#1e3a5f', '蜀汉': '#2D5A27', '东吴': '#5C4033',
+interface FactionRelation {
+  source: string;
+  target: string;
+  type: 'alliance' | 'rival' | 'neutral';
+  strength: number;
 }
 
-export function FactionRelationDiagram({ factions, relations, onFactionClick, selectedFactionId }: { factions: FactionNode[]; relations: FactionRelation[]; onFactionClick?: (id: string) => void; selectedFactionId?: string }) {
-  const [hovered, setHovered] = useState<string | null>(null)
+interface FactionRelationDiagramProps {
+  factions: FactionNode[];
+  relations?: FactionRelation[];
+  width?: number;
+  height?: number;
+}
 
-  const pos = factions.reduce((acc, f, i) => {
-    const a = (2 * Math.PI * i) / factions.length
-    acc[f.id] = { x: 250 + 180 * Math.cos(a), y: 200 + 180 * Math.sin(a) }
-    return acc
-  }, {} as Record<string, { x: number; y: number }>)
+export function FactionRelationDiagram({
+  factions,
+  relations = [],
+  width = 600,
+  height = 400,
+}: FactionRelationDiagramProps) {
+  const [hoveredFaction, setHoveredFaction] = useState<string | null>(null);
+  const [selectedFaction, setSelectedFaction] = useState<string | null>(null);
 
-  const getFiltRel = () => {
-    const af = hovered || selectedFactionId
-    if (!af) return relations
-    return relations.filter(r => r.from === af || r.to === af)
-  }
+  // Calculate node positions in a circle
+  const getNodePosition = (index: number, total: number, radius: number) => {
+    const angle = (2 * Math.PI * index) / total - Math.PI / 2;
+    const x = radius * Math.cos(angle) + width / 2;
+    const y = radius * Math.sin(angle) + height / 2;
+    return { x, y };
+  };
+
+  const radius = Math.min(width, height) * 0.35;
+
+  const getRelationPath = (source: FactionNode, target: FactionNode) => {
+    const sourcePos = getNodePosition(
+      factions.findIndex(f => f.id === source.id),
+      factions.length,
+      radius
+    );
+    const targetPos = getNodePosition(
+      factions.findIndex(f => f.id === target.id),
+      factions.length,
+      radius
+    );
+
+    const midX = (sourcePos.x + targetPos.x) / 2;
+    const midY = (sourcePos.y + targetPos.y) / 2;
+
+    const dx = targetPos.x - sourcePos.x;
+    const dy = targetPos.y - sourcePos.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const curveOffset = dist * 0.2;
+
+    const controlX = midX + curveOffset;
+    const controlY = midY - curveOffset;
+
+    return `M ${sourcePos.x} ${sourcePos.y} Q ${controlX} ${controlY} ${targetPos.x} ${targetPos.y}`;
+  };
+
+  const renderRelation = (relation: FactionRelation) => {
+    const source = factions.find(f => f.id === relation.source);
+    const target = factions.find(f => f.id === relation.target);
+    if (!source || !target) return null;
+
+    const isHighlighted = hoveredFaction === relation.source || hoveredFaction === relation.target;
+
+    const strokeColor = relation.type === 'alliance'
+      ? '#4a9c5d'
+      : relation.type === 'rival'
+        ? '#c42b2b'
+        : '#6b5f4f';
+
+    const strokeDash = relation.type === 'neutral' ? '5,5' : '';
+
+    return (
+      <g key={`${relation.source}-${relation.target}`}>
+        <path
+          d={getRelationPath(source, target)}
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth={isHighlighted ? 3 : 1.5}
+          strokeDasharray={strokeDash}
+          opacity={isHighlighted ? 1 : 0.4}
+          style={{
+            transition: 'all 0.2s ease',
+            cursor: 'pointer',
+          }}
+          onMouseEnter={() => setHoveredFaction(relation.source)}
+          onMouseLeave={() => setHoveredFaction(null)}
+        />
+        {/* Arrow or indicator at midpoint */}
+        <circle
+          cx={(getNodePosition(factions.findIndex(f => f.id === source.id), factions.length, radius).x +
+               getNodePosition(factions.findIndex(f => f.id === target.id), factions.length, radius).x) / 2}
+          cy={(getNodePosition(factions.findIndex(f => f.id === source.id), factions.length, radius).y +
+               getNodePosition(factions.findIndex(f => f.id === target.id), factions.length, radius).y) / 2}
+          r={4}
+          fill={strokeColor}
+          opacity={isHighlighted ? 0.8 : 0.3}
+        />
+      </g>
+    );
+  };
 
   return (
-    <div className="faction-diagram">
-      <svg viewBox="0 0 500 400" className="diagram-svg">
+    <div className="faction-relation-diagram">
+      <svg width={width} height={height} className="faction-diagram-svg">
+        {/* Background pattern */}
         <defs>
-          <filter id="glow"><feGaussianBlur stdDeviation="3" result="cb"/><feMerge><feMergeNode in="cb"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#22c55e"/></marker>
-          <marker id="hh" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#ef4444"/></marker>
+          <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="1" fill="rgba(201, 168, 76, 0.1)" />
+          </pattern>
+          <radialGradient id="centerGlow">
+            <stop offset="0%" stopColor="rgba(201, 168, 76, 0.1)" />
+            <stop offset="100%" stopColor="rgba(0, 0, 0, 0)" />
+          </radialGradient>
         </defs>
-        {getFiltRel().map((rel, i) => {
-          const f = pos[rel.from]
-          const t = pos[rel.to]
-          if (!f || !t) return null
-          const s = REL_STYLES[rel.type]
-          return (
-            <line key={i} x1={f.x} y1={f.y} x2={t.x} y2={t.y} stroke={s.color} strokeWidth={s.w} strokeDasharray={s.dash}
-              className={`relation-stroke ${rel.type}`} markerEnd={rel.type === 'alliance' || rel.type === 'hostile' ? `url(#${rel.type === 'alliance' ? 'ah' : 'hh'})` : undefined} />
-          )
-        })}
-        {factions.map(f => {
-          const p = pos[f.id]
-          if (!p) return null
-          const sz = 60 + (f.influence / 100) * 40
-          const sel = selectedFactionId === f.id
-          const hov = hovered === f.id
-          const col = f.color || FACTION_COLORS[f.id] || '#4a4a4a'
-          return (
-            <g key={f.id} className={`faction-node ${sel ? 'selected' : ''} ${hov ? 'hovered' : ''}`}
-              onClick={() => onFactionClick?.(f.id)} onMouseEnter={() => setHovered(f.id)} onMouseLeave={() => setHovered(null)} style={{ cursor: 'pointer' }}>
-              {(sel || hov) && <circle cx={p.x} cy={p.y} r={sz / 2 + 10} fill={col} opacity={0.3} filter="url(#glow)" />}
-              <circle cx={p.x} cy={p.y} r={sz / 2} fill={col} stroke={sel ? '#FFD700' : '#2D3748'} strokeWidth={sel ? 4 : 2} className="faction-circle" />
-              <text x={p.x} y={p.y - sz / 2 - 15} textAnchor="middle" className="faction-name" fill="#e8dcc8" fontSize="13" fontWeight="600">{f.name}</text>
-              <rect x={p.x - 25} y={p.y + sz / 2 + 8} width={50} height={6} rx={3} fill="#1a1a22" />
-              <rect x={p.x - 25} y={p.y + sz / 2 + 8} width={50 * (f.influence / 100)} height={6} rx={3} fill={col} className="influence-fill" />
-              <text x={p.x} y={p.y + sz / 2 + 24} textAnchor="middle" className="influence-text" fill="#c9a84c" fontSize="11">{f.influence}</text>
-            </g>
-          )
-        })}
+
+        <rect width={width} height={height} fill="url(#grid)" />
+        <circle cx={width / 2} cy={height / 2} r={radius * 0.5} fill="url(#centerGlow)" />
+
+        {/* Render relations first (behind nodes) */}
+        <g className="relations-layer">
+          {relations.map(renderRelation)}
+        </g>
+
+        {/* Center circle (Emperor) */}
+        <circle
+          cx={width / 2}
+          cy={height / 2}
+          r={40}
+          fill="var(--color-bg-tertiary)"
+          stroke="var(--color-gold)"
+          strokeWidth={2}
+          className="emperor-center"
+        />
+        <text
+          x={width / 2}
+          y={height / 2 + 5}
+          textAnchor="middle"
+          fill="var(--color-gold)"
+          fontSize={14}
+          fontWeight="bold"
+        >
+          天子
+        </text>
+
+        {/* Render faction nodes */}
+        <g className="nodes-layer">
+          {factions.map((faction, index) => {
+            const pos = getNodePosition(index, factions.length, radius);
+            const isHovered = hoveredFaction === faction.id;
+            const isSelected = selectedFaction === faction.id;
+            const nodeRadius = 35 + faction.influence * 0.3;
+
+            return (
+              <g
+                key={faction.id}
+                transform={`translate(${pos.x}, ${pos.y})`}
+                className="faction-node"
+                onMouseEnter={() => setHoveredFaction(faction.id)}
+                onMouseLeave={() => setHoveredFaction(null)}
+                onClick={() => setSelectedFaction(selectedFaction === faction.id ? null : faction.id)}
+                style={{ cursor: 'pointer' }}
+              >
+                {/* Glow effect */}
+                <circle
+                  r={nodeRadius + 10}
+                  fill={faction.color}
+                  opacity={isHovered || isSelected ? 0.3 : 0}
+                  className="node-glow"
+                />
+
+                {/* Main circle */}
+                <circle
+                  r={nodeRadius}
+                  fill="var(--color-bg-card)"
+                  stroke={faction.color}
+                  strokeWidth={isHovered || isSelected ? 3 : 2}
+                  className="node-circle"
+                />
+
+                {/* Influence bar */}
+                <circle
+                  r={nodeRadius - 5}
+                  fill="none"
+                  stroke={faction.color}
+                  strokeWidth={4}
+                  strokeDasharray={`${(faction.influence / 100) * 2 * Math.PI * (nodeRadius - 5)} ${2 * Math.PI * (nodeRadius - 5)}`}
+                  strokeDashoffset={0}
+                  opacity={0.6}
+                  transform={`rotate(-90)`}
+                />
+
+                {/* Faction name */}
+                <text
+                  y={-5}
+                  textAnchor="middle"
+                  fill="var(--color-gold)"
+                  fontSize={11}
+                  fontWeight="bold"
+                  className="faction-name"
+                >
+                  {faction.name}
+                </text>
+
+                {/* Influence value */}
+                <text
+                  y={10}
+                  textAnchor="middle"
+                  fill="var(--color-text-secondary)"
+                  fontSize={10}
+                >
+                  {faction.influence}
+                </text>
+
+                {/* Minister count */}
+                <text
+                  y={25}
+                  textAnchor="middle"
+                  fill="var(--color-text-muted)"
+                  fontSize={9}
+                >
+                  {faction.ministers.length}人
+                </text>
+              </g>
+            );
+          })}
+        </g>
       </svg>
-      <div className="diagram-legend">
-        <div className="legend-title">派系关系</div>
-        {Object.entries(REL_STYLES).map(([t, s]) => (
-          <div key={t} className="legend-item">
-            <svg width="30" height="12"><line x1="0" y1="6" x2="30" y2="6" stroke={s.color} strokeWidth={s.w} strokeDasharray={s.dash} /></svg>
-            <span>{t === 'alliance' ? '同盟' : t === 'neutral' ? '中立' : t === 'hostile' ? '敌对' : '从属'}</span>
-          </div>
-        ))}
+
+      {/* Legend */}
+      <div className="faction-legend">
+        <div className="legend-item">
+          <span className="legend-line alliance"></span>
+          <span>同盟</span>
+        </div>
+        <div className="legend-item">
+          <span className="legend-line rival"></span>
+          <span>对立</span>
+        </div>
+        <div className="legend-item">
+          <span className="legend-line neutral"></span>
+          <span>中立</span>
+        </div>
       </div>
-      {(selectedFactionId || hovered) && (() => {
-        const f = factions.find(f => f.id === (selectedFactionId || hovered))
-        if (!f) return null
-        return (
-          <div className="faction-info-panel fade-in">
-            <div className="info-header" style={{ borderLeftColor: f.color || FACTION_COLORS[f.id] || '#c9a84c' }}>
-              <h3>{f.name}</h3>
-              {f.leader && <p className="leader">领袖: {f.leader}</p>}
-            </div>
-            <div className="info-stats">
-              <div className="stat-row"><span>影响力</span><span>{f.influence}</span></div>
-            </div>
-          </div>
-        )
-      })()}
+
+      {/* Tooltip */}
+      {hoveredFaction && (
+        <div className="faction-tooltip">
+          {factions.find(f => f.id === hoveredFaction)?.description}
+        </div>
+      )}
     </div>
-  )
+  );
+}
+
+/* =============================================
+   FactionRelationDiagram Styles
+   ============================================= */
+
+.faction-relation-diagram {
+  position: relative;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 16px;
+}
+
+.faction-diagram-svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.faction-node {
+  transition: transform 0.2s ease;
+}
+
+.faction-node:hover {
+  transform: scale(1.1);
+}
+
+.node-circle {
+  transition: all 0.2s ease;
+}
+
+.node-glow {
+  transition: opacity 0.2s ease;
+}
+
+.emperor-center {
+  animation: emperorCenterPulse 3s ease-in-out infinite;
+}
+
+@keyframes emperorCenterPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px rgba(201, 168, 76, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(201, 168, 76, 0.5));
+  }
+}
+
+.faction-legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.legend-line {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.legend-line.alliance {
+  background: #4a9c5d;
+}
+
+.legend-line.rival {
+  background: #c42b2b;
+}
+
+.legend-line.neutral {
+  background: #6b5f4f;
+  background-image: repeating-linear-gradient(
+    90deg,
+    #6b5f4f 0,
+    #6b5f4f 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
+
+.faction-tooltip {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-gold-dim);
+  border-radius: var(--border-radius);
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  max-width: 300px;
+  text-align: center;
 }
