@@ -2387,10 +2387,40 @@ def build_ui():
             inputs=[save_cid_input],
             outputs=[save_result],
         )
+
+        # 读档后刷新所有UI组件
+        def do_load_game(campaign_id: str):
+            msg = ui.cmd_load(campaign_id)
+            if msg.startswith("✅"):
+                # 读档成功，刷新所有UI
+                return [
+                    ui._render_ministers(),
+                    ui._render_history(),
+                    ui._render_diary_html(),
+                    ui._render_dashboard_html(),
+                    ui._render_powers_html(),
+                    ui._render_intel_html(),
+                    ui._render_map_html(),
+                    ui._render_relocate_html(),
+                    ui._render_loyalty_html(),
+                    ui._render_dongzhuo_html(),
+                    ui._render_escape_html(),
+                    ui._render_skill_html(),
+                    ui._render_building_html(),
+                    ui._render_decree_html(),
+                    ui._render_faction_html(),
+                    ui._render_gazette_html(),
+                    ui._render_event_html(),
+                ]
+            else:
+                # 读档失败，返回消息但保持当前UI不变
+                return [msg] + [gr.update()] * 17
+
         load_btn.click(
-            fn=lambda cid: ui.cmd_load(cid),
+            fn=do_load_game,
             inputs=[load_cid_input],
-            outputs=[load_result],
+            outputs=[load_result, ministers_display, history_display,
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display, event_display],
         )
 
         # 初始化
