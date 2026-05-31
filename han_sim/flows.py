@@ -58,8 +58,8 @@ def calc_faction_influence(state: GameState, db: GameDB) -> Dict[str, float]:
 
     loyal_count = sum(1 for c in characters if c.get("loyalty", 0) >= 70)
     waiting_count = sum(1 for c in characters if 40 <= c.get("loyalty", 0) < 70)
-   离心_count = sum(1 for c in characters if 10 <= c.get("loyalty", 0) < 40)
-   叛逆_count = sum(1 for c in characters if c.get("loyalty", 0) < 10)
+    离心_count = sum(1 for c in characters if 10 <= c.get("loyalty", 0) < 40)
+    叛逆_count = sum(1 for c in characters if c.get("loyalty", 0) < 10)
 
     authority = state.metrics.get("威权", 0)
     reputation = state.metrics.get("声望", 0)
