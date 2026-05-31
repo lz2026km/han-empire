@@ -819,6 +819,58 @@ def check_emperor_escape(state: GameState) -> str:
     return "ongoing"
 
 
+# ── 献帝东归系统（Step7新增）────────────────────────────────────────
+
+def initiate_emperor_escape(state: GameState, target: str = "许昌") -> Dict:
+    """发起献帝东归：从长安逃往许昌，设定 emperor_escaped_turn。
+    需董卓已伏诛才能安全出逃。
+    返回结果 dict。
+    """
+    if state.emperor_escaped_turn > 0:
+        return {"success": False, "narrative": "献帝已在东归途中", "effects": {}}
+
+    state.emperor_escaped_turn = state.turn
+    authority = state.metrics.get("威权", 0)
+    shengwang = state.metrics.get("声望", 0)
+
+    # 威权>=60：天子有威信，沿途诸侯不敢为难
+    # 威权<60：风险较高，诸侯态度不确定
+    if authority >= 60:
+        success_prob = 0.8
+        effects = {"威权": 15, "声望": 10}
+        narrative = f"献帝出长安东归，诸侯见天子威权复振（{authority}），无人敢阻拦，顺利抵达{target}！"
+        state.emperor_safe_turn = state.turn  # 直接成功
+        state.log.append(f"【献帝东归成功】天子威权复振，诸侯不敢为难！")
+    else:
+        success_prob = 0.5
+        effects = {"威权": 5, "声望": 3}
+        narrative = f"献帝出长安东归，但威权不足（{authority}），诸侯态度暧昧，东归之路充满变数。"
+        state.log.append("【献帝东归启动】威权不足，诸侯态度不明，东归充满风险")
+
+    return {
+        "success": True,
+        "narrative": narrative,
+        "effects": effects,
+        "turns_left": 5,
+        "target": target,
+    }
+
+
+def execute_emperor_escape_check(state: GameState) -> Dict:
+    """每回合检查东归状态：成功/失败/进行中。返回结果 dict。"""
+    if state.emperor_escaped_turn == 0 or state.emperor_safe_turn > 0:
+        return {"status": "none"}
+
+    if state.emperor_safe_turn > 0:
+        return {"status": "success", "turns": state.turn - state.emperor_escaped_turn}
+
+    escape_turns = state.turn - state.emperor_escaped_turn
+    if escape_turns >= 5:
+        if state.emperor_safe_turn == 0:
+            return {"status": "failed", "turns": 5}
+    return {"status": "ongoing", "turns": escape_turns, "turns_left": max(0, 5 - escape_turns)}
+
+
 def detect_tragic_events(state: GameState) -> List[Dict]:
     """检测威权崩溃导致的悲剧性事件（每回合最多触发一个）。"""
     events = []
