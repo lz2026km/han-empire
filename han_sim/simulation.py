@@ -469,12 +469,12 @@ def run_monthly_simulation(
         })
     elif escape_status == "success":
         state.emperor_safe_turn = state.turn
+        state.log.append("【献帝东归成功】献帝已平安抵达许昌！")
         historical.append({
             "title": "献帝东归",
             "kind": "historical",
             "summary": "献帝历经艰辛，抵达许昌，曹操迎奉天子。",
         })
-        state.log.append("【献帝东归成功】献帝已平安抵达许昌！")
 
     # ── 3e. 指令状态机：过期诏书处理 ───────────────────────────
     try:
