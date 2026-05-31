@@ -89,6 +89,52 @@ TITLE_BANNER = """
 </div>
 """
 
+# ── 全局CSS变量（借鉴大明力挽狂澜styles.css）───────────────────────────
+gr.HTML("""
+<style>
+:root {
+    --font-brush: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+    --gold-soft: #c9a96e;
+    --gold-dark: #8a5a16;
+    --border: rgba(74, 45, 20, 0.42);
+    --panel: rgba(28, 33, 29, 0.95);
+    --panel-strong: rgba(42, 36, 24, 0.98);
+    --shadow: 0 22px 54px rgba(24, 18, 11, 0.38);
+    --paper: rgba(232, 224, 205, 0.95);
+    --text-light: #e8d5b7;
+    --text-dim: #9ca3af;
+    --accent-red: #8a221a;
+    --accent-green: #22c55e;
+    --accent-blue: #3b82f6;
+    --accent-yellow: #f59e0b;
+}
+.gr-paper {
+    background: var(--paper) !important;
+    color: #1a1410 !important;
+    border: 1px solid rgba(0,0,0,0.2) !important;
+    border-radius: 13px !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3) !important;
+}
+.gr-panel {
+    background: var(--panel-strong) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--shadow) !important;
+}
+pre {
+    font-family: var(--font-brush) !important;
+    background: var(--paper) !important;
+    color: #1a1410 !important;
+    border: 1px solid rgba(0,0,0,0.18) !important;
+    border-radius: 6px !important;
+    padding: 12px !important;
+    font-size: 15px !important;
+    line-height: 1.8 !important;
+    white-space: pre-wrap !important;
+}
+</style>
+""")
+
 
 # ── 会话状态管理 ────────────────────────────────────────────────────────
 class GameUI:
@@ -589,6 +635,44 @@ class GameUI:
             输入联军总军力（包含诸侯联军+天子兵马），点击「执行伏诛」进行判定
         </div>
         """
+
+    def _render_gazette_html(self) -> str:
+        """【史册】历代诏书与奏报HTML（借鉴大明邸报风格，羊皮纸效果）。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+        state = self.session.state
+        turn = state.turn
+        year = state.metrics.get("year", 189)
+        period = state.metrics.get("period", "初平元年")
+
+        # 汇总诏书历史
+        active = state.metrics.get("active_decrees", [])
+        by_type = {}
+        for dec in active:
+            by_type.setdefault(dec.decree_type, []).append(dec)
+
+        header = f"""<div style="background:#1a2d1a;border:1px solid #c9a96e;border-radius:8px;padding:12px;margin-bottom:12px;text-align:center">
+            <span style="font-size:18px;font-weight:bold;color:#c9a96e;font-family:var(--font-brush,'serif')">📜 史册</span>
+            <span style="font-size:12px;color:#9ca3af;margin-left:16px">{period} · 第{turn}回合</span>
+        </div>"""
+
+        # 羊皮纸效果诏书列表
+        decrees_html = ""
+        if active:
+            for dec in active[:20]:  # 最近20条
+                status_color = {"issued": "#22c55e", "executed": "#3b82f6", "expired": "#ef4444", "cancelled": "#6b7280"}.get(dec.status, "#9ca3af")
+                decrees_html += f"""<div class="gr-paper" style="margin-bottom:10px;padding:10px 14px">
+                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(0,0,0,0.1);padding-bottom:6px;margin-bottom:6px">
+                        <span style="font-weight:bold;color:#8a221a;font-size:14px">{dec.title}</span>
+                        <span style="font-size:11px;color:{status_color};font-weight:bold">{dec.status.upper()}</span>
+                    </div>
+                    <div style="font-size:12px;color:#1a1410;line-height:1.7">{dec.content[:80]}...</div>
+                    <div style="font-size:10px;color:#6b7280;margin-top:4px">{dec.decree_type} · 回合{dec.issued_turn}发布{f' · 剩{dec.expire_turn-state.turn}回合' if dec.status=='issued' else ''}</div>
+                </div>"""
+        else:
+            decrees_html = "<p style='color:#9ca3af;text-align:center'>史册尚无记录</p>"
+
+        return header + decrees_html
 
     def _render_faction_html(self) -> str:
         """【派系】朝堂派系HTML：四大派系影响力+趋势。"""
@@ -1117,6 +1201,49 @@ class GameUI:
         except Exception as e:
             return f"❗ 董卓伏诛执行失败：{str(e)}"
 
+    def cmd_free_decree(self, free_text: str):
+        """【自由拟诏】玩家输入自由文本，由系统记录为诏书草案。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        if not free_text or not free_text.strip():
+            return "❗ 请输入诏书内容。"
+        # 追加到诏令日志
+        from han_sim.flows import issue_decree
+        result = issue_decree(self.session.state, "自由诏书", free_text.strip(), free_text.strip(), "")
+        if result.get("success"):
+            return f"✅ 自由诏书已记入草案！\n内容：{free_text.strip()[:50]}..."
+        else:
+            return f"❌ {result.get('narrative', '记录失败')}"
+
+    def cmd_preview_decree(self):
+        """【诏书预览】预览当前已起草的诏书，羊皮纸效果显示。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        from han_sim.flows import get_decree_dashboard
+        active = get_decree_dashboard(self.session.state)
+        issued = active.get("by_status", {}).get("issued", [])
+        if not issued:
+            return "暂无已发布的诏书可供预览。"
+        preview = "【诏书预览·羊皮纸】\n\n"
+        for dec in issued:
+            preview += f"""━━━━━━━━━━━━━━━━\n【{dec['type']}】{dec['title']}\nID：{dec['id']}\n目标：{dec['target'] or '无'}\n剩余：{dec['remaining']}回合\n\n"""
+        return preview
+
+    def cmd_write_decree_ai(self, directives_text: str):
+        """【AI拟诏】将多条指令合并生成正式诏书（模拟大明LLM拟诏流程）。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        if not directives_text or not directives_text.strip():
+            return "❗ 请输入要合并的指令内容。"
+        # 模拟LLM生成诏书（实际可接LLM，这里先用规则生成）
+        lines = [l.strip() for l in directives_text.split("\n") if l.strip()]
+        if not lines:
+            return "❗ 未检测到有效指令。"
+        decree_text = "奉天承运皇帝诏曰：\n\n"
+        decree_text += "\n且\n".join([f"其一：{line}。" for line in lines])
+        decree_text += "\n\n布告天下，咸使闻知。\n"
+        return f"【正式诏书】\n\n{decree_text}"
+
     def cmd_issue_decree(self, decree_type: str, title: str, content: str, target: str):
         """发布诏书。"""
         if not self.session:
@@ -1457,6 +1584,13 @@ def build_ui():
                             escape_btn = gr.Button("发起东归", variant="primary")
                         escape_output = gr.Markdown()
 
+                    # Tab7: 史册（历代诏书+回合奏报）
+                    with gr.TabItem("📜 史册"):
+                        gr.Markdown("### 📜 史册：历代诏书与奏报")
+                        gazette_display = gr.HTML("*点击「新游戏」初始化*")
+                        gazette_output = gr.Markdown()
+                        refresh_gazette_btn = gr.Button("🔄 刷新史册")
+
                     # Tab8: 讨伐董卓
                     with gr.TabItem("⚔️ 讨伐"):
                         gr.Markdown("### ⚔️ 董卓伏诛线")
@@ -1489,7 +1623,7 @@ def build_ui():
                         loyalty_output = gr.Markdown()
                         refresh_skill_btn = gr.Button("🔄 刷新技能树")
 
-                    # Tab10: 技能
+                    # Tab10: 天子技能
                     with gr.TabItem("🌳 技能"):
                         gr.Markdown("### 🌳 天子技能树")
                         skill_display = gr.HTML("*点击「新游戏」初始化*")
@@ -1530,7 +1664,7 @@ def build_ui():
                         with gr.Row():
                             decree_type_input = gr.Dropdown(
                                 label="诏书类型",
-                                choices=["衣带密诏", "讨伐诏书", "迁都诏书", "嘉奖诏书", "罪己诏", "大赦天下"],
+                                choices=["衣带密诏", "讨伐诏书", "迁都诏书", "嘉奖诏书", "罪己诏", "大赦天下", "自由诏书"],
                                 value="衣带密诏",
                             )
                         with gr.Row():
@@ -1539,10 +1673,27 @@ def build_ui():
                         with gr.Row():
                             decree_content_input = gr.Textbox(label="内容", placeholder="诏书内容", lines=2)
                         with gr.Row():
-                            decree_issue_btn = gr.Button("发布诏书", variant="primary")
-                            decree_cancel_btn = gr.Button("取消诏书")
+                            decree_issue_btn = gr.Button("📜 发布诏书", variant="primary")
+                            decree_cancel_btn = gr.Button("❌ 取消")
+                            decree_preview_btn = gr.Button("👁️ 预览")
                         decree_output = gr.Markdown()
-                        refresh_decree_btn = gr.Button("🔄 刷新诏令")
+                        refresh_decree_btn = gr.Button("🔄 刷新")
+
+                        # 自由拟诏区（借鉴大明诏书草案）
+                        gr.Markdown("---")
+                        gr.Markdown("### ✍️ 自由拟诏（借鉴大明诏书流程）")
+                        gr.Markdown("*输入想要颁布的旨意，系统将生成正式诏书*")
+                        with gr.Row():
+                            free_decree_input = gr.Textbox(
+                                label="自由拟诏",
+                                placeholder="如：命曹操即刻率军进驻洛阳，清除董卓余党，安定社稷",
+                                lines=3,
+                            )
+                        with gr.Row():
+                            free_decree_btn = gr.Button("✍️ 记入草案")
+                            write_decree_ai_btn = gr.Button("🤖 AI拟诏")
+                            preview_decree_btn = gr.Button("👁️ 预览诏书")
+                        free_decree_output = gr.Markdown()
 
                     # Tab12: 迁都
                     with gr.TabItem("🏰 迁都"):
@@ -1647,6 +1798,9 @@ def build_ui():
         def do_refresh_faction():
             return ui._render_faction_html()
 
+        def do_refresh_gazette():
+            return ui._render_gazette_html()
+
         def do_refresh_decree():
             return ui._render_decree_html()
 
@@ -1714,10 +1868,37 @@ def build_ui():
             inputs=[decree_type_input, decree_title_input, decree_content_input, decree_target_input],
             outputs=decree_output,
         )
+        decree_preview_btn.click(
+            fn=ui.cmd_preview_decree,
+            inputs=[],
+            outputs=decree_output,
+        )
         decree_cancel_btn.click(
             fn=ui.cmd_cancel_decree,
             inputs=[decree_title_input],  # Using title as ID for simplicity
             outputs=decree_output,
+        )
+        # 自由拟诏 + AI拟诏 + 预览
+        free_decree_btn.click(
+            fn=ui.cmd_free_decree,
+            inputs=[free_decree_input],
+            outputs=free_decree_output,
+        )
+        write_decree_ai_btn.click(
+            fn=ui.cmd_write_decree_ai,
+            inputs=[free_decree_input],
+            outputs=free_decree_output,
+        )
+        preview_decree_btn.click(
+            fn=ui.cmd_preview_decree,
+            inputs=[],
+            outputs=decree_output,
+        )
+        # 史册刷新
+        refresh_gazette_btn.click(
+            fn=do_refresh_gazette,
+            inputs=[],
+            outputs=[gazette_display],
         )
         # 建筑建造
         building_btn.click(
@@ -1760,7 +1941,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display],
         )
         # 刷新按钮
         refresh_dashboard_btn.click(fn=do_refresh_dashboard, inputs=[], outputs=[dashboard_display])
@@ -1783,7 +1964,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display],
         )
 
     return demo
