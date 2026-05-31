@@ -60,6 +60,12 @@ class GameSession:
         db_path = user_data_path(f"campaign_{campaign_id}.db")
         db = GameDB.new(db_path)
         state = GameState()
+        # 初始化新增状态字段（Step4/5）
+        from han_sim.models import init_faction_influence
+        state.metrics["activated_skills"] = []
+        state.metrics["built_buildings"] = []
+        state.metrics["active_decrees"] = []
+        init_faction_influence(state)
         session = GameSession(
             campaign_id=campaign_id,
             state=state,

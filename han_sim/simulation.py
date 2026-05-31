@@ -30,6 +30,7 @@ from han_sim.flows import (
     detect_tragic_events,
     relocate_capital,
     apply_graduated_fiscal,
+    apply_building_maintenance,
     collect_tribute,
     apply_intel_expense,
     LOYALTY_RECOVERY_ACTIONS,
@@ -388,12 +389,19 @@ def run_monthly_simulation(
     # ── 1. 财政流 ──────────────────────────────────────────────
     fiscal = apply_monthly_flow(state, db)
 
+    # ── 1b. 建筑维护费（年度扣除，Step2/5新增）─────────────────
+    building_maint = apply_building_maintenance(state)
+
     # ── 2. 藩镇变化 ────────────────────────────────────────────
     faction_delta = calc_faction_delta(state, db)
 
     # ── 2b. 威权机制效果（Step2新增）────────────────────────────
     # 根据威权等级影响藩镇、声望、派系事件频率
     authority_changes = apply_authority_effects(state, db)
+
+    # ── 2b3. 派系动态（Step4/5新增）──────────────────────────
+    faction_result = apply_all_faction_dynamics(state, db)
+    decree_mult_from_faction = faction_result.get("decree_mult", 1.0)
 
     # ── 2b2. 董卓伏诛线触发（威权>=40时自动触发，Step6新增）─────────
     if state.dong_zhuo_trapped_turn == 0 and state.dong_zhuo_killed_turn == 0:

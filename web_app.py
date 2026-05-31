@@ -1573,6 +1573,11 @@ def build_ui():
 
                 gr.HTML(DIVIDER_SVG)
 
+                gr.HTML("<h4 style='color:#c9a96e;padding:4px 0'>⚖️ 派系态势</h4>")
+                gr.HTML('<div id="faction-mini" style="font-size:11px;color:#9ca3af;line-height:1.6">初始化中...</div>')
+
+                gr.HTML(DIVIDER_SVG)
+
                 gr.HTML("<h4 style='color:#c9a96e;padding:4px 0'>📜 快速拟旨</h4>")
                 quick_intent = gr.Dropdown(
                     label="常用诏书",
