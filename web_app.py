@@ -590,6 +590,48 @@ class GameUI:
         </div>
         """
 
+    def _render_decree_html(self) -> str:
+        """【诏令】诏令状态机HTML：有效诏书+过期诏书+可发类型。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+        from han_sim.flows import get_decree_dashboard
+        state = self.session.state
+        dash = get_decree_dashboard(state)
+
+        header = f"""<div style="background:#1a2d1a;border:1px solid #22c55e;border-radius:8px;padding:12px;margin-bottom:12px">
+            <span style="font-size:16px;font-weight:bold;color:#c9a96e">📋 诏令状态机</span>
+            <span style="font-size:12px;color:#9ca3af;margin-left:12px">总诏书：{dash["total"]}</span>
+        </div>"""
+
+        status_colors = {"draft": "#f59e0b", "issued": "#22c55e", "expired": "#ef4444", "executed": "#3b82f6", "cancelled": "#6b7280"}
+        by_status_html = ""
+        for status, decs in dash["by_status"].items():
+            color = status_colors.get(status, "#9ca3af")
+            items = []
+            for d in decs:
+                remaining = f"剩{d['remaining']}回合" if status == "issued" and d['remaining'] > 0 else f"第{d['issued_turn']}回合发布"
+                items.append(f"""<div style="background:#1a1a2e;border-radius:6px;padding:6px 8px;margin:2px 0;display:flex;justify-content:space-between">
+                    <div>
+                        <span style="color:{color};font-weight:bold;font-size:12px">[{d["type"]}]</span>
+                        <span style="font-size:13px;color:#e8d5b7">{d["title"]}</span>
+                        <span style="font-size:10px;color:#9ca3af">（{d["id"]}）</span>
+                    </div>
+                    <span style="font-size:11px;color:#9ca3af">{remaining}</span>
+                </div>""")
+            by_status_html += f"""<div style="margin-bottom:10px">
+                <div style="color:{color};font-weight:bold;font-size:13px;margin-bottom:4px">{status.upper()}（{len(decs)}）</div>
+                {"".join(items)}
+            </div>"""
+
+        # 可发类型
+        avail_html = "<table style='width:100%;border-collapse:collapse;font-size:12px;background:#1a1a2e;border-radius:6px'>"
+        avail_html += "<tr style='background:#16213e'><th style='padding:6px 8px;text-align:left;color:#c9a96e'>类型</th><th style='padding:6px 8px;text-align:left;color:#c9a96e'>威权需求</th><th style='padding:6px 8px;text-align:left;color:#c9a96e'>有效期</th><th style='padding:6px 8px;text-align:left;color:#c9a96e'>效果</th></tr>"
+        for dtype, edesc, ac, vt in dash["available_types"]:
+            avail_html += f"<tr><td style='padding:5px 8px;color:#e8d5b7;font-weight:bold'>{dtype}</td><td style='padding:5px 8px;color:#ef4444'>{ac}</td><td style='padding:5px 8px;color:#9ca3af'>{vt}回合</td><td style='padding:5px 8px;color:#22c55e'>{edesc}</td></tr>"
+        avail_html += "</table>"
+
+        return header + (by_status_html or "<p style='color:#9ca3af'>暂无诏书</p>") + "<h4 style='color:#c9a96e;margin:12px 0 6px'>可发诏书类型</h4>" + avail_html
+
     def _render_building_html(self) -> str:
         """【建筑】建筑系统HTML：已建成+可建造列表。"""
         if not self.session:
@@ -720,7 +762,7 @@ class GameUI:
 
                 # Tier badge
                 tier_badge = f"<span style='background:{color};color:white;padding:1px 4px;border-radius:3px;font-size:10px'>{skill.tier}阶</span>"
-                req_note = f" <span style='color:#ef4444;font-size:10px'>需{job_skill.requires[0] if skill.requires else ''}</span>" if skill.requires and not is_act else ""
+                req_note = f" <span style='color:#ef4444;font-size:10px'>需{skill.requires[0] if skill.requires else ''}</span>" if skill.requires and not is_act else ""
 
                 tree_items.append(f"""<div style="background:{bg};border-radius:6px;padding:6px 8px;margin:2px 0;opacity:{opacity};display:flex;align-items:center;gap:6px">
                     <span>{icon}</span>
@@ -1035,6 +1077,38 @@ class GameUI:
             return "\n".join(parts)
         except Exception as e:
             return f"❗ 董卓伏诛执行失败：{str(e)}"
+
+    def cmd_issue_decree(self, decree_type: str, title: str, content: str, target: str):
+        """发布诏书。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        if not title:
+            return "❗ 请输入诏书标题。"
+        try:
+            from han_sim.flows import issue_decree
+            result = issue_decree(self.session.state, decree_type, title, content, target)
+            if result.get("success"):
+                return result["narrative"]
+            else:
+                return f"❌ {result.get('narrative', '发布失败')}"
+        except Exception as e:
+            return f"❗ 发布失败：{str(e)}"
+
+    def cmd_cancel_decree(self, decree_id: str):
+        """取消诏书。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        if not decree_id:
+            return "❗ 请输入诏书ID（如 dec_001）。"
+        try:
+            from han_sim.flows import cancel_decree
+            result = cancel_decree(self.session.state, decree_id.strip())
+            if result.get("success"):
+                return result["narrative"]
+            else:
+                return f"❌ {result.get('narrative', '取消失败')}"
+        except Exception as e:
+            return f"❗ 取消失败：{str(e)}"
 
     def cmd_build_structure(self, bid: str):
         """建造建筑。"""
@@ -1403,6 +1477,27 @@ def build_ui():
                         building_output = gr.Markdown()
                         refresh_building_btn = gr.Button("🔄 刷新建筑")
 
+                    # Tab11: 诏令
+                    with gr.TabItem("📋 诏令"):
+                        gr.Markdown("### 📋 诏令状态机")
+                        decree_display = gr.HTML("*点击「新游戏」初始化*")
+                        with gr.Row():
+                            decree_type_input = gr.Dropdown(
+                                label="诏书类型",
+                                choices=["衣带密诏", "讨伐诏书", "迁都诏书", "嘉奖诏书", "罪己诏", "大赦天下"],
+                                value="衣带密诏",
+                            )
+                        with gr.Row():
+                            decree_title_input = gr.Textbox(label="诏书标题", placeholder="如：衣带密诏", lines=1)
+                            decree_target_input = gr.Textbox(label="目标", placeholder="如：曹操（可空）", lines=1)
+                        with gr.Row():
+                            decree_content_input = gr.Textbox(label="内容", placeholder="诏书内容", lines=2)
+                        with gr.Row():
+                            decree_issue_btn = gr.Button("发布诏书", variant="primary")
+                            decree_cancel_btn = gr.Button("取消诏书")
+                        decree_output = gr.Markdown()
+                        refresh_decree_btn = gr.Button("🔄 刷新诏令")
+
                     # Tab12: 迁都
                     with gr.TabItem("🏰 迁都"):
                         gr.Markdown("### 🏰 迁都系统")
@@ -1498,6 +1593,9 @@ def build_ui():
         def do_refresh_dongzhuo():
             return ui._render_dongzhuo_html()
 
+        def do_refresh_decree():
+            return ui._render_decree_html()
+
         def do_refresh_building():
             return ui._render_building_html()
 
@@ -1556,6 +1654,17 @@ def build_ui():
             inputs=[escape_target_input],
             outputs=escape_output,
         )
+        # 诏书发布
+        decree_issue_btn.click(
+            fn=ui.cmd_issue_decree,
+            inputs=[decree_type_input, decree_title_input, decree_content_input, decree_target_input],
+            outputs=decree_output,
+        )
+        decree_cancel_btn.click(
+            fn=ui.cmd_cancel_decree,
+            inputs=[decree_title_input],  # Using title as ID for simplicity
+            outputs=decree_output,
+        )
         # 建筑建造
         building_btn.click(
             fn=ui.cmd_build_structure,
@@ -1597,7 +1706,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display],
         )
         # 刷新按钮
         refresh_dashboard_btn.click(fn=do_refresh_dashboard, inputs=[], outputs=[dashboard_display])
@@ -1610,6 +1719,7 @@ def build_ui():
         refresh_escape_btn.click(fn=do_refresh_escape, inputs=[], outputs=[escape_display])
         refresh_skill_btn.click(fn=do_refresh_skill, inputs=[], outputs=[skill_display])
         refresh_building_btn.click(fn=do_refresh_building, inputs=[], outputs=[building_display])
+        refresh_decree_btn.click(fn=do_refresh_decree, inputs=[], outputs=[decree_display])
         refresh_intel_btn.click(fn=do_refresh_intel, inputs=[], outputs=[intel_display])
         refresh_map_btn.click(fn=do_refresh_map, inputs=[], outputs=[map_display])
 
@@ -1618,7 +1728,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display],
         )
 
     return demo

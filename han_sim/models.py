@@ -256,6 +256,188 @@ def get_available_buildings(authority: int, built: List[str]) -> List[Building]:
     return available
 
 
+# ── 指令状态机（Step3新增）────────────────────────────────────────
+
+@dataclass
+class DecreeRecord:
+    decree_id: str       # 诏书ID（如 "dec_001"）
+    decree_type: str      # 诏书类型（衣带密诏/讨伐诏书/迁都诏书/嘉奖诏书）
+    title: str           # 诏书标题
+    content: str         # 诏书内容
+    status: str          # 状态：draft / issued / expired / executed / cancelled
+    issued_turn: int     # 发布回合（0表示未发布）
+    expire_turn: int     # 过期回合（0表示未发布）
+    execute_turn: int     # 执行回合（0表示未执行）
+    target: str          # 目标（如"曹操"或"许昌"）
+    authority_cost: int  # 发布所需威权
+    effects: Dict        # 效果描述
+
+
+DECREE_TYPE_META: Dict[str, Dict] = {
+    "衣带密诏": {
+        "authority_cost": 30,
+        "valid_turns": 3,
+        "can_cancel": True,
+        "effect_desc": "串联忠臣诛贼",
+    },
+    "讨伐诏书": {
+        "authority_cost": 40,
+        "valid_turns": 4,
+        "can_cancel": True,
+        "effect_desc": "号召诸侯讨伐",
+    },
+    "迁都诏书": {
+        "authority_cost": 50,
+        "valid_turns": 6,
+        "can_cancel": False,
+        "effect_desc": "迁都改元",
+    },
+    "嘉奖诏书": {
+        "authority_cost": 20,
+        "valid_turns": 2,
+        "can_cancel": True,
+        "effect_desc": "嘉奖功臣",
+    },
+    "罪己诏": {
+        "authority_cost": 60,
+        "valid_turns": 5,
+        "can_cancel": False,
+        "effect_desc": "下诏罪己，收拢民心",
+    },
+    "大赦天下": {
+        "authority_cost": 40,
+        "valid_turns": 3,
+        "can_cancel": False,
+        "effect_desc": "大赦天下，安定民心",
+    },
+}
+
+
+def get_decree_status(state: GameState, decree_id: str) -> Optional[DecreeRecord]:
+    """查询某诏书状态。"""
+    active = state.metrics.get("active_decrees", [])
+    for dec in active:
+        if dec.decree_id == decree_id:
+            return dec
+    return None
+
+
+def list_active_decrees(state: GameState) -> List[DecreeRecord]:
+    """列出所有有效诏书。"""
+    return [dec for dec in state.metrics.get("active_decrees", [])
+            if dec.status in ("issued", "draft")]
+
+
+def issue_decree(state: GameState, decree_type: str, title: str, content: str, target: str = "") -> Dict:
+    """发布诏书（草稿→已发布）。返回结果dict。"""
+    meta = DECREE_TYPE_META.get(decree_type)
+    if not meta:
+        return {"success": False, "narrative": f"未知诏书类型：{decree_type}"}
+    authority = state.metrics.get("威权", 0)
+    if authority < meta["authority_cost"]:
+        return {"success": False, "narrative": f"威权不足（需{meta['authority_cost']}，当前{authority}）"}
+
+    # 生成ID
+    active = state.metrics.get("active_decrees", [])
+    dec_id = f"dec_{len(active) + 1:03d}"
+
+    decree = DecreeRecord(
+        decree_id=dec_id,
+        decree_type=decree_type,
+        title=title,
+        content=content,
+        status="issued",
+        issued_turn=state.turn,
+        expire_turn=state.turn + meta["valid_turns"],
+        execute_turn=0,
+        target=target,
+        authority_cost=meta["authority_cost"],
+        effects={"effect_desc": meta["effect_desc"]},
+    )
+    state.metrics["active_decrees"] = active + [decree]
+    state.log.append(f"【诏书发布】{title}（{decree_type}），有效期{meta['valid_turns']}回合")
+    return {
+        "success": True,
+        "narrative": f"✅ {title}已发布！\n类型：{decree_type}\n有效期：{meta['valid_turns']}回合\n效果：{meta['effect_desc']}",
+        "decree_id": dec_id,
+    }
+
+
+def execute_decree(state: GameState, decree_id: str) -> Dict:
+    """执行已发布的诏书（issued→executed）。"""
+    active = state.metrics.get("active_decrees", [])
+    for dec in active:
+        if dec.decree_id == decree_id:
+            if dec.status != "issued":
+                return {"success": False, "narrative": f"诏书状态不是已发布（当前：{dec.status}）"}
+            dec.status = "executed"
+            dec.execute_turn = state.turn
+            state.metrics["active_decrees"] = active
+            state.log.append(f"【诏书执行】{dec.title}（{dec.decree_type}）")
+            return {
+                "success": True,
+                "narrative": f"✅ {dec.title}已执行！",
+                "decree": dec.decree_type,
+            }
+    return {"success": False, "narrative": f"未找到诏书：{decree_id}"}
+
+
+def cancel_decree(state: GameState, decree_id: str) -> Dict:
+    """取消诏书（仅draft/issued且can_cancel=True）。"""
+    meta = DECREE_TYPE_META.get(state.metrics.get("active_decrees", [DecreeRecord("","","","","",0,0,0,"","",{})])[0].decree_type if state.metrics.get("active_decrees") else {})
+    active = state.metrics.get("active_decrees", [])
+    for i, dec in enumerate(active):
+        if dec.decree_id == decree_id:
+            dec_meta = DECREE_TYPE_META.get(dec.decree_type, {})
+            if not dec_meta.get("can_cancel", False):
+                return {"success": False, "narrative": f"【{dec.decree_type}】不可取消"}
+            if dec.status == "executed":
+                return {"success": False, "narrative": "诏书已执行，无法取消"}
+            dec.status = "cancelled"
+            state.metrics["active_decrees"] = active
+            state.log.append(f"【诏书取消】{dec.title}（{dec.decree_type}）")
+            return {
+                "success": True,
+                "narrative": f"✅ {dec.title}已取消",
+            }
+    return {"success": False, "narrative": f"未找到诏书：{decree_id}"}
+
+
+def tick_decree_expiry(state: GameState) -> List[DecreeRecord]:
+    """回合推进时检查诏书过期，返回过期列表。"""
+    active = state.metrics.get("active_decrees", [])
+    expired_list = []
+    for dec in active:
+        if dec.status == "issued" and dec.expire_turn > 0 and state.turn >= dec.expire_turn:
+            dec.status = "expired"
+            state.log.append(f"【诏书过期】{dec.title}（{dec.decree_type}）已过期")
+            expired_list.append(dec)
+    state.metrics["active_decrees"] = active
+    return expired_list
+
+
+def get_decree_dashboard(state: GameState) -> Dict:
+    """获取诏书状态总览。"""
+    active = state.metrics.get("active_decrees", [])
+    by_status = {}
+    for dec in active:
+        by_status.setdefault(dec.status, []).append({
+            "id": dec.decree_id,
+            "title": dec.title,
+            "type": dec.decree_type,
+            "target": dec.target,
+            "issued_turn": dec.issued_turn,
+            "expire_turn": dec.expire_turn,
+            "remaining": max(0, dec.expire_turn - state.turn) if dec.status == "issued" else 0,
+        })
+    return {
+        "total": len(active),
+        "by_status": by_status,
+        "available_types": [(k, v["effect_desc"], v["authority_cost"], v["valid_turns"])
+                            for k, v in DECREE_TYPE_META.items()],
+    }
+
+
 @dataclass
 class ChatResult:
     action: str
