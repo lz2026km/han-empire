@@ -22,6 +22,7 @@ from han_sim.flows import (
     apply_loyalty_decay,
     apply_warlord_loyalty_decay,
     check_betrayal_events,
+    trigger_dongzhuo_trap,
     calc_faction_delta,
     check_dongzhuo_trap,
     check_emperor_escape,
@@ -392,6 +393,11 @@ def run_monthly_simulation(
     # ── 2b. 威权机制效果（Step2新增）────────────────────────────
     # 根据威权等级影响藩镇、声望、派系事件频率
     authority_changes = apply_authority_effects(state, db)
+
+    # ── 2b2. 董卓伏诛线触发（威权>=40时自动触发，Step6新增）─────────
+    if state.dong_zhuo_trapped_turn == 0 and state.dong_zhuo_killed_turn == 0:
+        if state.metrics.get("威权", 0) >= 40:
+            trigger_dongzhuo_trap(state)
 
     # ── 2c. 藩镇动态：各路诸侯自动行动 ──────────────────────────
     warlord_changes = apply_warlord_actions(state, db)

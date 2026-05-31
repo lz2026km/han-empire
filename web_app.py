@@ -471,6 +471,70 @@ class GameUI:
         {"".join(lines)}
         </div>"""
 
+    def _render_dongzhuo_html(self) -> str:
+        """【讨伐董卓】董卓伏诛线HTML：当前状态+触发条件+执行按钮。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+        s = self.session.state
+        trapped = s.dong_zhuo_trapped_turn > 0 and s.dong_zhuo_killed_turn == 0
+        killed = s.dong_zhuo_killed_turn > 0
+        authority = s.metrics.get("威权", 0)
+
+        if killed:
+            status_html = """<div style="background:#1a3d1a;border:1px solid #22c55e;border-radius:8px;padding:16px;text-align:center">
+                <div style="font-size:32px">✅</div>
+                <div style="font-size:20px;font-weight:bold;color:#22c55e">董卓已伏诛</div>
+                <div style="font-size:13px;color:#9ca3af;margin-top:4px">第{s.dong_zhuo_killed_turn}回合，天子重光汉室</div>
+            </div>"""
+        elif trapped:
+            turns_left = 6 - (s.turn - s.dong_zhuo_trapped_turn)
+            status_html = f"""<div style="background:#3d2a1a;border:1px solid #f59e0b;border-radius:8px;padding:16px;text-align:center">
+                <div style="font-size:32px">🔥</div>
+                <div style="font-size:20px;font-weight:bold;color:#f59e0b">董卓被围困中</div>
+                <div style="font-size:14px;color:#e8d5b7;margin-top:4px">剩余<span style="color:#ef4444;font-weight:bold">{turns_left}</span>回合需完成伏诛</div>
+                <div style="font-size:12px;color:#9ca3af;margin-top:4px">威权：{authority}（≥60时所需军力-10）</div>
+            </div>"""
+        else:
+            status_html = f"""<div style="background:#2d1f1f;border:1px solid #ef4444;border-radius:8px;padding:16px;text-align:center">
+                <div style="font-size:32px">⚔️</div>
+                <div style="font-size:18px;font-weight:bold;color:#ef4444">董卓肆虐中</div>
+                <div style="font-size:13px;color:#9ca3af;margin-top:4px">威权：{authority}（需≥40触发伏诛线）</div>
+                <div style="font-size:12px;color:#9ca3af;margin-top:4px">诸侯联军军力≥{40 - (10 if authority >= 60 else (5 if authority >= 40 else 0))}方可伏诛</div>
+            </div>"""
+
+        return f"""<div style="font-family:system-ui,sans-serif">
+        {status_html}
+
+        <h4 style="margin:12px 0 6px;color:#c9a96e">📜 董卓伏诛机制</h4>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;background:#1a1a2e;border-radius:6px">
+            <tr style="background:#16213e">
+                <th style="padding:8px 12px;text-align:left;color:#c9a96e">项目</th>
+                <th style="padding:8px 12px;text-align:left;color:#c9a96e">说明</th>
+            </tr>
+            <tr>
+                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">触发条件</td>
+                <td style="padding:6px 12px;color:#9ca3af">威权≥40即可触发伏诛线</td>
+            </tr>
+            <tr>
+                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">成功条件</td>
+                <td style="padding:6px 12px;color:#9ca3af">联军军力 ≥ 40（威权≥60时-10）</td>
+            </tr>
+            <tr>
+                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">失败惩罚</td>
+                <td style="padding:6px 12px;color:#ef4444">威权-10，声望-5，超期6回合则游戏失败</td>
+            </tr>
+            <tr>
+                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">成功奖励</td>
+                <td style="padding:6px 12px;color:#22c55e">威权+30，声望+20，藩镇-15，汉室库+50</td>
+            </tr>
+        </table>
+
+        <h4 style="margin:12px 0 6px;color:#c9a96e">⚔️ 执行伏诛</h4>
+        <div style="font-size:12px;color:#9ca3af;margin-bottom:8px">
+            输入联军总军力（包含诸侯联军+天子兵马），点击「执行伏诛」进行判定
+        </div>
+        """
+
     def _render_loyalty_html(self) -> str:
         """【忠诚度】忠诚度系统HTML：大臣列表+诸侯忠诚度+恢复行动。"""
         if not self.session:
@@ -705,6 +769,40 @@ class GameUI:
             return "\n".join(lines)
         except Exception as e:
             return f"❗ 拟旨失败：{str(e)}"
+
+    def cmd_dongzhuo_elimination(self, military_input: str):
+        """执行董卓伏诛行动：输入联军军力，触发伏诛判定。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        if not military_input:
+            return "❗ 请输入联军军力。"
+        try:
+            military = int(military_input)
+        except ValueError:
+            return "❗ 请输入有效的数字军力。"
+        if military <= 0:
+            return "❗ 军力必须大于0。"
+        try:
+            from han_sim.flows import execute_dongzhuo_elimination, trigger_dongzhuo_trap
+            state = self.session.state
+            # 如果尚未触发陷阱，先触发
+            if state.dong_zhuo_trapped_turn == 0 and state.dong_zhuo_killed_turn == 0:
+                trigger_dongzhuo_trap(state)
+            result = execute_dongzhuo_elimination(state, military)
+            status = "✅ 董卓伏诛成功！" if result["success"] else "❌ 伏诛失败"
+            parts = [f"**【{status}】**"]
+            parts.append("")
+            parts.append(result["narrative"])
+            parts.append("")
+            parts.append(f"所需军力：{result['required']}，实际：{result['actual']}")
+            parts.append("")
+            for k, v in result["effects"].items():
+                sign = "+" if v >= 0 else ""
+                color = "#22c55e" if v > 0 else ("#ef4444" if v < 0 else "#9ca3af")
+                parts.append(f"<span style='color:{color};font-weight:bold'>{k} {sign}{v}</span>")
+            return "\n".join(parts)
+        except Exception as e:
+            return f"❗ 董卓伏诛执行失败：{str(e)}"
 
     def cmd_loyalty_recovery(self, char_name: str, action: str):
         """对指定大臣执行忠诚度恢复行动。"""
@@ -960,6 +1058,19 @@ def build_ui():
                         diary_display = gr.HTML("*天子日记将显示在这里*")
                         refresh_diary_btn = gr.Button("🔄 刷新日记")
 
+                    # Tab7: 讨伐董卓
+                    with gr.TabItem("⚔️ 讨伐"):
+                        gr.Markdown("### ⚔️ 董卓伏诛线")
+                        dongzhuo_display = gr.HTML("*点击「新游戏」初始化*")
+                        with gr.Row():
+                            dongzhuo_military_input = gr.Number(
+                                label="联军军力",
+                                placeholder="输入联军总军力",
+                                precision=0,
+                            )
+                            dongzhuo_btn = gr.Button("执行伏诛", variant="primary")
+                        dongzhuo_output = gr.Markdown()
+
                     # Tab8: 忠诚度
                     with gr.TabItem("💗 忠诚度"):
                         gr.Markdown("### 💗 忠诚度系统")
@@ -1067,6 +1178,9 @@ def build_ui():
         def do_refresh_loyalty():
             return ui._render_loyalty_html()
 
+        def do_refresh_dongzhuo():
+            return ui._render_dongzhuo_html()
+
         # 召对
         summon_btn.click(
             fn=ui.cmd_summon,
@@ -1119,6 +1233,12 @@ def build_ui():
             inputs=[loyalty_char_input, loyalty_action_input],
             outputs=loyalty_output,
         )
+        # 董卓伏诛
+        dongzhuo_btn.click(
+            fn=ui.cmd_dongzhuo_elimination,
+            inputs=[dongzhuo_military_input],
+            outputs=dongzhuo_output,
+        )
         # 威权恢复
         recovery_btn.click(
             fn=ui.cmd_authority_recovery,
@@ -1136,7 +1256,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display],
         )
         # 刷新按钮
         refresh_dashboard_btn.click(fn=do_refresh_dashboard, inputs=[], outputs=[dashboard_display])
@@ -1145,6 +1265,7 @@ def build_ui():
         refresh_diary_btn.click(fn=do_refresh_diary, inputs=[], outputs=[diary_display])
         refresh_relocate_btn.click(fn=do_refresh_relocate, inputs=[], outputs=[relocate_display])
         refresh_loyalty_btn.click(fn=do_refresh_loyalty, inputs=[], outputs=[loyalty_display])
+        refresh_dongzhuo_btn.click(fn=do_refresh_dongzhuo, inputs=[], outputs=[dongzhuo_display])
         refresh_intel_btn.click(fn=do_refresh_intel, inputs=[], outputs=[intel_display])
         refresh_map_btn.click(fn=do_refresh_map, inputs=[], outputs=[map_display])
 
@@ -1153,7 +1274,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display],
         )
 
     return demo
