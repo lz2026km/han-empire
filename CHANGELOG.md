@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [0.9.6] - 2026-05-31
 
+### Step5 - 忠诚度系统
+
+#### Added
+- **大臣忠诚度衰减** (`han_sim/flows.py` `apply_loyalty_decay()`)
+  - 威权>=80：几乎不衰减
+  - 威权50-79：标准衰减
+  - 威权20-49：加速衰减
+  - 威权<20：最快衰减
+  - 权臣麾下角色（董卓/曹操/吕布）额外+1
+
+- **诸侯忠诚度衰减** (`han_sim/flows.py` `apply_warlord_loyalty_decay()`)
+  - 按立场衰减：敌对(最快)/中立/忠诚(最慢)
+  - 受威权等级 `warlord_stability` 修正（威权越高衰减越慢）
+
+- **叛逃事件检测** (`han_sim/flows.py` `check_betrayal_events()`)
+  - 威权<20+忠诚度<30+有势力归属 → 3%叛逃概率
+  - 威权<15+藩镇>=80 → 5%藩镇脱离概率
+
+- **忠诚度恢复行动** (`han_sim/flows.py`)
+  - `LOYALTY_RECOVERY_ACTIONS` 字典：施恩(+5)/嘉奖(+8)/笼络(+6)/赦免(+10)/晋升(+12)
+  - `apply_loyalty_recovery()` 函数：内库检查→扣费→忠诚度更新
+
+- **忠诚度Tab** (`web_app.py`)
+  - 大臣忠诚度列表（名称/官职/忠诚/状态条）
+  - 诸侯忠诚度列表（势力/首领/忠诚/状态条）
+  - 恢复行动按钮+执行下拉菜单
+
+- **simulation.py 集成**：每月末推演调用 `apply_warlord_loyalty_decay()` 和 `check_betrayal_events()`
+
 ### Step4 - 迁都系统
 
 #### Added
