@@ -247,7 +247,7 @@ BUILDING_TYPES = {
 
 # ── 建筑状态与损耗（Step3新增）────────────────────────────────
 
-def apply_building_deterioration(state: GameState) -> List[str]:
+def apply_building_deterioration(state: "GameState") -> List[str]:
     """每月建筑状态损耗：
     - 状态低于60：风险+5
     - 状态低于30：风险+10
@@ -277,7 +277,7 @@ def apply_building_deterioration(state: GameState) -> List[str]:
     return damaged
 
 
-def repair_building(state: GameState, bid: str, cost: int) -> Dict:
+def repair_building(state: "GameState", bid: str, cost: int) -> Dict:
     """修缮建筑（消耗汉室库，恢复condition）。"""
     built = state.metrics.get("built_buildings", {})
     if bid not in built:
@@ -294,7 +294,7 @@ def repair_building(state: GameState, bid: str, cost: int) -> Dict:
     return {"success": True, "narrative": f"✅ {bid}修缮完成！费用-{cost}，状态{cond}/100"}
 
 
-def get_building_status_detailed(state: GameState) -> Dict[str, Dict]:
+def get_building_status_detailed(state: "GameState") -> Dict[str, Dict]:
     """获取所有建筑详细状态（condition/risk）。"""
     built = state.metrics.get("built_buildings", {})
     result = {}
@@ -390,7 +390,7 @@ DECREE_TYPE_META: Dict[str, Dict] = {
 }
 
 
-def get_decree_status(state: GameState, decree_id: str) -> Optional[DecreeRecord]:
+def get_decree_status(state: "GameState", decree_id: str) -> Optional[DecreeRecord]:
     """查询某诏书状态。"""
     active = state.metrics.get("active_decrees", [])
     for dec in active:
@@ -399,13 +399,13 @@ def get_decree_status(state: GameState, decree_id: str) -> Optional[DecreeRecord
     return None
 
 
-def list_active_decrees(state: GameState) -> List[DecreeRecord]:
+def list_active_decrees(state: "GameState") -> List[DecreeRecord]:
     """列出所有有效诏书。"""
     return [dec for dec in state.metrics.get("active_decrees", [])
             if dec.status in ("issued", "draft")]
 
 
-def issue_decree(state: GameState, decree_type: str, title: str, content: str, target: str = "") -> Dict:
+def issue_decree(state: "GameState", decree_type: str, title: str, content: str, target: str = "") -> Dict:
     """发布诏书（草稿→已发布）。返回结果dict。"""
     meta = DECREE_TYPE_META.get(decree_type)
     if not meta:
@@ -440,7 +440,7 @@ def issue_decree(state: GameState, decree_type: str, title: str, content: str, t
     }
 
 
-def execute_decree(state: GameState, decree_id: str) -> Dict:
+def execute_decree(state: "GameState", decree_id: str) -> Dict:
     """执行已发布的诏书（issued→executed）。"""
     active = state.metrics.get("active_decrees", [])
     for dec in active:
@@ -459,7 +459,7 @@ def execute_decree(state: GameState, decree_id: str) -> Dict:
     return {"success": False, "narrative": f"未找到诏书：{decree_id}"}
 
 
-def cancel_decree(state: GameState, decree_id: str) -> Dict:
+def cancel_decree(state: "GameState", decree_id: str) -> Dict:
     """取消诏书（仅draft/issued且can_cancel=True）。"""
     meta = DECREE_TYPE_META.get(state.metrics.get("active_decrees", [DecreeRecord("","","","","",0,0,0,"","",{})])[0].decree_type if state.metrics.get("active_decrees") else {})
     active = state.metrics.get("active_decrees", [])
@@ -480,7 +480,7 @@ def cancel_decree(state: GameState, decree_id: str) -> Dict:
     return {"success": False, "narrative": f"未找到诏书：{decree_id}"}
 
 
-def tick_decree_expiry(state: GameState) -> List[DecreeRecord]:
+def tick_decree_expiry(state: "GameState") -> List[DecreeRecord]:
     """回合推进时检查诏书过期，返回过期列表。"""
     active = state.metrics.get("active_decrees", [])
     expired_list = []
@@ -493,7 +493,7 @@ def tick_decree_expiry(state: GameState) -> List[DecreeRecord]:
     return expired_list
 
 
-def get_decree_dashboard(state: GameState) -> Dict:
+def get_decree_dashboard(state: "GameState") -> Dict:
     """获取诏书状态总览。"""
     active = state.metrics.get("active_decrees", [])
     by_status = {}
@@ -553,7 +553,7 @@ FACTION_META: Dict[str, Dict] = {
 }
 
 
-def get_faction_status(state: GameState) -> Dict:
+def get_faction_status(state: "GameState") -> Dict:
     """获取派系影响力状态。"""
     faction_data = state.metrics.get("faction_influence", {})
     result = {}
@@ -573,7 +573,7 @@ def get_faction_status(state: GameState) -> Dict:
     return result
 
 
-def init_faction_influence(state: GameState) -> None:
+def init_faction_influence(state: "GameState") -> None:
     """初始化派系影响力（游戏开始时调用）。"""
     state.metrics["faction_influence"] = {
         "忠汉派": 25,
@@ -583,7 +583,7 @@ def init_faction_influence(state: GameState) -> None:
     }
 
 
-def apply_faction_change(state: GameState, faction: str, delta: int) -> None:
+def apply_faction_change(state: "GameState", faction: str, delta: int) -> None:
     """调整派系影响力。"""
     faction_data = state.metrics.get("faction_influence", {})
     if faction in faction_data:
@@ -593,7 +593,7 @@ def apply_faction_change(state: GameState, faction: str, delta: int) -> None:
     state.metrics["faction_influence"] = faction_data
 
 
-def apply_all_faction_dynamics(state: GameState, db) -> Dict:
+def apply_all_faction_dynamics(state: "GameState", db) -> Dict:
     """每回合应用派系动态：
     - 忠汉派：威权高则上升
     - 离心派：威权低则上升
@@ -636,7 +636,7 @@ def apply_all_faction_dynamics(state: GameState, db) -> Dict:
     return {"changes": changes, "decree_mult": decree_mult}
 
 
-def get_dominant_faction(state: GameState) -> str:
+def get_dominant_faction(state: "GameState") -> str:
     """获取主导派系。"""
     faction_data = state.metrics.get("faction_influence", {})
     if not faction_data:
@@ -644,7 +644,7 @@ def get_dominant_faction(state: GameState) -> str:
     return max(faction_data, key=lambda k: faction_data[k])
 
 
-def adjust_faction_by_action(state: GameState, action_type: str, target: str = "") -> None:
+def adjust_faction_by_action(state: "GameState", action_type: str, target: str = "") -> None:
     """根据天子行动调整派系（行动反馈）。"""
     faction_data = state.metrics.get("faction_influence", {})
     if action_type == "issue_decree":
