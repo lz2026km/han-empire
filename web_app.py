@@ -471,6 +471,61 @@ class GameUI:
         {"".join(lines)}
         </div>"""
 
+    def _render_escape_html(self) -> str:
+        """【献帝东归】东归系统HTML：当前状态+执行按钮+倒计时。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+        s = self.session.state
+        escaped = s.emperor_escaped_turn > 0
+        safe = s.emperor_safe_turn > 0
+
+        if safe:
+            status_html = f"""<div style="background:#1a3d1a;border:1px solid #22c55e;border-radius:8px;padding:16px;text-align:center">
+                <div style="font-size:32px">✅</div>
+                <div style="font-size:20px;font-weight:bold;color:#22c55e">献帝已成功东归</div>
+                <div style="font-size:13px;color:#9ca3af;margin-top:4px">第{safe}回合抵达许昌，汉室重光</div>
+            </div>"""
+        elif escaped:
+            turns = s.turn - s.emperor_escaped_turn
+            left = max(0, 5 - turns)
+            status_html = f"""<div style="background:#3d2a1a;border:1px solid #f59e0b;border-radius:8px;padding:16px;text-align:center">
+                <div style="font-size:32px">🚗</div>
+                <div style="font-size:20px;font-weight:bold;color:#f59e0b">献帝东归中</div>
+                <div style="font-size:14px;color:#e8d5b7;margin-top:4px">剩余 <span style="color:#ef4444;font-weight:bold">{left}</span> 回合</div>
+            </div>"""
+        else:
+            dong_killed = s.dong_zhuo_killed_turn > 0
+            hint = "董卓已伏诛，可以东归" if dong_killed else "❌ 需先完成董卓伏诛"
+            status_html = f"""<div style="background:#2d1f1f;border:1px solid #ef4444;border-radius:8px;padding:16px;text-align:center">
+                <div style="font-size:32px">🏰</div>
+                <div style="font-size:18px;font-weight:bold;color:#ef4444">献帝困于长安</div>
+                <div style="font-size:13px;color:#9ca3af;margin-top:4px">{hint}</div>
+            </div>"""
+
+        return f"""<div style="font-family:system-ui,sans-serif">
+        {status_html}
+
+        <h4 style="margin:12px 0 6px;color:#c9a96e">📜 东归机制</h4>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;background:#1a1a2e;border-radius:6px">
+            <tr style="background:#16213e">
+                <th style="padding:8px 12px;text-align:left;color:#c9a96e">项目</th>
+                <th style="padding:8px 12px;text-align:left;color:#c9a96e">说明</th>
+            </tr>
+            <tr>
+                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">触发条件</td>
+                <td style="padding:6px 12px;color:#9ca3af">董卓伏诛后（威权>=60成功率80%，<60成功率50%）</td>
+            </tr>
+            <tr>
+                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">成功效果</td>
+                <td style="padding:6px 12px;color:#22c55e">威权+15，声望+10（威权>=60）</td>
+            </tr>
+            <tr>
+                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">失败效果</td>
+                <td style="padding:6px 12px;color:#ef4444">威权-10，声望-5，超期5回合则东归失败</td>
+            </tr>
+        </table>
+        """
+
     def _render_dongzhuo_html(self) -> str:
         """【讨伐董卓】董卓伏诛线HTML：当前状态+触发条件+执行按钮。"""
         if not self.session:
@@ -770,6 +825,33 @@ class GameUI:
         except Exception as e:
             return f"❗ 拟旨失败：{str(e)}"
 
+    def cmd_emperor_escape(self, target: str = "许昌"):
+        """发起献帝东归行动（从长安逃往许昌）。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        state = self.session.state
+        if state.emperor_safe_turn > 0:
+            return f"❗ 献帝已于第{state.emperor_safe_turn}回合成功东归，无需再逃。"
+        if state.emperor_escaped_turn > 0:
+            return f"❗ 献帝已于第{state.emperor_escaped_turn}回合开始东归，途中。"
+        if state.dong_zhuo_killed_turn == 0:
+            return "❗ 董卓未伏诛，此时出逃风险极高，不建议东归。"
+        try:
+            from han_sim.flows import initiate_emperor_escape
+            result = initiate_emperor_escape(state, target)
+            parts = ["**【献帝东归启动】**", ""]
+            parts.append(result.get("narrative", "献帝开始东归之路"))
+            parts.append("")
+            parts.append(f"目标：{target} | 剩余回合：{result.get('turns_left', 5)}")
+            parts.append("")
+            for k, v in result.get("effects", {}).items():
+                sign = "+" if v >= 0 else ""
+                color = "#22c55e" if v > 0 else ("#ef4444" if v < 0 else "#9ca3af")
+                parts.append(f"<span style='color:{color};font-weight:bold'>{k} {sign}{v}</span>")
+            return "\n".join(parts)
+        except Exception as e:
+            return f"❗ 东归启动失败：{str(e)}"
+
     def cmd_dongzhuo_elimination(self, military_input: str):
         """执行董卓伏诛行动：输入联军军力，触发伏诛判定。"""
         if not self.session:
@@ -1058,7 +1140,20 @@ def build_ui():
                         diary_display = gr.HTML("*天子日记将显示在这里*")
                         refresh_diary_btn = gr.Button("🔄 刷新日记")
 
-                    # Tab7: 讨伐董卓
+                    # Tab7: 献帝东归
+                    with gr.TabItem("🚗 东归"):
+                        gr.Markdown("### 🚗 献帝东归")
+                        escape_display = gr.HTML("*点击「新游戏」初始化*")
+                        with gr.Row():
+                            escape_target_input = gr.Dropdown(
+                                label="目标",
+                                choices=["许昌", "洛阳", "邺城"],
+                                value="许昌",
+                            )
+                            escape_btn = gr.Button("发起东归", variant="primary")
+                        escape_output = gr.Markdown()
+
+                    # Tab8: 讨伐董卓
                     with gr.TabItem("⚔️ 讨伐"):
                         gr.Markdown("### ⚔️ 董卓伏诛线")
                         dongzhuo_display = gr.HTML("*点击「新游戏」初始化*")
@@ -1178,6 +1273,9 @@ def build_ui():
         def do_refresh_loyalty():
             return ui._render_loyalty_html()
 
+        def do_refresh_escape():
+            return ui._render_escape_html()
+
         def do_refresh_dongzhuo():
             return ui._render_dongzhuo_html()
 
@@ -1227,6 +1325,12 @@ def build_ui():
             inputs=[relocate_input],
             outputs=relocate_output,
         )
+        # 献帝东归
+        escape_btn.click(
+            fn=ui.cmd_emperor_escape,
+            inputs=[escape_target_input],
+            outputs=escape_output,
+        )
         # 忠诚度恢复
         loyalty_btn.click(
             fn=ui.cmd_loyalty_recovery,
@@ -1256,7 +1360,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display],
         )
         # 刷新按钮
         refresh_dashboard_btn.click(fn=do_refresh_dashboard, inputs=[], outputs=[dashboard_display])
@@ -1266,6 +1370,7 @@ def build_ui():
         refresh_relocate_btn.click(fn=do_refresh_relocate, inputs=[], outputs=[relocate_display])
         refresh_loyalty_btn.click(fn=do_refresh_loyalty, inputs=[], outputs=[loyalty_display])
         refresh_dongzhuo_btn.click(fn=do_refresh_dongzhuo, inputs=[], outputs=[dongzhuo_display])
+        refresh_escape_btn.click(fn=do_refresh_escape, inputs=[], outputs=[escape_display])
         refresh_intel_btn.click(fn=do_refresh_intel, inputs=[], outputs=[intel_display])
         refresh_map_btn.click(fn=do_refresh_map, inputs=[], outputs=[map_display])
 
@@ -1274,7 +1379,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display],
         )
 
     return demo

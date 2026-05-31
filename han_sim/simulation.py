@@ -23,6 +23,7 @@ from han_sim.flows import (
     apply_warlord_loyalty_decay,
     check_betrayal_events,
     trigger_dongzhuo_trap,
+    execute_emperor_escape_check,
     calc_faction_delta,
     check_dongzhuo_trap,
     check_emperor_escape,
@@ -463,7 +464,8 @@ def run_monthly_simulation(
         threshold_crisis.append({
             "title": "东归失败",
             "kind": "threshold_crisis",
-            "summary": "献帝出逃未成，被李傕郭汜追回。",
+            "summary": "献帝未能抵达许昌，被李傕郭汜追回。",
+            "effects": {"威权": -10, "声望": -5, "藩镇": +5}
         })
     elif escape_status == "success":
         state.emperor_safe_turn = state.turn
@@ -472,8 +474,9 @@ def run_monthly_simulation(
             "kind": "historical",
             "summary": "献帝历经艰辛，抵达许昌，曹操迎奉天子。",
         })
+        state.log.append("【献帝东归成功】献帝已平安抵达许昌！")
 
-    # ── 3d. 指令状态机：过期诏书处理 ───────────────────────────
+    # ── 3e. 指令状态机：过期诏书处理 ───────────────────────────
     try:
         expired = db.expire_old_directives(state.turn)
         for exp_d in expired:
