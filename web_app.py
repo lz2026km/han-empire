@@ -590,6 +590,83 @@ class GameUI:
         </div>
         """
 
+    def _render_skill_html(self) -> str:
+        """【技能树】天子技能树HTML：四系技能树+状态+激活按钮。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+        from han_sim.flows import get_skill_tree_status
+        from han_sim.models import SKILL_TREES
+        state = self.session.state
+        status = get_skill_tree_status(state)
+        sp = status["skill_points"]
+        auth = status["authority"]
+        activated = state.metrics.get("activated_skills", [])
+
+        # 技能点
+        header = f"""<div style="background:#1a2d1a;border:1px solid #22c55e;border-radius:8px;padding:12px;margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                    <span style="font-size:16px;font-weight:bold;color:#c9a96e">🌳 天子技能树</span>
+                    <span style="font-size:12px;color:#9ca3af;margin-left:12px">威权：{auth}</span>
+                </div>
+                <div style="text-align:right">
+                    <span style="font-size:24px;font-weight:bold;color:#f59e0b">{sp}</span>
+                    <span style="font-size:12px;color:#9ca3af"> 技能点</span>
+                </div>
+            </div>
+            <div style="font-size:12px;color:#9ca3af;margin-top:4px">
+                已激活：{status["activated_count"]}/{status["total_skills"]} &nbsp;
+                可用：{len(status["available"])}
+            </div>
+        </div>"""
+
+        # 四系技能树
+        branch_colors = {"经略": "#22c55e", "权谋": "#8b5cf6", "武功": "#ef4444", "文治": "#3b82f6"}
+        trees_html = ""
+        for branch, skills in SKILL_TREES.items():
+            color = branch_colors.get(branch, "#9ca3af")
+            tree_items = []
+            for skill in skills:
+                sid = skill.sid
+                is_act = sid in activated
+                is_avail = any(s[0] == sid for s in status["available"])
+                is_locked = not is_act and not is_avail
+
+                if is_act:
+                    icon = "✅"
+                    bg = "#1a3d1a"
+                    opacity = "1"
+                elif is_avail:
+                    icon = "🔓"
+                    bg = "#2d2d1a"
+                    opacity = "1"
+                else:
+                    icon = "🔒"
+                    bg = "#1a1a2e"
+                    opacity = "0.5"
+
+                # Tier badge
+                tier_badge = f"<span style='background:{color};color:white;padding:1px 4px;border-radius:3px;font-size:10px'>{skill.tier}阶</span>"
+                req_note = f" <span style='color:#ef4444;font-size:10px'>需{job_skill.requires[0] if skill.requires else ''}</span>" if skill.requires and not is_act else ""
+
+                tree_items.append(f"""<div style="background:{bg};border-radius:6px;padding:6px 8px;margin:2px 0;opacity:{opacity};display:flex;align-items:center;gap:6px">
+                    <span>{icon}</span>
+                    <span style="font-size:12px;color:#e8d5b7;font-weight:bold">{sid}</span>
+                    <span style="font-size:12px;color:#e8d5b7">{skill.name}</span>
+                    {tier_badge}
+                    <span style="font-size:10px;color:#9ca3af">消耗:{skill.cost} | 威权≥{skill.unlock_level}</span>
+                </div>""")
+
+            trees_html += f"""<div style="margin-bottom:12px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                    <span style="font-size:16px;font-weight:bold;color:{color}">{branch}系</span>
+                    <span style="font-size:11px;color:#9ca3af">{status["branch_progress"][branch]["activated"]}/{status["branch_progress"][branch]["total"]} 已激活</span>
+                </div>
+                {"".join(tree_items)}
+            </div>"""
+
+        return header + trees_html
+
     def _render_loyalty_html(self) -> str:
         """【忠诚度】忠诚度系统HTML：大臣列表+诸侯忠诚度+恢复行动。"""
         if not self.session:
@@ -885,6 +962,26 @@ class GameUI:
             return "\n".join(parts)
         except Exception as e:
             return f"❗ 董卓伏诛执行失败：{str(e)}"
+
+    def cmd_activate_skill(self, skill_id: str):
+        """激活天子技能。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        if not skill_id:
+            return "❗ 请输入技能ID。"
+        try:
+            from han_sim.flows import activate_skill
+            result = activate_skill(self.session.state, skill_id.strip())
+            if result.get("success"):
+                parts = [f"✅ **{result['skill']}** 激活成功！"]
+                parts.append("")
+                parts.append(f"剩余技能点：{result['remaining_points']}")
+                parts.append(f"消耗技能点：{result['cost']}")
+                return "\n".join(parts)
+            else:
+                return f"❌ {result.get('narrative', '激活失败')}"
+        except Exception as e:
+            return f"❗ 技能激活失败：{str(e)}"
 
     def cmd_loyalty_recovery(self, char_name: str, action: str):
         """对指定大臣执行忠诚度恢复行动。"""
@@ -1183,8 +1280,22 @@ def build_ui():
                             )
                             loyalty_btn = gr.Button("执行", variant="primary")
                         loyalty_output = gr.Markdown()
+                        refresh_skill_btn = gr.Button("🔄 刷新技能树")
 
-                    # Tab9: 迁都
+                    # Tab10: 技能
+                    with gr.TabItem("🌳 技能"):
+                        gr.Markdown("### 🌳 天子技能树")
+                        skill_display = gr.HTML("*点击「新游戏」初始化*")
+                        with gr.Row():
+                            skill_input = gr.Textbox(
+                                label="输入技能ID",
+                                placeholder="如：jx_01（输入技能ID激活）",
+                                lines=1,
+                            )
+                            skill_btn = gr.Button("激活技能", variant="primary")
+                        skill_output = gr.Markdown()
+
+                    # Tab11: 迁都
                     with gr.TabItem("🏰 迁都"):
                         gr.Markdown("### 🏰 迁都系统")
                         relocate_display = gr.HTML("*点击「新游戏」初始化*")
@@ -1279,6 +1390,9 @@ def build_ui():
         def do_refresh_dongzhuo():
             return ui._render_dongzhuo_html()
 
+        def do_refresh_skill():
+            return ui._render_skill_html()
+
         # 召对
         summon_btn.click(
             fn=ui.cmd_summon,
@@ -1331,6 +1445,12 @@ def build_ui():
             inputs=[escape_target_input],
             outputs=escape_output,
         )
+        # 技能激活
+        skill_btn.click(
+            fn=ui.cmd_activate_skill,
+            inputs=[skill_input],
+            outputs=skill_output,
+        )
         # 忠诚度恢复
         loyalty_btn.click(
             fn=ui.cmd_loyalty_recovery,
@@ -1360,7 +1480,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display],
         )
         # 刷新按钮
         refresh_dashboard_btn.click(fn=do_refresh_dashboard, inputs=[], outputs=[dashboard_display])
@@ -1371,6 +1491,7 @@ def build_ui():
         refresh_loyalty_btn.click(fn=do_refresh_loyalty, inputs=[], outputs=[loyalty_display])
         refresh_dongzhuo_btn.click(fn=do_refresh_dongzhuo, inputs=[], outputs=[dongzhuo_display])
         refresh_escape_btn.click(fn=do_refresh_escape, inputs=[], outputs=[escape_display])
+        refresh_skill_btn.click(fn=do_refresh_skill, inputs=[], outputs=[skill_display])
         refresh_intel_btn.click(fn=do_refresh_intel, inputs=[], outputs=[intel_display])
         refresh_map_btn.click(fn=do_refresh_map, inputs=[], outputs=[map_display])
 
@@ -1379,7 +1500,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display],
         )
 
     return demo
