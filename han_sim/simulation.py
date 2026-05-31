@@ -308,7 +308,7 @@ def _generate_narration(state: GameState, fiscal: Dict,
             timeout_seconds=180.0,
         )
         if Agent is None:
-            narrative = "（月末推演：LLM未启用，数值结算完成）"
+            return "（月末推演：LLM未启用，数值结算完成）"
         else:
             agent = Agent(
                 name="月度叙事生成",
@@ -316,8 +316,8 @@ def _generate_narration(state: GameState, fiscal: Dict,
                 instructions=[prompt],
                 markdown=False,
             )
-        text = extract_agent_text(agent.run(prompt))
-        return text.strip()
+            text = extract_agent_text(agent.run(prompt))
+            return text.strip()
     except Exception as exc:
         # LLM 失败不影响游戏进程，返回摘要
         return (
@@ -367,6 +367,7 @@ def _generate_emperor_diary(state: GameState, fiscal: Dict,
         )
         if Agent is None:
             event_narrative = f"「{e_name}」事件触发。"
+            return f"第{state.turn}回合·{state.period}月·{mood}。{event_narrative}"
         else:
             agent = Agent(
                 name="天子日记生成",
@@ -374,8 +375,8 @@ def _generate_emperor_diary(state: GameState, fiscal: Dict,
                 instructions=[prompt],
                 markdown=False,
             )
-        text = extract_agent_text(agent.run(prompt))
-        diary = text.strip()
+            text = extract_agent_text(agent.run(prompt))
+            diary = text.strip()
         # 保证格式前缀
         prefix = f"第{state.turn}回合·{state.period}月·{mood}"
         if not diary.startswith(prefix):
