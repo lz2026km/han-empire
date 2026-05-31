@@ -3,8 +3,8 @@
 
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(0, 9, 6, 0),
-    prodvers=(0, 9, 6, 0),
+    filevers=(1, 8, 5, 0),
+    prodvers=(1, 8, 5, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -19,13 +19,13 @@ VSVersionInfo(
           u'040904B0',
           [
             StringStruct(u'CompanyName', u'Han Empire Sim'),
-            StringStruct(u'FileDescription', u'汉献帝之末路 - A Text-Based Strategy Game'),
-            StringStruct(u'FileVersion', u'0.9.6'),
+            StringStruct(u'FileDescription', u'汉献帝之末路 - 基于LLM的历史策略游戏'),
+            StringStruct(u'FileVersion', u'1.8.5'),
             StringStruct(u'InternalName', u'HanEmpireSim'),
             StringStruct(u'LegalCopyright', u'Copyright (c) 2024-2026'),
             StringStruct(u'OriginalFilename', u'HanEmpireSim.exe'),
             StringStruct(u'ProductName', u'汉献帝之末路'),
-            StringStruct(u'ProductVersion', u'0.9.6'),
+            StringStruct(u'ProductVersion', u'1.8.5'),
           ]
         )
       ]
