@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [0.9.6] - 2026-05-31
 
+### Step4 - 迁都系统
+
+#### Added
+- **迁都Tab** (`web_app.py`)
+  - 新增「🏰 迁都」Tab页面：当前都城显示+5城选项+效果预览表
+  - 都城选项：洛阳/许昌/长安/邺城/南阳（含说明、效果、状态）
+  - 威权约束：需威权≥30才能执行迁都
+
+- **迁都效果系统** (`han_sim/flows.py`)
+  - `_CAPITAL_EFFECTS` 字典：洛阳(无)/许昌(+5威权)/长安(-5声望-3威权-5藩镇)/邺城(-3声望-5威权-8藩镇)/南阳(-2声望-2威权-3藩镇)
+  - `relocate_capital()` 函数：验证合法性→应用效果→更新state.capital→记录日志
+
+- **迁都命令** (`web_app.py` `cmd_relocate_capital()`)
+  - 检查当前都城、威权约束、内库足够
+  - 返回迁都效果变化（颜色编码+/红/绿）
+
+- **迁都预览HTML** (`web_app.py` `_render_relocate_html()`)
+  - 当前都城高亮卡片
+  - 5城选项表格：名称/说明/效果/状态列
+  - 威权不足提示
+
 ### Step3 - 界面美化 + 威权恢复 + 诏书预览
 
 #### Added
