@@ -722,7 +722,7 @@ SEED_EVENTS: List[GameEvent] = [
 ]
 
 
-def check_event_trigger(state: GameState, event: GameEvent) -> bool:
+def check_event_trigger(state: "GameState", event: GameEvent) -> bool:
     """检查事件是否满足触发条件。"""
     gate = event.trigger_gate
     if not gate:
@@ -755,7 +755,7 @@ def check_event_trigger(state: GameState, event: GameEvent) -> bool:
     return True
 
 
-def trigger_random_event(state: GameState) -> Optional[GameEvent]:
+def trigger_random_event(state: "GameState") -> Optional[GameEvent]:
     """触发一个符合条件的随机事件。"""
     triggered = state.metrics.get("triggered_events", [])
     candidates = [e for e in SEED_EVENTS if e.id not in triggered and check_event_trigger(state, e)]
@@ -769,7 +769,7 @@ def trigger_random_event(state: GameState) -> Optional[GameEvent]:
     return event
 
 
-def get_event_dashboard(state: GameState) -> Dict:
+def get_event_dashboard(state: "GameState") -> Dict:
     """获取事件状态总览。"""
     triggered = state.metrics.get("triggered_events", [])
     active_events = [e for e in SEED_EVENTS if e.id in triggered]
