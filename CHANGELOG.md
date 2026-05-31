@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [0.9.6] - 2026-05-31
 
+### Step6 - 董卓伏诛
+
+#### Added
+- **董卓伏诛线触发** (`han_sim/flows.py` `trigger_dongzhuo_trap()`)
+  - 威权>=40时每月自动触发 `dong_zhuo_trapped_turn`
+  - 触发时记录日志"董卓伏诛线触发"
+
+- **伏诛判定逻辑** (`han_sim/flows.py` `execute_dongzhuo_elimination()`)
+  - 成功条件：联军军力>=40，威权>=60时-10
+  - 成功效果：威权+30，声望+20，藩镇-15，汉室库+50
+  - 失败效果：威权-10，声望-5
+
+- **simulation.py集成**（Step6）
+  - 每月检查威权>=40时自动触发伏诛线
+  - `trigger_dongzhuo_trap()` 在 authority_changes 后调用
+
+- **讨伐董卓Tab** (`web_app.py`)
+  - 显示当前状态：肆虐中/被围困中/已伏诛
+  - 围困倒计时（6回合）
+  - 机制说明表格
+  - 联军军力输入 + 执行按钮
+
+- **cmd_dongzhuo_elimination()** (`web_app.py`)
+  - 输入联军军力，触发伏诛判定
+  - 返回成功/失败状态+效果+所需/实际军力
+
 ### Step5 - 忠诚度系统
 
 #### Added
