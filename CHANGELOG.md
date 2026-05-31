@@ -6,7 +6,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [0.9.6] - 2026-05-31
 
+### Step3 - 界面美化 + 威权恢复 + 诏书预览
+
+#### Added
+- **威权仪表盘** (`web_app.py`)
+  - 专属卡片显示威权值/等级/诏书倍率/召对倍率，威权<20红色脉冲动画
+  - 威权恢复行动按钮（从左侧仪表盘点击选择）
+  
+- **诏书预览系统** (`web_app.py`)
+  - 选择诏书类型后实时显示预计效果（含威权折扣后数值+汉室库消耗）
+  - 使用 `DECREE_EFFECT_TEMPLATES` 替代不存在的 `DECREE_EFFECTS`
+  
+- **装饰性标题栏** (`web_app.py`)
+  - 渐变背景+金色分隔线+天子威权光晕效果
+  - `TITLE_BANNER` 和 `DIVIDER_SVG` 装饰组件
+
+- **三栏布局优化**
+  - 左侧国势+大臣，中央Tab，右侧威权恢复+快捷操作
+  - 威权恢复独立面板：13种恢复行动，按威权等级解锁
+
+- **朱红渐变主按钮** (`theme.py`)
+  - `btn-royal` 线性渐变+悬停金色光晕动画
+
+- **历史线进度条**
+  - 董卓伏诛/献帝东归双线，颜色动态（绿/橙/灰）
+
+#### Fixed
+- `DECREE_EFFECTS` → `DECREE_EFFECT_TEMPLATES`（诏书预览数据源修复）
+
+#### Changed
+- 诏书预览区：诏书Tab新增实时预览，预览随类型切换
+- 威权标签系统：从硬编码if分支改为 `get_authority_level()` 映射
+
 ### Step2 - 威权机制
+
+ - 威权机制
 
 #### Added
 - **威权等级系统** (`han_sim/models.py`)
