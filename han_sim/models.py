@@ -4,6 +4,7 @@
 
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
+import random
 
 
 @dataclass
@@ -935,21 +936,6 @@ class Army:
     loyalty: int
     status: str  # active / garrison / destroyed
     owner_power: str
-
-
-@dataclass
-class Building:
-    id: str
-    region_id: str
-    name: str
-    category: str  # 财政 / 军事 / 民生 / 科技 / 交通 / 内廷
-    level: int    # 1-5
-    condition: int  # 完好 0-100
-    maintenance: int  # 万两/月
-    risk: int
-    output_metric: str  # 汉室库 / 军备 / 声望
-    output_amount: int
-    status: str
 
 
 @dataclass

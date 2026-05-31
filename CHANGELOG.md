@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.0] - 2026-05-31
+
+### Bug Fixes - P0 Critical
+
+#### Fixed
+- **db.py:29** - Thread-safe database connections using `threading.local()`
+  - Replaced single shared connection with per-thread connections
+  - Added lazy initialization for schema and content
+
+- **models.py:280** - Added missing `import random` for `apply_building_deterioration()`
+
+- **flows.py:617-620** - Fixed wrong field query
+  - Changed `WHERE id=?` to `WHERE name=?` to match actual primary key
+
+- **models.py:941-952** - Removed duplicate `Building` dataclass definition
+  - Kept the more complete version with `region_id`, `category`, `level` fields
+
+- **server.py:155** - Fixed `run_monthly_simulation()` parameter order
+  - Changed `run_monthly_simulation(session)` to `run_monthly_simulation(session.state, session.db)`
+
+---
+
 ## [0.9.9] - 2026-05-31
 
 ### Animation Expansion & New UI Components

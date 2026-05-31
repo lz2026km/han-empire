@@ -152,7 +152,7 @@ def next_turn(campaign_id):
         GAMES[campaign_id] = GameSession.load(campaign_id)
 
     session = GAMES[campaign_id]
-    sim_result = run_monthly_simulation(session)
+    sim_result = run_monthly_simulation(session.state, session.db)
     session.save()
     GAMES[campaign_id] = session
 

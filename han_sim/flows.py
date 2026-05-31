@@ -616,7 +616,7 @@ def apply_loyalty_recovery(state: GameState, char_id: str, action: str) -> int:
     if not action_info:
         return 0
     char = state.db.conn.execute(
-        "SELECT * FROM characters WHERE id=?", (char_id,)
+        "SELECT * FROM characters WHERE name=?", (char_id,)
     ).fetchone()
     if not char:
         return 0

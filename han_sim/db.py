@@ -8,6 +8,7 @@
 import json
 import os
 import sqlite3
+import threading
 from datetime import datetime
 from typing import Dict, List, Optional, TYPE_CHECKING, Tuple
 
@@ -24,16 +25,31 @@ ECONOMY_ACCOUNTS = ("汉室库", "内库")
 class GameDB:
     def __init__(self, path: str, content: Optional["GameContent"] = None):
         self.path = path
-        self.content = content  # 过渡期可省略，seed_static_data 时自行加载
+        self.content = content
+        self._local = threading.local()
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-        self.conn = sqlite3.connect(path, check_same_thread=False, timeout=30)
-        self.conn.execute("PRAGMA journal_mode=WAL")
-        self.conn.row_factory = sqlite3.Row
-        self.init_schema()
-        self.init_fiscal_config()
-        if self.content is None:
-            from han_sim.content import load_game_content
-            self.content = load_game_content()
+        self._shared_conn = sqlite3.connect(path, check_same_thread=False, timeout=30)
+        self._shared_conn.execute("PRAGMA journal_mode=WAL")
+        self._shared_conn.row_factory = sqlite3.Row
+
+    def _get_conn(self) -> sqlite3.Connection:
+        if not hasattr(self._local, 'conn'):
+            self._local.conn = sqlite3.connect(self.path, timeout=30)
+            self._local.conn.execute("PRAGMA journal_mode=WAL")
+            self._local.conn.row_factory = sqlite3.Row
+        return self._local.conn
+
+    @property
+    def conn(self) -> sqlite3.Connection:
+        conn = self._get_conn()
+        if not hasattr(self, '_schema_initialized'):
+            self._schema_initialized = True
+            self.init_schema()
+            self.init_fiscal_config()
+            if self.content is None:
+                from han_sim.content import load_game_content
+                self.content = load_game_content()
+        return conn
 
     @classmethod
     def new(cls, path: str) -> "GameDB":
