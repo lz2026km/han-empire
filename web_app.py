@@ -1811,6 +1811,129 @@ class GameUI:
         except Exception as e:
             return f"❗ 月末推演失败：{str(e)}"
 
+    def cmd_harem(self, action: str, name: str = "") -> str:
+        """后宫系统命令：选妃/查看/调教"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        cid = self.session.campaign_id
+        try:
+            if action == "选妃":
+                candidates = self.session.db.list_consort_candidates(status="pending")
+                if not candidates:
+                    return "❌ 暂无待选秀女。（如需初始化，请重启游戏）"
+                # 如果提供了姓名，则选中该秀女
+                if name:
+                    result = self.session.db.select_consort(cid, name, turn=self.session.state.turn)
+                    if result:
+                        return f"✅ {name} 已入选入宫！\n\n**{name}**\n- 位份：采女\n- 居所：永巷"
+                    else:
+                        return f"❌ 秀女「{name}」不在候选名单中"
+                # 否则显示候选列表
+                lines = ["**👑 待选秀女**", ""]
+                for c in candidates[:8]:
+                    traits = c.get("traits", [])
+                    skills = c.get("skills", [])
+                    lines.append(f"- **{c.get('name','')}**（{c.get('age',18)}岁）")
+                    lines.append(f"  - 性情：{c.get('temperament','')} | 容色：{c.get('appearance',50)} | 才艺：{c.get('talent',50)}")
+                    lines.append(f"  - 特长：{','.join(skills) if skills else '暂无'}")
+                    lines.append(f"  - 标签：{','.join(traits) if traits else '暂无'}")
+                    lines.append("")
+                lines.append("---")
+                lines.append("**在上方输入秀女姓名，点击「执行」选中入宫**")
+                return "\n".join(lines)
+
+            elif action == "查看在册妃嫔":
+                consorts = self.session.db.list_consorts(cid)
+                if not consorts:
+                    return "❗ 后宫暂无妃嫔。"
+                lines = ["**👑 在册妃嫔**", ""]
+                for c in consorts:
+                    rank = c.get("rank", "采女")
+                    favor = c.get("favorability", 50)
+                    palace = c.get("palace", "永巷")
+                    traits = c.get("traits", [])
+                    skills = c.get("skills", [])
+                    fav_icon = "💖" if favor >= 70 else ("💔" if favor < 30 else "💛")
+                    lines.append(f"- **{c.get('name','')}** [{rank}] {fav_icon}好感{favor}")
+                    lines.append(f"  - 居所：{palace} | 特长：{','.join(skills) if skills else '暂无'}")
+                    lines.append(f"  - 性情：{','.join(traits) if traits else '暂无'}")
+                    lines.append("")
+                return "\n".join(lines)
+
+            elif action == "调教":
+                if not name:
+                    return "❗ 请输入妃嫔姓名"
+                # 解析 "姓名-技能" 格式，如 "伏寿-学习诗词"
+                parts = name.split("-", 1)
+                consort_name = parts[0].strip()
+                skill_cmd = parts[1].strip() if len(parts) > 1 else ""
+                consort = self.session.db.get_consort(cid, consort_name)
+                if not consort:
+                    return f"❗ 妃嫔「{consort_name}」不存在"
+                traits = consort.get("traits", [])
+                skills = consort.get("skills", [])
+                if not skill_cmd:
+                    lines = [
+                        f"**👑 调教妃嫔：{consort_name}**",
+                        "",
+                        f"当前性情：{','.join(traits) if traits else '暂无'}",
+                        f"当前特长：{','.join(skills) if skills else '暂无'}",
+                        "",
+                        "**输入格式：姓名-技能**",
+                        "例如：`伏寿-学习诗词` 或 `伏寿-性情温婉`",
+                        "",
+                        "可用水：学习诗词/学习音律/学习歌舞/学习剑术",
+                        "可用性情：性情温婉/性情刚烈/性情贤淑",
+                    ]
+                    return "\n".join(lines)
+                # 执行调教
+                skill_map = {
+                    "学习诗词": "诗词",
+                    "学习音律": "音律",
+                    "学习歌舞": "歌舞",
+                    "学习剑术": "剑术",
+                }
+                trait_map = {
+                    "性情温婉": "温婉",
+                    "性情刚烈": "刚烈",
+                    "性情贤淑": "贤淑",
+                }
+                skill = skill_map.get(skill_cmd, "")
+                trait = trait_map.get(skill_cmd, "")
+                if skill or trait:
+                    self.session.db.cultivate_consort(cid, consort_name, skill=skill or "", trait=trait or "")
+                    updated = self.session.db.get_consort(cid, consort_name)
+                    new_skills = updated.get("skills", []) if updated else skills
+                    new_traits = updated.get("traits", []) if updated else traits
+                    return f"✅ 调教成功！\n\n**{consort_name}**\n- 特长：{','.join(new_skills) if new_skills else '暂无'}\n- 性情：{','.join(new_traits) if new_traits else '暂无'}"
+                return f"❗ 未知指令：{skill_cmd}"
+
+            else:
+                return f"❗ 未知操作：{action}"
+        except Exception as e:
+            return f"❗ 后宫操作失败：{str(e)}"
+
+    def _render_harem_html(self) -> str:
+        """渲染后宫面板 HTML"""
+        if not self.session:
+            return "*点击「新游戏」初始化*"
+        cid = self.session.campaign_id
+        consorts = self.session.db.list_consorts(cid)
+        if not consorts:
+            return "*后宫暂无妃嫔*"
+        items = []
+        for c in consorts:
+            favor = c.get("favorability", 50)
+            fav_bar = "💖" * (favor // 25) + "💔" * (4 - favor // 25)
+            items.append(f"""
+            <div style="background:#16213e;border:1px solid #2d2d44;border-radius:8px;padding:10px;margin:6px 0">
+                <div style="color:#c9a96e;font-weight:bold">{c.get('name','')}</div>
+                <div style="color:#9ca3af;font-size:12px">{c.get('rank','采女')} · {c.get('palace','永巷')}</div>
+                <div style="margin-top:4px">{fav_bar} {favor}%</div>
+            </div>
+            """)
+        return "<div style='font-family:system-ui'>" + "".join(items) + "</div>"
+
 
 # ── Gradio UI ──────────────────────────────────────────────────────────
 def build_ui():
@@ -2073,21 +2196,26 @@ def build_ui():
                         decree_output = gr.Markdown()
                         refresh_decree_btn = gr.Button("🔄 刷新")
 
-                        # 自由拟诏区（借鉴大明诏书草案）
-                        gr.Markdown("---")
-                        gr.Markdown("### ✍️ 自由拟诏（借鉴大明诏书流程）")
-                        gr.Markdown("*输入想要颁布的旨意，系统将生成正式诏书*")
+                    # Tab18: 后宫
+                    with gr.TabItem("👑 后宫"):
+                        gr.Markdown("### 👑 后宫系统")
+                        gr.Markdown("*选妃入宫、调教妃嫔、查看后宫状况*")
+                        harem_display = gr.HTML("*点击「选妃」查看候选秀女*")
                         with gr.Row():
-                            free_decree_input = gr.Textbox(
-                                label="自由拟诏",
-                                placeholder="如：命曹操即刻率军进驻洛阳，清除董卓余党，安定社稷",
-                                lines=3,
+                            harem_action_input = gr.Dropdown(
+                                label="操作",
+                                choices=["选妃", "查看在册妃嫔", "调教"],
+                                value="选妃",
+                            )
+                            harem_name_input = gr.Textbox(
+                                label="秀女/妃嫔姓名",
+                                placeholder="输入姓名",
+                                lines=1,
                             )
                         with gr.Row():
-                            free_decree_btn = gr.Button("✍️ 记入草案")
-                            write_decree_ai_btn = gr.Button("🤖 AI拟诏")
-                            preview_decree_btn = gr.Button("👁️ 预览诏书")
-                        free_decree_output = gr.Markdown()
+                            harem_btn = gr.Button("执行", variant="primary")
+                            refresh_harem_btn = gr.Button("🔄 刷新")
+                        harem_output = gr.Markdown()
 
                     # Tab17: 迁都
                     with gr.TabItem("🏰 迁都"):
@@ -2177,7 +2305,8 @@ def build_ui():
             intel = ui._render_intel_html()
             map_html = ui._render_map_html()
             relocate_html = ui._render_relocate_html()
-            return out, ministers, history, diary, dash, powers, intel, map_html, relocate_html
+            harem_html = ui._render_harem_html()
+            return out, ministers, history, diary, dash, powers, intel, map_html, relocate_html, harem_html
 
         def do_refresh_dashboard():
             return ui._render_dashboard_html()
@@ -2363,7 +2492,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display, event_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display, event_display, harem_display],
         )
         # 刷新按钮
         refresh_dashboard_btn.click(fn=do_refresh_dashboard, inputs=[], outputs=[dashboard_display])
@@ -2380,6 +2509,14 @@ def build_ui():
         refresh_faction_btn.click(fn=do_refresh_faction, inputs=[], outputs=[faction_display])
         refresh_intel_btn.click(fn=do_refresh_intel, inputs=[], outputs=[intel_display])
         refresh_map_btn.click(fn=do_refresh_map, inputs=[], outputs=[map_display])
+        refresh_harem_btn.click(fn=ui._render_harem_html, inputs=[], outputs=[harem_display])
+
+        # 后宫操作
+        harem_btn.click(
+            fn=ui.cmd_harem,
+            inputs=[harem_action_input, harem_name_input],
+            outputs=harem_output,
+        )
 
         # 存档/读档
         save_btn.click(
@@ -2392,7 +2529,6 @@ def build_ui():
         def do_load_game(campaign_id: str):
             msg = ui.cmd_load(campaign_id)
             if msg.startswith("✅"):
-                # 读档成功，刷新所有UI
                 return [
                     ui._render_ministers(),
                     ui._render_history(),
@@ -2411,16 +2547,16 @@ def build_ui():
                     ui._render_faction_html(),
                     ui._render_gazette_html(),
                     ui._render_event_html(),
+                    ui._render_harem_html(),
                 ]
             else:
-                # 读档失败，返回消息但保持当前UI不变
-                return [msg] + [gr.update()] * 17
+                return [msg] + [gr.update()] * 18
 
         load_btn.click(
             fn=do_load_game,
             inputs=[load_cid_input],
             outputs=[load_result, ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display, event_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display, event_display, harem_display],
         )
 
         # 初始化
@@ -2428,7 +2564,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display, event_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display, event_display, harem_display],
         )
 
     return demo

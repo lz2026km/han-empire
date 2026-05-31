@@ -93,3 +93,31 @@ class GameContent:
 
 def load_game_content() -> GameContent:
     return GameContent()
+
+
+def seed_consort_candidates(db: "GameDB") -> None:
+    """将 content/consorts.json 的候选秀女数据灌入数据库。"""
+    from pathlib import Path
+    import json
+    path = Path(__file__).parent.parent / "content" / "consorts.json"
+    if not path.exists():
+        return
+    with open(path, "r", encoding="utf-8") as f:
+        candidates = json.load(f)
+    for c in candidates:
+        existing = db.conn.execute(
+            "SELECT id FROM consort_candidates WHERE name=?", (c["name"],)
+        ).fetchone()
+        if existing:
+            continue
+        db.add_consort_candidate(
+            name=c["name"],
+            age=c.get("age", 18),
+            background=c.get("background", ""),
+            appearance=c.get("appearance", 50),
+            talent=c.get("talent", 50),
+            temperament=c.get("temperament", "温婉"),
+            skills=c.get("skills", []),
+            traits=c.get("traits", []),
+            portrait_id=c.get("portrait_id", ""),
+        )

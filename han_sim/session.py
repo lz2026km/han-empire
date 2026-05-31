@@ -123,6 +123,9 @@ class GameSession:
         ]
         for b in initial_buildings:
             self.db.upsert_building(b)
+        # 初始化后宫候选秀女
+        from han_sim.content import seed_consort_candidates
+        seed_consort_candidates(self.db)
         self.db.commit()
 
     # ── 召见大臣 ─────────────────────────────────────────────

@@ -481,31 +481,155 @@ class GameDB:
             );
             CREATE INDEX IF NOT EXISTS idx_directives_campaign ON directives(campaign_id, status);
             CREATE INDEX IF NOT EXISTS idx_directives_turn ON directives(issued_turn, status);
+
+            CREATE TABLE IF NOT EXISTS consorts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                name TEXT NOT NULL,
+                rank TEXT NOT NULL DEFAULT '采女',
+                traits TEXT NOT NULL DEFAULT '[]',
+                skills TEXT NOT NULL DEFAULT '[]',
+                favorability INTEGER NOT NULL DEFAULT 50,
+                palace TEXT NOT NULL DEFAULT '永巷',
+                status TEXT NOT NULL DEFAULT 'active',
+                portrait_id TEXT NOT NULL DEFAULT '',
+                entered_turn INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(campaign_id, name)
+            );
+
+            CREATE TABLE IF NOT EXISTS consort_candidates (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                age INTEGER NOT NULL DEFAULT 18,
+                background TEXT NOT NULL DEFAULT '',
+                appearance INTEGER NOT NULL DEFAULT 50,
+                talent INTEGER NOT NULL DEFAULT 50,
+                temperament TEXT NOT NULL DEFAULT '温婉',
+                skills TEXT NOT NULL DEFAULT '[]',
+                traits TEXT NOT NULL DEFAULT '[]',
+                portrait_id TEXT NOT NULL DEFAULT '',
+                status TEXT NOT NULL DEFAULT 'pending',
+                selected_turn INTEGER,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS consort_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                turn INTEGER NOT NULL,
+                consort_name TEXT NOT NULL,
+                event_type TEXT NOT NULL,
+                description TEXT NOT NULL,
+                favorability_delta INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS consort_traits (
+                name TEXT PRIMARY KEY,
+                extra_skills TEXT NOT NULL DEFAULT '[]',
+                extra_traits TEXT NOT NULL DEFAULT '[]',
+                updated_turn INTEGER NOT NULL DEFAULT 0,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS legacies (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                source_issue_id INTEGER,
+                modifiers TEXT NOT NULL DEFAULT '{}',
+                narrative_hint TEXT NOT NULL DEFAULT '',
+                start_turn INTEGER NOT NULL,
+                duration_months INTEGER NOT NULL DEFAULT 24,
+                status TEXT NOT NULL DEFAULT 'active',
+                clear_gate TEXT NOT NULL DEFAULT '{}',
+                legacy_key TEXT NOT NULL DEFAULT '',
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_legacies_active ON legacies(status);
+
+            CREATE TABLE IF NOT EXISTS building_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                turn INTEGER NOT NULL,
+                year INTEGER NOT NULL,
+                period INTEGER NOT NULL,
+                building_id TEXT NOT NULL,
+                field TEXT NOT NULL,
+                old_value TEXT NOT NULL,
+                new_value TEXT NOT NULL,
+                delta INTEGER,
+                reason TEXT NOT NULL,
+                event_id TEXT,
+                edict_id INTEGER,
+                actor TEXT,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_building_logs_turn ON building_logs(turn, building_id);
+
+            CREATE TABLE IF NOT EXISTS power_name_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                turn INTEGER NOT NULL,
+                year INTEGER NOT NULL,
+                period INTEGER NOT NULL,
+                power_id TEXT NOT NULL,
+                old_name TEXT NOT NULL,
+                new_name TEXT NOT NULL,
+                old_aliases TEXT NOT NULL DEFAULT '',
+                new_aliases TEXT NOT NULL DEFAULT '',
+                reason TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
         """)
         self.conn.commit()
 
     def init_fiscal_config(self) -> None:
-        """汉末财政配置：田赋/盐铁/商税/兵饷/官俸/宫廷等。"""
         rows = [
-            ("田赋_rate", 60, "rate", "诸州田赋实收率%，60%为汉末默认"),
-            ("口赋_rate", 100, "rate", "人口钱实收率%"),
-            ("盐铁_rate", 70, "rate", "盐铁专营实收率%，可升至90"),
-            ("商税_rate", 40, "rate", "关卡商税实收率%，40%为汉末默认"),
-            ("兵饷_base", 80, "base", "常备军兵饷季度额，万钱"),
-            ("官俸_base", 50, "base", "在京百官俸禄季额，万钱"),
-            ("宫廷_base", 30, "base", "皇室日常用度季额，万钱"),
-            ("工程_base", 10, "base", "工部季度维护支出，万钱"),
-            ("赈济_base", 10, "base", "制度性赈灾备用，万钱"),
-            ("内库_base", 20, "base", "皇庄/没收财产季均上缴，万钱"),
-            ("皇威_rate", 50, "rate", "皇威影响诏令成功率%"),
+            ("辽饷_base",   15,  "base", "辽东加派月额，万两"),
+            ("辽饷_rate",   100,  "rate", "辽饷实收率%"),
+            ("盐税_base",    10,  "base", "盐引月度定额，万两。查私盐可拉高"),
+            ("盐税_rate",   100,  "rate", "盐税实收率%"),
+            ("商税_base",     5,  "base", "各地关卡店税月额，万两"),
+            ("商税_rate",   100,  "rate", "商税实收率%"),
+            ("宗室禄米_base", 40,  "base", "诸藩宗室禄米月度账面额，万两"),
+            ("宗室禄米_rate", 55, "rate", "宗室禄米实发率%"),
+            ("官俸_base",    15,  "base", "在京百官俸禄月额，万两"),
+            ("官俸_rate",   100,  "rate", "官俸发放率%"),
+            ("宫廷_base",     7,  "base", "皇室日常用度月额，万两"),
+            ("宫廷_rate",   100,  "rate", "宫廷开支率%"),
+            ("工程_base",     3,  "base", "工部月度维护支出，万两"),
+            ("工程_rate",   100,  "rate", "工程维护率%"),
+            ("赈灾_base",     3,  "base", "制度性赈灾备用，万两/月"),
+            ("赈灾_rate",   100,  "rate", "赈灾拨付率%"),
+            ("皇庄_base",    10,  "base", "皇庄地租月度上缴内库，万两"),
+            ("皇庄_rate",   100,  "rate", "皇庄收益率%"),
+            ("内库_base",    20,  "base", "皇庄/没收财产月均上缴，万两"),
+            ("妃嫔_base",     3,  "base", "后宫妃嫔月度供奉，万两"),
+            ("妃嫔_rate",   100,  "rate", "妃嫔供奉率%"),
         ]
-        for key, value, kind, note in rows:
+        SCHEMA_VERSION = 2
+        cur_ver_row = self.conn.execute(
+            "SELECT value FROM fiscal_config WHERE key = '__schema_version'"
+        ).fetchone()
+        cur_ver = int(cur_ver_row["value"]) if cur_ver_row else 0
+        if cur_ver < SCHEMA_VERSION:
             self.conn.execute(
-                """INSERT INTO fiscal_config (key, value, kind, note)
-                   VALUES (?, ?, ?, ?)
-                   ON CONFLICT(key) DO UPDATE SET value=excluded.value""",
-                (key, value, kind, note),
+                "INSERT INTO fiscal_config (key, value, kind, note) VALUES ('__schema_version', ?, 'meta', '财政默认值版本号') "
+                "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+                (SCHEMA_VERSION,),
             )
+            for key, value, kind, note in rows:
+                self.conn.execute(
+                    "INSERT INTO fiscal_config (key, value, kind, note) VALUES (?, ?, ?, ?) "
+                    "ON CONFLICT(key) DO UPDATE SET value=excluded.value, note=excluded.note",
+                    (key, value, kind, note),
+                )
+        else:
+            for key, value, kind, note in rows:
+                self.conn.execute(
+                    "INSERT OR IGNORE INTO fiscal_config (key, value, kind, note) VALUES (?, ?, ?, ?)",
+                    (key, value, kind, note),
+                )
         self.conn.commit()
 
     def get_fiscal_config(self) -> Dict[str, int]:
@@ -530,10 +654,9 @@ class GameDB:
     # ── 种子数据 ───────────────────────────────────────────────────
 
     def seed_static_data(self) -> None:
-        """首次启动时将 content/*.json 全部写入 DB。已有数据不覆盖。"""
+        pass  # TODO: docstring
         if self.table_has_rows("characters"):
-            return  # 已初始化则跳过
-
+            return  # Already initialized, skip
         characters = self.content.load_characters()
         powers_data = self.content.load_powers()
         regions_data = self.content.load_regions()
@@ -1807,6 +1930,235 @@ class GameDB:
         ).fetchall()
         return [dict(r) for r in rows]
 
+    # ── 遗产/开局修正系统 ───────────────────────────────────────────────
+
+    def insert_legacy(
+        self,
+        name: str,
+        modifiers: Optional[Dict] = None,
+        narrative_hint: str = "",
+        start_turn: int = 0,
+        duration_months: int = 24,
+        source_issue_id: Optional[int] = None,
+        legacy_key: str = "",
+        clear_gate: Optional[Dict] = None,
+    ) -> int:
+        """插入一条遗产（开局负面修正）。"""
+        mid = self.conn.execute("SELECT MAX(turn) FROM game_state").fetchone()
+        start = start_turn or (int(mid["MAX(turn)"]) if mid else 0)
+        self.conn.execute(
+            """INSERT INTO legacies
+               (name, modifiers, narrative_hint, start_turn, duration_months,
+                source_issue_id, legacy_key, clear_gate, status)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active')""",
+            (name, json.dumps(modifiers or {}, ensure_ascii=False), narrative_hint,
+             start, duration_months, source_issue_id, legacy_key,
+             json.dumps(clear_gate or {}, ensure_ascii=False)),
+        )
+        self.conn.commit()
+        row = self.conn.execute("SELECT last_insert_rowid()").fetchone()
+        return int(row[0]) if row else 0
+
+    def list_active_legacies(self, turn: int = 0) -> List[Dict]:
+        """返回当前激活的遗产。"""
+        rows = self.conn.execute(
+            "SELECT * FROM legacies WHERE status='active' ORDER BY id"
+        ).fetchall()
+        result = []
+        for row in rows:
+            d = dict(row)
+            if d.get("modifiers"):
+                try:
+                    d["modifiers"] = json.loads(d["modifiers"])
+                except Exception:
+                    d["modifiers"] = {}
+            if d.get("clear_gate"):
+                try:
+                    d["clear_gate"] = json.loads(d["clear_gate"])
+                except Exception:
+                    d["clear_gate"] = {}
+            remaining = d.get("duration_months", 24)
+            start = d.get("start_turn", 0)
+            if turn > 0 and start > 0:
+                elapsed = turn - start
+                remaining = max(0, remaining - elapsed)
+                if remaining <= 0 and d.get("duration_months", 24) != -1:
+                    continue
+            result.append(d)
+        return result
+
+    def expire_legacies(self, current_turn: int) -> List[Dict]:
+        """将已到期的遗产标记为过期。"""
+        expired = []
+        rows = self.conn.execute(
+            """SELECT * FROM legacies
+               WHERE status='active' AND duration_months > 0
+               AND (start_turn + duration_months) <= ?""",
+            (current_turn,),
+        ).fetchall()
+        for row in rows:
+            self.conn.execute("UPDATE legacies SET status='expired' WHERE id=?", (row["id"],))
+            expired.append(dict(row))
+        if expired:
+            self.conn.commit()
+        return expired
+
+    # ── 建筑日志 ─────────────────────────────────────────────────────────
+
+    def log_building_change(
+        self,
+        turn: int,
+        year: int,
+        period: int,
+        building_id: str,
+        field: str,
+        old_value: str,
+        new_value: str,
+        delta: int = 0,
+        reason: str = "",
+        event_id: str = "",
+        edict_id: int = 0,
+        actor: str = "",
+    ) -> None:
+        """记录建筑变更日志。"""
+        self.conn.execute(
+            """INSERT INTO building_logs
+               (turn, year, period, building_id, field, old_value, new_value,
+                delta, reason, event_id, edict_id, actor)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (turn, year, period, building_id, field, old_value, new_value,
+             delta, reason, event_id, edict_id, actor),
+        )
+        self.conn.commit()
+
+    # ── kv_store（键值存储）───────────────────────────────────────────────
+
+    def kv_get(self, key: str) -> Optional[str]:
+        row = self.conn.execute("SELECT value FROM kv_store WHERE key=?", (key,)).fetchone()
+        return row["value"] if row else None
+
+    def kv_set(self, key: str, value: str) -> None:
+        self.conn.execute(
+            "INSERT INTO kv_store (key, value) VALUES (?, ?) "
+            "ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=CURRENT_TIMESTAMP",
+            (key, value),
+        )
+        self.conn.commit()
+
+    def kv_delete(self, key: str) -> None:
+        self.conn.execute("DELETE FROM kv_store WHERE key=?", (key,))
+        self.conn.commit()
+
+    # ── 存档备份 ──────────────────────────────────────────────────────────
+
+    def backup_to(self, target_path: str) -> None:
+        """将当前数据库备份到目标路径。"""
+        import shutil
+        shutil.copy2(self.path, target_path)
+
+    def restore_from(self, source_path: str) -> None:
+        """从源路径恢复数据库。"""
+        import shutil
+        shutil.copy2(source_path, self.path)
+
+    # ── 预算明细（参考明末系统）──────────────────────────────────────────
+
+    def compute_budget_lines(self, state: "GameState") -> Dict[str, Any]:
+        """计算月度预算明细：收入/支出/流动。"""
+        fiscal = self.get_fiscal_config()
+        authority = state.metrics.get("威权", 0)
+
+        regions = self.list_regions()
+        total_tax = 0
+        for reg in regions:
+            base = reg.get("tax_per_turn", 0)
+            eff = max(0.05, 1.0 - reg.get("gentry_resistance", 0) / 100 * 0.55
+                      - max(0, reg.get("unrest", 0) - 20) / 100 * 0.30)
+            total_tax += int(base * eff)
+
+        army_expense = 0
+        for army in self.list_armies():
+            if army.get("status") == "active":
+                army_expense += army.get("maintenance_per_turn", 0)
+
+        rent = int(fiscal.get("皇庄_base", 10) * fiscal.get("皇庄_rate", 100) / 100)
+        tribute = int(fiscal.get("内库_base", 20) * fiscal.get("皇庄_rate", 100) / 100)
+        palace_exp = int(fiscal.get("宫廷_base", 7) * fiscal.get("宫廷_rate", 100) / 100)
+        consort_exp = int(fiscal.get("妃嫔_base", 3) * fiscal.get("妃嫔_rate", 100) / 100)
+
+        han_income = total_tax
+        han_expense = army_expense + palace_exp
+        han_net = han_income - han_expense
+
+        nei_income = rent + tribute
+        nei_expense = consort_exp
+        nei_net = nei_income - nei_expense
+
+        return {
+            "国库": {
+                "balance": state.metrics.get("汉室库", 0),
+                "income": [
+                    {"item": "田赋盐铁商税", "amount": han_income, "category": "田赋盐铁"},
+                ],
+                "expense": [
+                    {"item": "军费", "amount": army_expense, "category": "各军军饷"},
+                    {"item": "宫廷开支", "amount": palace_exp, "category": "宫廷开支"},
+                ],
+                "net": han_net,
+            },
+            "内库": {
+                "balance": state.metrics.get("内库", 0),
+                "income": [
+                    {"item": "皇庄", "amount": rent, "category": "皇庄"},
+                    {"item": "税入", "amount": tribute, "category": "内廷俸禄"},
+                ],
+                "expense": [
+                    {"item": "妃嫔供奉", "amount": consort_exp, "category": "妃嫔供奉"},
+                ],
+                "net": nei_net,
+            },
+            "authority": authority,
+        }
+
+    # ── 地区/军队/势力预警 ────────────────────────────────────────────────
+
+    def region_report(self, limit: int = 5) -> List[Dict]:
+        """返回不安定的地区列表。"""
+        rows = self.conn.execute(
+            "SELECT * FROM regions ORDER BY (unrest + gentry_resistance + military_pressure) DESC LIMIT ?",
+            (limit,),
+        ).fetchall()
+        return self._rows_to_dicts(rows)
+
+    def army_report(self, limit: int = 5) -> List[Dict]:
+        """返回需要关注的军队列表（欠饷/低士气）。"""
+        rows = self.conn.execute(
+            """SELECT * FROM armies
+               WHERE status='active' AND (arrears > 0 OR morale < 50)
+               ORDER BY (arrears + (100 - morale)) DESC LIMIT ?""",
+            (limit,),
+        ).fetchall()
+        return self._rows_to_dicts(rows)
+
+    def power_report(self, exclude_self: bool = True) -> List[Dict]:
+        """返回外部势力概况。"""
+        if exclude_self:
+            rows = self.conn.execute(
+                "SELECT * FROM powers WHERE id != 'han' ORDER BY military_strength DESC LIMIT 10"
+            ).fetchall()
+        else:
+            rows = self.conn.execute(
+                "SELECT * FROM powers ORDER BY military_strength DESC LIMIT 10"
+            ).fetchall()
+        return self._rows_to_dicts(rows)
+
+    def treasury_report(self, state: "GameState") -> Dict[str, Any]:
+        """返回国库/内库概况。"""
+        return {
+            "汉室库": state.metrics.get("汉室库", 0),
+            "内库": state.metrics.get("内库", 0),
+        }
+
     # ── 派系影响力更新 ───────────────────────────────────────────────────
 
     def update_faction_influence(self, state: "GameState") -> None:
@@ -1826,3 +2178,223 @@ class GameDB:
 
     def close(self) -> None:
         self.conn.close()
+
+    # ── 后宫系统 ─────────────────────────────────────────────────────────────
+
+    def list_consorts(self, campaign_id: str) -> List[Dict]:
+        """返回所有在册妃嫔。"""
+        rows = self.conn.execute(
+            "SELECT * FROM consorts WHERE campaign_id=? AND status='active' ORDER BY entered_turn DESC",
+            (campaign_id,),
+        ).fetchall()
+        return self._rows_to_dicts(rows)
+
+    def get_consort(self, campaign_id: str, name: str) -> Optional[Dict]:
+        """获取指定妃嫔。"""
+        row = self.conn.execute(
+            "SELECT * FROM consorts WHERE campaign_id=? AND name=?",
+            (campaign_id, name),
+        ).fetchone()
+        return dict(row) if row else None
+
+    def add_consort(
+        self,
+        campaign_id: str,
+        name: str,
+        rank: str = "采女",
+        traits: Optional[List[str]] = None,
+        skills: Optional[List[str]] = None,
+        favorability: int = 50,
+        palace: str = "永巷",
+        portrait_id: str = "",
+        turn: int = 0,
+    ) -> Dict:
+        """新增妃嫔入宫。"""
+        traits = traits or []
+        skills = skills or []
+        self.conn.execute(
+            """INSERT OR REPLACE INTO consorts
+               (campaign_id, name, rank, traits, skills, favorability, palace, portrait_id, entered_turn)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (campaign_id, name, rank, json.dumps(traits, ensure_ascii=False),
+             json.dumps(skills, ensure_ascii=False), favorability, palace, portrait_id, turn),
+        )
+        self.conn.commit()
+        return self.get_consort(campaign_id, name)
+
+    def update_consort(self, campaign_id: str, name: str, **fields) -> Optional[Dict]:
+        """更新妃嫔属性。"""
+        if not fields:
+            return self.get_consort(campaign_id, name)
+        allowed = {"rank", "traits", "skills", "favorability", "palace", "status", "portrait_id"}
+        sets = []
+        vals = []
+        for k, v in fields.items():
+            if k in allowed:
+                if k in ("traits", "skills") and isinstance(v, list):
+                    v = json.dumps(v, ensure_ascii=False)
+                sets.append(f"{k}=?")
+                vals.append(v)
+        if not sets:
+            return self.get_consort(campaign_id, name)
+        vals.extend([campaign_id, name])
+        self.conn.execute(
+            f"UPDATE consorts SET {','.join(sets)}, updated_at=CURRENT_TIMESTAMP WHERE campaign_id=? AND name=?",
+            vals,
+        )
+        self.conn.commit()
+        return self.get_consort(campaign_id, name)
+
+    def cultivate_consort(self, campaign_id: str, name: str, skill: str = "", trait: str = "") -> Dict:
+        """调教妃嫔：添加技能或性情，同时写入consort_traits永久记录。返回更新后的妃嫔。"""
+        consort = self.get_consort(campaign_id, name)
+        if not consort:
+            return {}
+        traits = consort.get("traits", [])
+        skills = consort.get("skills", [])
+        if skill and skill not in skills:
+            skills.append(skill)
+        if trait and trait not in traits:
+            traits.append(trait)
+        self.update_consort(campaign_id, name, traits=traits, skills=skills)
+
+        turn_row = self.conn.execute("SELECT MAX(turn) as t FROM game_state").fetchone()
+        turn = int(turn_row["t"]) if turn_row else 0
+
+        self.conn.execute(
+            """INSERT INTO consort_events
+               (campaign_id, turn, consort_name, event_type, description, favorability_delta)
+               VALUES (?, ?, ?, 'cultivate', ?, 0)""",
+            (campaign_id, turn, name, f"调教：习得{skill}" if skill else f"调教：性情变化{trait}"),
+        )
+
+        existing = self.conn.execute("SELECT name FROM consort_traits WHERE name=?", (name,)).fetchone()
+        extra_skills = json.dumps(skills, ensure_ascii=False)
+        extra_traits = json.dumps(traits, ensure_ascii=False)
+        if existing:
+            self.conn.execute(
+                "UPDATE consort_traits SET extra_skills=?, extra_traits=?, updated_turn=?, updated_at=CURRENT_TIMESTAMP WHERE name=?",
+                (extra_skills, extra_traits, turn, name),
+            )
+        else:
+            self.conn.execute(
+                "INSERT INTO consort_traits (name, extra_skills, extra_traits, updated_turn) VALUES (?, ?, ?, ?)",
+                (name, extra_skills, extra_traits, turn),
+            )
+        self.conn.commit()
+        return self.get_consort(campaign_id, name)
+
+    def get_consort_traits(self, name: str) -> Dict:
+        """返回 {extra_skills: [...], extra_traits: [...]}"""
+        row = self.conn.execute("SELECT extra_skills, extra_traits FROM consort_traits WHERE name=?", (name,)).fetchone()
+        if not row:
+            return {"extra_skills": [], "extra_traits": []}
+        return {
+            "extra_skills": json.loads(row["extra_skills"] or "[]"),
+            "extra_traits": json.loads(row["extra_traits"] or "[]"),
+        }
+
+    def change_consort_favorability(self, campaign_id: str, name: str, delta: int, reason: str = "") -> Optional[Dict]:
+        """增减妃嫔好感度。"""
+        consort = self.get_consort(campaign_id, name)
+        if not consort:
+            return None
+        new_fav = max(0, min(100, consort["favorability"] + delta))
+        self.update_consort(campaign_id, name, favorability=new_fav)
+        turn_row = self.conn.execute("SELECT turn, year, period FROM game_state ORDER BY turn DESC LIMIT 1").fetchone()
+        turn = turn_row["turn"] if turn_row else 0
+        self.conn.execute(
+            """INSERT INTO consort_events
+               (campaign_id, turn, consort_name, event_type, description, favorability_delta)
+               VALUES (?, ?, ?, 'favor', ?, ?)""",
+            (campaign_id, turn, name, reason, delta),
+        )
+        self.conn.commit()
+        return self.get_consort(campaign_id, name)
+
+    def list_consort_candidates(self, status: str = "pending") -> List[Dict]:
+        """返回待选秀女。"""
+        rows = self.conn.execute(
+            "SELECT * FROM consort_candidates WHERE status=? ORDER BY id",
+            (status,),
+        ).fetchall()
+        return self._rows_to_dicts(rows)
+
+    def add_consort_candidate(
+        self,
+        name: str,
+        age: int = 18,
+        background: str = "",
+        appearance: int = 50,
+        talent: int = 50,
+        temperament: str = "温婉",
+        skills: Optional[List[str]] = None,
+        traits: Optional[List[str]] = None,
+        portrait_id: str = "",
+    ) -> Dict:
+        """添加候选秀女。"""
+        skills = skills or []
+        traits = traits or []
+        self.conn.execute(
+            """INSERT INTO consort_candidates
+               (name, age, background, appearance, talent, temperament, skills, traits, portrait_id)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (name, age, background, appearance, talent, temperament,
+             json.dumps(skills, ensure_ascii=False), json.dumps(traits, ensure_ascii=False), portrait_id),
+        )
+        self.conn.commit()
+        row = self.conn.execute("SELECT * FROM consort_candidates WHERE name=?", (name,)).fetchone()
+        return dict(row)
+
+    def select_consort(self, campaign_id: str, candidate_name: str, turn: int = 0) -> Optional[Dict]:
+        """皇帝选妃：秀女入宫。"""
+        row = self.conn.execute("SELECT * FROM consort_candidates WHERE name=?", (candidate_name,)).fetchone()
+        if not row:
+            return None
+        self.conn.execute(
+            "UPDATE consort_candidates SET status='selected', selected_turn=? WHERE name=?",
+            (turn, candidate_name),
+        )
+        self.add_consort(
+            campaign_id=campaign_id,
+            name=candidate_name,
+            rank="采女",
+            traits=json.loads(row["traits"] or "[]"),
+            skills=json.loads(row["skills"] or "[]"),
+            favorability=50,
+            portrait_id=row["portrait_id"] or "",
+            turn=turn,
+        )
+        self.conn.commit()
+        return self.get_consort(campaign_id, candidate_name)
+
+    def set_consort_portrait(self, campaign_id: str, name: str, portrait_id: str) -> Optional[Dict]:
+        """设置妃嫔头像。"""
+        return self.update_consort(campaign_id, name, portrait_id=portrait_id)
+
+    def consort_event_record(
+        self, campaign_id: str, turn: int, consort_name: str, event_type: str,
+        description: str, favorability_delta: int = 0,
+    ) -> None:
+        """记录妃嫔事件。"""
+        self.conn.execute(
+            """INSERT INTO consort_events
+               (campaign_id, turn, consort_name, event_type, description, favorability_delta)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (campaign_id, turn, consort_name, event_type, description, favorability_delta),
+        )
+        self.conn.commit()
+
+    def list_consort_events(self, campaign_id: str, consort_name: str = "") -> List[Dict]:
+        """返回妃嫔事件记录。"""
+        if consort_name:
+            rows = self.conn.execute(
+                "SELECT * FROM consort_events WHERE campaign_id=? AND consort_name=? ORDER BY turn DESC",
+                (campaign_id, consort_name),
+            ).fetchall()
+        else:
+            rows = self.conn.execute(
+                "SELECT * FROM consort_events WHERE campaign_id=? ORDER BY turn DESC LIMIT 50",
+                (campaign_id,),
+            ).fetchall()
+        return [dict(r) for r in rows]

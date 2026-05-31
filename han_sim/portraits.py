@@ -45,6 +45,22 @@ PORTRAIT_URLS: Dict[str, Optional[str]] = {
     "emperor_pool_1":    "https://img.3keengames.net/avatar/rothsaga/huang_emperor.png",  # 献帝
     "emperor_pool_2":    "https://img.3keengames.net/avatar/rothsaga/huang_emperor.png",  # 献帝
     "han_pool_1":        "https://img.3keengames.net/avatar/rothsaga/huang_emperor.png",  # 献帝
+    # ── 后宫妃嫔 ─────────────────────────────────────────
+    "consort_pool_1":   "https://img.3keengames.net/avatar/rothsaga/zhenji.png",      # 甄宓
+    "consort_pool_2":   "https://img.3keengames.net/avatar/rothsaga/huizhen.png",     # 慧珍
+    "consort_pool_3":   "https://img.3keengames.net/avatar/rothsaga/daqiao.png",      # 大乔
+    "consort_pool_4":   "https://img.3keengames.net/avatar/rothsaga/xiaoqiao.png",    # 小乔
+    "consort_pool_5":   "https://img.3keengames.net/avatar/rothsaga/ganji.png",       # 甘夫人
+    "consort_pool_6":   "https://img.3keengames.net/avatar/rothsaga/sunshangxiang.png", # 孙尚香
+    "consort_pool_7":   "https://img.3keengames.net/avatar/rothsaga/mishi.png",      # 糜夫人
+    "consort_pool_8":   "https://img.3keengames.net/avatar/rothsaga/bu.png",         # 步氏
+    "consort_pool_9":   "https://img.3keengames.net/avatar/rothsaga/zhang.png",      # 张氏
+    "consort_pool_10":  "https://img.3keengames.net/avatar/rothsaga/dui.png",        # 堕姬
+    "consort_pool_11":  "https://img.3keengames.net/avatar/rothsaga/other.png",      # 其他妃嫔
+    "consort_pool_12":  "https://img.3keengames.net/avatar/rothsaga/other.png",
+    "consort_pool_13":  "https://img.3keengames.net/avatar/rothsaga/other.png",
+    "consort_pool_14":  "https://img.3keengames.net/avatar/rothsaga/other.png",
+    "consort_pool_15":  "https://img.3keengames.net/avatar/rothsaga/other.png",
 }
 
 # ── Emoji 兜底配置 ───────────────────────────────────────────────────────────
