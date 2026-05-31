@@ -1908,13 +1908,13 @@ def build_ui():
                         history_display = gr.Markdown("*召对记录将显示在这里*")
                         refresh_history_btn = gr.Button("🔄 刷新召对记录")
 
-                    # Tab7: 日记
+                    # Tab7: 日志
                     with gr.TabItem("📋 日志"):
-                        gr.Markdown("### 📖 天子日记")
+                        gr.Markdown("### 📋 天子日记")
                         diary_display = gr.HTML("*天子日记将显示在这里*")
                         refresh_diary_btn = gr.Button("🔄 刷新日记")
 
-                    # Tab7: 献帝东归
+                    # Tab9: 献帝东归
                     with gr.TabItem("🚗 东归"):
                         gr.Markdown("### 🚗 献帝东归")
                         escape_display = gr.HTML("*点击「新游戏」初始化*")
@@ -1928,14 +1928,14 @@ def build_ui():
                         escape_output = gr.Markdown()
                         refresh_escape_btn = gr.Button("🔄 刷新")
 
-                    # Tab7: 事件
+                    # Tab10: 事件
                     with gr.TabItem("⚡ 事件"):
                         gr.Markdown("### ⚡ 事件系统（历史+随机）")
                         event_display = gr.HTML("*点击「新游戏」初始化*")
                         event_output = gr.Markdown()
                         refresh_event_btn = gr.Button("🔄 刷新事件")
 
-                    # Tab8: 史册（历代诏书+回合奏报）
+                    # Tab11: 史册
                     with gr.TabItem("📜 史册"):
                         gr.Markdown("### 📜 史册：历代诏书与奏报")
                         gazette_display = gr.HTML("*点击「新游戏」初始化*")
@@ -1944,7 +1944,7 @@ def build_ui():
                             refresh_gazette_btn = gr.Button("🔄 刷新史册")
                         gazette_output = gr.Markdown()
 
-                    # Tab8: 讨伐董卓
+                    # Tab12: 讨伐
                     with gr.TabItem("⚔️ 讨伐"):
                         gr.Markdown("### ⚔️ 董卓伏诛线")
                         dongzhuo_display = gr.HTML("*点击「新游戏」初始化*")
@@ -1977,7 +1977,7 @@ def build_ui():
                         loyalty_output = gr.Markdown()
                         refresh_loyalty_btn = gr.Button("🔄 刷新")
 
-                    # Tab10: 天子技能
+                    # Tab13: 天子技能
                     with gr.TabItem("🌳 技能"):
                         gr.Markdown("### 🌳 天子技能树")
                         skill_display = gr.HTML("*点击「新游戏」初始化*")
@@ -1991,14 +1991,14 @@ def build_ui():
                         skill_output = gr.Markdown()
                         refresh_skill_btn = gr.Button("🔄 刷新")
 
-                    # Tab11: 派系
+                    # Tab14: 派系
                     with gr.TabItem("⚖️ 派系"):
                         gr.Markdown("### ⚖️ 朝堂派系")
                         faction_display = gr.HTML("*点击「新游戏」初始化*")
                         faction_output = gr.Markdown()
                         refresh_faction_btn = gr.Button("🔄 刷新派系")
 
-                    # Tab12: 建筑
+                    # Tab15: 建筑
                     with gr.TabItem("🏛️ 建筑"):
                         gr.Markdown("### 🏛️ 建筑系统（含状态与损耗）")
                         building_display = gr.HTML("*点击「新游戏」初始化*")
@@ -2020,7 +2020,7 @@ def build_ui():
                             refresh_building_btn = gr.Button("🔄 刷新")
                         building_output = gr.Markdown()
 
-                    # Tab11: 诏令
+                    # Tab16: 诏令
                     with gr.TabItem("📋 诏令"):
                         gr.Markdown("### 📋 诏令状态机")
                         decree_display = gr.HTML("*点击「新游戏」初始化*")
@@ -2058,7 +2058,7 @@ def build_ui():
                             preview_decree_btn = gr.Button("👁️ 预览诏书")
                         free_decree_output = gr.Markdown()
 
-                    # Tab12: 迁都
+                    # Tab17: 迁都
                     with gr.TabItem("🏰 迁都"):
                         gr.Markdown("### 🏰 迁都系统")
                         relocate_display = gr.HTML("*点击「新游戏」初始化*")
