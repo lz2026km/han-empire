@@ -87,6 +87,23 @@ def get_office_emoji(office_type: str) -> str:
     return OFFICE_EMOJI.get(office_type, OFFICE_EMOJI["default"])
 
 
+def get_affection_border_color(affection: int) -> str:
+    """根据好感度返回边框颜色。
+    
+    Args:
+        affection: 好感度值 (0-100)
+        
+    Returns:
+        颜色hex字符串：≥70金色#c9a96e，40-69银色#8b9eb3，<40灰色#9ca3af
+    """
+    if affection >= 70:
+        return "#c9a96e"  # 金色
+    elif affection >= 40:
+        return "#8b9eb3"  # 银色
+    else:
+        return "#9ca3af"  # 灰色
+
+
 def render_character_portrait_html(
     name: str,
     office_type: str = "default",

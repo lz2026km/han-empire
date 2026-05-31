@@ -460,6 +460,13 @@ class GameDB:
             );
             CREATE INDEX IF NOT EXISTS idx_turn_directives_turn ON turn_directives(turn, status);
 
+            CREATE TABLE IF NOT EXISTS minister_affection (
+                character_name TEXT PRIMARY KEY,
+                affection INTEGER NOT NULL DEFAULT 50,
+                last_interaction_turn INTEGER NOT NULL DEFAULT 0,
+                interaction_count INTEGER NOT NULL DEFAULT 0
+            );
+
             CREATE TABLE IF NOT EXISTS kv_store (
                 key TEXT PRIMARY KEY,
                 value TEXT NOT NULL DEFAULT '',
@@ -658,6 +665,55 @@ class GameDB:
     def set_fiscal_config(self, key: str, value: int) -> None:
         self.conn.execute("UPDATE fiscal_config SET value = ? WHERE key = ?", (value, key))
         self.conn.commit()
+
+    # ── Minister Affection ─────────────────────────────────────────────
+
+    def init_minister_affection(self, character_name: str) -> None:
+        """初始化大臣好感度记录（若不存在则创建默认记录）"""
+        self.conn.execute(
+            """INSERT OR IGNORE INTO minister_affection
+               (character_name, affection, last_interaction_turn, interaction_count)
+               VALUES (?, 50, 0, 0)""",
+            (character_name,),
+        )
+        self.conn.commit()
+
+    def get_minister_affection(self, character_name: str) -> Optional[Dict[str, Any]]:
+        """获取大臣好感度数据，不存在则返回None"""
+        row = self.conn.execute(
+            "SELECT * FROM minister_affection WHERE character_name = ?",
+            (character_name,),
+        ).fetchone()
+        return dict(row) if row else None
+
+    def set_minister_affection(self, character_name: str, affection: int,
+                                last_interaction_turn: int, interaction_count: int) -> None:
+        """设置大臣好感度完整数据（覆盖式）"""
+        self.conn.execute(
+            """INSERT OR REPLACE INTO minister_affection
+               (character_name, affection, last_interaction_turn, interaction_count)
+               VALUES (?, ?, ?, ?)""",
+            (character_name, affection, last_interaction_turn, interaction_count),
+        )
+        self.conn.commit()
+
+    def modify_minister_affection(self, character_name: str, delta: int,
+                                   current_turn: int) -> int:
+        """修改大臣好感度（增量），返回新的affection值"""
+        info = self.get_minister_affection(character_name)
+        if info is None:
+            self.init_minister_affection(character_name)
+            info = self.get_minister_affection(character_name)
+        new_affection = max(0, min(100, info["affection"] + delta))
+        self.conn.execute(
+            """UPDATE minister_affection
+               SET affection = ?, last_interaction_turn = ?,
+                   interaction_count = interaction_count + 1
+               WHERE character_name = ?""",
+            (new_affection, current_turn, character_name),
+        )
+        self.conn.commit()
+        return new_affection
 
     def ensure_column(self, table: str, column: str, definition: str) -> None:
         columns = {row["name"] for row in self.conn.execute(f"PRAGMA table_info({table})").fetchall()}

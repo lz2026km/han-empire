@@ -696,6 +696,122 @@ def execute_cheat(campaign_id):
     return jsonify({'success': success, 'output': output})
 
 
+# ---- Armies & Battle ----
+
+@app.route('/api/campaigns/<campaign_id>/armies', methods=['GET'])
+def list_armies(campaign_id):
+    """获取所有军队列表"""
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    rows = db.conn.execute(
+        "SELECT * FROM armies WHERE owner_power = 'han' ORDER BY id"
+    ).fetchall()
+
+    armies = []
+    for row in rows:
+        armies.append({
+            'id': row['id'],
+            'name': row['name'],
+            'station': row['station'],
+            'theater': row['theater'],
+            'commander': row['commander'],
+            'troop_type': row['troop_type'],
+            'manpower': row['manpower'],
+            'morale': row['morale'],
+            'training': row['training'],
+            'equipment': row['equipment'],
+            'status': row['status'],
+        })
+
+    return jsonify({'armies': armies})
+
+
+@app.route('/api/campaigns/<campaign_id>/ministers', methods=['GET'])
+def list_ministers(campaign_id):
+    """获取大臣列表（含好感度）"""
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    rows = db.conn.execute(
+        "SELECT * FROM characters WHERE status = 'active' AND power_id = 'han' ORDER BY name"
+    ).fetchall()
+
+    ministers = []
+    for row in rows:
+        name = row['name']
+        aff = db.get_minister_affection(name)
+        ministers.append({
+            'name': name,
+            'office': row['office'],
+            'office_type': row['office_type'],
+            'faction': row['faction'],
+            'loyalty': row['loyalty'],
+            'ability': row['ability'],
+            'integrity': row['integrity'],
+            'courage': row['courage'],
+            'portrait_id': row['portrait_id'],
+            'affection': aff['affection'] if aff else 50,
+            'interaction_count': aff['interaction_count'] if aff else 0,
+            'last_interaction_turn': aff['last_interaction_turn'] if aff else 0,
+        })
+
+    return jsonify({'ministers': ministers})
+
+
+@app.route('/api/campaigns/<campaign_id>/battle', methods=['POST'])
+def trigger_battle(campaign_id):
+    """触发战斗（随机骰子系统）"""
+    import random
+
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+
+    session = GAMES[campaign_id]
+    data = request.get_json() or {}
+    attacker_id = data.get('attacker_id', '')
+    defender_id = data.get('defender_id', '')
+
+    # 随机骰子投掷 (1-100)
+    attacker_roll = random.randint(1, 100)
+    defender_roll = random.randint(1, 100)
+
+    # 基础胜率计算
+    attacker_info = session.db.conn.execute(
+        "SELECT morale, training FROM armies WHERE id = ?", (attacker_id,)
+    ).fetchone()
+    defender_info = session.db.conn.execute(
+        "SELECT morale, training FROM armies WHERE id = ?", (defender_id,)
+    ).fetchone()
+
+    if not attacker_info or not defender_info:
+        return jsonify({'error': 'Army not found'}), 404
+
+    # 简单战斗力计算
+    attacker_power = (attacker_info['morale'] + attacker_info['training']) * 2 + attacker_roll
+    defender_power = (defender_info['morale'] + defender_info['training']) * 2 + defender_roll
+
+    attacker_win = attacker_power > defender_power
+    margin = abs(attacker_power - defender_power)
+
+    result = '胜利' if attacker_win else '失败'
+    return jsonify({
+        'attacker_roll': attacker_roll,
+        'defender_roll': defender_roll,
+        'attacker_power': attacker_power,
+        'defender_power': defender_power,
+        'result': result,
+        'margin': margin,
+        'narrative': f'进攻方投出{attacker_roll}，防御方投出{defender_roll}，{result}！'
+    })
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5555))
     app.run(host='0.0.0.0', port=port, debug=False)
