@@ -590,6 +590,79 @@ class GameUI:
         </div>
         """
 
+    def _render_building_html(self) -> str:
+        """【建筑】建筑系统HTML：已建成+可建造列表。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+        from han_sim.flows import get_building_status
+        from han_sim.models import BUILDING_TYPES, BUILDING_CATALOG
+        state = self.session.state
+        status = get_building_status(state)
+
+        header = f"""<div style="background:#1a2d1a;border:1px solid #22c55e;border-radius:8px;padding:12px;margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                    <span style="font-size:16px;font-weight:bold;color:#c9a96e">🏛️ 建筑系统</span>
+                    <span style="font-size:12px;color:#9ca3af;margin-left:12px">威权：{status["authority"]}</span>
+                </div>
+                <div style="text-align:right">
+                    <span style="font-size:24px;font-weight:bold;color:#f59e0b">{status["treasury"]}</span>
+                    <span style="font-size:12px;color:#9ca3af"> 汉室库</span>
+                </div>
+            </div>
+            <div style="font-size:12px;color:#9ca3af;margin-top:4px">
+                已建成：{status["built_count"]} | 年维护费：{status["maintenance_total"]}
+            </div>
+        </div>"""
+
+        # 按类型展示
+        type_colors = {"宫殿": "#c9a96e", "军事": "#ef4444", "经济": "#22c55e", "特殊": "#8b5cf6"}
+        built_html = ""
+        for btype, bids in BUILDING_TYPES.items():
+            color = type_colors.get(btype, "#9ca3af")
+            built_in = [bid for bid in bids if bid in status["built"]]
+            if not built_in:
+                continue
+            items = []
+            for bid in built_in:
+                b = BUILDING_CATALOG.get(bid)
+                if not b:
+                    continue
+                items.append(f"""<div style="background:#1a3d1a;border-radius:6px;padding:6px 8px;margin:2px 0">
+                    <span style="font-size:14px;color:#22c55e">✅</span>
+                    <span style="font-size:13px;color:#e8d5b7;font-weight:bold">{b.name}</span>
+                    <span style="font-size:11px;color:#9ca3af">（{b.location}）</span>
+                    <span style="font-size:10px;color:#9ca3af">维护:{b.maintenance}/年</span>
+                    <span style="font-size:10px;color:#22c55e">{b.effect}</span>
+                </div>""")
+            built_html += f"""<div style="margin-bottom:10px">
+                <div style="color:{color};font-weight:bold;font-size:13px;margin-bottom:4px">{btype}类</div>
+                {"".join(items)}
+            </div>"""
+
+        # 可建列表
+        avail_html = ""
+        for btype, bids in BUILDING_TYPES.items():
+            color = type_colors.get(btype, "#9ca3af")
+            avail_in = [(b) for b in status["available"] if b[0] in bids]
+            if not avail_in:
+                continue
+            items = []
+            for bid, name, cost, maint, unlvl, effect, loc in avail_in:
+                items.append(f"""<div style="background:#2d2d1a;border-radius:6px;padding:6px 8px;margin:2px 0">
+                    <span style="font-size:13px;color:#f59e0b">{bid}</span>
+                    <span style="font-size:13px;color:#e8d5b7;font-weight:bold">{name}</span>
+                    <span style="font-size:11px;color:#9ca3af">（{loc}）</span>
+                    <span style="font-size:10px;color:#ef4444">费用:{cost} | 威权≥{unlvl}</span>
+                    <span style="font-size:10px;color:#22c55e">{effect}</span>
+                </div>""")
+            avail_html += f"""<div style="margin-bottom:10px">
+                <div style="color:{color};font-weight:bold;font-size:13px;margin-bottom:4px">{btype}类（可建）</div>
+                {"".join(items)}
+            </div>"""
+
+        return header + "<h4 style='color:#c9a96e;margin:12px 0 6px'>已建成</h4>" + (built_html or "<p style='color:#9ca3af'>暂无建筑</p>") + "<h4 style='color:#c9a96e;margin:12px 0 6px'>可建造</h4>" + (avail_html or "<p style='color:#9ca3af'>无</p>")
+
     def _render_skill_html(self) -> str:
         """【技能树】天子技能树HTML：四系技能树+状态+激活按钮。"""
         if not self.session:
@@ -963,6 +1036,27 @@ class GameUI:
         except Exception as e:
             return f"❗ 董卓伏诛执行失败：{str(e)}"
 
+    def cmd_build_structure(self, bid: str):
+        """建造建筑。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        if not bid:
+            return "❗ 请输入建筑ID。"
+        try:
+            from han_sim.flows import build_structure
+            result = build_structure(self.session.state, bid.strip())
+            if result.get("success"):
+                parts = [f"✅ **{result['building']}** 建造成功！"]
+                parts.append("")
+                parts.append(f"剩余汉室库：{result['remaining_treasury']}")
+                parts.append(f"建造费用：-{result['cost']}")
+                parts.append(f"年维护费：-{result['maintenance']}")
+                return "\n".join(parts)
+            else:
+                return f"❌ {result.get('narrative', '建造失败')}"
+        except Exception as e:
+            return f"❗ 建造失败：{str(e)}"
+
     def cmd_activate_skill(self, skill_id: str):
         """激活天子技能。"""
         if not self.session:
@@ -1295,7 +1389,21 @@ def build_ui():
                             skill_btn = gr.Button("激活技能", variant="primary")
                         skill_output = gr.Markdown()
 
-                    # Tab11: 迁都
+                    # Tab11: 建筑
+                    with gr.TabItem("🏛️ 建筑"):
+                        gr.Markdown("### 🏛️ 建筑系统")
+                        building_display = gr.HTML("*点击「新游戏」初始化*")
+                        with gr.Row():
+                            building_input = gr.Textbox(
+                                label="输入建筑ID",
+                                placeholder="如：weiyang",
+                                lines=1,
+                            )
+                            building_btn = gr.Button("建造", variant="primary")
+                        building_output = gr.Markdown()
+                        refresh_building_btn = gr.Button("🔄 刷新建筑")
+
+                    # Tab12: 迁都
                     with gr.TabItem("🏰 迁都"):
                         gr.Markdown("### 🏰 迁都系统")
                         relocate_display = gr.HTML("*点击「新游戏」初始化*")
@@ -1390,6 +1498,9 @@ def build_ui():
         def do_refresh_dongzhuo():
             return ui._render_dongzhuo_html()
 
+        def do_refresh_building():
+            return ui._render_building_html()
+
         def do_refresh_skill():
             return ui._render_skill_html()
 
@@ -1445,6 +1556,12 @@ def build_ui():
             inputs=[escape_target_input],
             outputs=escape_output,
         )
+        # 建筑建造
+        building_btn.click(
+            fn=ui.cmd_build_structure,
+            inputs=[building_input],
+            outputs=building_output,
+        )
         # 技能激活
         skill_btn.click(
             fn=ui.cmd_activate_skill,
@@ -1480,7 +1597,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display],
         )
         # 刷新按钮
         refresh_dashboard_btn.click(fn=do_refresh_dashboard, inputs=[], outputs=[dashboard_display])
@@ -1492,6 +1609,7 @@ def build_ui():
         refresh_dongzhuo_btn.click(fn=do_refresh_dongzhuo, inputs=[], outputs=[dongzhuo_display])
         refresh_escape_btn.click(fn=do_refresh_escape, inputs=[], outputs=[escape_display])
         refresh_skill_btn.click(fn=do_refresh_skill, inputs=[], outputs=[skill_display])
+        refresh_building_btn.click(fn=do_refresh_building, inputs=[], outputs=[building_display])
         refresh_intel_btn.click(fn=do_refresh_intel, inputs=[], outputs=[intel_display])
         refresh_map_btn.click(fn=do_refresh_map, inputs=[], outputs=[map_display])
 
@@ -1500,7 +1618,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display],
         )
 
     return demo

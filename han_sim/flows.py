@@ -992,3 +992,80 @@ def execute_emperor_skill(
     changes_str = ", ".join(f"{k}{'+' if v >= 0 else ''}{v}" for k, v in metric_delta.items())
     state.log.append(f"【技能生效】{desc}：{changes_str}")
     return {"ok": True, "message": desc, "delta": metric_delta}
+
+# ── 建筑系统（Step2新增）────────────────────────────────────────\n
+
+def build_structure(state: GameState, bid: str) -> Dict:
+    """建造建筑。返回结果dict。"""
+    from han_sim.models import get_building_by_id, get_available_buildings
+
+    authority = state.metrics.get("威权", 0)
+    treasury = state.metrics.get("汉室库", 0)
+    built = state.metrics.get("built_buildings", [])
+
+    building = get_building_by_id(bid)
+    if not building:
+        return {"success": False, "narrative": f"建筑 {bid} 不存在"}
+    if bid in built:
+        return {"success": False, "narrative": f"【{building.name}】已建成，无需重复建造"}
+    if authority < building.unlock_level:
+        return {"success": False, "narrative": f"威权不足（需{building.unlock_level}，当前{authority}）"}
+    if treasury < building.cost:
+        return {"success": False, "narrative": f"汉室库资金不足（需{building.cost}，当前{treasury}）"}
+
+    state.metrics["汉室库"] -= building.cost
+    if "built_buildings" not in state.metrics:
+        state.metrics["built_buildings"] = []
+    state.metrics["built_buildings"].append(bid)
+
+    narrative = (f"【建筑建成】{building.name}（{building.location}）\n"
+                 f"建造费用：-{building.cost}\n"
+                 f"维护费用：-{building.maintenance}/年\n"
+                 f"效果：{building.effect}")
+    state.log.append(f"【建筑建成】{building.name}！")
+    return {
+        "success": True,
+        "narrative": narrative,
+        "building": building.name,
+        "cost": building.cost,
+        "maintenance": building.maintenance,
+        "remaining_treasury": state.metrics["汉室库"],
+    }
+
+
+def get_building_status(state: GameState) -> Dict:
+    """获取当前建筑状态。"""
+    from han_sim.models import BUILDING_CATALOG, BUILDING_TYPES, get_available_buildings
+
+    authority = state.metrics.get("威权", 0)
+    treasury = state.metrics.get("汉室库", 0)
+    built = state.metrics.get("built_buildings", [])
+    maintenance_total = sum(BUILDING_CATALOG[bid].maintenance for bid in built if bid in BUILDING_CATALOG)
+    available = get_available_buildings(authority, built)
+
+    built_by_type = {}
+    for btype, bids in BUILDING_TYPES.items():
+        built_in = [bid for bid in bids if bid in built]
+        if built_in:
+            built_by_type[btype] = [{"id": bid, **BUILDING_CATALOG[bid].__dict__} for bid in built_in if bid in BUILDING_CATALOG]
+
+    return {
+        "treasury": treasury,
+        "maintenance_total": maintenance_total,
+        "built": built,
+        "built_count": len(built),
+        "built_by_type": built_by_type,
+        "available": [(b.bid, b.name, b.cost, b.maintenance, b.unlock_level, b.effect, b.location) for b in available],
+        "authority": authority,
+    }
+
+
+def apply_building_maintenance(state: GameState) -> Dict:
+    """每年扣除建筑维护费。"""
+    from han_sim.models import BUILDING_CATALOG
+    built = state.metrics.get("built_buildings", [])
+    total = sum(BUILDING_CATALOG[bid].maintenance for bid in built if bid in BUILDING_CATALOG)
+    if total > 0:
+        state.metrics["汉室库"] = max(0, state.metrics.get("汉室库", 0) - total)
+        state.log.append(f"【建筑维护】年度维护费 -{total}")
+    return {"maintenance": total, "汉室库": state.metrics.get("汉室库", 0)}

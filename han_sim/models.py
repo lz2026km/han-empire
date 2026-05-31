@@ -169,6 +169,93 @@ def can_activate_skill(skill: Skill, authority: int, activated: List[str], skill
     return True, "可激活"
 
 
+# ── 建筑系统（Step2新增）────────────────────────────────────────
+
+@dataclass
+class Building:
+    bid: str           # 唯一标识，如 "weiyang"
+    name: str          # 建筑名，如 "未央宫"
+    cost: int          # 建造费用（汉室库消耗）
+    maintenance: int   # 每年维护费
+    effect: str        # 效果描述
+    effect_bonus: Dict[str, float]  # 效果加成dict（百分比）
+    unlock_level: int  # 解锁威权要求
+    location: str       # 建造地点
+
+
+BUILDING_CATALOG: Dict[str, Building] = {
+    # 宫殿类
+    "weiyang": Building("weiyang", "未央宫", 150, 20,
+                        "威权+3/年",
+                        {"威权": 3.0}, 40, "长安"),
+    "xuchang_palace": Building("xuchang_palace", "许昌行宫", 100, 15,
+                               "威权衰减减缓50%",
+                               {"decay_reduce": 0.5}, 30, "许昌"),
+    "luoyang_palace": Building("luoyang_palace", "洛阳宫殿", 120, 18,
+                               "声望+2/年",
+                               {"声望": 2.0}, 35, "洛阳"),
+    # 军事类
+    "luoyang_armory": Building("luoyang_armory", "洛阳武库", 100, 12,
+                                "军事行动效果+15%",
+                                {"military": 0.15}, 30, "洛阳"),
+    "yanzhou_arsenal": Building("yanzhou_arsenal", "兖州武库", 90, 10,
+                                "军事行动效果+10%",
+                                {"military": 0.10}, 25, "兖州"),
+    "jinzhou_arsenal": Building("jinzhou_arsenal", "荆州武库", 90, 10,
+                                "军事行动效果+10%",
+                                {"military": 0.10}, 25, "荆州"),
+    "yangzhou_arsenal": Building("yangzhou_arsenal", "扬州武库", 80, 8,
+                                "军事行动效果+8%",
+                                {"military": 0.08}, 20, "扬州"),
+    # 经济类
+    "yanzhou_granary": Building("yanzhou_granary", "兖州粮仓", 60, 8,
+                                "田赋收入+10%",
+                                {"tax_land": 0.10}, 10, "兖州"),
+    "jinzhou_granary": Building("jinzhou_granary", "荆州粮仓", 60, 8,
+                                "田赋收入+10%",
+                                {"tax_land": 0.10}, 10, "荆州"),
+    "xuzhou_granary": Building("xuzhou_granary", "徐州粮仓", 50, 6,
+                               "田赋收入+8%",
+                               {"tax_land": 0.08}, 10, "徐州"),
+    "guangzhou_granary": Building("guangzhou_granary", "广州粮仓", 50, 6,
+                                  "田赋收入+8%",
+                                  {"tax_land": 0.08}, 10, "广州"),
+    # 特殊建筑
+    "jiujiang_dock": Building("jiujiang_dock", "九江船坞", 70, 10,
+                               "水军效果+20%",
+                               {"naval": 0.20}, 30, "九江"),
+    "tongguan_fort": Building("tongguan_fort", "潼关要塞", 80, 12,
+                               "长安防御+25%",
+                               {"defense": 0.25}, 35, "长安"),
+    "hulao_pass": Building("hulao_pass", "虎牢关", 60, 8,
+                            "洛阳防御+20%",
+                            {"defense": 0.20}, 20, "洛阳"),
+}
+
+
+BUILDING_TYPES = {
+    "宫殿": ["weiyang", "xuchang_palace", "luoyang_palace"],
+    "军事": ["luoyang_armory", "yanzhou_arsenal", "jinzhou_arsenal", "yangzhou_arsenal"],
+    "经济": ["yanzhou_granary", "jinzhou_granary", "xuzhou_granary", "guangzhou_granary"],
+    "特殊": ["jiujiang_dock", "tongguan_fort", "hulao_pass"],
+}
+
+
+def get_building_by_id(bid: str) -> Optional[Building]:
+    return BUILDING_CATALOG.get(bid)
+
+
+def get_available_buildings(authority: int, built: List[str]) -> List[Building]:
+    """获取当前可建造的建筑（未建造且满足威权要求）。"""
+    available = []
+    for bid, building in BUILDING_CATALOG.items():
+        if bid in built:
+            continue
+        if authority >= building.unlock_level:
+            available.append(building)
+    return available
+
+
 @dataclass
 class ChatResult:
     action: str
