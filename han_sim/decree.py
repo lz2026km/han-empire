@@ -23,7 +23,7 @@ import os
 import random
 import re
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 try:
     from agno.agent import Agent
@@ -795,7 +795,7 @@ def _apply_decree_effects(
     effects: List[Dict],
     state: GameState,
     db: GameDB,
-) -> tuple[Dict[str, int], List[str]]:
+) -> Tuple[Dict[str, int], List[str]]:
     """应用诏书效果，返回 (delta_dict, log_entries)。
 
     派系修正：忠汉派大臣执行诏书效果×1.2，离心派×0.8。

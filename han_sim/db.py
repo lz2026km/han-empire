@@ -3,13 +3,13 @@
 完整 schema + 种子数据初始化 + 状态持久化。启动时由 GameSession 注入 content。
 """
 
-from __future__ import annotations
+
 
 import json
 import os
 import sqlite3
 from datetime import datetime
-from typing import Dict, List, Optional, TYPE_CHECKING
+from typing import Dict, List, Optional, TYPE_CHECKING, Tuple
 
 if TYPE_CHECKING:
     from han_sim.models import GameState
@@ -857,7 +857,7 @@ class GameDB:
             )
         self.conn.commit()
 
-    def get_character_status(self, name: str) -> tuple[str, str]:
+    def get_character_status(self, name: str) -> Tuple[str, str]:
         row = self.conn.execute(
             "SELECT status, status_reason FROM characters WHERE name=?", (name,)
         ).fetchone()
@@ -1042,6 +1042,31 @@ class GameDB:
                 p.get("status", "active"),
                 p.get("last_action", ""),
                 p.get("aliases", ""),
+            ),
+        )
+
+    def upsert_event(self, e: dict) -> None:
+        import json
+        interests = e.get("interests")
+        audiences = e.get("audiences")
+        if isinstance(interests, list):
+            interests = json.dumps(interests, ensure_ascii=False)
+        if isinstance(audiences, list):
+            audiences = json.dumps(audiences, ensure_ascii=False)
+        self.conn.execute(
+            """INSERT OR IGNORE INTO events
+               (id, title, kind, summary, urgency, severity, credibility, interests, audiences)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                e.get("id", ""),
+                e.get("title", ""),
+                e.get("kind", ""),
+                e.get("summary", ""),
+                e.get("urgency", 0),
+                e.get("severity", 0),
+                e.get("credibility", 0),
+                interests or "",
+                audiences or "",
             ),
         )
 

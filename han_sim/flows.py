@@ -991,7 +991,7 @@ def execute_emperor_skill(
     from han_sim.skills import skill_display_name
 
     # 技能效果定义：skill_id → (指标变化dict, 描述)
-    _SKILL_EFFECTS: Dict[str, tuple[Dict[str, int], str]] = {
+    _SKILL_EFFECTS: Dict[str, Tuple[Dict[str, int], str]] = {
         # 经略系
         "jinglve_1": ({"威权": +2}, "知己知彼：了解自身实力，威权+2"),
         "jinglve_2": ({"藩镇": -3}, "远交近攻：联合远敌，藩镇-3"),
