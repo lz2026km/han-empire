@@ -2131,6 +2131,7 @@ def build_ui():
             powers = ui._render_powers_html()
             intel = ui._render_intel_html()
             map_html = ui._render_map_html()
+            relocate_html = ui._render_relocate_html()
             return out, ministers, history, diary, dash, powers, intel, map_html, relocate_html
 
         def do_refresh_dashboard():
