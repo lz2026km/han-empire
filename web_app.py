@@ -590,6 +590,45 @@ class GameUI:
         </div>
         """
 
+    def _render_faction_html(self) -> str:
+        """【派系】朝堂派系HTML：四大派系影响力+趋势。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+        from han_sim.models import get_faction_status, FACTION_META, init_faction_influence
+        state = self.session.state
+        if "faction_influence" not in state.metrics:
+            init_faction_influence(state)
+        faction_status = get_faction_status(state)
+
+        header = f"""<div style="background:#1a2d1a;border:1px solid #22c55e;border-radius:8px;padding:12px;margin-bottom:12px">
+            <span style="font-size:16px;font-weight:bold;color:#c9a96e">⚖️ 朝堂派系</span>
+        </div>"""
+
+        trend_icons = {"rising": "📈", "stable": "➡️", "declining": "📉"}
+        faction_cards = ""
+        for faction, info in faction_status.items():
+            meta = FACTION_META.get(faction, {})
+            color = meta.get("color", "#9ca3af")
+            inf = info["influence"]
+            trend = info["trend"]
+            icon = trend_icons.get(trend, "➡️")
+
+            # Progress bar
+            bar = f"""<div style="background:#2d2d44;border-radius:4px;height:8px;width:100%;margin-top:4px">
+                <div style="background:{color};border-radius:4px;height:8px;width:{inf}%;transition:width 0.3s"></div>
+            </div>"""
+
+            faction_cards += f"""<div style="background:#1a1a2e;border-radius:8px;padding:12px;margin-bottom:8px;border-left:3px solid {color}">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <span style="font-size:15px;font-weight:bold;color:{color}">{faction}</span>
+                    <span style="font-size:18px;font-weight:bold;color:#e8d5b7">{inf}<span style="font-size:11px;color:#9ca3af">/100 {icon}</span></span>
+                </div>
+                {bar}
+                <div style="font-size:11px;color:#9ca3af;margin-top:4px">{meta.get('description', '')}</div>
+            </div>"""
+
+        return header + faction_cards
+
     def _render_decree_html(self) -> str:
         """【诏令】诏令状态机HTML：有效诏书+过期诏书+可发类型。"""
         if not self.session:
@@ -1463,7 +1502,14 @@ def build_ui():
                             skill_btn = gr.Button("激活技能", variant="primary")
                         skill_output = gr.Markdown()
 
-                    # Tab11: 建筑
+                    # Tab11: 派系
+                    with gr.TabItem("⚖️ 派系"):
+                        gr.Markdown("### ⚖️ 朝堂派系")
+                        faction_display = gr.HTML("*点击「新游戏」初始化*")
+                        faction_output = gr.Markdown()
+                        refresh_faction_btn = gr.Button("🔄 刷新派系")
+
+                    # Tab12: 建筑
                     with gr.TabItem("🏛️ 建筑"):
                         gr.Markdown("### 🏛️ 建筑系统")
                         building_display = gr.HTML("*点击「新游戏」初始化*")
@@ -1593,6 +1639,9 @@ def build_ui():
         def do_refresh_dongzhuo():
             return ui._render_dongzhuo_html()
 
+        def do_refresh_faction():
+            return ui._render_faction_html()
+
         def do_refresh_decree():
             return ui._render_decree_html()
 
@@ -1706,7 +1755,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display],
         )
         # 刷新按钮
         refresh_dashboard_btn.click(fn=do_refresh_dashboard, inputs=[], outputs=[dashboard_display])
@@ -1720,6 +1769,7 @@ def build_ui():
         refresh_skill_btn.click(fn=do_refresh_skill, inputs=[], outputs=[skill_display])
         refresh_building_btn.click(fn=do_refresh_building, inputs=[], outputs=[building_display])
         refresh_decree_btn.click(fn=do_refresh_decree, inputs=[], outputs=[decree_display])
+        refresh_faction_btn.click(fn=do_refresh_faction, inputs=[], outputs=[faction_display])
         refresh_intel_btn.click(fn=do_refresh_intel, inputs=[], outputs=[intel_display])
         refresh_map_btn.click(fn=do_refresh_map, inputs=[], outputs=[map_display])
 
@@ -1728,7 +1778,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display],
         )
 
     return demo

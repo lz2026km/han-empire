@@ -438,6 +438,156 @@ def get_decree_dashboard(state: GameState) -> Dict:
     }
 
 
+# ── 派系系统（Step4新增）────────────────────────────────────────
+
+@dataclass
+class FactionInfluence:
+    faction: str          # 派系名
+    influence: int         # 影响力 0-100
+    trend: str            # 趋势：rising / stable / declining
+    key_members: List[str]  # 核心成员
+
+
+FACTION_META: Dict[str, Dict] = {
+    "忠汉派": {
+        "color": "#22c55e",
+        "description": "忠于汉室的大臣与诸侯",
+        "goal": "兴复汉室，还政天子",
+        "trigger_event": "衣带密诏",
+    },
+    "务实派": {
+        "color": "#3b82f6",
+        "description": "以实际利益为先的务实者",
+        "goal": "保住实力，左右逢源",
+        "trigger_event": "嘉奖诏书",
+    },
+    "离心派": {
+        "color": "#f59e0b",
+        "description": "有离心倾向但不公开叛逆",
+        "goal": "积蓄实力，静观其变",
+        "trigger_event": "威权低于30",
+    },
+    "叛逆派": {
+        "color": "#ef4444",
+        "description": "公开与汉室为敌",
+        "goal": "取而代之",
+        "trigger_event": "威权低于15",
+    },
+}
+
+
+def get_faction_status(state: GameState) -> Dict:
+    """获取派系影响力状态。"""
+    faction_data = state.metrics.get("faction_influence", {})
+    result = {}
+    for faction, meta in FACTION_META.items():
+        inf = faction_data.get(faction, 20)
+        trend = "stable"
+        if inf > 40:
+            trend = "rising"
+        elif inf < 20:
+            trend = "declining"
+        result[faction] = {
+            "influence": inf,
+            "trend": trend,
+            "color": meta["color"],
+            "description": meta["description"],
+        }
+    return result
+
+
+def init_faction_influence(state: GameState) -> None:
+    """初始化派系影响力（游戏开始时调用）。"""
+    state.metrics["faction_influence"] = {
+        "忠汉派": 25,
+        "务实派": 30,
+        "离心派": 30,
+        "叛逆派": 15,
+    }
+
+
+def apply_faction_change(state: GameState, faction: str, delta: int) -> None:
+    """调整派系影响力。"""
+    faction_data = state.metrics.get("faction_influence", {})
+    if faction in faction_data:
+        faction_data[faction] = max(0, min(100, faction_data[faction] + delta))
+    else:
+        faction_data[faction] = max(0, min(100, 20 + delta))
+    state.metrics["faction_influence"] = faction_data
+
+
+def apply_all_faction_dynamics(state: GameState, db) -> Dict:
+    """每回合应用派系动态：
+    - 忠汉派：威权高则上升
+    - 离心派：威权低则上升
+    - 叛逆派：藩镇高则上升
+    - 务实派：相对稳定
+    """
+    authority = state.metrics.get("威权", 0)
+    fanzhen = state.metrics.get("藩镇", 80)
+    faction_data = state.metrics.get("faction_influence", {})
+
+    changes = {}
+    if authority >= 50:
+        changes["忠汉派"] = 3
+        changes["离心派"] = -2
+    elif authority <= 20:
+        changes["忠汉派"] = -2
+        changes["离心派"] = 3
+    if fanzhen >= 80:
+        changes["叛逆派"] = 2
+    elif fanzhen <= 50:
+        changes["叛逆派"] = -1
+    # 务实派随稳定性变化
+    changes["务实派"] = 0
+
+    for faction, delta in changes.items():
+        if faction in faction_data:
+            faction_data[faction] = max(0, min(100, faction_data[faction] + delta))
+
+    state.metrics["faction_influence"] = faction_data
+
+    # 派系影响诏书效果
+    decree_mult = 1.0
+    if faction_data.get("忠汉派", 20) >= 50:
+        decree_mult += 0.1
+    if faction_data.get("离心派", 30) >= 50:
+        decree_mult -= 0.1
+    if faction_data.get("叛逆派", 15) >= 40:
+        decree_mult -= 0.15
+
+    return {"changes": changes, "decree_mult": decree_mult}
+
+
+def get_dominant_faction(state: GameState) -> str:
+    """获取主导派系。"""
+    faction_data = state.metrics.get("faction_influence", {})
+    if not faction_data:
+        return "务实派"
+    return max(faction_data, key=lambda k: faction_data[k])
+
+
+def adjust_faction_by_action(state: GameState, action_type: str, target: str = "") -> None:
+    """根据天子行动调整派系（行动反馈）。"""
+    faction_data = state.metrics.get("faction_influence", {})
+    if action_type == "issue_decree":
+        # 发诏书：忠汉派+，离心派-
+        apply_faction_change(state, "忠汉派", 2)
+        apply_faction_change(state, "离心派", -1)
+    elif action_type == "punish_loyal":
+        # 惩罚忠臣：忠汉派-，离心派+
+        apply_faction_change(state, "忠汉派", -3)
+        apply_faction_change(state, "离心派", 2)
+    elif action_type == "reward_loyal":
+        # 嘉奖忠臣：忠汉派+
+        apply_faction_change(state, "忠汉派", 2)
+    elif action_type == "suppress_rebel":
+        # 镇压叛逆：忠汉派+，叛逆派-
+        apply_faction_change(state, "忠汉派", 2)
+        apply_faction_change(state, "叛逆派", -2)
+    state.metrics["faction_influence"] = faction_data
+
+
 @dataclass
 class ChatResult:
     action: str
