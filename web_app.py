@@ -1726,6 +1726,37 @@ class GameUI:
         except Exception as e:
             return f"❗ 威权恢复失败：{str(e)}"
 
+    def cmd_save(self, campaign_id: str) -> str:
+        """保存当前游戏进度。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        if not campaign_id.strip():
+            cid = self.session.campaign_id
+        else:
+            cid = campaign_id.strip()
+        try:
+            path = self.session.save()
+            return f"✅ 存档成功！\n存档ID：{cid}\n路径：{path}"
+        except Exception as e:
+            return f"❗ 存档失败：{str(e)}"
+
+    def cmd_load(self, campaign_id: str) -> str:
+        """从存档恢复游戏。"""
+        if not campaign_id.strip():
+            return "❗ 请输入存档ID（留空则用当前存档）。"
+        cid = campaign_id.strip()
+        try:
+            from han_sim.session import GameSession
+            new_session = GameSession.load(cid)
+            self.session = new_session
+            self.decree_log = []
+            return f"✅ 读档成功！\n存档ID：{cid}\n第{new_session.state.turn}回合 · {new_session.state.year}年{new_session.state.period}月"
+        except FileNotFoundError:
+            return f"❗ 存档 [{cid}] 不存在，请检查存档ID。"
+        except Exception as e:
+            return f"❗ 读档失败：{str(e)}"
+
+
     def cmd_review(self):
         if not self.session:
             return "❗ 请先点击 **新游戏** 开始。"
@@ -2113,6 +2144,20 @@ def build_ui():
 
                 gr.HTML("<h4 style='color:#c9a96e;padding:12px 0 4px'>🎮 游戏控制</h4>")
                 new_game_btn = gr.Button("🆕 新游戏", variant="secondary", size="lg")
+                save_btn = gr.Button("💾 存档", variant="primary", size="sm")
+                save_cid_input = gr.Textbox(
+                    label="存档ID（留空自动用当前ID）",
+                    placeholder="留空或输入存档名",
+                    lines=1,
+                )
+                save_result = gr.Textbox(label="存档结果", lines=1, interactive=False)
+                load_btn = gr.Button("📂 读档", variant="primary", size="sm")
+                load_cid_input = gr.Textbox(
+                    label="存档ID",
+                    placeholder="输入存档ID加载",
+                    lines=1,
+                )
+                load_result = gr.Textbox(label="读档结果", lines=1, interactive=False)
 
         # ── 底部帮助 ────────────────────────────────────────────────
         gr.HTML(f"""
@@ -2335,6 +2380,18 @@ def build_ui():
         refresh_faction_btn.click(fn=do_refresh_faction, inputs=[], outputs=[faction_display])
         refresh_intel_btn.click(fn=do_refresh_intel, inputs=[], outputs=[intel_display])
         refresh_map_btn.click(fn=do_refresh_map, inputs=[], outputs=[map_display])
+
+        # 存档/读档
+        save_btn.click(
+            fn=lambda cid: ui.cmd_save(cid),
+            inputs=[save_cid_input],
+            outputs=[save_result],
+        )
+        load_btn.click(
+            fn=lambda cid: ui.cmd_load(cid),
+            inputs=[load_cid_input],
+            outputs=[load_result],
+        )
 
         # 初始化
         demo.load(

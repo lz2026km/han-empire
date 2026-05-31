@@ -3,6 +3,9 @@
 
 
 import uuid
+import shutil
+from pathlib import Path
+
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
@@ -212,8 +215,58 @@ class GameSession:
     # ── 存档 ─────────────────────────────────────────────────
 
     def save(self) -> str:
-        path = user_data_path(f"campaign_{self.campaign_id}_save.db")
-        return path
+        """保存当前进度到存档文件。返回存档文件路径。"""
+        src = user_data_path(f"campaign_{self.campaign_id}.db")
+        dst = user_data_path(f"campaign_{self.campaign_id}_save.db")
+        shutil.copy2(src, dst)
+        return dst
+
+    @staticmethod
+    def load(campaign_id: str) -> "GameSession":
+        """从存档文件恢复游戏会话。"""
+        save_path = user_data_path(f"campaign_{campaign_id}_save.db")
+        if not Path(save_path).exists():
+            raise FileNotFoundError(f"存档不存在：{save_path}")
+        src = user_data_path(f"campaign_{campaign_id}.db")
+        shutil.copy2(save_path, src)
+        db = GameDB(src)
+        state = db.load_state()
+        from han_sim.content import load_game_content
+        content = load_game_content()
+        session = GameSession(
+            campaign_id=campaign_id,
+            state=state,
+            db=db,
+            content=content,
+            turn_phase=getattr(state, 'turn_phase', PHASE_SUMMONING),
+        )
+        return session
+
+    @staticmethod
+    def list_saves() -> List[Dict]:
+        """列出所有存档。"""
+        base = user_data_path("")
+        saves = []
+        for f in Path(base).glob("campaign_*_save.db"):
+            cid = f.stem.replace("campaign_", "").replace("_save", "")
+            import time
+            st = f.stat()
+            saves.append({
+                "campaign_id": cid,
+                "path": str(f),
+                "modified": time.strftime("%Y-%m-%d %H:%M", time.localtime(st.st_mtime)),
+            })
+        saves.sort(key=lambda x: x["modified"], reverse=True)
+        return saves
+
+    @staticmethod
+    def delete_save(campaign_id: str) -> bool:
+        """删除指定存档。"""
+        save_path = user_data_path(f"campaign_{campaign_id}_save.db")
+        if Path(save_path).exists():
+            Path(save_path).unlink()
+            return True
+        return False
 
     def export_state(self) -> Dict:
         return {
