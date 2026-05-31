@@ -6,28 +6,44 @@
 
 ## ⚔️ v1.0.1 — 2026-05-31
 
-> **MinisterChat · 天子技能 · 建筑系统 · Launcher 优化**
+> MinisterChat · 修复线程安全 · 数据层加固
 
 ### ✨ 新增功能
 
 | 分类 | 功能 | 描述 |
 |------|------|------|
-| 🗣️ **MinisterChat** | `web/src/components/MinisterChat.tsx` (177行) | 大臣实时对话界面，支持多轮聊天 + 历史记录 |
-| 📋 **技能Tab** | `web/src/components/SkillTab.tsx` | 天子技能树可视化，点选执行 |
-| 🏗️ **建筑Tab** | `web/src/components/BuildingTab.tsx` | 建筑建造/升级/维护管理 |
+| 🗣️ **MinisterChat** | `web/src/components/MinisterChat.tsx` | 大臣实时对话界面，支持多轮聊天 + 历史记录 |
 | 🖥️ **Launcher** | `launcher.py` | DPI缩放自适应 + 系统托盘 + 窗口记忆 |
-| 📜 **main.py** | 新增 `--cli` 命令行模式 | 无窗口纯终端推演 |
+| 📜 **main.py** | 新增 `--cli` 命令行模式（未实现） | 占位符，待 cli 模块开发 |
 
 ### 🐛 Bug Fixes
 
-- `db.py` — deadline_turn 字段新增（建筑/事件截止回合追踪）
-- `issues.py` — 10处修复，progress→bar_value 字段名统一
-- `models.py` — Building dataclass 完善（region_id/category/level）
+| 文件 | 问题 | 修复 |
+|------|------|------|
+| `db.py` | 共享连接线程不安全 | `threading.local()` per-thread connections，新增 `deadline_turn` 字段 |
+| `issues.py` | 10处修复 | `progress` → `bar_value` 字段名统一 |
+| `models.py` | Building dataclass 重复定义 | 合并保留完整字段 |
+| `flows.py:617` | `WHERE id=?` 错 | → `WHERE name=?`（匹配主键） |
+| `server.py:155` | `run_monthly_simulation()` 参数顺序错 | → `(session.state, session.db)` |
 
 ### 📦 Dependencies
 
-- `pyproject.toml` 依赖更新（Flask-CORS / Watchdog / pyinstaller）
+- `pyproject.toml` 依赖更新（Flask-CORS）
 - `HanEmpireSim.spec` Windows 打包配置
+
+### 📊 前端组件
+
+| 组件 | 文件 | 说明 |
+|------|------|------|
+| BattleView | `BattleView.tsx` | 回合制战斗可视化 |
+| DecreeReviewPanel | `DecreeReviewPanel.tsx` | 诏书审批面板 |
+| FactionRelationDiagram | `FactionRelationDiagram.tsx` | 势力关系图 |
+| Header | `Header.tsx` | 顶部导航 |
+| MapLegend | `MapLegend.tsx` | 地图图例 |
+| MinisterChat | `MinisterChat.tsx` | 大臣对话 |
+| MinisterPortrait | `MinisterPortrait.tsx` | 大臣头像（阵营色边框） |
+| Notification | `Notification.tsx` | 实时Toast通知 |
+| ProvinceMap | `ProvinceMap.tsx` + `.css` | 省份地图 + 地形季节 |
 
 ---
 
@@ -49,11 +65,11 @@
 
 ## 🎨 v0.9.9 — 2026-05-31
 
-> **40+ CSS动画 · 6大新组件 · 古风UI全面升级**
+> **CSS动画 · 6大新组件 · 古风UI全面升级**
 
 ### ✨ 新增
 
-**动画系统** (`web/src/styles/animations.css`)
+**动画系统** (`web/src/styles/animations.css` - 61keyframes)
 ```
 🔖 御玺盖印   📜 卷轴展开   🥁 战鼓律动   🔥 火光脉动
 💧 水墨晕染   🔔 通知滑入   🐉 龙纹律动   🏮 宫灯飘浮
@@ -66,8 +82,8 @@
 | `Notification.tsx` | 实时Toast通知（7类型） |
 | `MinisterPortrait.tsx` | 大臣头像（阵营色边框） |
 | `BattleView.tsx` | 回合制战斗可视化 |
-| `FactionRelationDiagram.svg` | 势力关系图（SVG） |
-| `ProvinceMap.css` | 地形+季节+悬浮提示 |
+| `FactionRelationDiagram.tsx` | 势力关系图 |
+| `ProvinceMap.css` + `.tsx` | 地形+季节+悬浮提示 |
 
 ---
 
