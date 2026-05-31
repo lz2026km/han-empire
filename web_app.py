@@ -424,14 +424,55 @@ class GameUI:
             <th style="padding:5px 6px;text-align:right;color:#c9a96e">威</th>
         </tr>"""
 
+        # UI升级：势力卡片化
+        stance_colors = {"loyal": "#22c55e", "neutral": "#9ca3af", "hostile": "#ef4444"}
+        stance_labels = {"loyal": "忠汉", "neutral": "中立", "hostile": "敌对"}
+        cards = ""
+        for p in powers:
+            color = colors.get(p.get("stance", "neutral"), "#9ca3af")
+            stance = p.get("stance", "neutral")
+            stance_label = stance_labels.get(stance, "?")
+            mil = p.get('military_strength', 0)
+            lev = p.get('leverage', 0)
+            mil_pct = min(100, int(mil) // 3)
+            lev_pct = min(100, int(lev) // 3)
+            mil_bar_color = "#22c55e" if mil_pct >= 50 else "#f59e0b" if mil_pct >= 25 else "#ef4444"
+            cards += f"""<div style="background:#1a1a2e;border-radius:8px;padding:10px;margin-bottom:8px;border-left:3px solid {color}">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                    <span style="font-size:14px;font-weight:bold;color:#e8d5b7">{p.get('name','?')}</span>
+                    <span style="background:{color};color:white;padding:2px 8px;border-radius:10px;font-size:11px">{stance_label}</span>
+                </div>
+                <div style="font-size:12px;color:#9ca3af;margin-bottom:6px">首领: {p.get('leader','?')}　势力范围: {p.get('territory', '未知')}</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                    <div>
+                        <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-bottom:2px">
+                            <span>军力</span><span style="color:{mil_bar_color}">{mil}</span>
+                        </div>
+                        <div style="background:#2d2d44;border-radius:3px;height:6px">
+                            <div style="background:{mil_bar_color};border-radius:3px;height:6px;width:{mil_pct}%;transition:width 0.3s"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-bottom:2px">
+                            <span>威势</span><span>{lev}</span>
+                        </div>
+                        <div style="background:#2d2d44;border-radius:3px;height:6px">
+                            <div style="background:{color};border-radius:3px;height:6px;width:{lev_pct}%;transition:width 0.3s"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>"""
+
+        legend = """<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:11px">
+            <span style="color:#22c55e">● 忠汉</span>
+            <span style="color:#9ca3af">● 中立</span>
+            <span style="color:#ef4444">● 敌对</span>
+            <span style="color:#9ca3af">军力/威势越高威胁越大</span>
+        </div>"""
+
         return f"""<div style="font-family:system-ui,sans-serif">
-        <table style="width:100%;border-collapse:collapse;font-size:13px">
-            {header}
-            {"".join(rows)}
-        </table>
-        <p style="font-size:11px;color:#9ca3af;margin-top:8px">
-            🟦 忠 · 🟪 中立 · 🟥 敌对 · 军力/威势越高威胁越大
-        </p>
+        {cards}
+        {legend}
         </div>"""
 
     def _render_ministers(self):
@@ -803,8 +844,20 @@ class GameUI:
             init_faction_influence(state)
         faction_status = get_faction_status(state)
 
-        header = f"""<div style="background:#1a2d1a;border:1px solid #22c55e;border-radius:8px;padding:12px;margin-bottom:12px">
-            <span style="font-size:16px;font-weight:bold;color:#c9a96e">⚖️ 朝堂派系</span>
+        authority = state.metrics.get("威权", 50)
+        auth_color = "#22c55e" if authority >= 60 else "#f59e0b" if authority >= 30 else "#ef4444"
+        faction_names = list(faction_status.keys())
+        badge_parts = []
+        for f in faction_names:
+            fc = FACTION_META.get(f, {}).get("color", "#9ca3af")
+            badge_parts.append("<span style=\'background:" + fc + ";color:white;padding:2px 8px;border-radius:10px;font-size:11px;margin-right:4px\'>" + f + ":" + str(faction_status[f]["influence"]) + "</span>")
+        badge_html = "".join(badge_parts)
+        header = f"""<div style="background:linear-gradient(135deg,#1a2d1a 0%,#1a1a2e 100%);border:1px solid #c9a96e;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 4px 16px rgba(201,169,110,0.1)">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:16px;font-weight:bold;color:#c9a96e">⚖️ 朝堂派系</span>
+                <span style="font-size:12px;color:#9ca3af">威权：<span style="color:{auth_color};font-weight:bold">{authority}</span></span>
+            </div>
+            <div style="margin-top:8px">{badge_html}</div>
         </div>"""
 
         trend_icons = {"rising": "📈", "stable": "➡️", "declining": "📉"}
@@ -821,12 +874,23 @@ class GameUI:
                 <div style="background:{color};border-radius:4px;height:8px;width:{inf}%;transition:width 0.3s"></div>
             </div>"""
 
+            meta_color = meta.get("color", "#9ca3af")
+            inf_pct = inf
+            inf_bar_color = "#22c55e" if inf >= 60 else "#f59e0b" if inf >= 30 else "#ef4444"
             faction_cards += f"""<div style="background:#1a1a2e;border-radius:8px;padding:12px;margin-bottom:8px;border-left:3px solid {color}">
                 <div style="display:flex;justify-content:space-between;align-items:center">
-                    <span style="font-size:15px;font-weight:bold;color:{color}">{faction}</span>
-                    <span style="font-size:18px;font-weight:bold;color:#e8d5b7">{inf}<span style="font-size:11px;color:#9ca3af">/100 {icon}</span></span>
+                    <div>
+                        <span style="font-size:15px;font-weight:bold;color:{color}">{faction}</span>
+                        <span style="background:{meta_color}22;padding:1px 6px;border-radius:4px;margin-left:6px;font-size:10px;color:{meta_color}">{meta.get('goal','')}</span>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-size:20px;font-weight:bold;color:#e8d5b7">{inf}<span style="font-size:11px;color:#9ca3af">/100</span></div>
+                        <div style="font-size:11px">{icon}</div>
+                    </div>
                 </div>
-                {bar}
+                <div style="background:#2d2d44;border-radius:4px;height:8px;margin:6px 0">
+                    <div style="background:{inf_bar_color};border-radius:4px;height:8px;width:{inf_pct}%;transition:width 0.3s"></div>
+                </div>
                 <div style="font-size:11px;color:#9ca3af;margin-top:4px">{meta.get('description', '')}</div>
             </div>"""
 
