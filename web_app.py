@@ -1201,6 +1201,13 @@ class GameUI:
         except Exception as e:
             return f"❗ 董卓伏诛执行失败：{str(e)}"
 
+    def cmd_gazette_monthly(self):
+        """【邸报】生成本月回合总结（借鉴大明邸报文风）。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        from han_sim.models import get_gazette_summary
+        return get_gazette_summary(self.session.state)
+
     def cmd_free_decree(self, free_text: str):
         """【自由拟诏】玩家输入自由文本，由系统记录为诏书草案。"""
         if not self.session:
@@ -1216,17 +1223,20 @@ class GameUI:
             return f"❌ {result.get('narrative', '记录失败')}"
 
     def cmd_preview_decree(self):
-        """【诏书预览】预览当前已起草的诏书，羊皮纸效果显示。"""
+        """【诏书预览】预览当前已发布的诏书（羊皮纸效果）。"""
         if not self.session:
             return "❗ 请先点击 **新游戏** 开始。"
         from han_sim.flows import get_decree_dashboard
-        active = get_decree_dashboard(self.session.state)
+        state = self.session.state
+        active = get_decree_dashboard(state)
         issued = active.get("by_status", {}).get("issued", [])
-        if not issued:
-            return "暂无已发布的诏书可供预览。"
-        preview = "【诏书预览·羊皮纸】\n\n"
-        for dec in issued:
-            preview += f"""━━━━━━━━━━━━━━━━\n【{dec['type']}】{dec['title']}\nID：{dec['id']}\n目标：{dec['target'] or '无'}\n剩余：{dec['remaining']}回合\n\n"""
+        history = state.metrics.get("decree_history", [])
+        all_decrees = issued + [{"id": d["decree_id"], "type": d["decree_type"], "title": d["title"], "target": d.get("target",""), "remaining": 0} for d in history[-10:]]
+        if not all_decrees:
+            return "史册暂无诏书记录。"
+        preview = "【史册·诏书预览】\n\n"
+        for dec in all_decrees:
+            preview += f"【{dec['type']}】{dec['title']}（{dec['id']}）\n目标：{dec['target'] or '无'}\n\n"
         return preview
 
     def cmd_write_decree_ai(self, directives_text: str):
@@ -1252,9 +1262,29 @@ class GameUI:
             return "❗ 请输入诏书标题。"
         try:
             from han_sim.flows import issue_decree
+            from han_sim.models import record_decree_history, DecreeRecord
             result = issue_decree(self.session.state, decree_type, title, content, target)
             if result.get("success"):
-                return result["narrative"]
+                # 追加到史册
+                state = self.session.state
+                history = state.metrics.get("decree_history", [])
+                history.append({
+                    "decree_id": result.get("decree_id", f"dec_{len(history)}"),
+                    "decree_type": decree_type,
+                    "title": title,
+                    "content": content,
+                    "status": "issued",
+                    "issued_turn": state.turn,
+                    "expire_turn": 0,
+                    "execute_turn": 0,
+                    "target": target,
+                    "authority_cost": 0,
+                    "effects": {"effect_desc": decree_type},
+                })
+                if len(history) > 50:
+                    history = history[-50:]
+                state.metrics["decree_history"] = history
+                return result["narrative"] + "\n✅ 已记入史册"
             else:
                 return f"❌ {result.get('narrative', '发布失败')}"
         except Exception as e:
@@ -1588,8 +1618,10 @@ def build_ui():
                     with gr.TabItem("📜 史册"):
                         gr.Markdown("### 📜 史册：历代诏书与奏报")
                         gazette_display = gr.HTML("*点击「新游戏」初始化*")
+                        with gr.Row():
+                            gazette_monthly_btn = gr.Button("📋 生成邸报", variant="primary")
+                            refresh_gazette_btn = gr.Button("🔄 刷新史册")
                         gazette_output = gr.Markdown()
-                        refresh_gazette_btn = gr.Button("🔄 刷新史册")
 
                     # Tab8: 讨伐董卓
                     with gr.TabItem("⚔️ 讨伐"):
@@ -1899,6 +1931,11 @@ def build_ui():
             fn=do_refresh_gazette,
             inputs=[],
             outputs=[gazette_display],
+        )
+        gazette_monthly_btn.click(
+            fn=ui.cmd_gazette_monthly,
+            inputs=[],
+            outputs=[gazette_output],
         )
         # 建筑建造
         building_btn.click(
