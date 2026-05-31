@@ -915,6 +915,70 @@ def apply_skill_points(state: GameState, db: GameDB) -> int:
     return gained
 
 
+def get_skill_tree_status(state: GameState) -> Dict:
+    """获取技能树状态（供UI渲染使用）。"""
+    from han_sim.models import SKILL_TREES, get_skill_by_id, get_available_skills, can_activate_skill
+
+    authority = state.metrics.get("威权", 0)
+    skill_points = state.metrics.get("skill_points", 0)
+    raw = state.metrics.get("activated_skills", [])
+    activated: List[str] = raw if isinstance(raw, list) else []
+
+    available = get_available_skills(authority, activated)
+    available_with_status = []
+    for skill in available:
+        can_act, reason = can_activate_skill(skill, authority, activated, skill_points)
+        available_with_status.append((skill.sid, skill.name, can_act, reason))
+
+    branch_progress = {}
+    total = 0
+    activated_count = 0
+    for branch, skills in SKILL_TREES.items():
+        total += len(skills)
+        branch_act = sum(1 for s in skills if s.sid in activated)
+        activated_count += branch_act
+        branch_progress[branch] = {"activated": branch_act, "total": len(skills)}
+
+    return {
+        "skill_points": skill_points,
+        "authority": authority,
+        "activated": activated,
+        "available": available_with_status,
+        "branch_progress": branch_progress,
+        "activated_count": activated_count,
+        "total_skills": total,
+    }
+
+
+def activate_skill(state: GameState, skill_id: str) -> Dict:
+    """激活天子技能。"""
+    from han_sim.models import get_skill_by_id, can_activate_skill
+
+    authority = state.metrics.get("威权", 0)
+    skill_points = state.metrics.get("skill_points", 0)
+    raw = state.metrics.get("activated_skills", [])
+    activated: List[str] = raw if isinstance(raw, list) else []
+
+    skill = get_skill_by_id(skill_id)
+    if not skill:
+        return {"success": False, "narrative": f"技能 {skill_id} 不存在"}
+
+    can_act, reason = can_activate_skill(skill, authority, activated, skill_points)
+    if not can_act:
+        return {"success": False, "narrative": reason}
+
+    state.metrics["skill_points"] -= skill.cost
+    state.metrics["activated_skills"].append(skill_id)
+    state.log.append(f"【技能激活】{skill.name}（{skill.branch}系），消耗{skill.cost}点")
+
+    return {
+        "success": True,
+        "skill": skill.name,
+        "remaining_points": state.metrics["skill_points"],
+        "cost": skill.cost,
+    }
+
+
 def execute_emperor_skill(
     state: GameState,
     db: GameDB,
