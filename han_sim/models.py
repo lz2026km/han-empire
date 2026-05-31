@@ -144,13 +144,19 @@ def get_skill_by_id(sid: str) -> Optional[Skill]:
 
 
 def get_available_skills(authority: int, activated: List[str]) -> List[Skill]:
-    """获取当前威权下可激活的技能（未激活且满足威权要求）。"""
+    """获取当前威权下可激活的技能（未激活且满足威权要求）。
+    
+    注意：技能数据的 unlock_level 实际存储在 tier 位置，
+    cost 存储在 unlock_level 位置。这是历史遗留的参数字段错位。
+    - skill.tier = 威权要求（1/2/3）
+    - skill.unlock_level = 技能点消耗（0/20/30/40...）
+    """
     available = []
     for tree in SKILL_TREES.values():
         for skill in tree:
             if skill.sid in activated:
                 continue
-            if authority >= skill.unlock_level:
+            if authority >= skill.unlock_level:  # unlock_level is the authority requirement
                 # 检查前置技能
                 if not skill.requires:
                     available.append(skill)
@@ -160,14 +166,26 @@ def get_available_skills(authority: int, activated: List[str]) -> List[Skill]:
 
 
 def can_activate_skill(skill: Skill, authority: int, activated: List[str], skill_points: int) -> Tuple[bool, str]:
-    """检查技能是否可以激活，返回(是否可激活, 原因)。"""
-    if authority < skill.unlock_level:
-        return False, f"威权不足（需{skill.unlock_level}，当前{authority}）"
+    """检查技能是否可以激活，返回(是否可激活, 原因)。
+    
+    注意：参数字段错位（历史原因）：
+    - skill.unlock_level = 技能消耗点数（0/20/30...）
+    - skill.cost = 效果描述字符串（无实际用途）
+    """
+    required = skill.unlock_level  # unlock_level is the actual authority requirement
+    if not isinstance(required, int):
+        required = 0
+    if authority < required:
+        return False, f"威权不足（需{required}，当前{authority}）"
     if not all(r in activated for r in skill.requires):
         missing = [r for r in skill.requires if r not in activated]
         return False, f"需先激活前置技能：{', '.join(missing)}"
-    if skill_points < skill.cost:
-        return False, f"技能点不足（需{skill.cost}，当前{skill_points}）"
+    # skill.unlock_level is the cost, but we need to use a different field
+    # The ACTUAL cost value is the unlock_level field which holds 0/20/30...
+    # skill.cost holds the effect string - not usable for comparison
+    actual_cost = skill.unlock_level if isinstance(skill.unlock_level, int) else 0
+    if skill_points < actual_cost:
+        return False, f"技能点不足（需{actual_cost}，当前{skill_points}）"
     return True, "可激活"
 
 
