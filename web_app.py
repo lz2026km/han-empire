@@ -471,6 +471,71 @@ class GameUI:
         {"".join(lines)}
         </div>"""
 
+    def _render_relocate_html(self) -> str:
+        """【迁都】迁都系统HTML：当前都城 + 可选都城 + 迁都效果预览。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+        from han_sim.flows import _CAPITAL_EFFECTS
+        s = self.session.state
+        current = getattr(s, 'capital', '洛阳')
+        authority = s.metrics.get('威权', 0)
+
+        # 检查威权是否足够（迁都需威权>=30）
+        can_relocate = authority >= 30
+
+        # 都城选项
+        capital_options = [
+            {"id": "洛阳", "label": "洛阳", "desc": "东汉国都，汉室正统，但董卓控制中", "color": "#ef4444", "disabled": current == "洛阳"},
+            {"id": "许昌", "label": "许昌", "desc": "曹操势力范围，形式统一但受制于人", "color": "#f59e0b", "disabled": current == "许昌"},
+            {"id": "长安", "label": "长安", "desc": "西京故都，偏安一隅可避锋芒", "color": "#6b7280", "disabled": current == "长安"},
+            {"id": "邺城", "label": "邺城", "desc": "袁绍地盘，藩镇不服风险高", "color": "#6b7280", "disabled": current == "邺城"},
+            {"id": "南阳", "label": "南阳", "desc": "光武帝乡，人心尚在，风险中等", "color": "#6b7280", "disabled": current == "南阳"},
+        ]
+
+        rows_html = ""
+        for cap in capital_options:
+            disabled_text = "(当前)" if cap["disabled"] else ("(威权不足)" if not can_relocate and not cap["disabled"] else "")
+            effect = _CAPITAL_EFFECTS.get(cap["id"], {})
+            effect_str = " / ".join([f"{k}{'+' if v >= 0 else ''}{v}" for k, v in effect.items() if v != 0]) or "无变化"
+            color = cap["color"]
+            row_class = "opacity:0.5" if cap["disabled"] or (not can_relocate and not cap["disabled"]) else ""
+            rows_html += f"""<tr style="{row_class}">
+                <td style="padding:8px;font-weight:bold;color:{color};font-size:15px">{cap["label"]}</td>
+                <td style="padding:8px;font-size:12px;color:#9ca3af">{cap["desc"]}</td>
+                <td style="padding:8px;font-size:12px;color:#e8d5b7;text-align:center">{effect_str}</td>
+                <td style="padding:8px;font-size:12px;color:#f59e0b">{disabled_text}</td>
+            </tr>"""
+
+        header_html = """<tr style="background:#16213e;font-size:11px">
+            <th style="padding:6px 8px;text-align:left;color:#c9a96e">都城</th>
+            <th style="padding:6px 8px;text-align:left;color:#c9a96e">说明</th>
+            <th style="padding:6px 8px;text-align:center;color:#c9a96e">效果</th>
+            <th style="padding:6px 8px;text-align:center;color:#c9a96e">状态</th>
+        </tr>"""
+
+        return f"""<div style="font-family:system-ui,sans-serif">
+        <div style="background:#1a1a2e;border:1px solid #c9a96e;border-radius:8px;padding:12px;margin-bottom:12px;text-align:center">
+            <div style="font-size:12px;color:#9ca3af">当前都城</div>
+            <div style="font-size:26px;font-weight:bold;color:#c9a96e">{current}</div>
+            <div style="font-size:12px;color:#9ca3af;margin-top:4px">威权：{authority}（迁都需≥30）{'✅ 可迁都' if can_relocate else '❌ 威权不足'}</div>
+        </div>
+
+        <h4 style="margin:8px 0 6px;color:#c9a96e">🏰 迁都选项</h4>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+            {header_html}
+            {rows_html}
+        </table>
+
+        <h4 style="margin:12px 0 6px;color:#c9a96e">📜 迁都效果说明</h4>
+        <ul style="font-size:12px;color:#9ca3af;padding-left:20px">
+            <li>洛阳：汉室正统，无加成，但董卓控制中风险高</li>
+            <li>许昌：曹操控制，形式统一，威权+5但藩镇+3</li>
+            <li>长安：西迁避难，声望-5，威权-3，藩镇-5（保守策略）</li>
+            <li>邺城：袁绍地盘，藩镇-8但声望-3（风险高）</li>
+            <li>南阳：光武帝乡，中庸之选</li>
+        </ul>
+        </div>"""
+
     def _render_decree_preview(self, intent: str) -> str:
         """诏书预览：根据输入意图显示预计效果。"""
         if not self.session:
@@ -564,6 +629,32 @@ class GameUI:
             return "\n".join(lines)
         except Exception as e:
             return f"❗ 拟旨失败：{str(e)}"
+
+    def cmd_relocate_capital(self, new_capital: str):
+        """执行迁都。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        if not new_capital:
+            return "❗ 请选择目标都城。"
+        current = self.session.state.capital
+        if current == new_capital:
+            return f"❗ 当前就在 {new_capital}，无需迁都。"
+        try:
+            from han_sim.flows import relocate_capital
+            delta = relocate_capital(self.session.state, new_capital)
+            if not delta:
+                return f"❗ 迁都至 {new_capital} 失败（未知原因）"
+            parts = [f"**【迁都成功】{current} → {new_capital}**"]
+            parts.append("")
+            for k, v in delta.items():
+                sign = "+" if v >= 0 else ""
+                color = "#22c55e" if v > 0 else ("#ef4444" if v < 0 else "#9ca3af")
+                parts.append(f"<span style='color:{color};font-weight:bold'>{k} {sign}{v}</span>")
+            parts.append("")
+            parts.append(f"_当前都城：{new_capital}_")
+            return "\n".join(parts)
+        except Exception as e:
+            return f"❗ 迁都失败：{str(e)}"
 
     def cmd_authority_recovery(self, action: str):
         """执行威权恢复行动。"""
@@ -773,6 +864,20 @@ def build_ui():
                         diary_display = gr.HTML("*天子日记将显示在这里*")
                         refresh_diary_btn = gr.Button("🔄 刷新日记")
 
+                    # Tab8: 迁都
+                    with gr.TabItem("🏰 迁都"):
+                        gr.Markdown("### 🏰 迁都系统")
+                        relocate_display = gr.HTML("*点击「新游戏」初始化*")
+                        with gr.Row():
+                            relocate_input = gr.Dropdown(
+                                label="选择目标都城",
+                                choices=["洛阳", "许昌", "长安", "邺城", "南阳"],
+                                value="",
+                            )
+                            relocate_btn = gr.Button("执行迁都", variant="primary")
+                        relocate_output = gr.Markdown()
+                        refresh_relocate_btn = gr.Button("🔄 刷新迁都选项")
+
             # ── 右侧边栏：操作面板 ───────────────────────────────
             with gr.Column(scale=1, min_width=260):
                 gr.HTML("<h3 style='color:#c9a96e;padding:8px 0 4px;border-bottom:1px solid #2d2d44'>⚡ 快捷操作</h3>")
@@ -827,7 +932,7 @@ def build_ui():
             powers = ui._render_powers_html()
             intel = ui._render_intel_html()
             map_html = ui._render_map_html()
-            return out, ministers, history, diary, dash, powers, intel, map_html
+            return out, ministers, history, diary, dash, powers, intel, map_html, relocate_html
 
         def do_refresh_dashboard():
             return ui._render_dashboard_html()
@@ -841,6 +946,9 @@ def build_ui():
             return ui._render_intel_html()
         def do_refresh_map():
             return ui._render_map_html()
+
+        def do_refresh_relocate():
+            return ui._render_relocate_html()
 
         # 召对
         summon_btn.click(
@@ -882,6 +990,12 @@ def build_ui():
             inputs=[quick_intent],
             outputs=quick_decree_output,
         )
+        # 迁都
+        relocate_btn.click(
+            fn=ui.cmd_relocate_capital,
+            inputs=[relocate_input],
+            outputs=relocate_output,
+        )
         # 威权恢复
         recovery_btn.click(
             fn=ui.cmd_authority_recovery,
@@ -899,13 +1013,14 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display],
         )
         # 刷新按钮
         refresh_dashboard_btn.click(fn=do_refresh_dashboard, inputs=[], outputs=[dashboard_display])
         refresh_powers_btn.click(fn=do_refresh_powers, inputs=[], outputs=[powers_display])
         refresh_history_btn.click(fn=do_refresh_history, inputs=[], outputs=[history_display])
         refresh_diary_btn.click(fn=do_refresh_diary, inputs=[], outputs=[diary_display])
+        refresh_relocate_btn.click(fn=do_refresh_relocate, inputs=[], outputs=[relocate_display])
         refresh_intel_btn.click(fn=do_refresh_intel, inputs=[], outputs=[intel_display])
         refresh_map_btn.click(fn=do_refresh_map, inputs=[], outputs=[map_display])
 
@@ -914,7 +1029,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display],
         )
 
     return demo
