@@ -36,6 +36,10 @@
 - **诸侯动态**：藩镇自动行动，写入 `last_action`
 - **阈值危机**：藩镇>70 / 威权<10 / 声望<15 自动触发危机事件
 - **天子日记**：LLM 生成回合日记体记录
+- **deadline 超时**：事项自动处理（推进/失败/取消）
+
+### 💬 大臣召对（MinisterChat）
+全新独立聊天界面（177行 TSX + 236行 CSS），拟古奏对风格，即时消息气泡 + 大臣头像（3keengames.net），派系标签 + 忠诚度徽章，实时解析 LLM 回复并写入数据库。
 
 ### 🌳 天子技能树
 四系各12条技能（经略/权谋/武功/文治），威权达标解锁，消耗技能点激活。威权≥40每回合+1点，威权≥60每回合+2点，上限10点。
@@ -232,27 +236,28 @@ han-empire/
 
 ## 版本历程
 
-| 版本 | 日期 | 里程碑 |
+|| 版本 | 日期 | 里程碑 ||
 |------|------|--------|
-| **v0.9.9** | 2026-05-31 | **Step18完成**：派系动态系统完整版（FACTION_THRESHOLDS/DECREE_MODIFIERS/METRIC_SENSITIVITY）+ pywebview桌面launcher（355行）+ REST API（Flask，19端点）+ PyInstaller打包配置（HanEmpireSim.spec）+ consorts.json（34名秀女）+ opening_crises.json + v0.9.9前端升级（BattleView/FactionRelationDiagram/MinisterPortrait/Notification/ProvinceMap + 40+ CSS动画） |
-| **v0.9.7** | 2026-05-31 | **五大系统完整落地**：天子技能树（四系48技能，威权解锁+前置依赖+技能点消耗）+ 建筑系统（14建筑，宫殿/军事/经济/特殊，维护费自动扣除）+ 诏令状态机（6种诏书类型，衣带密诏/讨伐/迁都/嘉奖/罪己/大赦，状态流转draft→issued→expired）+ 派系系统（忠汉/务实/离心/叛逆四派系，威权/藩镇联动，每月动态更新）+ 系统联动（新游戏初始化+每月调用） |
-| **v0.9.6** | 2026-05-31 | **核心事件链全通**：忠诚度系统（大臣/诸侯双衰减，5种恢复行动，叛逃检测）+ 董卓伏诛（威权≥40触发，军力判定，成功/失败效果）+ 献帝东归（董卓伏诛后启动，威权≥60成功率80%）+ 迁都系统（5城迁都，威权约束） |
-| **v0.9.4** | 2026-05-30 | **古风主题配色**：玄黑/朱红/古金/暖白17色配色方案 + Noto Serif SC 字体，覆盖全部UI组件 |
-| **v0.9.0** | 2026-05-30 | **十项功能全量落地**：天子技能树(44→228行)、双Agent推演架构(别名映射+阈值危机+天子日记)、分级财政(田赋盐铁贡金暗探)、派系系统(四大派系影响+apply_faction_events)、军情情报(4工具+情报Tab)、事项增强(危机注入+级联+deadline)、地图视图(ASCII八州地图)、天子日记LLM生成、建筑系统(6建筑+维护费结算)、指令状态机(directives表完整CRUD) |
-| **v0.8.3** | 2026-05-30 | 忠诚度上下文注入召对 + 诸侯动态显示 + 衣带密诏Web独立按钮 |
-| **v0.8.2** | 2026-05-30 | 藩镇动态(apply_warlord_actions)+忠诚度机制(loyalty_multiplier)+衣带诏(issue_secret_edict)+仪表盘(gradio.Tabs六栏)+势力视图(立场着色) |
-| **v0.8.1** | 2026-05-30 | 扩充开局邸报 — 天子近况/汉室国势/五困局/势力格局/历史线状态/游戏系统说明 |
-| **v0.8.0** | 2026-05-29 | issues.py 完整方法链 — advance_issue/close_issue/cancel_issue/mark_event_triggered/list_active_issues |
-| **v0.7.9** | 2026-05-29 | db.py 完整 schema + 种子数据 + 状态读写 |
-| **v0.7.7** | 2026-05-29 | CHANGELOG.md + scripts探针 + 设计文档 |
-| **v0.7.6** | 2026-05-29 | prompts目录(6个md) + buildings.json(26建筑) + token_stats.py |
-| **v0.7.5** | 2026-05-28 | emperor_skills.json(48条) + classes.json(49条) + skills.py(241行) |
-| **v0.7.4** | 2026-05-28 | assets/matching/context/report/exceptions 5模块 |
-| **v0.7.3** | 2026-05-27 | 内容侧扩充至369条（characters 120/regions 50/powers 30/events 79/seed_events 40） |
-| **v0.7.2** | 2026-05-26 | Web界面升级：仪表盘/召对历史/游戏日志/事务Tabs |
-| **v0.7.1** | 2026-05-25 | 威权/迁都/忠诚衰减/董卓伏诛/献帝东归/藩镇动态 |
-| **v0.7.0** | 2026-05-24 | 核心系统完成：回合制 + LLM召对 + 圣旨系统 + Gradio界面 |
-| **v0.5.0** | 2026-05-20 | 记忆系统核心 — event_memories表 + LLM提取 + 召见注入 |
+|| **v1.0.1** | 2026-05-31 | **全面审核修复**：MinisterChat独立聊天界面（177行TSX+236行CSS，拟古奏对风格）+ SkillTab技能树Tab + BuildingTab建筑Tab + 30+古风CSS动画（龙纹/卷轴/锦衣/朝服主题）+ launcher DPI缩放适配 + main.py新增`--cli`命令行模式 + issues.py progress→bar_value字段修复10处 + db.py新增deadline_turn字段 + pyproject.toml版本统一为v1.0.1 ||
+|| **v0.9.9** | 2026-05-31 | **Step18完成**：派系动态系统完整版（FACTION_THRESHOLDS/DECREE_MODIFIERS/METRIC_SENSITIVITY）+ pywebview桌面launcher（355行）+ REST API（Flask，19端点）+ PyInstaller打包配置（HanEmpireSim.spec）+ consorts.json（34名秀女）+ opening_crises.json + v0.9.9前端升级（BattleView/FactionRelationDiagram/MinisterPortrait/Notification/ProvinceMap + 40+ CSS动画） ||
+|| **v0.9.7** | 2026-05-31 | **五大系统完整落地**：天子技能树（四系48技能，威权解锁+前置依赖+技能点消耗）+ 建筑系统（14建筑，宫殿/军事/经济/特殊，维护费自动扣除）+ 诏令状态机（6种诏书类型，衣带密诏/讨伐/迁都/嘉奖/罪己/大赦，状态流转draft→issued→expired）+ 派系系统（忠汉/务实/离心/叛逆四派系，威权/藩镇联动，每月动态更新）+ 系统联动（新游戏初始化+每月调用） |
+|| **v0.9.6** | 2026-05-31 | **核心事件链全通**：忠诚度系统（大臣/诸侯双衰减，5种恢复行动，叛逃检测）+ 董卓伏诛（威权≥40触发，军力判定，成功/失败效果）+ 献帝东归（董卓伏诛后启动，威权≥60成功率80%）+ 迁都系统（5城迁都，威权约束） |
+|| **v0.9.4** | 2026-05-30 | **古风主题配色**：玄黑/朱红/古金/暖白17色配色方案 + Noto Serif SC 字体，覆盖全部UI组件 |
+|| **v0.9.0** | 2026-05-30 | **十项功能全量落地**：天子技能树(44→228行)、双Agent推演架构(别名映射+阈值危机+天子日记)、分级财政(田赋盐铁贡金暗探)、派系系统(四大派系影响+apply_faction_events)、军情情报(4工具+情报Tab)、事项增强(危机注入+级联+deadline)、地图视图(ASCII八州地图)、天子日记LLM生成、建筑系统(6建筑+维护费结算)、指令状态机(directives表完整CRUD) |
+|| **v0.8.3** | 2026-05-30 | 忠诚度上下文注入召对 + 诸侯动态显示 + 衣带密诏Web独立按钮 |
+|| **v0.8.2** | 2026-05-30 | 藩镇动态(apply_warlord_actions)+忠诚度机制(loyalty_multiplier)+衣带诏(issue_secret_edict)+仪表盘(gradio.Tabs六栏)+势力视图(立场着色) |
+|| **v0.8.1** | 2026-05-30 | 扩充开局邸报 — 天子近况/汉室国势/五困局/势力格局/历史线状态/游戏系统说明 |
+|| **v0.8.0** | 2026-05-29 | issues.py 完整方法链 — advance_issue/close_issue/cancel_issue/mark_event_triggered/list_active_issues |
+|| **v0.7.9** | 2026-05-29 | db.py 完整 schema + 种子数据 + 状态读写 |
+|| **v0.7.7** | 2026-05-29 | CHANGELOG.md + scripts探针 + 设计文档 |
+|| **v0.7.6** | 2026-05-29 | prompts目录(6个md) + buildings.json(26建筑) + token_stats.py |
+|| **v0.7.5** | 2026-05-28 | emperor_skills.json(48条) + classes.json(49条) + skills.py(241行) |
+|| **v0.7.4** | 2026-05-28 | assets/matching/context/report/exceptions 5模块 |
+|| **v0.7.3** | 2026-05-27 | 内容侧扩充至369条（characters 120/regions 50/powers 30/events 79/seed_events 40） |
+|| **v0.7.2** | 2026-05-26 | Web界面升级：仪表盘/召对历史/游戏日志/事务Tabs |
+|| **v0.7.1** | 2026-05-25 | 威权/迁都/忠诚衰减/董卓伏诛/献帝东归/藩镇动态 |
+|| **v0.7.0** | 2026-05-24 | 核心系统完成：回合制 + LLM召对 + 圣旨系统 + Gradio界面 |
+|| **v0.5.0** | 2026-05-20 | 记忆系统核心 — event_memories表 + LLM提取 + 召见注入 |
 
 ---
 
