@@ -677,24 +677,26 @@ class GameUI:
         {status_html}
 
         <h4 style="margin:12px 0 6px;color:#c9a96e">📜 东归机制</h4>
-        <table style="width:100%;border-collapse:collapse;font-size:13px;background:#1a1a2e;border-radius:6px">
-            <tr style="background:#16213e">
-                <th style="padding:8px 12px;text-align:left;color:#c9a96e">项目</th>
-                <th style="padding:8px 12px;text-align:left;color:#c9a96e">说明</th>
-            </tr>
-            <tr>
-                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">触发条件</td>
-                <td style="padding:6px 12px;color:#9ca3af">董卓伏诛后（威权>=60成功率80%，<60成功率50%）</td>
-            </tr>
-            <tr>
-                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">成功效果</td>
-                <td style="padding:6px 12px;color:#22c55e">威权+15，声望+10（威权>=60）</td>
-            </tr>
-            <tr>
-                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">失败效果</td>
-                <td style="padding:6px 12px;color:#ef4444">威权-10，声望-5，超期5回合则东归失败</td>
-            </tr>
-        </table>
+        <div style="background:#1a1a2e;border-radius:8px;overflow:hidden">
+            <table style="width:100%;border-collapse:collapse;font-size:13px">
+                <tr style="background:#16213e">
+                    <th style="padding:8px 12px;text-align:left;color:#c9a96e">项目</th>
+                    <th style="padding:8px 12px;text-align:left;color:#c9a96e">说明</th>
+                </tr>
+                <tr>
+                    <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">触发条件</td>
+                    <td style="padding:6px 12px;color:#9ca3af">董卓伏诛后（威权>=60成功率80%，<60成功率50%）</td>
+                </tr>
+                <tr>
+                    <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">成功效果</td>
+                    <td style="padding:6px 12px;color:#22c55e">威权+15，声望+10（威权>=60时）</td>
+                </tr>
+                <tr>
+                    <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">失败效果</td>
+                    <td style="padding:6px 12px;color:#ef4444">威权-10，超期5回合则东归失败</td>
+                </tr>
+            </table>
+        </div>
         """
 
     def _render_dongzhuo_html(self) -> str:
@@ -732,32 +734,36 @@ class GameUI:
         {status_html}
 
         <h4 style="margin:12px 0 6px;color:#c9a96e">📜 董卓伏诛机制</h4>
-        <table style="width:100%;border-collapse:collapse;font-size:13px;background:#1a1a2e;border-radius:6px">
-            <tr style="background:#16213e">
-                <th style="padding:8px 12px;text-align:left;color:#c9a96e">项目</th>
-                <th style="padding:8px 12px;text-align:left;color:#c9a96e">说明</th>
-            </tr>
-            <tr>
-                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">触发条件</td>
-                <td style="padding:6px 12px;color:#9ca3af">威权≥40即可触发伏诛线</td>
-            </tr>
-            <tr>
-                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">成功条件</td>
-                <td style="padding:6px 12px;color:#9ca3af">联军军力 ≥ 40（威权≥60时-10）</td>
-            </tr>
-            <tr>
-                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">失败惩罚</td>
-                <td style="padding:6px 12px;color:#ef4444">威权-10，声望-5，超期6回合则游戏失败</td>
-            </tr>
-            <tr>
-                <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">成功奖励</td>
-                <td style="padding:6px 12px;color:#22c55e">威权+30，声望+20，藩镇-15，汉室库+50</td>
-            </tr>
-        </table>
+        <div style="background:#1a1a2e;border-radius:8px;overflow:hidden;margin-bottom:12px">
+            <table style="width:100%;border-collapse:collapse;font-size:13px">
+                <tr style="background:#16213e">
+                    <th style="padding:8px 12px;text-align:left;color:#c9a96e">项目</th>
+                    <th style="padding:8px 12px;text-align:left;color:#c9a96e">说明</th>
+                </tr>
+                <tr>
+                    <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">触发条件</td>
+                    <td style="padding:6px 12px;color:#9ca3af">威权≥40即可触发伏诛线</td>
+                </tr>
+                <tr>
+                    <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">成功条件</td>
+                    <td style="padding:6px 12px;color:#9ca3af">联军军力≥40（威权≥60时-10）</td>
+                </tr>
+                <tr>
+                    <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">失败惩罚</td>
+                    <td style="padding:6px 12px;color:#ef4444">威权-10，超期6回合则游戏失败</td>
+                </tr>
+                <tr>
+                    <td style="padding:6px 12px;color:#e8d5b7;font-weight:bold">成功奖励</td>
+                    <td style="padding:6px 12px;color:#22c55e">威权+30，藩镇-15，汉室库+50</td>
+                </tr>
+            </table>
+        </div>
 
         <h4 style="margin:12px 0 6px;color:#c9a96e">⚔️ 执行伏诛</h4>
-        <div style="font-size:12px;color:#9ca3af;margin-bottom:8px">
-            输入联军总军力（包含诸侯联军+天子兵马），点击「执行伏诛」进行判定
+        <div style="background:#1a1a2e;border-radius:8px;padding:12px">
+            <p style="font-size:12px;color:#9ca3af;margin-bottom:8px">
+                输入联军总军力（诸侯联军+天子兵马），点击「执行伏诛」
+            </p>
         </div>
         """
 
@@ -904,9 +910,21 @@ class GameUI:
         state = self.session.state
         dash = get_decree_dashboard(state)
 
-        header = f"""<div style="background:#1a2d1a;border:1px solid #22c55e;border-radius:8px;padding:12px;margin-bottom:12px">
-            <span style="font-size:16px;font-weight:bold;color:#c9a96e">📋 诏令状态机</span>
-            <span style="font-size:12px;color:#9ca3af;margin-left:12px">总诏书：{dash["total"]}</span>
+        authority = state.metrics.get("威权", 50)
+        auth_color = "#22c55e" if authority >= 60 else "#f59e0b" if authority >= 30 else "#ef4444"
+        decree_count = dash["total"]
+        issued_count = len(dash["by_status"].get("issued", []))
+        header = f"""<div style="background:linear-gradient(135deg,#1a2d1a 0%,#1a1a2e 100%);border:1px solid #c9a96e;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 4px 16px rgba(201,169,110,0.1)">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                    <span style="font-size:16px;font-weight:bold;color:#c9a96e">📋 诏令状态机</span>
+                    <span style="font-size:11px;color:#9ca3af;margin-left:8px">威权：<span style="color:{auth_color};font-weight:bold">{authority}</span></span>
+                </div>
+                <div style="display:flex;gap:12px">
+                    <span style="font-size:12px;color:#9ca3af">总诏书：<span style="color:#e8d5b7;font-weight:bold">{decree_count}</span></span>
+                    <span style="font-size:12px;color:#22c55e">有效：<span style="font-weight:bold">{issued_count}</span></span>
+                </div>
+            </div>
         </div>"""
 
         status_colors = {"draft": "#f59e0b", "issued": "#22c55e", "expired": "#ef4444", "executed": "#3b82f6", "cancelled": "#6b7280"}
@@ -948,19 +966,25 @@ class GameUI:
         status = get_building_status(state)
         detailed = get_building_status_detailed(state)
 
-        header = f"""<div style="background:#1a2d1a;border:1px solid #22c55e;border-radius:8px;padding:12px;margin-bottom:12px">
+        authority = state.metrics.get("威权", 50)
+        auth_color = "#22c55e" if authority >= 60 else "#f59e0b" if authority >= 30 else "#ef4444"
+        treasury = status["treasury"]
+        treasury_color = "#22c55e" if treasury >= 1000 else "#f59e0b" if treasury >= 500 else "#ef4444"
+        header = f"""<div style="background:linear-gradient(135deg,#1a2d1a 0%,#1a1a2e 100%);border:1px solid #c9a96e;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 4px 16px rgba(201,169,110,0.1)">
             <div style="display:flex;justify-content:space-between;align-items:center">
                 <div>
-                    <span style="font-size:16px;font-weight:bold;color:#c9a96e">🏛️ 建筑（含状态与损耗）</span>
-                    <span style="font-size:12px;color:#9ca3af;margin-left:12px">威权：{status["authority"]}</span>
+                    <span style="font-size:16px;font-weight:bold;color:#c9a96e">🏛️ 建筑系统</span>
+                    <span style="font-size:11px;color:#9ca3af;margin-left:8px">威权：<span style="color:{auth_color};font-weight:bold">{authority}</span></span>
                 </div>
                 <div style="text-align:right">
-                    <span style="font-size:24px;font-weight:bold;color:#f59e0b">{status["treasury"]}</span>
+                    <span style="font-size:24px;font-weight:bold;color:{treasury_color}">{treasury}</span>
                     <span style="font-size:12px;color:#9ca3af"> 汉室库</span>
                 </div>
             </div>
-            <div style="font-size:12px;color:#9ca3af;margin-top:4px">
-                已建成：{status["built_count"]} | 年维护费：{status["maintenance_total"]}
+            <div style="display:flex;gap:16px;font-size:11px;margin-top:6px;flex-wrap:wrap">
+                <span style="color:#9ca3af">已建成：<span style="color:#22c55e;font-weight:bold">{status["built_count"]}</span></span>
+                <span style="color:#9ca3af">年维护：<span style="color:#f59e0b;font-weight:bold">{status["maintenance_total"]}</span></span>
+                <span style="color:#9ca3af">可用：<span style="color:#3b82f6;font-weight:bold">{len(status["available"])}</span></span>
             </div>
         </div>"""
 
@@ -990,15 +1014,34 @@ class GameUI:
                 else:
                     cond_bar = ""
                     status_line = ""
-                items.append(f"""<div style="background:#1a3d1a;border-radius:6px;padding:6px 8px;margin:2px 0">
-                    <div style="display:flex;justify-content:space-between">
-                        <span style="font-size:14px;color:#22c55e">✅</span>
-                        <span style="font-size:13px;color:#e8d5b7;font-weight:bold">{b.name}</span>
-                        <span style="font-size:11px;color:#9ca3af">（{b.location}）</span>
-                        <span style="font-size:10px;color:#9ca3af">维护:{b.maintenance}/年</span>
+                cond_bar_display = cond_bar.replace("margin-top:3px", "margin-top:4px") if cond_bar else ""
+                items.append(f"""<div style="background:#1a1a2e;border-radius:8px;padding:10px;margin:4px 0;border-left:3px solid #22c55e">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                        <div>
+                            <span style="font-size:14px;color:#22c55e;font-weight:bold">✅</span>
+                            <span style="font-size:14px;color:#e8d5b7;font-weight:bold">{b.name}</span>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <span style="font-size:10px;color:#9ca3af">（{b.location}）</span>
+                            <span style="font-size:10px;background:#2d2d44;padding:2px 6px;border-radius:4px;color:#9ca3af">维护:{b.maintenance}/年</span>
+                        </div>
                     </div>
-                    {cond_bar}
-                    {status_line}
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px">
+                        <div>
+                            <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-bottom:2px">
+                                <span>状态</span><span style="color:{cond_color}">{cond}/100</span>
+                            </div>
+                            <div style="background:#2d2d44;border-radius:3px;height:5px">{cond_bar}</div>
+                        </div>
+                        <div>
+                            <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-bottom:2px">
+                                <span>风险</span><span style="color:#ef4444">{risk}/100</span>
+                            </div>
+                            <div style="background:#2d2d44;border-radius:3px;height:5px">
+                                <div style="background:#ef4444;border-radius:3px;height:5px;width:{risk}%"></div>
+                            </div>
+                        </div>
+                    </div>
                     <div style="font-size:10px;color:#22c55e">{b.effect}</div>
                 </div>""")
             built_html += f"""<div style="margin-bottom:10px">
