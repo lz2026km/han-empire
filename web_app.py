@@ -1697,6 +1697,7 @@ def build_ui():
                             )
                             escape_btn = gr.Button("发起东归", variant="primary")
                         escape_output = gr.Markdown()
+                        refresh_escape_btn = gr.Button("🔄 刷新")
 
                     # Tab7: 事件
                     with gr.TabItem("⚡ 事件"):
@@ -1726,6 +1727,7 @@ def build_ui():
                             )
                             dongzhuo_btn = gr.Button("执行伏诛", variant="primary")
                         dongzhuo_output = gr.Markdown()
+                        refresh_dongzhuo_btn = gr.Button("🔄 刷新")
 
                     # Tab8: 忠诚度
                     with gr.TabItem("💗 忠诚度"):
@@ -1744,7 +1746,7 @@ def build_ui():
                             )
                             loyalty_btn = gr.Button("执行", variant="primary")
                         loyalty_output = gr.Markdown()
-                        refresh_skill_btn = gr.Button("🔄 刷新技能树")
+                        refresh_loyalty_btn = gr.Button("🔄 刷新")
 
                     # Tab10: 天子技能
                     with gr.TabItem("🌳 技能"):
@@ -1758,6 +1760,7 @@ def build_ui():
                             )
                             skill_btn = gr.Button("激活技能", variant="primary")
                         skill_output = gr.Markdown()
+                        refresh_skill_btn = gr.Button("🔄 刷新")
 
                     # Tab11: 派系
                     with gr.TabItem("⚖️ 派系"):
