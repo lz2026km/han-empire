@@ -756,18 +756,19 @@ class GameUI:
         return header + (by_status_html or "<p style='color:#9ca3af'>暂无诏书</p>") + "<h4 style='color:#c9a96e;margin:12px 0 6px'>可发诏书类型</h4>" + avail_html
 
     def _render_building_html(self) -> str:
-        """【建筑】建筑系统HTML：已建成+可建造列表。"""
+        """"【建筑】建筑系统HTML：已建成（含condition/risk）+ 可建造列表。"""
         if not self.session:
             return "<p>请先点击「新游戏」初始化</p>"
         from han_sim.flows import get_building_status
-        from han_sim.models import BUILDING_TYPES, BUILDING_CATALOG
+        from han_sim.models import BUILDING_TYPES, BUILDING_CATALOG, get_building_status_detailed
         state = self.session.state
         status = get_building_status(state)
+        detailed = get_building_status_detailed(state)
 
         header = f"""<div style="background:#1a2d1a;border:1px solid #22c55e;border-radius:8px;padding:12px;margin-bottom:12px">
             <div style="display:flex;justify-content:space-between;align-items:center">
                 <div>
-                    <span style="font-size:16px;font-weight:bold;color:#c9a96e">🏛️ 建筑系统</span>
+                    <span style="font-size:16px;font-weight:bold;color:#c9a96e">🏛️ 建筑（含状态与损耗）</span>
                     <span style="font-size:12px;color:#9ca3af;margin-left:12px">威权：{status["authority"]}</span>
                 </div>
                 <div style="text-align:right">
@@ -780,7 +781,6 @@ class GameUI:
             </div>
         </div>"""
 
-        # 按类型展示
         type_colors = {"宫殿": "#c9a96e", "军事": "#ef4444", "经济": "#22c55e", "特殊": "#8b5cf6"}
         built_html = ""
         for btype, bids in BUILDING_TYPES.items():
@@ -793,19 +793,36 @@ class GameUI:
                 b = BUILDING_CATALOG.get(bid)
                 if not b:
                     continue
+                if bid in detailed:
+                    info = detailed[bid]
+                    cond = info["condition"]
+                    risk = info["risk"]
+                    cond_color = "#22c55e" if cond >= 60 else "#f59e0b" if cond >= 30 else "#ef4444"
+                    cond_bar = f"""<div style="background:#2d2d44;border-radius:4px;height:6px;width:100%;margin-top:3px">
+                        <div style="background:{cond_color};border-radius:4px;height:6px;width:{cond}%;transition:width 0.3s"></div>
+                    </div>"""
+                    status_line = f"""<div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-top:2px">
+                        <span>状态:{cond}/100</span><span>风险:{risk}/100</span>
+                    </div>"""
+                else:
+                    cond_bar = ""
+                    status_line = ""
                 items.append(f"""<div style="background:#1a3d1a;border-radius:6px;padding:6px 8px;margin:2px 0">
-                    <span style="font-size:14px;color:#22c55e">✅</span>
-                    <span style="font-size:13px;color:#e8d5b7;font-weight:bold">{b.name}</span>
-                    <span style="font-size:11px;color:#9ca3af">（{b.location}）</span>
-                    <span style="font-size:10px;color:#9ca3af">维护:{b.maintenance}/年</span>
-                    <span style="font-size:10px;color:#22c55e">{b.effect}</span>
+                    <div style="display:flex;justify-content:space-between">
+                        <span style="font-size:14px;color:#22c55e">✅</span>
+                        <span style="font-size:13px;color:#e8d5b7;font-weight:bold">{b.name}</span>
+                        <span style="font-size:11px;color:#9ca3af">（{b.location}）</span>
+                        <span style="font-size:10px;color:#9ca3af">维护:{b.maintenance}/年</span>
+                    </div>
+                    {cond_bar}
+                    {status_line}
+                    <div style="font-size:10px;color:#22c55e">{b.effect}</div>
                 </div>""")
             built_html += f"""<div style="margin-bottom:10px">
                 <div style="color:{color};font-weight:bold;font-size:13px;margin-bottom:4px">{btype}类</div>
                 {"".join(items)}
             </div>"""
 
-        # 可建列表
         avail_html = ""
         for btype, bids in BUILDING_TYPES.items():
             color = type_colors.get(btype, "#9ca3af")
@@ -826,7 +843,7 @@ class GameUI:
                 {"".join(items)}
             </div>"""
 
-        return header + "<h4 style='color:#c9a96e;margin:12px 0 6px'>已建成</h4>" + (built_html or "<p style='color:#9ca3af'>暂无建筑</p>") + "<h4 style='color:#c9a96e;margin:12px 0 6px'>可建造</h4>" + (avail_html or "<p style='color:#9ca3af'>无</p>")
+        return header + "<h4 style='color:#c9a96e;margin:12px 0 6px'>已建成（含condition/risk条）</h4>" + (built_html or "<p style='color:#9ca3af'>暂无建筑</p>") + "<h4 style='color:#c9a96e;margin:12px 0 6px'>可建造</h4>" + (avail_html or "<p style='color:#9ca3af'>无</p>")
 
     def _render_skill_html(self) -> str:
         """【技能树】天子技能树HTML：四系技能树+状态+激活按钮。"""
@@ -1306,6 +1323,21 @@ class GameUI:
         except Exception as e:
             return f"❗ 取消失败：{str(e)}"
 
+    def cmd_repair_building(self, bid: str, cost: str):
+        """修缮建筑。"""
+        if not self.session:
+            return "❗ 请先点击 **新游戏** 开始。"
+        try:
+            cost_int = int(cost) if cost else 0
+        except ValueError:
+            return "❗ 修缮费用请输入数字。"
+        from han_sim.models import repair_building
+        result = repair_building(self.session.state, bid.strip(), cost_int)
+        if result.get("success"):
+            return result["narrative"]
+        else:
+            return f"❌ {result.get('narrative', '修缮失败')}"
+
     def cmd_build_structure(self, bid: str):
         """建造建筑。"""
         if not self.session:
@@ -1677,7 +1709,7 @@ def build_ui():
 
                     # Tab12: 建筑
                     with gr.TabItem("🏛️ 建筑"):
-                        gr.Markdown("### 🏛️ 建筑系统")
+                        gr.Markdown("### 🏛️ 建筑系统（含状态与损耗）")
                         building_display = gr.HTML("*点击「新游戏」初始化*")
                         with gr.Row():
                             building_input = gr.Textbox(
@@ -1685,9 +1717,17 @@ def build_ui():
                                 placeholder="如：weiyang",
                                 lines=1,
                             )
-                            building_btn = gr.Button("建造", variant="primary")
+                            repair_cost_input = gr.Textbox(
+                                label="修缮费用",
+                                placeholder="默认30",
+                                value="30",
+                                lines=1,
+                            )
+                        with gr.Row():
+                            building_btn = gr.Button("🏗️ 建造", variant="primary")
+                            building_repair_btn = gr.Button("🔧 修缮")
+                            refresh_building_btn = gr.Button("🔄 刷新")
                         building_output = gr.Markdown()
-                        refresh_building_btn = gr.Button("🔄 刷新建筑")
 
                     # Tab11: 诏令
                     with gr.TabItem("📋 诏令"):

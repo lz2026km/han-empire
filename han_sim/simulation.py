@@ -392,6 +392,11 @@ def run_monthly_simulation(
     # ── 1b. 建筑维护费（年度扣除，Step2/5新增）─────────────────
     building_maint = apply_building_maintenance(state)
 
+    # ── 1c. 建筑状态损耗（Step3新增）──────────────────────────
+    damaged_buildings = []
+    from han_sim.models import apply_building_deterioration
+    damaged_buildings = apply_building_deterioration(state)
+
     # ── 2. 藩镇变化 ────────────────────────────────────────────
     faction_delta = calc_faction_delta(state, db)
 

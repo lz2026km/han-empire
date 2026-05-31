@@ -3,7 +3,7 @@
 
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -157,7 +157,7 @@ def get_available_skills(authority: int, activated: List[str]) -> List[Skill]:
     return available
 
 
-def can_activate_skill(skill: Skill, authority: int, activated: List[str], skill_points: int) -> tuple[bool, str]:
+def can_activate_skill(skill: Skill, authority: int, activated: List[str], skill_points: int) -> Tuple[bool, str]:
     """检查技能是否可以激活，返回(是否可激活, 原因)。"""
     if authority < skill.unlock_level:
         return False, f"威权不足（需{skill.unlock_level}，当前{authority}）"
@@ -181,6 +181,10 @@ class Building:
     effect_bonus: Dict[str, float]  # 效果加成dict（百分比）
     unlock_level: int  # 解锁威权要求
     location: str       # 建造地点
+    condition: int = 100  # 建筑状态 0-100（借鉴大明condition）
+    risk: int = 0         # 损毁风险 0-100
+    output_metric: str = ""   # 产出指标
+    output_amount: int = 0   # 产出量
 
 
 BUILDING_CATALOG: Dict[str, Building] = {
@@ -239,6 +243,73 @@ BUILDING_TYPES = {
     "经济": ["yanzhou_granary", "jinzhou_granary", "xuzhou_granary", "guangzhou_granary"],
     "特殊": ["jiujiang_dock", "tongguan_fort", "hulao_pass"],
 }
+
+
+# ── 建筑状态与损耗（Step3新增）────────────────────────────────
+
+def apply_building_deterioration(state: GameState) -> List[str]:
+    """每月建筑状态损耗：
+    - 状态低于60：风险+5
+    - 状态低于30：风险+10
+    - 风险过高的建筑有概率损坏
+    返回损坏建筑列表。
+    """
+    built = state.metrics.get("built_buildings", {})
+    damaged = []
+    for bid, bdata in built.items():
+        cond = bdata.get("condition", 100)
+        risk = bdata.get("risk", 0)
+        # 自然损耗
+        cond = max(0, cond - random.randint(0, 2))
+        # 低状态加风险
+        if cond < 30:
+            risk += random.randint(5, 10)
+        elif cond < 60:
+            risk += random.randint(1, 5)
+        # 随机损坏判定
+        if risk >= 80 and random.random() < 0.15:
+            cond = max(0, cond - random.randint(20, 40))
+            damaged.append(bid)
+        built[bid] = {"condition": cond, "risk": min(100, risk)}
+    state.metrics["built_buildings"] = built
+    if damaged:
+        state.log.append(f"【建筑损坏】{', '.join(damaged)}受损！")
+    return damaged
+
+
+def repair_building(state: GameState, bid: str, cost: int) -> Dict:
+    """修缮建筑（消耗汉室库，恢复condition）。"""
+    built = state.metrics.get("built_buildings", {})
+    if bid not in built:
+        return {"success": False, "narrative": f"建筑 {bid} 未建造"}
+    han_ku = state.metrics.get("汉室库", 0)
+    if han_ku < cost:
+        return {"success": False, "narrative": f"汉室库不足（需{cost}，当前{han_ku}）"}
+    bdata = built[bid]
+    cond = min(100, bdata.get("condition", 50) + 30)
+    built[bid] = {"condition": cond, "risk": max(0, bdata.get("risk", 0) - 20)}
+    state.metrics["built_buildings"] = built
+    state.metrics["汉室库"] = han_ku - cost
+    state.log.append(f"【修缮完成】{bid}修缮完毕，状态恢复至{cond}")
+    return {"success": True, "narrative": f"✅ {bid}修缮完成！费用-{cost}，状态{cond}/100"}
+
+
+def get_building_status_detailed(state: GameState) -> Dict[str, Dict]:
+    """获取所有建筑详细状态（condition/risk）。"""
+    built = state.metrics.get("built_buildings", {})
+    result = {}
+    for bid, bdata in built.items():
+        b = get_building_by_id(bid)
+        if b:
+            result[bid] = {
+                "name": b.name,
+                "condition": bdata.get("condition", 100),
+                "risk": bdata.get("risk", 0),
+                "maintenance": b.maintenance,
+                "effect": b.effect,
+                "location": b.location,
+            }
+    return result
 
 
 def get_building_by_id(bid: str) -> Optional[Building]:
@@ -309,6 +380,12 @@ DECREE_TYPE_META: Dict[str, Dict] = {
         "valid_turns": 3,
         "can_cancel": False,
         "effect_desc": "大赦天下，安定民心",
+    },
+    "自由诏书": {
+        "authority_cost": 25,
+        "valid_turns": 4,
+        "can_cancel": True,
+        "effect_desc": "自主拟旨，特事特办",
     },
 }
 
