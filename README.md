@@ -57,7 +57,9 @@
 |------|------|
 | 运行时 | Python 3.11+ / SQLite |
 | LLM框架 | Agno（多Agent编排，可选） |
+| 网络 | httpx（异步HTTP客户端） |
 | Web界面 | Gradio 6.0（12 Tab布局） |
+| ORM | SQLAlchemy 2.0（数据库封装） |
 | 模型支持 | OpenAI 兼容 API（MiniMax/DeepSeek 等） |
 | 内容管理 | JSON + Markdown + 结构化数据 |
 
