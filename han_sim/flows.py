@@ -721,6 +721,66 @@ def relocate_capital(state: GameState, new_capital: str) -> Dict[str, int]:
     return delta
 
 
+# ── 董卓伏诛系统（Step6新增）────────────────────────────────────────
+
+DONGZHUO_BASE_MILITARY = 40   # 董卓基础军力（伏诛所需最低值）
+
+
+def trigger_dongzhuo_trap(state: GameState) -> None:
+    """触发董卓伏诛线：设置 trapped_turn，标志围困开始。"""
+    if state.dong_zhuo_trapped_turn > 0:
+        return  # 已触发，不再重复
+    state.dong_zhuo_trapped_turn = state.turn
+    state.log.append("【董卓伏诛线触发】董卓被围，诸侯攻守之势已成！")
+
+
+def execute_dongzhuo_elimination(state: GameState, military_strength: int) -> Dict:
+    """执行董卓伏诛判定：
+    - 成功条件：军力 >= 董卓基础军力 + 威权修正
+    - 威权修正：威权越高，所需军力越低（威权>=60时-10）
+    返回结果 dict：{success, narrative, effects}
+    """
+    authority = state.metrics.get("威权", 0)
+    required = DONGZHUO_BASE_MILITARY
+    if authority >= 60:
+        required -= 10  # 威权高则降低难度
+    elif authority >= 40:
+        required -= 5
+
+    # 军力不足则失败
+    success = military_strength >= required
+    if success:
+        state.dong_zhuo_killed_turn = state.turn
+        state.dong_zhuo_trapped_turn = 0
+        effects = {
+            "威权": 30,
+            "声望": 20,
+            "藩镇": -15,
+            "汉室库": 50,  # 抄没董卓家产
+        }
+        narrative = f"董卓伏诛！诸侯联军攻入长安，董卓死于乱军之中。汉室重光，威权大增！"
+        state.log.append("【董卓伏诛】董卓已死，汉室重光！")
+    else:
+        effects = {
+            "威权": -10,
+            "声望": -5,
+        }
+        narrative = f"联军攻打长安未克（需军力{required}，实际{military_strength}），董卓依然坐镇，局势更加危急。"
+        state.log.append(f"【董卓伏诛失败】联军未克，军力不足（需{required}，实际{military_strength}）")
+
+    # 应用效果
+    for k, v in effects.items():
+        state.metrics[k] = max(0, min(100, state.metrics.get(k, 50) + v))
+
+    return {
+        "success": success,
+        "narrative": narrative,
+        "effects": effects,
+        "required": required,
+        "actual": military_strength,
+    }
+
+
 def check_dongzhuo_trap(state: GameState) -> bool:
     """董卓伏诛线检测。
     若 dong_zhuo_trapped_turn > 0 且距被困已满6回合仍未诛董卓 → 游戏失败。
