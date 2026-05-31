@@ -667,6 +667,122 @@ def adjust_faction_by_action(state: "GameState", action_type: str, target: str =
     state.metrics["faction_influence"] = faction_data
 
 
+# ── 事件系统（Step5新增）────────────────────────────────────────
+
+@dataclass
+class GameEvent:
+    id: str
+    title: str
+    kind: str           # situation/node/ending
+    summary: str
+    urgency: int         # 紧迫度 1-4
+    severity: int        # 严重度 1-4
+    trigger_gate: Dict[str, str]  # 触发条件
+    auto_trigger: bool = False
+    event_type: str = "situation"
+
+
+SEED_EVENTS: List[GameEvent] = [
+    # 历史锚点
+    GameEvent("evt_黄巾之乱", "黄巾之乱", "situation", "太平道起义，天下震动", 3, 4,
+              {"year": ">184", "authority": "<60"}, auto_trigger=True),
+    GameEvent("evt_董卓进京", "董卓进京", "situation", "董卓率军入京，废少帝立献帝", 4, 5,
+              {"year": ">189"}, auto_trigger=True),
+    GameEvent("evt_十八路诸侯", "十八路诸侯会盟", "situation", "诸侯联军讨董，天下瞩目", 3, 4,
+              {"authority": ">40"}, auto_trigger=True),
+    GameEvent("evt_迁都长安", "迁都长安", "node", "董卓强迁都城至长安", 3, 3,
+              {"location": "洛阳"}, auto_trigger=True),
+    GameEvent("evt_曹操挟持", "曹操挟持天子", "situation", "曹操迎天子于许昌，挟天子以令诸侯", 3, 3,
+              {"authority": "<50"}, auto_trigger=False),
+    # 随机事件
+    GameEvent("evt_瘟疫", "瘟疫流行", "situation", "疫病在州县蔓延", 2, 3,
+              {"random_chance": "0.1"}, auto_trigger=False),
+    GameEvent("evt_旱灾", "旱灾", "situation", "大旱，颗粒无收", 2, 3,
+              {"random_chance": "0.15"}, auto_trigger=False),
+    GameEvent("evt_洪涝", "洪涝", "situation", "黄河决堤，淹没良田", 2, 3,
+              {"random_chance": "0.1"}, auto_trigger=False),
+    GameEvent("evt_地震", "地震", "node", "地动山摇，宫室倾颓", 2, 2,
+              {"random_chance": "0.05"}, auto_trigger=False),
+    GameEvent("evt_饥荒", "饥荒", "situation", "粮价飞涨，民不聊生", 3, 4,
+              {"random_chance": "0.12"}, auto_trigger=False),
+    GameEvent("evt_民变", "民变", "situation", "刁民揭竿而起", 2, 3,
+              {"unrest": ">60"}, auto_trigger=False),
+    GameEvent("evt_党争", "党争", "situation", "朝臣结党，互相倾轧", 2, 2,
+              {"faction_alert": "true"}, auto_trigger=False),
+    GameEvent("evt_边患", "边患", "situation", "外族入侵，边境告急", 2, 3,
+              {"military_pressure": ">70"}, auto_trigger=False),
+    GameEvent("evt_祥瑞", "祥瑞", "node", "瑞象呈祥，天降吉兆", 1, 1,
+              {"random_chance": "0.08"}, auto_trigger=False),
+    GameEvent("evt_日食", "日食", "node", "日食，大臣以为不祥", 2, 2,
+              {"random_chance": "0.05"}, auto_trigger=False),
+    GameEvent("evt_忠诚大臣", "忠诚大臣涌现", "situation", "忠臣现身，愿为汉室效命", 1, 2,
+              {"random_chance": "0.1", "faction": "忠汉派"}, auto_trigger=False),
+    GameEvent("evt_藩镇割据", "藩镇割据", "situation", "藩镇坐大，不听诏令", 3, 4,
+              {"fanzhen": ">80"}, auto_trigger=False),
+]
+
+
+def check_event_trigger(state: GameState, event: GameEvent) -> bool:
+    """检查事件是否满足触发条件。"""
+    gate = event.trigger_gate
+    if not gate:
+        return False
+    if "random_chance" in gate:
+        import random
+        chance = float(gate["random_chance"].replace("0.", "0."))
+        if random.random() > chance:
+            return False
+    if "year" in gate:
+        op, val = gate["year"][0], int(gate["year"][1:])
+        year = state.metrics.get("year", 189)
+        if op == ">" and not year > val:
+            return False
+    if "authority" in gate:
+        auth = state.metrics.get("威权", 0)
+        if "<" in gate["authority"]:
+            threshold = int(gate["authority"].replace("<", ""))
+            if not auth < threshold:
+                return False
+        elif ">" in gate["authority"]:
+            threshold = int(gate["authority"].replace(">", ""))
+            if not auth > threshold:
+                return False
+    if "fanzhen" in gate:
+        op, val = gate["fanzhen"][0], int(gate["fanzhen"][1:])
+        fz = state.metrics.get("藩镇", 0)
+        if op == ">" and not fz > val:
+            return False
+    return True
+
+
+def trigger_random_event(state: GameState) -> Optional[GameEvent]:
+    """触发一个符合条件的随机事件。"""
+    triggered = state.metrics.get("triggered_events", [])
+    candidates = [e for e in SEED_EVENTS if e.id not in triggered and check_event_trigger(state, e)]
+    if not candidates:
+        return None
+    import random
+    event = random.choice(candidates)
+    triggered.append(event.id)
+    state.metrics["triggered_events"] = triggered
+    state.log.append(f"【事件触发】{event.title} - {event.summary}")
+    return event
+
+
+def get_event_dashboard(state: GameState) -> Dict:
+    """获取事件状态总览。"""
+    triggered = state.metrics.get("triggered_events", [])
+    active_events = [e for e in SEED_EVENTS if e.id in triggered]
+    available = [e for e in SEED_EVENTS if e.id not in triggered]
+    return {
+        "total": len(SEED_EVENTS),
+        "triggered_count": len(triggered),
+        "active": [{"id": e.id, "title": e.title, "kind": e.kind, "summary": e.summary} for e in active_events],
+        "available_count": len(available),
+        "available_preview": [{"id": e.id, "title": e.title} for e in available[:5]],
+    }
+
+
 @dataclass
 class ChatResult:
     action: str

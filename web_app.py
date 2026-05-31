@@ -636,6 +636,41 @@ class GameUI:
         </div>
         """
 
+    def _render_event_html(self) -> str:
+        """【事件】事件系统HTML：已触发+可触发预览。"""
+        if not self.session:
+            return "<p>请先点击「新游戏」初始化</p>"
+        from han_sim.models import get_event_dashboard, SEED_EVENTS
+        state = self.session.state
+        dash = get_event_dashboard(state)
+
+        header = f"""<div style="background:#1a2d1a;border:1px solid #ef4444;border-radius:8px;padding:12px;margin-bottom:12px">
+            <span style="font-size:16px;font-weight:bold;color:#c9a96e">⚡ 事件系统</span>
+            <span style="font-size:12px;color:#9ca3af;margin-left:12px">已触发：{dash["triggered_count"]}/{dash["total"]}</span>
+        </div>"""
+
+        # 已触发事件
+        active_html = ""
+        if dash["active"]:
+            for e in dash["active"]:
+                kind_color = {"situation": "#f59e0b", "node": "#3b82f6", "ending": "#ef4444"}.get(e["kind"], "#9ca3af")
+                active_html += f"""<div style="background:#2d1a1a;border-radius:6px;padding:8px;margin:4px 0;border-left:3px solid {kind_color}">
+                    <span style="color:{kind_color};font-weight:bold;font-size:13px">【{e["kind"]}】</span>
+                    <span style="color:#e8d5b7;font-weight:bold">{e["title"]}</span>
+                    <div style="font-size:11px;color:#9ca3af;margin-top:2px">{e["summary"]}</div>
+                </div>"""
+        else:
+            active_html = "<p style='color:#9ca3af'>暂无已触发事件</p>"
+
+        # 可触发预览
+        avail_html = "<h4 style='color:#c9a96e;margin:10px 0 6px'>可触发事件</h4>"
+        for e in dash["available_preview"]:
+            avail_html += f"""<div style="background:#1a1a2e;border-radius:6px;padding:6px 8px;margin:2px 0">
+                <span style="font-size:12px;color:#9ca3af">{e["title"]}</span>
+            </div>"""
+
+        return header + "<h4 style='color:#c9a96e;margin:10px 0 6px'>已触发事件</h4>" + active_html + avail_html
+
     def _render_gazette_html(self) -> str:
         """【史册】历代诏书与奏报HTML（借鉴大明邸报风格，羊皮纸效果）。"""
         if not self.session:
@@ -1663,7 +1698,14 @@ def build_ui():
                             escape_btn = gr.Button("发起东归", variant="primary")
                         escape_output = gr.Markdown()
 
-                    # Tab7: 史册（历代诏书+回合奏报）
+                    # Tab7: 事件
+                    with gr.TabItem("⚡ 事件"):
+                        gr.Markdown("### ⚡ 事件系统（历史+随机）")
+                        event_display = gr.HTML("*点击「新游戏」初始化*")
+                        event_output = gr.Markdown()
+                        refresh_event_btn = gr.Button("🔄 刷新事件")
+
+                    # Tab8: 史册（历代诏书+回合奏报）
                     with gr.TabItem("📜 史册"):
                         gr.Markdown("### 📜 史册：历代诏书与奏报")
                         gazette_display = gr.HTML("*点击「新游戏」初始化*")
@@ -1887,6 +1929,9 @@ def build_ui():
         def do_refresh_faction():
             return ui._render_faction_html()
 
+        def do_refresh_event():
+            return ui._render_event_html()
+
         def do_refresh_gazette():
             return ui._render_gazette_html()
 
@@ -1984,6 +2029,11 @@ def build_ui():
             outputs=decree_output,
         )
         # 史册刷新
+        refresh_event_btn.click(
+            fn=do_refresh_event,
+            inputs=[],
+            outputs=[event_display],
+        )
         refresh_gazette_btn.click(
             fn=do_refresh_gazette,
             inputs=[],
@@ -2035,7 +2085,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display, event_display],
         )
         # 刷新按钮
         refresh_dashboard_btn.click(fn=do_refresh_dashboard, inputs=[], outputs=[dashboard_display])
@@ -2058,7 +2108,7 @@ def build_ui():
             fn=do_new_game,
             inputs=[],
             outputs=[ministers_display, history_display,
-                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display],
+                     diary_display, dashboard_display, powers_display, intel_display, map_display, relocate_display, loyalty_display, dongzhuo_display, escape_display, skill_display, building_display, decree_display, faction_display, gazette_display, event_display],
         )
 
     return demo
