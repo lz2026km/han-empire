@@ -180,9 +180,7 @@ def can_activate_skill(skill: Skill, authority: int, activated: List[str], skill
     if not all(r in activated for r in skill.requires):
         missing = [r for r in skill.requires if r not in activated]
         return False, f"需先激活前置技能：{', '.join(missing)}"
-    # skill.unlock_level is the cost, but we need to use a different field
-    # The ACTUAL cost value is the unlock_level field which holds 0/20/30...
-    # skill.cost holds the effect string - not usable for comparison
+    # skill.unlock_level is the cost (int), skill.cost is the effect string
     actual_cost = skill.unlock_level if isinstance(skill.unlock_level, int) else 0
     if skill_points < actual_cost:
         return False, f"技能点不足（需{actual_cost}，当前{skill_points}）"
