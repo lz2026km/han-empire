@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [0.9.6] - 2026-05-31
 
+### Step7 - 献帝东归
+
+#### Added
+- **东归启动** (`han_sim/flows.py` `initiate_emperor_escape()`)
+  - 需董卓伏诛后触发
+  - 威权>=60：成功率80%，效果威权+15，声望+10
+  - 威权<60：成功率50%，效果威权+5，声望+3
+  - 自动设置 `emperor_escaped_turn`
+
+- **东归执行检查** (`han_sim/flows.py` `execute_emperor_escape_check()`)
+  - 每回合检查东归状态：成功/失败/进行中
+  - 返回状态、已用回合、剩余回合
+
+- **simulation.py集成**（Step7）
+  - 东归失败 → threshold_crisis（威权-10，声望-5，藩镇+5）
+  - 东归成功 → historical（献帝抵达许昌）
+
+- **献帝东归Tab** (`web_app.py`)
+  - 显示状态：困于长安/东归中/已成功
+  - 倒计时显示（5回合）
+  - 目标选择（许昌/洛阳/邺城）+ 发起东归按钮
+
+- **cmd_emperor_escape()** (`web_app.py`)
+  - 验证董卓已伏诛
+  - 调用 `initiate_emperor_escape()`
+  - 返回结果（状态/叙事/效果）
+
 ### Step6 - 董卓伏诛
 
 #### Added
