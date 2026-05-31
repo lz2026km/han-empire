@@ -475,25 +475,29 @@ class GameUI:
         """诏书预览：根据输入意图显示预计效果。"""
         if not self.session:
             return ""
-        from han_sim.decree import DECREE_EFFECTS
-        effects = DECREE_EFFECTS.get(intent, {})
+        from han_sim.decree import DECREE_EFFECT_TEMPLATES
+        effects = DECREE_EFFECT_TEMPLATES.get(intent, [])
         if not effects:
-            return "<p style='color:#6b7280;font-size:12px'>未找到该诏书类型的效果信息</p>"
+            return f"<p style='color:#6b7280;font-size:12px'>未找到「{intent}」的诏书模板</p>"
 
         authority = self.session.state.metrics.get('威权', 0)
         auth_level = get_authority_level(authority)
         lines = ["<div style='font-size:12px'>"]
         lines.append(f"<b style='color:#c9a96e'>📜 {intent} 预计效果（威权{authority}，倍率{auth_level.decree_mult:.0%}）</b>")
         lines.append("<table style='width:100%;border-collapse:collapse;font-size:12px;margin-top:6px'>")
-        for metric, delta in effects.get("metrics", {}).items():
+        total_cost = 0
+        for e in effects:
+            metric = e.get("metric", "?")
+            delta = e.get("delta", 0)
             actual = int(delta * auth_level.decree_mult)
             sign = "+" if actual >= 0 else ""
             color = "#22c55e" if actual > 0 else ("#ef4444" if actual < 0 else "#9ca3af")
             lines.append(f"<tr><td style='padding:2px 4px;color:#e8d5b7'>{metric}</td><td style='color:{color};text-align:right;font-weight:bold'>{sign}{actual}</td></tr>")
+            if metric in ("汉室库", "内库") and delta < 0:
+                total_cost += abs(delta)
         lines.append("</table>")
-        cost = effects.get("cost", 0)
-        if cost > 0:
-            lines.append(f"<div style='color:#f59e0b;font-size:11px;margin-top:4px'>⚠️ 消耗内库：{cost}万两</div>")
+        if total_cost > 0:
+            lines.append(f"<div style='color:#f59e0b;font-size:11px;margin-top:4px'>⚠️ 消耗汉室库：{total_cost}万两</div>")
         lines.append("</div>")
         return "\n".join(lines)
 
