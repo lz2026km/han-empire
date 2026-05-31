@@ -24,7 +24,9 @@
     "trigger_gate": {
       "metrics.威权": ">0"
     },
-    "trigger_condition": {}
+    "trigger_condition": {},
+    "resolve_condition": "",
+    "fail_condition": ""
   },
   {
     "id": "luoyang_burned",
@@ -49,7 +51,9 @@
     "trigger_gate": {
       "metrics.威权": ">0"
     },
-    "trigger_condition": {}
+    "trigger_condition": {},
+    "resolve_condition": "",
+    "fail_condition": ""
   },
   {
     "id": "lvbu_zhuofu",
@@ -76,7 +80,9 @@
     },
     "trigger_condition": {
       "powers.dongzhuo.status": "active"
-    }
+    },
+    "resolve_condition": "",
+    "fail_condition": ""
   },
   {
     "id": "lijue_guoha",
@@ -101,7 +107,92 @@
     "trigger_gate": {
       "metrics.威权": ">0"
     },
-    "trigger_condition": {}
+"trigger_condition": {},
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "luoyang_burned",
+    "title": "董卓焚城",
+    "kind": "historical",
+    "summary": "董卓因关东诸侯讨伐，挟献帝迁都长安，临走前纵火焚烧洛阳，洛阳化为焦土，汉室根基尽毁。",
+    "urgency": 90,
+    "severity": 95,
+    "credibility": 100,
+    "interests": [
+      "朝堂",
+      "天下"
+    ],
+    "audiences": [
+      "皇帝",
+      "百官"
+    ],
+    "trigger_year": 190,
+    "trigger_month": 1,
+    "precondition": "董卓进京后触发",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.威权": ">0"
+    },
+    "trigger_condition": {},
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "lvbu_zhuofu",
+    "title": "吕布刺董",
+    "kind": "historical",
+    "summary": "192年，司徒王允设连环计，吕布于未央宫刺杀董卓，凉州兵溃散，李傕郭汜率兵攻入长安。",
+    "urgency": 85,
+    "severity": 80,
+    "credibility": 100,
+    "interests": [
+      "朝堂",
+      "凉州"
+    ],
+    "audiences": [
+      "皇帝",
+      "百官"
+    ],
+    "trigger_year": 192,
+    "trigger_month": 4,
+    "precondition": "董卓存活至192年",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.威权": ">0"
+    },
+    "trigger_condition": {
+      "powers.dongzhuo.status": "active"
+    },
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "lijue_guoha",
+    "title": "李傕郭汜之乱",
+    "kind": "historical",
+    "summary": "192年后，李傕、郭汜率凉州残部攻入长安，劫持献帝，百官受辱，长安再度陷入混乱，献帝流亡。",
+    "urgency": 90,
+    "severity": 90,
+    "credibility": 100,
+    "interests": [
+      "朝堂",
+      "长安"
+    ],
+    "audiences": [
+      "皇帝",
+      "百官"
+    ],
+    "trigger_year": 193,
+    "trigger_month": 1,
+    "precondition": "吕布刺董后触发",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.威权": ">0"
+    },
+    "trigger_condition": {},
+    "resolve_condition": "",
+    "fail_condition": ""
   },
   {
     "id": "guangwu_restored",
@@ -126,7 +217,9 @@
     "trigger_gate": {
       "metrics.威权": ">0"
     },
-    "trigger_condition": {}
+    "trigger_condition": {},
+    "resolve_condition": "",
+    "fail_condition": ""
   },
   {
     "id": "caocao_xuchang",
@@ -155,7 +248,9 @@
     },
     "trigger_condition": {
       "state.year": 196
-    }
+    },
+    "resolve_condition": "",
+    "fail_condition": ""
   },
   {
     "id": "guandu_battle",
@@ -185,7 +280,9 @@
     "trigger_condition": {
       "powers.caowei.status": "active",
       "powers.yuanshao.status": "active"
-    }
+    },
+    "resolve_condition": "",
+    "fail_condition": ""
   },
   {
     "id": "chibi_battle",
@@ -217,7 +314,9 @@
       "powers.caowei.status": "active",
       "powers.shuhan.status": "active",
       "powers.dongwu.status": "active"
-    }
+    },
+    "resolve_condition": "",
+    "fail_condition": ""
   },
   {
     "id": "hanzhong_battle",
@@ -246,7 +345,9 @@
     },
     "trigger_condition": {
       "powers.shuhan.status": "active"
-    }
+    },
+    "resolve_condition": "",
+    "fail_condition": ""
   },
   {
     "id": "caopi_abdication",
@@ -275,7 +376,9 @@
     "trigger_condition": {
       "state.year": 220,
       "powers.caowei.status": "active"
-    }
+    },
+"resolve_condition": "",
+    "fail_condition": ""
   },
   {
     "id": "e_189_hejin",

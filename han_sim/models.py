@@ -612,15 +612,25 @@ def apply_faction_change(state: "GameState", faction: str, delta: int) -> None:
 
 
 def apply_all_faction_dynamics(state: "GameState", db) -> Dict:
-    """每回合应用派系动态：
+    """每回合应用派系动态（调用 flows.py 中的 calc_faction_influence）。
+
     - 忠汉派：威权高则上升
     - 离心派：威权低则上升
     - 叛逆派：藩镇高则上升
     - 务实派：相对稳定
     """
+    from han_sim.flows import (
+        calc_faction_influence,
+        FACTION_METRIC_SENSITIVITY,
+        FACTION_THRESHOLDS,
+    )
+
     authority = state.metrics.get("威权", 0)
     fanzhen = state.metrics.get("藩镇", 80)
+    reputation = state.metrics.get("声望", 0)
     faction_data = state.metrics.get("faction_influence", {})
+
+    influences = calc_faction_influence(state, db)
 
     changes = {}
     if authority >= 50:
@@ -633,8 +643,6 @@ def apply_all_faction_dynamics(state: "GameState", db) -> Dict:
         changes["叛逆派"] = 2
     elif fanzhen <= 50:
         changes["叛逆派"] = -1
-    # 务实派随稳定性变化
-    changes["务实派"] = 0
 
     for faction, delta in changes.items():
         if faction in faction_data:
@@ -642,14 +650,15 @@ def apply_all_faction_dynamics(state: "GameState", db) -> Dict:
 
     state.metrics["faction_influence"] = faction_data
 
-    # 派系影响诏书效果
     decree_mult = 1.0
-    if faction_data.get("忠汉派", 20) >= 50:
-        decree_mult += 0.1
-    if faction_data.get("离心派", 30) >= 50:
-        decree_mult -= 0.1
-    if faction_data.get("叛逆派", 15) >= 40:
-        decree_mult -= 0.15
+    for faction, threshold in FACTION_THRESHOLDS.items():
+        inf = faction_data.get(faction, 20)
+        if inf >= threshold["rising"]:
+            from han_sim.flows import get_faction_decree_modifier
+            decree_mod = get_faction_decree_modifier(faction, "诏书")
+            decree_mult += decree_mod
+
+    decree_mult = max(0.5, min(1.3, decree_mult))
 
     return {"changes": changes, "decree_mult": decree_mult}
 

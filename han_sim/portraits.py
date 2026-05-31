@@ -11,6 +11,9 @@ Version: 0.2.0
 """
 
 from typing import Dict, List, Optional
+import os
+
+from han_sim.paths import user_data_path
 
 # ── 头像URL映射表（按portrait_id）────────────────────────────────────────────
 # 格式：portrait_id -> 图片URL或空（走emoji兜底）
@@ -227,3 +230,38 @@ if __name__ == "__main__":
     with open("/tmp/portrait_test.html", "w", encoding="utf-8") as f:
         f.write(f"<div style='padding:20px;background:#f0ece0'>{html}</div>")
     print("Portrait test written to /tmp/portrait_test.html")
+
+
+# ── Custom Portraits ───────────────────────────────────────────────────────────
+
+def _custom_portrait_dir() -> str:
+    path = user_data_path("portraits/custom")
+    os.makedirs(path, exist_ok=True)
+    return path
+
+
+def save_custom_portrait(character_name: str, image_data: bytes, filename: str) -> str:
+    safe_name = "".join(c if c.isalnum() or c in ("_", "-", " ") else "_" for c in character_name)
+    dir_path = _custom_portrait_dir()
+    ext = os.path.splitext(filename)[1] if filename else ".png"
+    file_path = os.path.join(dir_path, f"{safe_name}{ext}")
+    with open(file_path, "wb") as f:
+        f.write(image_data)
+    return file_path
+
+
+def delete_custom_portrait(character_name: str) -> bool:
+    dir_path = _custom_portrait_dir()
+    for fname in os.listdir(dir_path):
+        base = os.path.splitext(fname)[0]
+        if base == character_name or base == "".join(c if c.isalnum() or c in ("_", "-", " ") else "_" for c in character_name):
+            os.remove(os.path.join(dir_path, fname))
+            return True
+    return False
+
+
+def list_custom_portraits() -> List[str]:
+    dir_path = _custom_portrait_dir()
+    if not os.path.exists(dir_path):
+        return []
+    return sorted(os.listdir(dir_path))

@@ -879,6 +879,8 @@ class GameDB:
             self.save_state(state)
             self.ensure_opening_ledger(state)
             self.seed_opening_gazette(state)
+            self.seed_opening_crises(state)
+            self.sync_opening_legacies(state)
             return state
 
         metrics = {
@@ -957,6 +959,81 @@ class GameDB:
             (prev_turn, prev_year, prev_period, text),
         )
         self.conn.commit()
+
+    def seed_opening_crises(self, state: "GameState") -> None:
+        """新档开局时从 opening_crises.json 植入初始危机事项。"""
+        if self.table_has_rows("issues"):
+            return
+        try:
+            crises = self.content.load_opening_crises()
+        except Exception:
+            return
+        for c in crises:
+            if not isinstance(c, dict):
+                continue
+            title = str(c.get("title") or "")
+            if not title:
+                continue
+            self.insert_issue(
+                state,
+                title=title,
+                description=str(c.get("summary", ""))[:200],
+                origin_kind=str(c.get("origin_kind", "opening_crisis")),
+                origin_ref=str(c.get("origin_ref", c.get("id", ""))),
+                kind=str(c.get("kind", "situation")),
+                bar_value=int(c.get("bar_value", 30)),
+                bar_good_meaning=str(c.get("bar_good_meaning", "已平")),
+                bar_bad_meaning=str(c.get("bar_bad_meaning", "失控")),
+                inertia=int(c.get("inertia", 0)),
+                severity=int(c.get("severity", 50)),
+                tags=list(c.get("tags", [])),
+                ongoing_effects={},
+                effect_on_resolve=c.get("effect_on_resolve", {}),
+                effect_on_fail=c.get("effect_on_fail", {}),
+                resolve_condition=str(c.get("resolve_condition", "")),
+                fail_condition=str(c.get("fail_condition", "")),
+            )
+
+    def sync_opening_legacies(self, state: "GameState") -> None:
+        """新档开局时根据 preset legacies 写入 legacies 表（开局负面修正）。"""
+        if self.table_has_rows("legacies"):
+            return
+        opening_legacies = [
+            {
+                "name": "董卓余威",
+                "legacy_key": "dongzhuo_residual",
+                "modifiers": {"威权": -15, "声望": -10},
+                "narrative_hint": "董卓虽已伏诛，但其部将李傕、郭汜仍割据一方，余部未平。",
+                "duration_months": 12,
+                "clear_gate": {"metric": "威权", "min": 50},
+            },
+            {
+                "name": "诸侯离心",
+                "legacy_key": "warlord_disloyalty",
+                "modifiers": {"藩镇": 15, "威权": -10},
+                "narrative_hint": "董卓乱政后，各地诸侯已不再信任朝廷，拥兵自重。",
+                "duration_months": 18,
+                "clear_gate": {"metric": "藩镇", "max": 30},
+            },
+            {
+                "name": "民心凋敝",
+                "legacy_key": "people_suffering",
+                "modifiers": {"声望": -15},
+                "narrative_hint": "连年战乱，百姓流离失所，民心已不再向汉。",
+                "duration_months": 24,
+                "clear_gate": {"metric": "声望", "min": 50},
+            },
+        ]
+        for leg in opening_legacies:
+            self.insert_legacy(
+                name=leg["name"],
+                legacy_key=leg.get("legacy_key", ""),
+                modifiers=leg.get("modifiers", {}),
+                narrative_hint=leg.get("narrative_hint", ""),
+                duration_months=leg.get("duration_months", 24),
+                start_turn=state.turn,
+                clear_gate=leg.get("clear_gate", {}),
+            )
 
     # ── 人物状态 ───────────────────────────────────────────────────
 

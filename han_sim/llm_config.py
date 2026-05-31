@@ -48,28 +48,35 @@ def supports_openai_reasoning_effort(model: str) -> bool:
 
 
 def load_llm_config(
-    base_url: str,
-    model: str,
+    base_url: str = "",
+    model: str = "",
     api_key: str = "",
     timeout_seconds: float = 180.0,
     advanced_model: str = "",
     advanced_base_url: str = "",
     advanced_api_key: str = "",
 ) -> LLMConfig:
-    api_key = (api_key or os.environ.get("OPENAI_API_KEY", "")).strip()
+    runtime = load_runtime_llm()
+    api_key = (api_key or runtime.get("api_key", "") or os.environ.get("OPENAI_API_KEY", "")).strip()
     if not api_key:
         api_key = getpass.getpass("请输入 API key（不会保存，回车取消）：").strip()
     if not api_key:
         raise SystemExit("未提供 API key，无法使用 LLM。")
-    adv_base = (advanced_base_url or "").strip()
+    cfg_base_url = (base_url or runtime.get("base_url", "") or "").strip()
+    cfg_model = (model or runtime.get("model", "") or "").strip()
+    if not cfg_base_url:
+        cfg_base_url = "https://api.deepseek.com/v1"
+    if not cfg_model:
+        cfg_model = "deepseek-v4-flash"
+    adv_base = (advanced_base_url or runtime.get("advanced_base_url", "") or "").strip()
     return LLMConfig(
         api_key=api_key,
-        base_url=normalize_openai_base_url(base_url),
-        model=model,
+        base_url=normalize_openai_base_url(cfg_base_url),
+        model=cfg_model,
         timeout_seconds=timeout_seconds,
-        advanced_model=(advanced_model or "").strip(),
+        advanced_model=(advanced_model or runtime.get("advanced_model", "") or "").strip(),
         advanced_base_url=normalize_openai_base_url(adv_base) if adv_base else "",
-        advanced_api_key=(advanced_api_key or "").strip(),
+        advanced_api_key=(advanced_api_key or runtime.get("advanced_api_key", "") or "").strip(),
     )
 
 
@@ -91,6 +98,19 @@ def for_role(cfg: LLMConfig, role: str) -> LLMConfig:
             advanced_api_key=cfg.advanced_api_key,
         )
     return cfg
+
+
+def save_llm_config(config: LLMConfig) -> None:
+    save_runtime_llm(
+        base_url=config.base_url,
+        model=config.model,
+        api_key=config.api_key,
+        max_tokens=config.max_tokens,
+        timeout_seconds=config.timeout_seconds,
+        advanced_model=config.advanced_model,
+        advanced_base_url=config.advanced_base_url,
+        advanced_api_key=config.advanced_api_key,
+    )
 
 
 def load_runtime_llm() -> Dict[str, str]:

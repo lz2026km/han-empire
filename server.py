@@ -11,7 +11,9 @@ from flask_cors import CORS
 from han_sim.session import GameSession
 from han_sim.simulation import run_monthly_simulation
 from han_sim.decree import issue_secret_edict
+from han_sim.portraits import save_custom_portrait, delete_custom_portrait, list_custom_portraits
 import json
+from typing import List, Dict
 
 app = Flask(__name__)
 CORS(app)
@@ -237,6 +239,225 @@ def list_saves(campaign_id):
 @app.route('/api/campaigns/<campaign_id>/saves/<int:slot>', methods=['DELETE'])
 def delete_save(campaign_id, slot):
     return jsonify({'message': f'存档 slot {slot} 已删除'})
+
+
+@app.route('/api/portraits/custom/<character_name>', methods=['POST'])
+def upload_custom_portrait(character_name):
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+    file = request.files['file']
+    if not file.filename:
+        return jsonify({'error': 'Empty filename'}), 400
+    image_data = file.read()
+    path = save_custom_portrait(character_name, image_data, file.filename)
+    return jsonify({'message': 'Portrait uploaded', 'path': path})
+
+
+@app.route('/api/portraits/custom/<character_name>', methods=['DELETE'])
+def delete_custom_portrait_api(character_name):
+    deleted = delete_custom_portrait(character_name)
+    if deleted:
+        return jsonify({'message': f'Portrait for {character_name} deleted'})
+    return jsonify({'error': 'Portrait not found'}), 404
+
+
+@app.route('/api/portraits/custom', methods=['GET'])
+def list_custom_portraits_api():
+    portraits = list_custom_portraits()
+    return jsonify({'portraits': portraits})
+
+
+# ---- Directives (Draft Decree System) ----
+
+@app.route('/api/directives', methods=['GET'])
+def list_directives():
+    campaign_id = request.args.get('campaign_id', '')
+    turn = request.args.get('turn', type=int, default=0)
+
+    if campaign_id not in GAMES:
+        try:
+            GAMES[campaign_id] = GameSession.load(campaign_id)
+        except Exception:
+            return jsonify({'directives': [], 'error': 'Campaign not found'})
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    try:
+        rows = db.conn.execute(
+            """SELECT * FROM directives
+               WHERE (? = 0 OR issued_turn = ?) AND campaign_id = ?
+               ORDER BY issued_turn DESC, id DESC""",
+            (turn, turn, campaign_id),
+        ).fetchall()
+    except Exception:
+        rows = []
+
+    directives = []
+    for row in rows:
+        d = dict(row)
+        directives.append({
+            'id': d.get('id'),
+            'turn': d.get('issued_turn', 0),
+            'year': session.state.year,
+            'period': session.state.period,
+            'text': d.get('content', ''),
+            'source': d.get('kind', ''),
+            'actor': '',
+            'status': d.get('status', 'draft'),
+            'notes': '',
+            'created_at': d.get('created_at', ''),
+        })
+
+    return jsonify({'directives': directives})
+
+
+@app.route('/api/directives', methods=['POST'])
+def create_directive():
+    data = request.get_json() or {}
+    campaign_id = data.get('campaign_id', '')
+    text = data.get('text', '')
+    actor = data.get('actor', '')
+    source = data.get('source', '')
+    status = data.get('status', 'draft')
+
+    if campaign_id not in GAMES:
+        try:
+            GAMES[campaign_id] = GameSession.load(campaign_id)
+        except Exception:
+            return jsonify({'error': 'Campaign not found'}), 404
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    turn = session.state.turn
+    issued_turn = turn
+    expires_turn = turn + 3
+
+    kind = source or 'manual'
+
+    cursor = db.conn.execute(
+        """INSERT INTO directives (campaign_id, type, kind, status, content, issued_turn, expires_turn)
+           VALUES (?, 'decree', ?, ?, ?, ?, ?)""",
+        (campaign_id, kind, status, text, issued_turn, expires_turn),
+    )
+    db.conn.commit()
+    directive_id = cursor.lastrowid
+
+    return jsonify({
+        'id': directive_id,
+        'turn': turn,
+        'year': session.state.year,
+        'period': session.state.period,
+        'text': text,
+        'source': source,
+        'actor': actor,
+        'status': status,
+        'message': 'Directive created'
+    })
+
+
+@app.route('/api/directives/<int:directive_id>/confirm', methods=['PUT'])
+def confirm_directive(directive_id):
+    data = request.get_json() or {}
+    campaign_id = data.get('campaign_id', '')
+
+    if campaign_id not in GAMES:
+        return jsonify({'error': 'Campaign not found'}), 404
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    db.conn.execute(
+        "UPDATE directives SET status = 'confirmed', updated_at = CURRENT_TIMESTAMP WHERE id = ? AND campaign_id = ?",
+        (directive_id, campaign_id),
+    )
+    db.conn.commit()
+
+    return jsonify({'message': 'Directive confirmed', 'id': directive_id})
+
+
+@app.route('/api/directives/<int:directive_id>/reject', methods=['PUT'])
+def reject_directive(directive_id):
+    data = request.get_json() or {}
+    campaign_id = data.get('campaign_id', '')
+
+    if campaign_id not in GAMES:
+        return jsonify({'error': 'Campaign not found'}), 404
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    db.conn.execute(
+        "UPDATE directives SET status = 'rejected', updated_at = CURRENT_TIMESTAMP WHERE id = ? AND campaign_id = ?",
+        (directive_id, campaign_id),
+    )
+    db.conn.commit()
+
+    return jsonify({'message': 'Directive rejected', 'id': directive_id})
+
+
+@app.route('/api/directives/<int:directive_id>', methods=['DELETE'])
+def delete_directive(directive_id):
+    campaign_id = request.args.get('campaign_id', '')
+
+    if campaign_id not in GAMES:
+        return jsonify({'error': 'Campaign not found'}), 404
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    db.conn.execute("DELETE FROM directives WHERE id = ? AND campaign_id = ?", (directive_id, campaign_id))
+    db.conn.commit()
+
+    return jsonify({'message': 'Directive deleted', 'id': directive_id})
+
+
+@app.route('/api/decree/write', methods=['POST'])
+def write_decree():
+    data = request.get_json() or {}
+    campaign_id = data.get('campaign_id', '')
+
+    if campaign_id not in GAMES:
+        try:
+            GAMES[campaign_id] = GameSession.load(campaign_id)
+        except Exception:
+            return jsonify({'error': 'Campaign not found'}), 404
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    rows = db.conn.execute(
+        "SELECT * FROM directives WHERE campaign_id = ? AND status = 'confirmed' ORDER BY issued_turn DESC",
+        (campaign_id,),
+    ).fetchall()
+
+    if not rows:
+        return jsonify({'error': 'No confirmed directives', 'decree_text': ''})
+
+    directives = [dict(row) for row in rows]
+    decree_text = _generate_formal_decree(directives, session.state)
+
+    return jsonify({
+        'message': 'Decree generated',
+        'decree_text': decree_text,
+        'directives_count': len(directives),
+    })
+
+
+def _generate_formal_decree(directives: List[Dict], state) -> str:
+    """Generate formal decree text from confirmed directives."""
+    lines = ["奉天承运，皇帝诏曰："]
+
+    for i, d in enumerate(directives, 1):
+        text = d.get('content', '')
+        if text:
+            lines.append(f"其一：{text}。")
+
+    lines.append("")
+    lines.append("布告天下，咸使闻知。")
+
+    return "\n".join(lines)
 
 
 if __name__ == '__main__':

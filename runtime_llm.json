@@ -1,0 +1,10 @@
+{
+  "base_url": "https://api.deepseek.com/v1",
+  "model": "deepseek-v4-flash",
+  "api_key": "",
+  "max_tokens": 8000,
+  "timeout_seconds": 180.0,
+  "advanced_model": "",
+  "advanced_base_url": "",
+  "advanced_api_key": ""
+}
