@@ -1839,7 +1839,7 @@ def build_ui():
         # ── 主布局：三栏 ─────────────────────────────────────────────
         with gr.Row():
             # ── 左侧边栏：状态总览 + 大臣列表 ──────────────────
-            with gr.Column(scale=1, min_width=260):
+            with gr.Column(scale=1, width=260):
                 gr.HTML("<h3 style='color:#c9a96e;padding:8px 0 4px;border-bottom:1px solid #2d2d44'>📊 国势总览</h3>")
                 dashboard_display = gr.HTML("*点击「新游戏」初始化*")
                 refresh_dashboard_btn = gr.Button("🔄 刷新", size="compact")
@@ -2073,7 +2073,7 @@ def build_ui():
                         refresh_relocate_btn = gr.Button("🔄 刷新迁都选项")
 
             # ── 右侧边栏：操作面板 ───────────────────────────────
-            with gr.Column(scale=1, min_width=260):
+            with gr.Column(scale=1, width=260):
                 gr.HTML("<h3 style='color:#c9a96e;padding:8px 0 4px;border-bottom:1px solid #2d2d44'>⚡ 快捷操作</h3>")
 
                 gr.HTML("<h4 style='color:#c9a96e;padding:4px 0'>🆕 威权恢复</h4>")
