@@ -58,8 +58,9 @@
 | 运行时 | Python 3.11+ / SQLite |
 | LLM框架 | Agno（多Agent编排，可选） |
 | 网络 | httpx（异步HTTP客户端） |
-| Web界面 | Gradio 6.0（12 Tab布局） |
+| Web界面 | Gradio 6.0（12 Tab）+ React + Vite（Web前端） |
 | ORM | SQLAlchemy 2.0（数据库封装） |
+| 前端框架 | React 18 + TypeScript + Vite |
 | 模型支持 | OpenAI 兼容 API（MiniMax/DeepSeek 等） |
 | 内容管理 | JSON + Markdown + 结构化数据 |
 
@@ -93,12 +94,20 @@ python web_app.py
 
 ```
 han-empire/
-├── web_app.py               # Gradio Web 界面（12 Tab）
-├── launcher.py              # 终端启动器
+├── web/                  # React + Vite Web前端（TypeScript/TSX）
+│   ├── src/
+│   │   ├── components/    # React组件（9个：BattleView/FactionRelationDiagram/MinisterPortrait/Notification/ProvinceMap/MapLegend/DecreeReviewPanel/Header）
+│   │   ├── styles/       # CSS（animations.css古风动画/主题样式）
+│   │   └── api.ts        # REST API客户端
+│   └── dist/             # 构建输出
 │
-├── han_sim/                 # 核心游戏引擎
+├── web_app.py            # Gradio Web 界面（12 Tab，2578行）
+├── launcher.py           # pywebview桌面窗口（355行）
+├── server.py             # Flask REST API（19端点）
+│
+├── han_sim/              # 核心游戏引擎
 │   ├── models.py            # 数据类（GameState/CourtContext/SimulationResult等，1017行）
-│   ├── db.py                # SQLite 持久化（12张表 + 完整CRUD，1827行）
+│   ├── db.py                # SQLite 持久化（37张表 + 完整CRUD，2400行）
 │   ├── session.py           # 回合流转、初始化、大臣召对（228行）
 │   ├── simulation.py        # 月末推演（双Agent + JSON提取 + 阈值危机，603行）
 │   ├── flows.py             # 财政流/派系/藩镇动态/技能点/诏书效果（1135行）
@@ -118,7 +127,7 @@ han-empire/
 │   ├── characters.json    # 人物数据（120人，含派系/能力/忠诚/技能）
 │   ├── regions.json       # 州郡数据（50州郡）
 │   ├── powers.json        # 诸侯势力（30势力，含军力/立场/盟友）
-│   ├── events.json        # 历史事件（79条）
+│   ├── events.json        # 历史事件（79条，含resolve/fail_condition）
 │   ├── armies.json        # 军队数据（20编制）
 │   ├── seed_events.json   # 种子事件（40条）
 │   ├── decrees.json       # 诏书模板（30条）
@@ -126,6 +135,8 @@ han-empire/
 │   ├── classes.json       # 阶级数据（8阶级，49条）
 │   ├── buildings.json     # 建筑数据（26个）
 │   ├── skill_tools.json   # 诏令工具模板（21条）
+│   ├── consorts.json      # 后宫秀女候选（34名）
+│   ├── opening_crises.json # 开局危机系统
 │   └── prompts/           # LLM Prompt 模板
 │       ├── minister_agent.md
 │       ├── decree_writer.md
@@ -147,26 +158,50 @@ han-empire/
 
 ---
 
-## 数据库架构（12张核心表）
+## 数据库架构（37张核心表）
 
 | 表名 | 用途 |
 |------|------|
-| `characters` | 人物数据（含派系/能力/忠诚/风格） |
-| `regions` | 州郡数据 |
+| `game_state` | 游戏全局状态（年/月/回合/阶段） |
+| `metrics` | 数值指标（威权/藩镇/声望/汉室库/内库） |
+| `characters` | 人物数据（含派系/能力/忠诚/风格/状态） |
+| `character_offices` | 人物官职历 |
+| `factions` | 四大派系影响力 |
+| `classes` | 阶级数据 |
 | `powers` | 诸侯势力（含军力/立场/盟友/last_action） |
-| `events` | 历史事件 |
-| `campaigns` | 游戏存档 |
-| `turn_records` | 回合记录 |
-| `factions` | 派系影响力 |
-| `memories` | 事件记忆卡 |
-| `decree_history` | 诏书历史 |
-| `issues` | 事项追踪（进度/级联/危机） |
-| `issues_history` | 事项历史 |
-| `minister_skill_grants` | 大臣技能授权 |
-| `emperer_skills` | 天子已激活技能 |
-| `directives` | 指令状态机（草稿/已发布/过期） |
-| `emperor_diary` | 天子日记 |
+| `power_logs` | 诸侯行动日志 |
+| `regions` | 州郡数据 |
+| `region_logs` | 区域变化日志 |
+| `armies` | 军队数据 |
+| `army_logs` | 军队变动日志 |
 | `buildings` | 建筑状态 |
+| `building_logs` | 建筑日志 |
+| `economy_accounts` | 财政账户（汉室库/内库） |
+| `economy_ledger` | 财政流水账 |
+| `fiscal_config` | 财政配置 |
+| `events` | 历史事件 |
+| `event_triggers` | 事件触发器 |
+| `turn_logs` | 回合日志 |
+| `turn_reports` | 回合报告 |
+| `turn_extractions` | 回合数据提取 |
+| `turn_directives` | 回合指令 |
+| `chat_messages` | 召对历史消息 |
+| `secret_orders` | 密诏记录 |
+| `issues` | 事项追踪（进度/级联/危机） |
+| `issue_advances` | 事项推进历史 |
+| `event_memories` | 事件记忆卡 |
+| `event_memory_sources` | 记忆来源关联 |
+| `kv_store` | 通用键值存储 |
+| `emperor_skills` | 天子已激活技能 |
+| `minister_skill_grants` | 大臣技能授权 |
+| `directives` | 指令状态机（草稿/已发布/过期） |
+| `consorts` | 后宫妃嫔 |
+| `consort_candidates` | 秀女候选 |
+| `consort_events` | 后宫事件 |
+| `consort_traits` | 秀女特质 |
+| `legacies` | 遗业/传承数据 |
+| `power_name_logs` | 势力名号变更日志 |
+| `emperor_diary` | 天子日记 |
 
 ---
 
@@ -199,7 +234,7 @@ han-empire/
 
 | 版本 | 日期 | 里程碑 |
 |------|------|--------|
-| **v0.9.8** | 2026-05-31 | **Step12-15完成**：Claude Code风格开发配置（CLAUDE.md/代码审查Agent/Git工作流命令）、端到端测试套件、项目配置标准化（README/DEVELOPMENT/LICENSE/gitignore） |
+| **v0.9.9** | 2026-05-31 | **Step18完成**：派系动态系统完整版（FACTION_THRESHOLDS/DECREE_MODIFIERS/METRIC_SENSITIVITY）+ pywebview桌面launcher（355行）+ REST API（Flask，19端点）+ PyInstaller打包配置（HanEmpireSim.spec）+ consorts.json（34名秀女）+ opening_crises.json + v0.9.9前端升级（BattleView/FactionRelationDiagram/MinisterPortrait/Notification/ProvinceMap + 40+ CSS动画） |
 | **v0.9.7** | 2026-05-31 | **五大系统完整落地**：天子技能树（四系48技能，威权解锁+前置依赖+技能点消耗）+ 建筑系统（14建筑，宫殿/军事/经济/特殊，维护费自动扣除）+ 诏令状态机（6种诏书类型，衣带密诏/讨伐/迁都/嘉奖/罪己/大赦，状态流转draft→issued→expired）+ 派系系统（忠汉/务实/离心/叛逆四派系，威权/藩镇联动，每月动态更新）+ 系统联动（新游戏初始化+每月调用） |
 | **v0.9.6** | 2026-05-31 | **核心事件链全通**：忠诚度系统（大臣/诸侯双衰减，5种恢复行动，叛逃检测）+ 董卓伏诛（威权≥40触发，军力判定，成功/失败效果）+ 献帝东归（董卓伏诛后启动，威权≥60成功率80%）+ 迁都系统（5城迁都，威权约束） |
 | **v0.9.4** | 2026-05-30 | **古风主题配色**：玄黑/朱红/古金/暖白17色配色方案 + Noto Serif SC 字体，覆盖全部UI组件 |
