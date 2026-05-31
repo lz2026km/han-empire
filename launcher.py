@@ -55,7 +55,7 @@ def _prompt_api_key(gui_root: str) -> bool:
     win.title("配置 API Key")
     win.resizable(False, False)
     win.update_idletasks()
-    w, h = 480, 320
+    w, h = 480, 360
     x = (win.winfo_screenwidth() // 2) - (w // 2)
     y = (win.winfo_screenheight() // 2) - (h // 2)
     win.geometry(f"{w}x{h}+{x}+{y}")
@@ -73,6 +73,9 @@ def _prompt_api_key(gui_root: str) -> bool:
     api_key_var = tk.StringVar()
     api_key_entry = tk.Entry(win, textvariable=api_key_var, width=45, show="*")
     api_key_entry.place(x=40, y=195)
+
+    tk.Label(win, text="提示：API Key将保存在本地配置文件中", font=("Microsoft YaHei", 9)).place(x=40, y=230)
+    tk.Label(win, text="推荐使用 DeepSeek API（性价比高）", font=("Microsoft YaHei", 9, "italic")).place(x=40, y=250)
 
     result = {"ok": False}
 
@@ -121,12 +124,9 @@ def _resolve_url(path: str) -> str:
     return path
 
 
-class WindowController:
-    def __init__(self):
-        self.window = None
-        self.server_thread = None
-
-    def start(self):
+def _setup_dpi_awareness() -> None:
+    """配置 Windows DPI 感知以获得清晰的UI渲染。"""
+    try:
         import ctypes
         try:
             ctypes.windll.shcore.SetProcessDpiAwareness(2)
@@ -135,6 +135,29 @@ class WindowController:
                 ctypes.windll.user32.SetProcessDPIAware()
             except Exception:
                 pass
+    except Exception:
+        pass
+
+
+def _get_screen_info() -> dict:
+    """获取屏幕信息用于窗口居中。"""
+    try:
+        import ctypes
+        user32 = ctypes.windll.user32
+        width = user32.GetSystemMetrics(0)
+        height = user32.GetSystemMetrics(1)
+        return {"width": width, "height": height}
+    except Exception:
+        return {"width": 1280, "height": 800}
+
+
+class WindowController:
+    def __init__(self):
+        self.window = None
+        self.server_thread = None
+
+    def start(self):
+        _setup_dpi_awareness()
 
         if not _check_api_key():
             if not _prompt_api_key("tk"):
@@ -145,11 +168,7 @@ class WindowController:
         self.server_thread = _start_flask_server(port)
         print(f"[启动器] Flask 服务已启动：http://127.0.0.1:{port}")
 
-        web_dir = os.path.join(os.path.dirname(__file__), "web", "dist")
-        if os.path.isdir(web_dir):
-            url = f"http://127.0.0.1:{port}"
-        else:
-            url = f"http://127.0.0.1:{port}"
+        url = f"http://127.0.0.1:{port}"
 
         if webview is None:
             print("[启动器] pywebview 未安装，正在打开浏览器...")
@@ -158,11 +177,15 @@ class WindowController:
             input()
             return
 
+        screen = _get_screen_info()
+        window_width = min(1400, screen["width"] - 100)
+        window_height = min(900, screen["height"] - 100)
+
         self.window = webview.create_window(
             "汉献帝之末路",
             url,
-            width=1280,
-            height=800,
+            width=window_width,
+            height=window_height,
             min_size=(960, 600),
             resizable=True,
             js_api=None,
@@ -182,6 +205,7 @@ class WindowController:
 def main():
     print("=" * 50)
     print("  汉献帝之末路 - 桌面版")
+    print("  基于 LLM 的回合制古风帝王游戏")
     print("=" * 50)
     print()
 

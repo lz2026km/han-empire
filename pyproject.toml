@@ -1,13 +1,35 @@
 [project]
 name = "han-empire"
-version = "0.9.5"
-description = "Add your description here"
-requires-python = ">=3.14"
+version = "0.9.9"
+description = "汉献帝之末路 - 基于 LLM + 历史推演的回合制古风帝王游戏"
+requires-python = ">=3.11"
 dependencies = [
     "agno>=2.6.9",
     "aiofiles>=25.1.0",
+    "flask>=3.1.0",
+    "flask-cors>=5.0.0",
     "gradio>=6.15.2",
     "httpx>=0.28.1",
     "openai>=2.38.0",
     "sqlalchemy>=2.0.50",
+    "pywebview>=5.5.1",
+    "Pillow>=11.1.0",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.25.0",
+    "ruff>=0.11.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["scripts"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

@@ -300,3 +300,214 @@
   100% { transform: scaleX(1); opacity: 1; }
 }
 .fan-unfold { animation: fanUnfold 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+/* ---- Phoenix Rise ---- */
+@keyframes phoenixRise {
+  0% { transform: translateY(20px) scale(0.8); opacity: 0; filter: brightness(0.3) hue-rotate(-20deg); }
+  30% { transform: translateY(0) scale(1.05); opacity: 1; filter: brightness(1.2) hue-rotate(0deg); }
+  100% { transform: translateY(-15px) scale(1); opacity: 1; filter: brightness(1) hue-rotate(0deg); }
+}
+.phoenix-rise { animation: phoenixRise 1.2s ease-out forwards; }
+
+/* ---- Smoke Fade ---- */
+@keyframes smokeFade {
+  0% { opacity: 0; transform: scale(1.3); filter: blur(0px); }
+  50% { opacity: 0.7; transform: scale(1.1); filter: blur(2px); }
+  100% { opacity: 0; transform: scale(1.5); filter: blur(8px); }
+}
+.smoke-fade { animation: smokeFade 2s ease-out forwards; }
+
+/* ---- Dragon Dance ---- */
+@keyframes dragonDance {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(8px) rotate(3deg); }
+  75% { transform: translateX(-8px) rotate(-3deg); }
+}
+.dragon-dance { animation: dragonDance 3s ease-in-out infinite; }
+
+/* ---- Emperor Decree Stamp ---- */
+@keyframes decreeStamp {
+  0% { transform: scale(3) rotate(-20deg); opacity: 0; }
+  50% { transform: scale(1.1) rotate(5deg); opacity: 0.8; }
+  70% { transform: scale(0.95) rotate(-3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.decree-stamp { animation: decreeStamp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+/* ---- Silk Unfurl ---- */
+@keyframes silkUnfurl {
+  0% { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+.silk-unfurl { animation: silkUnfurl 1.2s ease-out forwards; }
+
+/* ---- Candle Flicker ---- */
+@keyframes candleFlicker {
+  0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(255, 150, 50, 0.8), 0 0 20px rgba(255, 100, 0, 0.4); }
+  50% { opacity: 0.85; text-shadow: 0 0 5px rgba(255, 150, 50, 0.6), 0 0 15px rgba(255, 100, 0, 0.3); }
+}
+.candle-flicker { animation: candleFlicker 2s ease-in-out infinite; }
+
+/* ---- War Banner Wave ---- */
+@keyframes warBannerWave {
+  0%, 100% { transform: skewX(0deg); }
+  25% { transform: skewX(2deg); }
+  75% { transform: skewX(-2deg); }
+}
+.war-banner-wave { animation: warBannerWave 0.8s ease-in-out infinite; }
+
+/* ---- Scroll Unroll ---- */
+@keyframes scrollUnroll {
+  0% { transform: scaleY(0) rotateX(90deg); transform-origin: top; opacity: 0; }
+  60% { transform: scaleY(1.02) rotateX(-5deg); opacity: 1; }
+  100% { transform: scaleY(1) rotateX(0deg); opacity: 1; }
+}
+.scroll-unroll { animation: scrollUnroll 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
+/* ---- Jade Shine ---- */
+@keyframes jadeShine {
+  0%, 100% { box-shadow: 0 0 5px rgba(100, 200, 150, 0.4), inset 0 0 5px rgba(100, 200, 150, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(100, 200, 150, 0.8), inset 0 0 15px rgba(100, 200, 150, 0.4); }
+}
+.jade-shine { animation: jadeShine 3s ease-in-out infinite; }
+
+/* ---- Blood Drip ---- */
+@keyframes bloodDrip {
+  0% { transform: translateY(-100%); opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0.5; }
+}
+.blood-drip { animation: bloodDrip 2s ease-in forwards; }
+
+/* ---- Cloud Drift ---- */
+@keyframes cloudDrift {
+  0% { transform: translateX(-20px) translateY(0); opacity: 0.6; }
+  50% { transform: translateX(10px) translateY(-10px); opacity: 0.9; }
+  100% { transform: translateX(20px) translateY(0); opacity: 0.6; }
+}
+.cloud-drift { animation: cloudDrift 8s ease-in-out infinite; }
+
+/* ---- Seal Press ---- */
+@keyframes sealPress {
+  0% { transform: scale(2); opacity: 0; filter: brightness(2); }
+  60% { transform: scale(0.9); opacity: 0.8; filter: brightness(1.2); }
+  100% { transform: scale(1); opacity: 1; filter: brightness(1); }
+}
+.seal-press { animation: sealPress 0.4s ease-out forwards; }
+
+/* ---- Character Entry ---- */
+@keyframes characterEntry {
+  0% { transform: translateX(-50px) rotate(-5deg); opacity: 0; filter: grayscale(100%); }
+  100% { transform: translateX(0) rotate(0deg); opacity: 1; filter: grayscale(0%); }
+}
+.character-entry { animation: characterEntry 0.6s ease-out forwards; }
+
+/* ---- Tab Select ---- */
+@keyframes tabSelect {
+  0% { transform: translateY(-5px); opacity: 0.5; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.tab-select { animation: tabSelect 0.2s ease-out forwards; }
+
+/* ---- Palace Gates Open ---- */
+@keyframes palaceGatesOpen {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+.palace-gates-open { animation: palaceGatesOpen 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; transform-origin: left; }
+
+/* ---- Mist Sweep ---- */
+@keyframes mistSweep {
+  0% { clip-path: inset(0 100% 0 0); opacity: 0.8; }
+  100% { clip-path: inset(0 0 0 0); opacity: 0.4; }
+}
+.mist-sweep { animation: mistSweep 3s ease-out forwards; }
+
+/* ---- Sun Rise ---- */
+@keyframes sunRise {
+  0% { transform: translateY(30px); opacity: 0; filter: brightness(0.3); }
+  50% { transform: translateY(0); opacity: 1; filter: brightness(1.3); }
+  100% { transform: translateY(-10px); opacity: 0.9; filter: brightness(1); }
+}
+.sun-rise { animation: sunRise 2s ease-out forwards; }
+
+/* ---- Moon Glow ---- */
+@keyframes moonGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(200, 200, 255, 0.3), 0 0 40px rgba(200, 200, 255, 0.1); }
+  50% { box-shadow: 0 0 40px rgba(200, 200, 255, 0.6), 0 0 80px rgba(200, 200, 255, 0.3); }
+}
+.moon-glow { animation: moonGlow 4s ease-in-out infinite; }
+
+/* ---- Stagger Children ---- */
+.stagger-children > *:nth-child(1) { animation-delay: 0.0s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(9) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(10) { animation-delay: 0.45s; }
+.stagger-children > *:nth-child(11) { animation-delay: 0.5s; }
+.stagger-children > *:nth-child(12) { animation-delay: 0.55s; }
+
+/* ---- Pulse Border ---- */
+@keyframes pulseBorder {
+  0%, 100% { border-color: var(--color-gold-dim); }
+  50% { border-color: var(--color-gold-bright); box-shadow: 0 0 10px rgba(201, 168, 76, 0.3); }
+}
+.pulse-border { animation: pulseBorder 2s ease-in-out infinite; }
+
+/* ---- Glow Pulse ---- */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(201, 168, 76, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(201, 168, 76, 0.5); }
+}
+.glow-pulse { animation: glowPulse 2s ease-in-out infinite; }
+
+/* ---- Screen Shake ---- */
+@keyframes screenShake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-8px) translateY(4px); }
+  20% { transform: translateX(8px) translateY(-4px); }
+  30% { transform: translateX(-6px) translateY(2px); }
+  40% { transform: translateX(6px) translateY(-2px); }
+  50% { transform: translateX(-4px) translateY(4px); }
+  60% { transform: translateX(4px) translateY(-4px); }
+  70% { transform: translateX(-2px) translateY(2px); }
+  80% { transform: translateX(2px) translateY(-2px); }
+  90% { transform: translateX(-1px) translateY(1px); }
+}
+.screen-shake { animation: screenShake 0.6s ease-in-out; }
+
+/* ---- Float Up ---- */
+@keyframes floatUp {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.float-up { animation: floatUp 0.5s ease-out forwards; }
+
+/* ---- Crown Shine ---- */
+@keyframes crownShine {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(1.5) drop-shadow(0 0 10px rgba(255, 215, 0, 0.8)); }
+  100% { filter: brightness(1); }
+}
+.crown-shine { animation: crownShine 2.5s ease-in-out infinite; }
+
+/* ---- Particle Float ---- */
+@keyframes particleFloat {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.8; }
+  50% { transform: translateY(-30px) translateX(10px) scale(1.2); opacity: 0.4; }
+  100% { transform: translateY(-60px) translateX(-5px) scale(0.8); opacity: 0; }
+}
+.particle-float { animation: particleFloat 3s ease-out infinite; }
+
+/* ---- Wind Blow ---- */
+@keyframes windBlow {
+  0% { transform: skewX(0deg) translateX(0); }
+  25% { transform: skewX(3deg) translateX(5px); }
+  75% { transform: skewX(-2deg) translateX(-3px); }
+  100% { transform: skewX(0deg) translateX(0); }
+}
+.wind-blow { animation: windBlow 2s ease-in-out infinite; }

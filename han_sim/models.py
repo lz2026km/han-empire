@@ -273,8 +273,10 @@ def apply_building_deterioration(state: "GameState") -> List[str]:
     - 风险过高的建筑有概率损坏
     返回损坏建筑列表。
     """
-    built = state.metrics.get("built_buildings", {})
+    built = state.metrics.get("built_buildings", [])
     damaged = []
+    if not isinstance(built, dict):
+        return damaged
     for bid, bdata in built.items():
         cond = bdata.get("condition", 100)
         risk = bdata.get("risk", 0)
@@ -984,7 +986,11 @@ class GameState:
         for key, value in list(self.metrics.items()):
             if key in ("汉室库", "内库"):
                 self.metrics[key] = max(0, value)
-            else:
+            elif isinstance(value, list):
+                continue
+            elif isinstance(value, dict):
+                continue
+            elif isinstance(value, (int, float)):
                 self.metrics[key] = max(0, min(100, value))
 
     def next_period(self) -> None:

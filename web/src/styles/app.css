@@ -2,7 +2,7 @@
    汉献帝之末路 - 玄黑/朱红/古金 古风主题
    Theme: Ancient Chinese Dark Palace Style
    ============================================= */
-@import url('./styles/animations.css');
+@import url('./animations.css');
 
 :root {
   /* 玄黑 - 主背景 */
@@ -648,6 +648,201 @@ input:focus, select:focus {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
+}
+
+/* ---- Skill Header ---- */
+.skill-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.skill-points-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, var(--color-accent-red-dim) 0%, var(--color-bg-tertiary) 100%);
+  border: 1px solid var(--color-gold-dim);
+  border-radius: var(--border-radius);
+}
+
+.skill-points-label {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.skill-points-value {
+  font-size: 24px;
+  color: var(--color-gold-bright);
+  font-weight: 700;
+}
+
+/* ---- Skill Branches ---- */
+.skill-branches {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.skill-branch-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 16px;
+}
+
+.skill-branch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.skill-branch-name {
+  font-size: 15px;
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+.skill-branch-count {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.skill-nodes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.skill-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 80px;
+  position: relative;
+}
+
+.skill-node:hover:not(:disabled) {
+  border-color: var(--color-gold-dim);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.skill-node--locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.skill-node--unlocked {
+  background: var(--color-accent-red-dim);
+  border-color: var(--color-accent-red);
+  color: var(--color-gold);
+}
+
+.skill-node-name {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.skill-node-tier {
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+
+.skill-node-check {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 10px;
+  color: var(--color-gold-bright);
+}
+
+/* ---- Buildings Header ---- */
+.buildings-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.buildings-slots {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  padding: 8px 16px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+}
+
+/* ---- Buildings Grid ---- */
+.buildings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.building-card {
+  padding: 16px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  transition: all 0.2s;
+}
+
+.building-card:hover {
+  border-color: var(--color-gold-dim);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.building-card--built {
+  border-color: var(--color-accent-red-dim);
+  background: linear-gradient(135deg, var(--color-bg-card) 0%, rgba(139, 26, 26, 0.1) 100%);
+}
+
+.building-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.building-card__name {
+  font-size: 15px;
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+.building-card__level {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  padding: 2px 8px;
+  background: var(--color-bg-tertiary);
+  border-radius: 10px;
+}
+
+.building-card__effect {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.building-card__build {
+  width: 100%;
+  font-size: 12px;
 }
 
 @media (max-width: 1200px) {

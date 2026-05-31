@@ -2,13 +2,15 @@
    App.tsx - Main Application Component
    汉献帝之末路 - React Frontend
    ============================================= */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Header } from './components/Header'
 import { useGame } from './hooks/useGame'
+import { MinisterChat } from './components/MinisterChat'
 import type { GameState, MinisterStats, FactionStats } from './types'
 import './styles/app.css'
+import { api } from './api'
 
-type Tab = 'overview' | 'decree' | 'ministers' | 'factions' | 'skills' | 'buildings' | 'log'
+type Tab = 'overview' | 'decree' | 'ministers' | 'factions' | 'skills' | 'buildings' | 'log' | 'chat'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('overview')
@@ -28,6 +30,7 @@ export default function App() {
   const tabs: { id: Tab; label: string }[] = [
     { id: 'overview', label: '🏠 总览' },
     { id: 'decree', label: '📜 诏书' },
+    { id: 'chat', label: '💬 召对' },
     { id: 'ministers', label: '👥 大臣' },
     { id: 'factions', label: '⚔️ 派系' },
     { id: 'skills', label: '🌲 技能' },
@@ -92,6 +95,9 @@ export default function App() {
               )}
               {activeTab === 'decree' && (
                 <DecreeTab gameState={gameState} ministers={ministers} onIssue={issueDecree} />
+              )}
+              {activeTab === 'chat' && campaignId && (
+                <MinisterChat campaignId={campaignId} ministers={ministers} />
               )}
               {activeTab === 'ministers' && (
                 <MinisterTab ministers={ministers} />
@@ -259,7 +265,7 @@ function DecreeTab({
 }
 
 function DecreeCard({
-  decreeType, ministers, onIssue
+  decreeType, onIssue
 }: {
   decreeType: string
   ministers: MinisterStats[]
@@ -353,21 +359,156 @@ function FactionTab({ factions }: { factions: FactionStats[] }) {
 }
 
 function SkillTab({ campaignId }: { campaignId: string }) {
+  const [skillTree, setSkillTree] = useState<{
+    branches: Record<string, { id: string; name: string; cost: number; tier: number; unlocked: boolean }[]>
+    authority_required: number
+    skill_points: number
+  } | null>(null)
+  const [activating, setActivating] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!campaignId) return
+    api.getSkillTree(campaignId).then(res => {
+      const tree = (res as any).skill_tree
+      setSkillTree(tree)
+    }).catch(() => {
+      setSkillTree({ branches: {}, authority_required: 0, skill_points: 0 })
+    })
+  }, [campaignId])
+
+  const handleActivate = async (skillId: string) => {
+    setActivating(skillId)
+    try {
+      await api.unlockSkill(campaignId, skillId)
+      const res = await api.getSkillTree(campaignId)
+      setSkillTree((res as any).skill_tree)
+    } catch (e) {
+      console.error(e)
+    }
+    setActivating(null)
+  }
+
+  const branches = skillTree?.branches || {}
+  const skillPoints = skillTree?.skill_points || 0
+
+  const branchNames: Record<string, string> = {
+    'jinglve': '经略',
+    'zhengzhi': '权谋',
+    'junlu': '武功',
+    'wenzhi': '文治',
+  }
+
   return (
     <div className="fade-in">
-      <div className="empty-state">
-        技能树加载中（需先完成API）...
+      <div className="skill-header">
+        <div className="skill-points-badge">
+          <span className="skill-points-label">技能点</span>
+          <span className="skill-points-value">{skillPoints}</span>
+        </div>
       </div>
+
+      <div className="skill-branches">
+        {Object.entries(branches).map(([branchKey, skills]) => (
+          <div key={branchKey} className="skill-branch-card">
+            <div className="skill-branch-header">
+              <span className="skill-branch-name">{branchNames[branchKey] || branchKey}</span>
+              <span className="skill-branch-count">{skills.filter(s => s.unlocked).length}/{skills.length}</span>
+            </div>
+            <div className="skill-nodes">
+              {skills.map(skill => (
+                <button
+                  key={skill.id}
+                  className={`skill-node ${skill.unlocked ? 'skill-node--unlocked' : 'skill-node--locked'}`}
+                  onClick={() => !skill.unlocked && handleActivate(skill.id)}
+                  disabled={skill.unlocked || activating === skill.id}
+                  title={`消耗 ${skill.cost} 点`}
+                >
+                  <div className="skill-node-name">{skill.name}</div>
+                  <div className="skill-node-tier">阶{skill.tier}</div>
+                  {skill.unlocked && <div className="skill-node-check">✓</div>}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {Object.keys(branches).length === 0 && (
+        <div className="empty-state">
+          <p>威权达到40后将解锁技能树</p>
+          <p style={{ fontSize: '12px', marginTop: '8px', color: 'var(--color-text-muted)' }}>
+            当前威权不足，请先通过诏书和召对提升威权
+          </p>
+        </div>
+      )}
     </div>
   )
 }
 
 function BuildingTab({ campaignId }: { campaignId: string }) {
+  const [buildings, setBuildings] = useState<{
+    buildings: { id: string; name: string; level: number; effect_str: string; constructed: boolean; cost: number }[]
+    total_slots: number
+  } | null>(null)
+  const [constructing, setConstructing] = useState(false)
+
+  useEffect(() => {
+    if (!campaignId) return
+    api.getBuildings(campaignId).then(res => {
+      const data = (res as any).buildings
+      setBuildings(data)
+    }).catch(() => {
+      setBuildings({ buildings: [], total_slots: 5 })
+    })
+  }, [campaignId])
+
+  const handleConstruct = async (buildingId: string) => {
+    setConstructing(true)
+    try {
+      await api.construct(campaignId, buildingId)
+      const res = await api.getBuildings(campaignId)
+      setBuildings((res as any).buildings)
+    } catch (e) {
+      console.error(e)
+    }
+    setConstructing(false)
+  }
+
+  const buildingList = buildings?.buildings || []
+  const totalSlots = buildings?.total_slots || 5
+
   return (
     <div className="fade-in">
-      <div className="empty-state">
-        建筑系统加载中（需先完成API）...
+      <div className="buildings-header">
+        <span className="buildings-slots">建筑槽位: {buildingList.filter(b => b.constructed).length}/{totalSlots}</span>
       </div>
+
+      <div className="buildings-grid">
+        {buildingList.map(b => (
+          <div key={b.id} className={`building-card ${b.constructed ? 'building-card--built' : ''}`}>
+            <div className="building-card__header">
+              <span className="building-card__name">{b.name}</span>
+              {b.constructed && <span className="building-card__level">Lv.{b.level}</span>}
+            </div>
+            <div className="building-card__effect">{b.effect_str}</div>
+            {!b.constructed && (
+              <button
+                className="btn btn--primary building-card__build"
+                onClick={() => handleConstruct(b.id)}
+                disabled={constructing || buildingList.filter(x => x.constructed).length >= totalSlots}
+              >
+                {b.cost > 0 ? `建造 (${b.cost}万两)` : '建造'}
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {buildingList.length === 0 && (
+        <div className="empty-state">
+          <p>暂无建筑数据</p>
+        </div>
+      )}
     </div>
   )
 }

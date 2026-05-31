@@ -10,7 +10,7 @@ import os
 import sqlite3
 import threading
 from datetime import datetime
-from typing import Dict, List, Optional, TYPE_CHECKING, Tuple
+from typing import Dict, List, Optional, TYPE_CHECKING, Tuple, Any
 
 if TYPE_CHECKING:
     from han_sim.models import GameState
@@ -369,6 +369,7 @@ class GameDB:
                 fail_condition TEXT NOT NULL DEFAULT '',
                 resolution_summary TEXT NOT NULL DEFAULT '',
                 last_advance_turn INTEGER NOT NULL DEFAULT 0,
+                deadline_turn INTEGER NOT NULL DEFAULT 0,
                 closed_turn INTEGER,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP

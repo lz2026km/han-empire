@@ -7,7 +7,7 @@
 打 onefile（单文件，启动慢）：
     pyinstaller --onefile HanEmpireSim.spec
 
-产物：dist/HanEmpireSim/
+产物：dist/HanEmpireSim/HanEmpireSim.exe
 """
 
 from PyInstaller.utils.hooks import collect_all, collect_submodules
@@ -45,6 +45,8 @@ hiddenimports = (
     + collect_submodules("fastapi")
     + collect_submodules("anyio")
     + collect_submodules("starlette")
+    + collect_submodules("flask")
+    + collect_submodules("flask_cors")
     + [
         "han_sim",
         "han_sim.cli.terminal",
@@ -58,6 +60,8 @@ hiddenimports = (
         "uvicorn.protocols.websockets.auto",
         "uvicorn.lifespan",
         "uvicorn.lifespan.on",
+        "PIL._imaging",
+        "sqlalchemy.sql.defaults",
     ]
 )
 
@@ -70,6 +74,7 @@ datas = (
     + tree_datas("web/public", "web/public", exclude_parts={"_backup_rgb", "_original_before_cutout"})
     + [
         ("content", "content"),
+        (str(Path(__file__).parent / "content"), "content"),
     ]
 )
 
@@ -119,6 +124,9 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=None,
+    version=None,
+    resource_type=None,
 )
 
 coll = COLLECT(

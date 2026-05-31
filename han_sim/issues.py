@@ -607,7 +607,7 @@ def apply_issue_inertia_and_ongoing(
 
     for row in active:
         issue_id = int(row["id"])
-        bar = int(row["progress"])
+        bar = int(row["bar_value"])
         inertia = int(row.get("inertia", 0))
 
         # 1) inertia 漂移
@@ -638,63 +638,63 @@ def apply_issue_inertia_and_ongoing(
                 row = db.conn.execute("SELECT * FROM issues WHERE id=?", (issue_id,)).fetchone()
                 if row is None:
                     continue
-                bar = int(row["progress"])
+                bar = int(row["bar_value"])
 
-        # 2) ongoing_effects
-        ongoing = json.loads(row.get("ongoing_effects") or "{}")
-        if not ongoing:
-            continue
-        # 折扣系数
-        if bar >= 80:
-            scale = 0.3
-        elif bar >= 40:
-            scale = 0.6
-        else:
-            scale = 1.0
-
-        metric_part: Dict[str, int] = {}
-        for k, v in (ongoing.get("metrics") or {}).items():
-            try:
-                raw = int(v)
-            except (TypeError, ValueError):
+            # 2) ongoing_effects
+            ongoing = json.loads(row.get("ongoing_effects") or "{}")
+            if not ongoing:
                 continue
-            if raw == 0:
-                continue
-            scaled = int(round(raw * scale))
-            if scaled == 0:
-                continue
-            cap = 5  # 每月最多 +/-5
-            already = period_metric_acc.get(k, 0)
-            remaining = cap - abs(already)
-            if remaining <= 0:
-                continue
-            if scaled > 0:
-                allowed = min(scaled, remaining)
+            # 折扣系数
+            if bar >= 80:
+                scale = 0.3
+            elif bar >= 40:
+                scale = 0.6
             else:
-                allowed = max(scaled, -remaining)
-            if allowed == 0:
-                continue
-            state.metrics[k] = int(state.metrics.get(k, 0)) + allowed
-            period_metric_acc[k] = already + allowed
-            metric_part[k] = allowed
+                scale = 1.0
 
-        economy_part = _apply_economy_list(db, state, ongoing.get("economy") or [])
+            metric_part: Dict[str, int] = {}
+            for k, v in (ongoing.get("metrics") or {}).items():
+                try:
+                    raw = int(v)
+                except (TypeError, ValueError):
+                    continue
+                if raw == 0:
+                    continue
+                scaled = int(round(raw * scale))
+                if scaled == 0:
+                    continue
+                cap = 5  # 每月最多 +/-5
+                already = period_metric_acc.get(k, 0)
+                remaining = cap - abs(already)
+                if remaining <= 0:
+                    continue
+                if scaled > 0:
+                    allowed = min(scaled, remaining)
+                else:
+                    allowed = max(scaled, -remaining)
+                if allowed == 0:
+                    continue
+                state.metrics[k] = int(state.metrics.get(k, 0)) + allowed
+                period_metric_acc[k] = already + allowed
+                metric_part[k] = allowed
 
-        if metric_part or economy_part:
-            db.conn.execute(
-                """
-                INSERT INTO issue_advances (
-                    issue_id, turn, trigger_kind, delta_bar,
-                    from_value, to_value, narrative, metric_delta
-                ) VALUES (?, ?, 'ongoing', 0, ?, ?, ?, ?)
-                """,
-                (
-                    issue_id, state.turn, bar, bar,
-                    f"持续效果落账 (折扣 {int(scale*100)}%)",
-                    json.dumps({"metrics": metric_part, "economy": economy_part}, ensure_ascii=False),
-                ),
-            )
-            db.conn.commit()
+            economy_part = _apply_economy_list(db, state, ongoing.get("economy") or [])
+
+            if metric_part or economy_part:
+                db.conn.execute(
+                    """
+                    INSERT INTO issue_advances (
+                        issue_id, turn, trigger_kind, delta_bar,
+                        from_value, to_value, narrative, metric_delta
+                    ) VALUES (?, ?, 'ongoing', 0, ?, ?, ?, ?)
+                    """,
+                    (
+                        issue_id, state.turn, bar, bar,
+                        f"持续效果落账 (折扣 {int(scale*100)}%)",
+                        json.dumps({"metrics": metric_part, "economy": economy_part}, ensure_ascii=False),
+                    ),
+                )
+                db.conn.commit()
 
     state.clamp()
 

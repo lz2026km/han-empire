@@ -3,7 +3,7 @@
    ============================================= */
 import { useState, useCallback } from 'react'
 import { api } from '../api'
-import type { GameState, MinisterStats, FactionStats, Campaign } from '../types'
+import type { GameState, MinisterStats, FactionStats } from '../types'
 
 export function useGame() {
   const [campaignId, setCampaignId] = useState<string | null>(null)

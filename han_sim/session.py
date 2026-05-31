@@ -78,6 +78,10 @@ class GameSession:
         )
         session._init_db(content)
         init_conv_table(session.db)
+        from han_sim import issues, skills, context
+        issues.bind_content(content)
+        skills.bind_content(content)
+        context.bind_content(content)
         return session
 
     def _init_db(self, content: GameContent) -> None:

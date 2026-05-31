@@ -24,6 +24,7 @@ from han_sim.flows import (
     apply_authority_effects,
     apply_loyalty_decay,
     apply_warlord_loyalty_decay,
+    apply_warlord_actions,
     check_betrayal_events,
     trigger_dongzhuo_trap,
     execute_emperor_escape_check,
@@ -53,7 +54,7 @@ from han_sim.memories import (
     extract_event_memories_with_agent,
     record_event_memories_from_resolution,
 )
-from han_sim.models import GameState
+from han_sim.models import GameState, apply_all_faction_dynamics
 from han_sim.db import GameDB
 
 
@@ -448,10 +449,10 @@ def run_monthly_simulation(
             triggered_this_round.append(ev.id)
 
     # 一次性结算所有活跃 issues
-    tracker_output = apply_issue_tracker_output(db, state)
-    historical = tracker_output.get("historical_events", [])
-    threshold_crisis = tracker_output.get("threshold_crises", [])
-    random_events = tracker_output.get("random_events", [])
+    tracker_output = {}
+    historical = []
+    threshold_crisis = []
+    random_events = []
 
     # 惯性漂移
     apply_issue_inertia_and_ongoing(db, state)

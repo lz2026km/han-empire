@@ -821,7 +821,6 @@ def apply_loyalty_decay(state: GameState, db: GameDB) -> List[Dict]:
     for char in characters:
         if char.get("status") != "active":
             continue
-        lid = char["id"]
         power_id = char.get("power_id", "")
         loyalty = char.get("loyalty", 50)
 
