@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- 朱红 → 玄黑 → 古金 渐变 -->
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a0a0a"/>
+      <stop offset="40%" stop-color="#3a0a0a"/>
+      <stop offset="100%" stop-color="#0a0506"/>
+    </linearGradient>
+    <linearGradient id="hall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8b1a1a"/>
+      <stop offset="100%" stop-color="#4a0a0a"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4a548"/>
+      <stop offset="100%" stop-color="#7a5a1a"/>
+    </linearGradient>
+    <radialGradient id="lantern" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#ffcc66"/>
+      <stop offset="60%" stop-color="#cc1a1a"/>
+      <stop offset="100%" stop-color="#3a0a0a" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="tile" width="80" height="40" patternUnits="userSpaceOnUse">
+      <rect width="80" height="40" fill="#2a0808"/>
+      <circle cx="20" cy="20" r="2" fill="#7a5a1a" opacity="0.4"/>
+      <circle cx="60" cy="20" r="2" fill="#7a5a1a" opacity="0.4"/>
+    </pattern>
+  </defs>
+
+  <!-- 远景天幕 -->
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+
+  <!-- 远山剪影（水墨） -->
+  <path d="M 0 600 L 200 480 L 400 520 L 600 440 L 800 500 L 1000 420 L 1200 480 L 1400 440 L 1600 500 L 1800 460 L 1920 500 L 1920 1080 L 0 1080 Z" fill="#0a0303" opacity="0.7"/>
+
+  <!-- 未央宫大殿屋顶（歇山顶 + 飞檐） -->
+  <path d="M 100 280 L 1820 280 L 1900 380 L 20 380 Z" fill="url(#hall)"/>
+  <!-- 屋脊瓦垄 -->
+  <g stroke="#2a0808" stroke-width="2" opacity="0.6">
+    <line x1="120" y1="290" x2="1800" y2="290"/>
+    <line x1="140" y1="300" x2="1780" y2="300"/>
+    <line x1="160" y1="310" x2="1760" y2="310"/>
+  </g>
+  <!-- 飞檐翘角 -->
+  <path d="M 20 380 Q 0 360 -40 350 L -20 400 Z" fill="url(#hall)"/>
+  <path d="M 1900 380 Q 1920 360 1960 350 L 1940 400 Z" fill="url(#hall)"/>
+
+  <!-- 屋檐斗拱层 -->
+  <rect x="0" y="380" width="1920" height="40" fill="url(#gold)" opacity="0.5"/>
+  <g fill="#7a5a1a">
+    <rect x="40" y="385" width="30" height="30"/>
+    <rect x="160" y="385" width="30" height="30"/>
+    <rect x="280" y="385" width="30" height="30"/>
+    <rect x="400" y="385" width="30" height="30"/>
+    <rect x="520" y="385" width="30" height="30"/>
+    <rect x="640" y="385" width="30" height="30"/>
+    <rect x="760" y="385" width="30" height="30"/>
+    <rect x="880" y="385" width="30" height="30"/>
+    <rect x="1000" y="385" width="30" height="30"/>
+    <rect x="1120" y="385" width="30" height="30"/>
+    <rect x="1240" y="385" width="30" height="30"/>
+    <rect x="1360" y="385" width="30" height="30"/>
+    <rect x="1480" y="385" width="30" height="30"/>
+    <rect x="1600" y="385" width="30" height="30"/>
+    <rect x="1720" y="385" width="30" height="30"/>
+    <rect x="1840" y="385" width="30" height="30"/>
+  </g>
+
+  <!-- 朱红立柱 × 8 -->
+  <g fill="url(#hall)">
+    <rect x="120" y="420" width="50" height="500"/>
+    <rect x="320" y="420" width="50" height="500"/>
+    <rect x="520" y="420" width="50" height="500"/>
+    <rect x="720" y="420" width="50" height="500"/>
+    <rect x="920" y="420" width="50" height="500"/>
+    <rect x="1120" y="420" width="50" height="500"/>
+    <rect x="1320" y="420" width="50" height="500"/>
+    <rect x="1520" y="420" width="50" height="500"/>
+    <rect x="1720" y="420" width="50" height="500"/>
+  </g>
+  <!-- 柱头莲花座 -->
+  <g fill="url(#gold)">
+    <circle cx="145" cy="420" r="18"/>
+    <circle cx="345" cy="420" r="18"/>
+    <circle cx="545" cy="420" r="18"/>
+    <circle cx="745" cy="420" r="18"/>
+    <circle cx="945" cy="420" r="18"/>
+    <circle cx="1145" cy="420" r="18"/>
+    <circle cx="1345" cy="420" r="18"/>
+    <circle cx="1545" cy="420" r="18"/>
+    <circle cx="1745" cy="420" r="18"/>
+  </g>
+
+  <!-- 中央藻井（古金 + 龙纹） -->
+  <rect x="700" y="100" width="520" height="180" fill="url(#gold)" opacity="0.3" stroke="#7a5a1a" stroke-width="3"/>
+  <g fill="none" stroke="#7a5a1a" stroke-width="2" opacity="0.8">
+    <circle cx="960" cy="190" r="80"/>
+    <circle cx="960" cy="190" r="60"/>
+    <circle cx="960" cy="190" r="40"/>
+    <circle cx="960" cy="190" r="20"/>
+    <path d="M 960 110 Q 990 150 960 190 Q 930 230 960 270"/>
+    <path d="M 880 190 Q 920 160 960 190 Q 1000 220 1040 190"/>
+  </g>
+
+  <!-- 御座（龙椅） -->
+  <rect x="850" y="700" width="220" height="100" fill="url(#gold)"/>
+  <rect x="830" y="650" width="260" height="60" fill="#7a5a1a"/>
+  <path d="M 830 650 L 830 600 L 870 600 L 870 620 L 1050 620 L 1050 600 L 1090 600 L 1090 650 Z" fill="#5a3a0a"/>
+
+  <!-- 玄黑地砖 -->
+  <rect x="0" y="900" width="1920" height="180" fill="url(#tile)"/>
+
+  <!-- 大红灯笼 × 4 -->
+  <g>
+    <circle cx="280" cy="500" r="50" fill="url(#lantern)"/>
+    <line x1="280" y1="450" x2="280" y2="450" stroke="#7a5a1a" stroke-width="3"/>
+    <circle cx="720" cy="500" r="50" fill="url(#lantern)"/>
+    <circle cx="1200" cy="500" r="50" fill="url(#lantern)"/>
+    <circle cx="1640" cy="500" r="50" fill="url(#lantern)"/>
+  </g>
+
+  <!-- 标题水印（淡） -->
+  <text x="50%" y="50%" font-family="serif" font-size="48" fill="#d4a548" opacity="0.15" text-anchor="middle" dominant-baseline="middle">未央宫朝会</text>
+</svg>

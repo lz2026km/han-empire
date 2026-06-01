@@ -1560,7 +1560,7 @@ input:focus, select:focus {
   background-repeat: no-repeat;
 }
 
-.modal-bg-state { background-image: url("/bg_state.png"); }
+.modal-bg-state { background-image: url("/bg_state.svg"); }
 .modal-bg-chat { background: rgba(244, 237, 221, 0.86) !important; }
 .modal-bg-edict { background: rgba(255, 255, 255, 0.8) !important; }
 
@@ -1632,14 +1632,14 @@ input:focus, select:focus {
 
 /* ---- 朝堂抽屉背景 ---- */
 .court-drawer {
-  background-image: url("/bg_chat.webp");
+  background-image: url("/bg_chat_dark.svg");
   background-size: cover;
   background-position: center;
 }
 
 /* ---- 后宫抽屉 ---- */
 .harem-drawer {
-  background-image: url("/bg_harem.png");
+  background-image: url("/bg_harem.svg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -2118,7 +2118,7 @@ input:focus, select:focus {
 }
 
 .modal-bg-state {
-  background-image: url("/bg_state.png");
+  background-image: url("/bg_state.svg");
 }
 
 .modal-bg-chat {
@@ -2176,14 +2176,14 @@ input:focus, select:focus {
 
 /* 朝堂抽屉背景 */
 .court-drawer {
-  background-image: url("/bg_chat.webp");
+  background-image: url("/bg_chat_dark.svg");
   background-size: cover;
   background-position: center;
 }
 
 /* 后宫独立弹窗背景：寝宫风格 */
 .harem-drawer {
-  background-image: url("/bg_harem.png");
+  background-image: url("/bg_harem.svg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="silk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8b1a1a"/>
+      <stop offset="100%" stop-color="#3a0a0a"/>
+    </linearGradient>
+    <radialGradient id="candle" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#ffaa66"/>
+      <stop offset="50%" stop-color="#cc1a1a"/>
+      <stop offset="100%" stop-color="#3a0a0a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="#2a0a0a"/>
+  <!-- 朱红纱幔多层 -->
+  <g opacity="0.6">
+    <path d="M 0 0 L 200 200 L 400 50 L 600 250 L 800 100 L 1000 280 L 1200 80 L 1400 250 L 1600 60 L 1920 220 L 1920 0 Z" fill="url(#silk)"/>
+    <path d="M 0 1080 L 200 900 L 400 1050 L 600 850 L 800 1000 L 1000 820 L 1200 1020 L 1400 850 L 1600 1040 L 1920 880 L 1920 1080 Z" fill="url(#silk)"/>
+  </g>
+  <!-- 珠帘（点状） -->
+  <g fill="#d4a548" opacity="0.5">
+    <circle cx="200" cy="0" r="3"/>
+    <circle cx="200" cy="40" r="3"/>
+    <circle cx="200" cy="80" r="3"/>
+    <circle cx="200" cy="120" r="3"/>
+    <circle cx="200" cy="160" r="3"/>
+    <circle cx="200" cy="200" r="3"/>
+    <circle cx="200" cy="240" r="3"/>
+    <circle cx="200" cy="280" r="3"/>
+    <circle cx="200" cy="320" r="3"/>
+    <circle cx="200" cy="360" r="3"/>
+    <circle cx="200" cy="400" r="3"/>
+    <circle cx="200" cy="440" r="3"/>
+    <circle cx="200" cy="480" r="3"/>
+    <circle cx="200" cy="520" r="3"/>
+    <circle cx="200" cy="560" r="3"/>
+    <circle cx="200" cy="600" r="3"/>
+    <circle cx="200" cy="640" r="3"/>
+    <circle cx="200" cy="680" r="3"/>
+    <circle cx="200" cy="720" r="3"/>
+    <circle cx="200" cy="760" r="3"/>
+    <circle cx="480" cy="0" r="3"/>
+    <circle cx="480" cy="40" r="3"/>
+    <circle cx="480" cy="80" r="3"/>
+    <circle cx="480" cy="120" r="3"/>
+    <circle cx="480" cy="160" r="3"/>
+    <circle cx="480" cy="200" r="3"/>
+    <circle cx="480" cy="240" r="3"/>
+    <circle cx="480" cy="280" r="3"/>
+    <circle cx="480" cy="320" r="3"/>
+    <circle cx="480" cy="360" r="3"/>
+    <circle cx="480" cy="400" r="3"/>
+    <circle cx="480" cy="440" r="3"/>
+    <circle cx="480" cy="480" r="3"/>
+    <circle cx="480" cy="520" r="3"/>
+    <circle cx="480" cy="560" r="3"/>
+    <circle cx="480" cy="600" r="3"/>
+    <circle cx="480" cy="640" r="3"/>
+    <circle cx="480" cy="680" r="3"/>
+    <circle cx="480" cy="720" r="3"/>
+    <circle cx="480" cy="760" r="3"/>
+    <circle cx="760" cy="0" r="3"/>
+    <circle cx="760" cy="40" r="3"/>
+    <circle cx="760" cy="80" r="3"/>
+    <circle cx="760" cy="120" r="3"/>
+    <circle cx="760" cy="160" r="3"/>
+    <circle cx="760" cy="200" r="3"/>
+    <circle cx="760" cy="240" r="3"/>
+    <circle cx="760" cy="280" r="3"/>
+    <circle cx="760" cy="320" r="3"/>
+    <circle cx="760" cy="360" r="3"/>
+    <circle cx="760" cy="400" r="3"/>
+    <circle cx="760" cy="440" r="3"/>
+    <circle cx="760" cy="480" r="3"/>
+    <circle cx="760" cy="520" r="3"/>
+    <circle cx="760" cy="560" r="3"/>
+    <circle cx="760" cy="600" r="3"/>
+    <circle cx="760" cy="640" r="3"/>
+    <circle cx="760" cy="680" r="3"/>
+    <circle cx="760" cy="720" r="3"/>
+    <circle cx="760" cy="760" r="3"/>
+    <circle cx="1040" cy="0" r="3"/>
+    <circle cx="1040" cy="40" r="3"/>
+    <circle cx="1040" cy="80" r="3"/>
+    <circle cx="1040" cy="120" r="3"/>
+    <circle cx="1040" cy="160" r="3"/>
+    <circle cx="1040" cy="200" r="3"/>
+    <circle cx="1040" cy="240" r="3"/>
+    <circle cx="1040" cy="280" r="3"/>
+    <circle cx="1040" cy="320" r="3"/>
+    <circle cx="1040" cy="360" r="3"/>
+    <circle cx="1040" cy="400" r="3"/>
+    <circle cx="1040" cy="440" r="3"/>
+    <circle cx="1040" cy="480" r="3"/>
+    <circle cx="1040" cy="520" r="3"/>
+    <circle cx="1040" cy="560" r="3"/>
+    <circle cx="1040" cy="600" r="3"/>
+    <circle cx="1040" cy="640" r="3"/>
+    <circle cx="1040" cy="680" r="3"/>
+    <circle cx="1040" cy="720" r="3"/>
+    <circle cx="1040" cy="760" r="3"/>
+    <circle cx="1320" cy="0" r="3"/>
+    <circle cx="1320" cy="40" r="3"/>
+    <circle cx="1320" cy="80" r="3"/>
+    <circle cx="1320" cy="120" r="3"/>
+    <circle cx="1320" cy="160" r="3"/>
+    <circle cx="1320" cy="200" r="3"/>
+    <circle cx="1320" cy="240" r="3"/>
+    <circle cx="1320" cy="280" r="3"/>
+    <circle cx="1320" cy="320" r="3"/>
+    <circle cx="1320" cy="360" r="3"/>
+    <circle cx="1320" cy="400" r="3"/>
+    <circle cx="1320" cy="440" r="3"/>
+    <circle cx="1320" cy="480" r="3"/>
+    <circle cx="1320" cy="520" r="3"/>
+    <circle cx="1320" cy="560" r="3"/>
+    <circle cx="1320" cy="600" r="3"/>
+    <circle cx="1320" cy="640" r="3"/>
+    <circle cx="1320" cy="680" r="3"/>
+    <circle cx="1320" cy="720" r="3"/>
+    <circle cx="1320" cy="760" r="3"/>
+    <circle cx="1600" cy="0" r="3"/>
+    <circle cx="1600" cy="40" r="3"/>
+    <circle cx="1600" cy="80" r="3"/>
+    <circle cx="1600" cy="120" r="3"/>
+    <circle cx="1600" cy="160" r="3"/>
+    <circle cx="1600" cy="200" r="3"/>
+    <circle cx="1600" cy="240" r="3"/>
+    <circle cx="1600" cy="280" r="3"/>
+    <circle cx="1600" cy="320" r="3"/>
+    <circle cx="1600" cy="360" r="3"/>
+    <circle cx="1600" cy="400" r="3"/>
+    <circle cx="1600" cy="440" r="3"/>
+    <circle cx="1600" cy="480" r="3"/>
+    <circle cx="1600" cy="520" r="3"/>
+    <circle cx="1600" cy="560" r="3"/>
+    <circle cx="1600" cy="600" r="3"/>
+    <circle cx="1600" cy="640" r="3"/>
+    <circle cx="1600" cy="680" r="3"/>
+    <circle cx="1600" cy="720" r="3"/>
+    <circle cx="1600" cy="760" r="3"/>
+  </g>
+  <!-- 红烛高照 × 3 -->
+  <g>
+    <circle cx="400" cy="500" r="150" fill="url(#candle)"/>
+    <circle cx="960" cy="400" r="200" fill="url(#candle)"/>
+    <circle cx="1520" cy="500" r="150" fill="url(#candle)"/>
+  </g>
+  <!-- 漆器（圆） -->
+  <g>
+    <ellipse cx="500" cy="850" rx="60" ry="20" fill="#1a0505"/>
+    <rect x="480" y="800" width="40" height="50" fill="#1a0505"/>
+    <ellipse cx="1420" cy="850" rx="60" ry="20" fill="#1a0505"/>
+    <rect x="1400" y="800" width="40" height="50" fill="#1a0505"/>
+  </g>
+  <!-- 铜镜（圆+反光） -->
+  <circle cx="960" cy="600" r="80" fill="#5a4a3a" stroke="#d4a548" stroke-width="3"/>
+  <circle cx="960" cy="600" r="60" fill="#3a3a3a"/>
+  <text x="50%" y="50%" font-family="serif" font-size="48" fill="#d4a548" opacity="0.2" text-anchor="middle">后宫寝宫</text>
+</svg>

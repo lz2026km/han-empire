@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="ink" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8d8a8"/>
+      <stop offset="100%" stop-color="#a89878"/>
+    </linearGradient>
+  </defs>
+  <!-- 宣纸底 -->
+  <rect width="1920" height="1080" fill="url(#ink)"/>
+  <!-- 远山层叠（水墨淡） -->
+  <g fill="#3a3a3a" opacity="0.4">
+    <path d="M 0 600 L 300 500 L 500 580 L 700 480 L 900 560 L 1100 460 L 1300 540 L 1500 480 L 1700 560 L 1920 500 L 1920 1080 L 0 1080 Z"/>
+  </g>
+  <g fill="#1a1a1a" opacity="0.5">
+    <path d="M 0 700 L 200 620 L 400 680 L 600 600 L 800 680 L 1000 600 L 1200 680 L 1400 600 L 1600 680 L 1800 620 L 1920 680 L 1920 1080 L 0 1080 Z"/>
+  </g>
+  <!-- 中景山（更浓） -->
+  <g fill="#0a0a0a" opacity="0.7">
+    <path d="M 0 850 L 250 780 L 500 830 L 750 770 L 1000 820 L 1250 760 L 1500 810 L 1750 780 L 1920 820 L 1920 1080 L 0 1080 Z"/>
+  </g>
+  <!-- 江河（浅水墨线） -->
+  <path d="M 0 950 Q 480 920 960 950 T 1920 940" stroke="#5a5a5a" stroke-width="3" fill="none" opacity="0.5"/>
+  <path d="M 0 1000 Q 480 970 960 1000 T 1920 990" stroke="#3a3a3a" stroke-width="2" fill="none" opacity="0.4"/>
+  <!-- 孤舟（点缀） -->
+  <g fill="#1a1a1a">
+    <ellipse cx="500" cy="970" rx="20" ry="5"/>
+    <rect x="495" y="950" width="2" height="20"/>
+    <path d="M 497 950 L 510 955 L 497 960 Z" fill="#3a3a3a"/>
+  </g>
+  <!-- 古木（远景） -->
+  <g fill="#0a0a0a">
+    <ellipse cx="200" cy="780" rx="30" ry="80"/>
+    <rect x="195" y="780" width="10" height="100"/>
+    <ellipse cx="1700" cy="780" rx="30" ry="80"/>
+    <rect x="1695" y="780" width="10" height="100"/>
+  </g>
+  <!-- 飞鸟（点） -->
+  <g stroke="#0a0a0a" stroke-width="1" fill="none">
+    <path d="M 600 400 Q 605 395 610 400 Q 615 395 620 400"/>
+    <path d="M 1200 350 Q 1205 345 1210 350 Q 1215 345 1220 350"/>
+    <path d="M 800 450 Q 805 445 810 450 Q 815 445 820 450"/>
+  </g>
+  <text x="50%" y="50%" font-family="serif" font-size="64" fill="#0a0a0a" opacity="0.3" text-anchor="middle">汉室江山</text>
+</svg>
