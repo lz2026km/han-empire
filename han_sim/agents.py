@@ -14,6 +14,7 @@ except ImportError:
 from han_sim.llm_config import load_llm_config
 from han_sim.llm_model import create_chat_model, extract_agent_text, verify_llm_available
 from han_sim.models import GameState
+from han_sim.exceptions import LLMUnavailable
 
 
 def _tlog(msg: str) -> None:
@@ -22,8 +23,14 @@ def _tlog(msg: str) -> None:
     print(f"[{time.strftime('%H:%M:%S')}] {msg}")
 
 
-def create_minister_agent(minister: Dict, state: GameState, memory_brief: str = "", loyalty_ctx: str = "") -> Agent:
-    """创建大臣对话 agent。memory_brief 会注入到 system prompt 末尾。"""
+def create_minister_agent(minister: Dict, state: GameState, memory_brief: str = "", loyalty_ctx: str = "", campaign_id: str = "default", use_tools: bool = True) -> Agent:
+    """创建大臣对话 agent。memory_brief 会注入到 system prompt 末尾。
+
+    v2.0.0 Phase 4.3: 加多轮对话 + 4 个 tool_call
+    - session_id: 稳定键, 同一大臣多次召对共享历史
+    - add_history_to_context=True + num_history_responses=10: 保留 10 轮对话
+    - tools=[query_state/propose_decree/estimate_resistance/suggest_audience]
+    """
     import os as _os
     _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
     llm_cfg = load_llm_config(
@@ -65,16 +72,39 @@ def create_minister_agent(minister: Dict, state: GameState, memory_brief: str = 
     if memory_brief:
         system_prompt += memory_brief + "\n\n"
 
-    system_prompt += "请用符合你人物身份的方式回应天子。"
+    system_prompt += (
+        "请用符合你人物身份的方式回应天子。\n\n"
+        "【可调用的 tool】\n"
+        "- query_state: 查国势(国库/威权/藩镇/民心/兵力/都城)\n"
+        "- propose_decree: 天子明示采纳时拟旨入档(必须含'奉天承运'和'钦此')\n"
+        "- estimate_resistance: 估某政策的反弹\n"
+        "- suggest_audience: 推荐应召见的大臣\n\n"
+        "【回答原则】\n"
+        "1. 召对是私语，不复述他人奏对\n"
+        "2. 回答须符合你的身份性格(忠直/谄媚/怯懦/权谋)\n"
+        "3. 涉及谋逆/党争时你可能叩头不敢直言\n"
+        "4. 重要对话结束应给天子明确建议"
+    )
 
-    if Agent is None:
-        raise LLMUnavailable("agno未安装，无法创建大臣Agent")
-    return Agent(
+    # v2.0.0 Phase 4.3: session_id + 多轮对话
+    from han_sim.agent_tools import MINISTER_TOOLS, build_minister_session_id
+    session_id = build_minister_session_id(campaign_id, minister["name"])
+
+    agent_kwargs: Dict[str, Any] = dict(
         name="大臣-" + minister["name"],
+        agent_id=f"minister-{minister['name']}",
+        session_id=session_id,
         model=create_chat_model(llm_cfg, temperature=0.7),
         instructions=[system_prompt],
+        # v2.0.0 Phase 4.3: 多轮对话 - agno 新 API
+        add_history_to_context=True,
+        num_history_responses=10,
         markdown=True,
     )
+    if use_tools and MINISTER_TOOLS:
+        agent_kwargs["tools"] = MINISTER_TOOLS
+
+    return Agent(**agent_kwargs)
 
 
 def parse_agent_json(text: str, key: str) -> Optional[Any]:

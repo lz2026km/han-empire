@@ -550,7 +550,8 @@ def chat_with_minister(campaign_id, minister_name):
     from han_sim.memories import extract_chat_memories_for_minister
 
     try:
-        agent = create_minister_agent(minister, session.state, "", "")
+        # v2.0.0 Phase 4.3: 传 campaign_id 让多轮对话 session 持久化
+        agent = create_minister_agent(minister, session.state, "", "", campaign_id=campaign_id)
         response = agent.run(message)
         text = response.content if hasattr(response, 'content') else str(response)
 
@@ -583,6 +584,74 @@ def chat_with_minister(campaign_id, minister_name):
         })
     except Exception as e:
         return jsonify({'result': f'召对失败: {str(e)}'})
+
+
+# v2.0.0 Phase 4.4: 自由对话 - 群臣廷议（多人同时发言 + 互相引用）
+@app.route('/api/campaigns/<campaign_id>/free_chat', methods=['POST'])
+def free_chat_endpoint(campaign_id):
+    """群臣廷议端点 - 天子一句话，多大臣按立场轮流回应。
+
+    请求体: {"topic": "迁都许昌是否可行", "ministers": ["曹操", "荀彧", "孔融"]}
+    返回: {"rounds": [{"minister": "曹操", "text": "..."}, ...]}
+    """
+    data = request.get_json() or {}
+    topic = data.get('topic', '').strip()
+    minister_names = data.get('ministers', [])
+
+    if not topic:
+        return jsonify({'error': 'topic 必填'}), 400
+    if not minister_names or len(minister_names) > 5:
+        return jsonify({'error': 'ministers 1-5 人'}), 400
+
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+    session = GAMES[campaign_id]
+    ministers = session.get_active_ministers()
+
+    from han_sim.agents import create_minister_agent
+
+    rounds = []
+    prior_texts = []
+    for name in minister_names:
+        minister = next((m for m in ministers if m.get('name') == name), None)
+        if not minister:
+            rounds.append({"minister": name, "text": f"（{name}不在朝中）"})
+            continue
+        try:
+            # 群臣廷议 session 共享
+            from han_sim.agent_tools import build_audience_session_id
+            sess_id = build_audience_session_id(campaign_id, topic)
+            agent = create_minister_agent(
+                minister, session.state, "",
+                loyalty_ctx=f"廷议主题: {topic}",
+                campaign_id=sess_id,
+            )
+            ctx = ""
+            if prior_texts:
+                ctx = "\n\n【前人已议】\n" + "\n".join(prior_texts[-3:])
+            prompt = f"廷议主题：{topic}\n请以你的身份立场发表意见（200字内）。{ctx}"
+            response = agent.run(prompt)
+            text = response.content if hasattr(response, 'content') else str(response)
+            rounds.append({"minister": name, "text": text})
+            prior_texts.append(f"{name}: {text[:200]}")
+        except Exception as e:
+            rounds.append({"minister": name, "text": f"（{name} 奏对失败: {e}）"})
+
+    return jsonify({"topic": topic, "rounds": rounds})
+
+
+# v2.0.0 Phase 4.4: 重置对话 session
+@app.route('/api/campaigns/<campaign_id>/chat/<minister_name>/reset', methods=['POST'])
+def reset_chat_session(campaign_id, minister_name):
+    """重置某大臣的对话历史（新朝会/新话题时用）。"""
+    from han_sim.agent_tools import build_minister_session_id
+    sess_id = build_minister_session_id(campaign_id, minister_name)
+    try:
+        from agno.memory import AgentMemory
+        AgentMemory(session_id=sess_id).clear()
+    except Exception:
+        pass
+    return jsonify({"status": "reset", "session_id": sess_id})
 
 
 @app.route('/api/campaigns/<campaign_id>/secret_orders', methods=['GET'])

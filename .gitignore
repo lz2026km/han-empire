@@ -36,3 +36,15 @@ Thumbs.db
 memory/
 output/
 CLAUDE.md
+
+# PyInstaller 打包产物 (Phase 4.5 Windows EXE)
+build/
+dist/
+*.spec.bak
+venv/
+__pycache__/
+*.pyc
+
+# Windows 错误日志
+han_empire_error.log
+runtime_llm.json
