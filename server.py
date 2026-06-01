@@ -1041,6 +1041,65 @@ def simulate_battle_api():
 
 
 # ════════════════════════════════════════════════════════════════
+# v2.1.0 Phase 6.2: 科举征辟 + 罢免流放 API
+# ════════════════════════════════════════════════════════════════
+
+@app.route('/api/civil/ranks', methods=['GET'])
+def civil_ranks_api():
+    """列出 10 级官品"""
+    from han_sim.civil_service import list_ranks
+    return jsonify({"ranks": list_ranks()})
+
+
+@app.route('/api/civil/subjects', methods=['GET'])
+def civil_subjects_api():
+    """列出科举科目"""
+    from han_sim.civil_service import list_exam_subjects
+    return jsonify({"subjects": list_exam_subjects()})
+
+
+@app.route('/api/civil/exam', methods=['POST'])
+def civil_exam_api():
+    """举行科举"""
+    from han_sim.civil_service import hold_exam
+    data = request.get_json() or {}
+    name = data.get('candidate_name', '天子')
+    year = data.get('year', 200)
+    month = data.get('month', 1)
+    intelligence = data.get('intelligence', 50)
+    result = hold_exam(name, year, month, intelligence)
+    return jsonify({"result": result.to_dict()})
+
+
+@app.route('/api/civil/dismiss', methods=['POST'])
+def civil_dismiss_api():
+    """罢免大臣"""
+    from han_sim.civil_service import dismiss_minister
+    data = request.get_json() or {}
+    name = data.get('name', '某臣')
+    reason = data.get('reason', '失职')
+    year = data.get('year', 200)
+    month = data.get('month', 1)
+    faction = data.get('faction', '忠汉派')
+    result = dismiss_minister(name, reason, year, month, faction)
+    return jsonify({"result": result.to_dict()})
+
+
+@app.route('/api/civil/exile', methods=['POST'])
+def civil_exile_api():
+    """流放大臣"""
+    from han_sim.civil_service import exile_minister
+    data = request.get_json() or {}
+    name = data.get('name', '某臣')
+    reason = data.get('reason', '谋反')
+    year = data.get('year', 200)
+    month = data.get('month', 1)
+    faction = data.get('faction', '叛逆派')
+    result = exile_minister(name, reason, year, month, faction)
+    return jsonify({"result": result.to_dict()})
+
+
+# ════════════════════════════════════════════════════════════════
 # v1.15.0 乾坤大挪移 Phase D · 后宫 API
 # ════════════════════════════════════════════════════════════════
 
