@@ -22,9 +22,10 @@ import type { SecretOrder } from './api'
 import { api } from './api'
 import { CourtLayout } from './components/CourtLayout'
 import { MinisterPortrait } from './components/MinisterPortrait'
+import { ConsortTab } from './components/ConsortTab'
 import './styles/app.css'
 
-type Tab = 'overview' | 'decree' | 'ministers' | 'factions' | 'skills' | 'buildings' | 'log' | 'chat' | 'map' | 'orders'
+type Tab = 'overview' | 'decree' | 'ministers' | 'factions' | 'skills' | 'buildings' | 'log' | 'chat' | 'map' | 'orders' | 'consort'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('overview')
@@ -163,6 +164,7 @@ export default function App() {
     { id: 'map', label: '🗺️ 地图' },
     { id: 'orders', label: '🔐 密令' },
     { id: 'log', label: '📋 日志' },
+    { id: 'consort', label: '🏯 后宫' },
   ]
 
   return (
@@ -247,6 +249,9 @@ export default function App() {
                 )}
                 {activeTab === 'log' && (
                   <LogTab entries={log} />
+                )}
+                {activeTab === 'consort' && campaignId && (
+                  <ConsortTab campaignId={campaignId} />
                 )}
               </SceneTransition>
             </>

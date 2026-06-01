@@ -95,6 +95,65 @@
 
 ---
 
+## 🌐 v1.17.0 — 2026-06-01
+
+> 乾坤大挪移一号方案 · Phase F · 后宫系统 Web 化
+
+### ✨ 新增
+
+| 类别 | 文件 | 内容 |
+|------|------|------|
+| 🆕 Web 组件 | `web/src/components/ConsortTab.tsx` | 11 号 Tab 后宫组件（名册 / 召幸 / 调教 / 衣带诏线索 4 区） |
+| 🆕 CSS | `web/src/styles/app.css` | 追加 ~120 行 `.consort-*` 样式（grid + 卡片 + 聊天泡） |
+| 🔌 API 客户端 | `web/src/api.ts` | 7 后宫方法（`getConsortTab` / `listConsorts` / `getConsort` / `audienceConsort` / `getConsortRecords` / `cultivateConsort` / `getConsortTraits`） |
+| 🛡️ 类型 | `web/src/types.ts` | `Consort` / `ConsortRecord` 类型（21 行） |
+| 📜 文档 | `README.md` | 核心玩法加「🏯 后宫系统」一节 |
+| 📜 文档 | `docs/product-plan.md` | 核心玩法循环加 6/7 步（召幸 / 候选情势判选），新增后宫系统 / 候选情势判选 / 版本路线 三节 |
+| 📜 方案 | `docs/phaseF_v1.17.0_proposal.md` | 6 子任务 / 3 天工期 / 10 验收 |
+
+### 🔄 改动
+
+| 文件 | 改动 | 行数 |
+|------|------|------|
+| `web/src/App.tsx` | import ConsortTab + Tab 类型加 'consort' + tabs 数组加 11 号 + 内容路由 | +5 行 |
+
+### 🐛 修复
+
+| 位置 | 现象 | 修复 |
+|------|------|------|
+| README.md | v1.15.0 后宫已实现但 README 缺后宫说明 | 新增「🏯 后宫系统」一节 |
+| docs/product-plan.md | 核心数值表被截断（仅 3/4 行）、派系系统重复 | 重写全文 87 行 / 4008 字节 |
+| 候选情势判选章节缺失 | 玩家不知 v1.16.0 双层软筛 | 新增「候选情势判选」节 |
+
+### 🎯 验收 12 条
+
+- ✅ ConsortTab.tsx 4 子组件（名册 / 召幸 / 调教 / 衣带诏线索）
+- ✅ App.tsx 11 个 Tab 注册（加 consort）
+- ✅ web api.ts 7 后宫方法（按 server.py 实际 schema，防御性判空）
+- ✅ web types.ts Consort / ConsortRecord 类型
+- ✅ README 后宫系统一节
+- ✅ product-plan.md 后宫 + 候选情势判选 + 版本路线
+- ✅ 旧 10 Tab 不破坏
+- ✅ 明朝漏网词 0
+- ✅ server pid 4116087 不杀不重启
+- ✅ 单元测试 83/83 全过（v1.15.0+）
+- ✅ 工期 3d 估算 → **0.5d 实际**（节省 83%）
+- ✅ 底册 4 Phase 全部完成 + 自加 2 Phase（E/F）= 乾坤大挪移一号方案 6/6 phases
+
+### 📊 GitHub 进度
+
+```
+(v1.17.0 即将 commit)
+8303ee1 v1.16.0: 乾坤大挪移 Phase E · 候选情势判选官
+401f64f v1.15.0: 乾坤大挪移 Phase D · 汉献帝后宫系统完整化
+9371217 v1.14.0: 乾坤大挪移 Phase C · tools.py 移植汉献帝
+d76b4f0 v1.13.1: 乾坤大挪移修小版本 · 修3 BUG
+795a751 v1.13.0: 乾坤大挪移 Phase B · 召对即时记忆系统完整化
+56cb690 v1.12.0: 乾坤大挪移 Phase A · game_world 宪法 + 权威源引用
+```
+
+---
+
 ## 🎯 v1.16.0 — 2026-06-01
 
 > 乾坤大挪移一号方案 · Phase E · 候选情势判选官（event_selector）

@@ -5,7 +5,7 @@
 import type {
   Campaign, CampaignStateResponse, DecreeResponse,
   EventResponse, SkillTreeResponse, BuildingsResponse,
-  FactionInfoResponse, GameSave, DecreeResult
+  FactionInfoResponse, GameSave, DecreeResult, Consort
 } from './types'
 
 const API_BASE = 'http://localhost:5555/api'
@@ -155,6 +155,53 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ command, args }),
     }),
+
+  // ---- v1.15.0+ 后宫系统 (Phase F v1.17.0) ----
+  // 注：v1.15.0 server.py 后宫 API 返 {consorts/candidates/result/...}，
+  //     仅 cultivate API 显式返 {ok}。前端做防御性判空。
+
+  getConsortTab: (campaignId: string) =>
+    request<{ consorts: Consort[]; candidates?: any[]; stats?: any }>(
+      `/campaigns/${campaignId}/consort_tab`
+    ),
+
+  listConsorts: (campaignId: string) =>
+    request<{ consorts: Consort[] }>(
+      `/campaigns/${campaignId}/consorts`
+    ),
+
+  getConsort: (campaignId: string, consortId: string) =>
+    request<{ consort_id: string; portrait: any; db: any; events: any[] }>(
+      `/campaigns/${campaignId}/consorts/${consortId}`
+    ),
+
+  audienceConsort: (campaignId: string, consortId: string, message: string) =>
+    request<{ result: string; consort_id: string; chat_history?: { role: string; text: string }[] }>(
+      `/campaigns/${campaignId}/consorts/${consortId}/audience`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ message }),
+      }
+    ),
+
+  getConsortRecords: (campaignId: string, consortId: string) =>
+    request<{ records: any[]; consort_id: string }>(
+      `/campaigns/${campaignId}/consorts/${consortId}/records`
+    ),
+
+  cultivateConsort: (campaignId: string, consortId: string, skill: string, trait: string, emperorWords: string) =>
+    request<{ ok?: boolean; consort?: any; error?: string }>(
+      `/campaigns/${campaignId}/consorts/${consortId}/cultivate`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ skill, trait, emperor_words: emperorWords }),
+      }
+    ),
+
+  getConsortTraits: (campaignId: string, consortId: string) =>
+    request<{ consort_id: string; extra_skills: string[]; extra_traits: string[] }>(
+      `/campaigns/${campaignId}/consorts/${consortId}/traits`
+    ),
 }
 
 export interface SecretOrder {

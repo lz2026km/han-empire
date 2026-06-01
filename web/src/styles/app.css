@@ -1907,3 +1907,194 @@ input:focus, select:focus {
 .cheat-console-btn:hover { background: #1c5028; }
 .cheat-console-btn-ghost { background: transparent; border-color: #2a4a32; color: #6fdf8f; }
 .cheat-console-btn-ghost:hover { background: #11200f; }
+
+/* ════════════════════════════════════════════════════════════════
+   v1.17.0 Phase F · 后宫 Tab 样式
+   ════════════════════════════════════════════════════════════════ */
+
+.consort-tab {
+  padding: 0;
+}
+
+.consort-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 16px;
+}
+
+.consort-roster {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-title {
+  color: var(--color-gold);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 6px;
+}
+
+.consort-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.consort-card:hover {
+  border-color: var(--color-gold);
+  background: var(--color-bg-tertiary);
+}
+
+.consort-card--selected {
+  border-color: var(--color-gold-bright);
+  background: var(--color-bg-tertiary);
+  box-shadow: 0 0 0 1px var(--color-gold);
+}
+
+.consort-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.consort-card__name {
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.consort-card__title {
+  color: var(--color-gold);
+  font-size: 12px;
+  padding: 2px 6px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
+
+.consort-card__meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+}
+
+.consort-card__faction {
+  color: var(--color-accent-blue);
+}
+
+.consort-card__affinity {
+  color: var(--color-gold-bright);
+}
+
+.consort-card__personality {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+.consort-card__skills {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.consort-interact {
+  display: flex;
+  flex-direction: column;
+}
+
+.consort-chat {
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.consort-msg {
+  padding: 6px 10px;
+  border-radius: 6px;
+  max-width: 85%;
+}
+
+.consort-msg--emperor {
+  align-self: flex-end;
+  background: var(--color-accent-blue);
+  color: white;
+}
+
+.consort-msg--consort {
+  align-self: flex-start;
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--color-text-primary);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.consort-msg__role {
+  font-size: 10px;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+
+.consort-msg__text {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.consort-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.consort-cultivate {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.consort-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.consort-form-row label {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.consort-form-row input,
+.consort-form-row textarea {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  color: var(--color-text-primary);
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.cultivate-result--ok {
+  color: var(--color-accent-green);
+  background: rgba(34, 197, 94, 0.1) !important;
+}
+
+.cultivate-result--err {
+  color: var(--color-accent-red);
+  background: rgba(239, 68, 68, 0.1) !important;
+}

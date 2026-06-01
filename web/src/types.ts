@@ -180,3 +180,38 @@ export interface ActionButton {
   variant?: 'primary' | 'gold' | 'default'
   disabled?: boolean
 }
+
+// ---- v1.15.0+ 后宫系统 (Phase F v1.17.0) ----
+
+export interface Consort {
+  id: string
+  canonical_name: string
+  name?: string
+  title: string           // 皇后 / 贵人 / 嫔 / 美人
+  rank?: string
+  role: string
+  personality: string
+  affinity: number        // 好感度 0-100
+  background: string
+  skills: string[]
+  traits: string[]
+  faction: string         // 派系：忠汉派/务实派/离心派/董卓军
+  family?: string
+  historical_role?: string
+  debut_year?: number
+  timeline?: number
+  status?: string         // active / deceased
+  permanent_traits?: string[]  // 永久性格
+}
+
+export interface ConsortRecord {
+  id: number
+  consort_id: string
+  consort_name: string
+  turn: number
+  skill: string
+  trait: string
+  emperor_words: string
+  result: string
+  created_at: string
+}
