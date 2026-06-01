@@ -1,149 +1,365 @@
-# 汉献帝之末路
+# 汉献帝之末路 (v2.0.0)
 
-> 基于 LLM + 历史推演的回合制古风帝王游戏。玩家扮演汉献帝刘协，在董卓乱政、曹操「挟天子以令诸侯」的控制下，寻求兴复汉室之道。
+> **LLM 驱动的回合制古风帝王策略游戏**。你扮演汉献帝刘协，在董卓乱政、曹操"挟天子以令诸侯"的二十年中，寻求兴复汉室之道。
+>
+> 主公！这是您的江山，您的诏书，您的衣带密令，您的智谋与大汉最后的命运。
 
 [![GitHub Repo](https://img.shields.io/badge/GitHub-lz2026km%2Fhan--empire-brightgreen)](https://github.com/lz2026km/han-empire)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+[![v2.0.0](https://img.shields.io/badge/version-2.0.0-orange)](CHANGELOG.md)
+[![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6)](README_WINDOWS.md)
 
 ---
 
-## 游戏背景
+## 🎮 三句话看懂这个游戏
 
-**189年**，董卓进京，废少帝立献帝，拉开汉末乱世序幕。
-
-献帝先被董卓控制于洛阳、长安，后被曹操迁都许昌。名为天子，实为阶下囚。诸侯割据，汉室衰微，皇权名存实亡。
-
-**你的使命**：在这最黑暗的二十年里，以智谋与名分，辗转于董卓、曹操与诸侯之间，寻求兴复汉室之道。
+1. **你** = 汉献帝刘协（189-220 年），被曹操控制在许昌的傀儡皇帝
+2. **游戏核心 = LLM 驱动**：诏书、召对、廷议、战役、历史演进——**每个决策都有 AI 模拟**
+3. **目标 = 兴复汉室**：5 大历史事件（董卓乱政/官渡/赤壁/曹丕篡汉/衣带诏）任你改写
 
 ---
 
-## 核心玩法
+## 📜 游戏背景
 
-### 🎯 召见大臣
-与三国名臣对话——试探忠诚、获取建议、洞察人心。大臣按**忠诚度四档**（忠诚/观望/离心/叛逆）给出不同回应，并受**派系**影响（忠汉派/务实派/离心派/叛逆派）。
+**中平六年（189 年）**，董卓进京，废少帝，立献帝，拉开汉末乱世序幕。
 
-### ⚖️ 朝堂派系
-四大派系（忠汉派/务实派/离心派/叛逆派）影响力 0-100，威权/藩镇联动。每月自动更新。派系影响诏书效果倍率。
+献帝先被董卓控制于洛阳、长安，后被曹操"迁都"许昌。**名为天子，实为阶下囚。** 诸侯割据，汉室衰微，皇权名存实亡。
 
-### 📜 拟旨诏令
-六种诏书（衣带密诏/讨伐诏书/迁都诏书/嘉奖诏书/罪己诏/大赦天下）经**指令状态机**管理：草稿→已发布→过期/已执行/已取消。威权达标方可发布。
+**你的使命**：在这最黑暗的二十年里，以智谋与名分，辗转于董卓、曹操与诸侯之间，**寻求兴复汉室之道**。
 
-### 🔄 月末推演
-每回合由 LLM 季节模拟器推演，输出叙事文本，再由提取器解析为结构化指标变化。包含：分级财政、派系变化、诸侯动态、阈值危机、天子日记。
+> _"朕乃大汉天子，天命所归。曹贼挟朕，朕岂甘为阶下囚？"——汉献帝（玩家）_
 
-### 🗺️ 势力视图
-各路诸侯军力 ASCII 排行（精锐/较强/中等/较弱/虚弱）+ 联盟关系 + 董卓伏诛线详情。威权≥40解锁暗探情报。
+---
 
-### ⚔️ 战役推演
-支持两军对战推演（随机骰子系统，最多10回合），返回古风风格战报，含伤亡统计与胜负判定。
+## 🌟 核心玩法（v2.0.0 LLM 驱动版）
 
-### 🏛️ 建筑系统
-14建筑分四类：**宫殿类**（未央宫/许昌行宫/洛阳宫殿）、**军事类**（四州武库）、**经济类**（四州粮仓）、**特殊类**（九江船坞/潼关要塞/虎牢关）。维护费自动扣除。
+### 🧠 1. LLM 自由对话（**Phase 4.3-4.4**）
 
-### 🏯 后宫系统（v1.15.0+ Phase D / v1.17.0+ Phase F）
+每个大臣都是**真实 LLM 模拟**：
+
+- **多轮对话** —— 同一大臣多次召对，自动保持历史（10 轮）
+- **性格驱动** —— 忠直/谄媚/怯懦/权谋的大臣，会给**截然不同的回应**
+- **立场匹配** —— 帝党/曹党/孙刘/西凉 四大派系，各有算盘
+- **4 个 tool_call** —— 大臣可主动调：
+  - `query_state` 查国势（尚书台口吻）
+  - `propose_decree` 拟旨入档（奉天承运/钦此校验）
+  - `estimate_resistance` 估阻力（廷尉口吻）
+  - `suggest_audience` 推荐大臣（侍中口吻）
+
+### 👥 2. 群臣廷议（自由对话系统）
+
+一道诏令，**3-5 位大臣按立场轮发**、互相引用、争论不休：
+
+```
+天子: "迁都许昌是否可行？"
+曹操: "臣以为可也，许昌四战之地，扼中原要冲……"  [务实派]
+荀彧: "臣附议，然王霸之业，当先正名分……"         [王佐派]
+孔融: "天子守国都，岂可轻迁？臣死谏！"             [忠汉派]
+```
+
+### 📜 3. 6 种诏书（状态机管理）
+
+| 诏书 | 效果 | 历史依据 |
+|------|------|---------|
+| **衣带密诏** | 血书衣带，密令亲信诛杀权臣 | 200 年衣带诏事件 |
+| **讨伐诏书** | 声讨叛逆，号召天下共击之 | 衣带诏+诸侯会盟 |
+| **迁都诏书** | 迁都洛阳/许昌/邺城/长安 | 董卓迁长安、曹操迁许昌 |
+| **嘉奖诏书** | 加官晋爵，提升忠诚 | 嘉奖群臣 |
+| **罪己诏** | 天子反省，重塑声望 | 灵帝、光武帝皆曾下 |
+| **大赦天下** | 减刑免罪，缓和社会矛盾 | 帝王常用手段 |
+
+**威权决定诏书效力**：
+- 威权 ≥ 80：诏书如山，大臣俯首听命
+- 威权 ≥ 50：诏书有效，大臣谨慎遵从
+- 威权 ≥ 20：诏书无力，大臣阳奉阴违
+- 威权 < 20：天子的声音无人理会
+
+### ⚔️ 4. 5 大历史事件（**Phase 4.6 详扩**）
+
+| # | 事件 | 年份 | 核心选择 | 历史影响 |
+|---|------|------|---------|---------|
+| 1 | **董卓乱政** | 189 | 联王允/借吕布/出逃长安 | 玩家可改写 |
+| 2 | **官渡之战** | 200 | 支持曹操/密诏袁绍/中立观望 | 决定北方霸权 |
+| 3 | **赤壁之战** | 208 | 支持孙刘/亲曹自保/密诏反曹 | 决定三分天下 |
+| 4 | **夷陵之战** | 222 | 间接干预 | 蜀汉元气 |
+| 5 | **曹丕篡汉** | 220 | 禅让/拒绝/衣带诏决战 | **汉朝生死** |
+
+每个事件都含 **3 个 LLM 评估选项**（含历史锁定/高风险/中立观望），影响威权/声望/派系/汉室库。
+
+### 🗡️ 5. 衣带诏专属剧情（**Phase 4.8**）
+
+- **新增 `e_200_yidai_zhau` 事件** —— 献帝亲笔血书缝入衣带，密令国舅董承诛曹
+- **衣带诏五臣**：董承、种辑、吴硕、王子服、刘备
+- **新 agno_skill `yidai-zhao/`** —— 教 LLM 何时触发衣带诏、何时密使联外、何时收兵
+- **失败后果** —— 夷三族、伏寿皇后幽禁、汉室威权 -30
+- **成功条件** —— 威权≥70 + 密使隐秘 + 盟友响应
+
+### 🏛️ 6. 36 模块核心引擎
+
+| 模块 | 职责 | 行数 |
+|------|------|------|
+| `models.py` | 数据类（GameState/CourtContext 等） | 45K |
+| `db.py` | SQLite 持久化（**41 表**） | 12K |
+| `simulation.py` | 月末推演（双 Agent + JSON 提取） | 27K |
+| `flows.py` | 财政流/派系/藩镇动态 | 48K |
+| `decree.py` | 诏书系统（6 种） | 30K |
+| `decree_templates.py` | 诏书模板库 | 17K |
+| `decree_templates.py` | 诏书模板 | 17K |
+| `issues.py` | 事项追踪 + 危机注入 | 51K |
+| `issues_crisis.py` | 阈值危机注入簇 | 8K |
+| `memories.py` | 召对记忆实时抽取 | 23K |
+| `agents.py` | 5 个 LLM agent 工厂 | 17K |
+| `agent_tools.py` | 4 个 tool_call 工具集 | 5K |
+| `llm_model.py` | LLM 统一入口（借鉴 ming） | 6K |
+| `event_selector.py` | 候选情势判选官（LLM 软筛） | 11K |
+| `...` | 还有 22 个模块 | ... |
+
+**总计 14433 行 han_sim 代码**（v1.18.0 → v2.0.0 净减 654 行 + 重构）
+
+### 🎨 7. 9 个 Tab + 3 个 hook（**Phase 3 前端重做**）
+
+| 汉风命名 | 原英文 | 用途 |
+|---------|-------|------|
+| 朝会 | overview | 国势仪表盘 |
+| 诏书 | decree | 6 种诏书发布 |
+| 召对 | chat | 大臣 LLM 对话 |
+| 朝堂 | ministers | 大臣列表/好感度 |
+| 派系 | faction | 四大派系影响力 |
+| 天子 | skills | 天子技能树 |
+| 营造 | building | 14 建筑管理 |
+| 舆图 | map | 8 州地图（开发中） |
+| 密诏 | orders | 衣带诏 + 密令 |
+| 起居注 | log | 天子日记 |
+| 后宫 | consort | 6 妃嫔系统 |
+
+**App.tsx 936 → 354 行（-62%）** + 3 个 hook（useGame/useSettlement/useChatModal）
+
+### 🗺️ 8. 8 州 + 51 州郡 + 30 势力
+
+- **8 州**：司隶/豫州/冀州/兖州/徐州/青州/荆州/益州
+- **51 州郡**：精确到郡县
+- **30 诸侯势力**：含军力/立场/盟友关系
+- **14 建筑**：4 类（宫殿/军事/经济/特殊）
+
+### 👥 9. 158 位历史人物（**Phase 4.7 详扩**）
+
+**v2.0.0 新增 6 位关键人物**：
+- **董承**（车骑将军/衣带诏主谋/汉室）
+- **种辑**（御史中丞/衣带诏五臣/汉室）
+- **王子服**（议郎/衣带诏五臣/汉室）
+- **吴硕**（散骑常侍/衣带诏五臣/汉室）
+- **伏寿**（皇后/伏完之女/汉室）
+- **程昱**（卫尉/曹操谋主/曹营）
+
+含派系/能力/忠诚/技能/历史典故全字段。
+
+### 🏯 10. 后宫系统（v1.15.0+）
+
 - 6 位汉末深宫妃嫔（伏寿/董贵/曹贵人/李婉/何莹/王美人）
-- **召幸对话**：妃嫔按位份+性格回话（皇后端庄有锋芒、贵人谨言慎行）
-- **调教工具** `cultivate_consort(skill, trait)`：学技能/改性格 → 永久性格写入
-- **衣带诏线索**：汉献帝特色——后宫既是闺阁也是密谋载体（伏寿、董贵皆衣带诏主谋）
-- Web 后宫 Tab（v1.17.0+）：名册 / 召幸 / 调教 / 衣带诏线索
-- 妃嫔**不涉朝政**（除非家族相关+献帝主动问），绝不"出戏"
-
-### 🌳 天子技能树
-四系各12条技能（经略/权谋/武功/文治），威权达标解锁，消耗技能点激活。威权≥40每回合+1点，威权≥60每回合+2点，上限10点。
-
-### 💬 大臣召对
-独立聊天界面，拟古奏对风格，即时消息气泡 + 大臣头像，派系标签 + 忠诚度徽章。
-
-### 📋 事项追踪
-完整**事项追踪系统**：密谋讨贼/讨伐董卓/献帝东归等历史线，含进度条、结案判定、失败效果与 deadline 超时自动处理。
-
-### ❤️ 大臣好感度
-与大臣互动影响好感度数值（0-100），好感度决定头像边框颜色：≥70金色 / 40-69银色 / <40灰色。
+- **召幸对话**：按位份+性格回话
+- **调教工具** `cultivate_consort(skill, trait)`：学技能/改性格
+- **衣带诏线索**：后宫既是闺阁也是密谋载体
 
 ---
 
-## 技术栈
+## 🛠️ 技术栈
 
 | 层级 | 技术 |
 |------|------|
-| 运行时 | Python 3.11+ / SQLite |
-| LLM框架 | Agno（多Agent编排，可选） |
-| 网络 | httpx（异步HTTP客户端） |
-| Web界面 | Flask REST API + React + Vite（Web前端） |
-| 桌面 | pywebview（launcher.py） |
-| 模型支持 | OpenAI 兼容 API（MiniMax/DeepSeek 等） |
+| **LLM 核心** | Agno（多 Agent 编排）+ OpenAI 兼容 API（MiniMax-M2.5） |
+| **运行时** | Python 3.11+ / SQLite |
+| **后端** | Flask + Flask-CORS（**48 个 REST 端点**） |
+| **前端** | React + Vite + TypeScript |
+| **桌面** | pywebview 5.5+（**Windows 原生窗口**） |
+| **打包** | PyInstaller（**单文件 EXE**） |
+| **数据** | 158 大臣 / 92+40 事件 / 51 州郡 / 30 势力 / 48 技能 / 30 诏书模板 |
 
 ---
 
-## 快速开始
+## 📦 快速开始
+
+### 🪟 Windows 玩家（**v2.0.0 推荐**）
+
+1. 下载 `汉献帝之末路-Windows.zip`（[Releases](https://github.com/lz2026km/han-empire/releases)）
+2. 解压到任意位置
+3. 双击 `汉献帝之末路.exe`
+4. 首次启动会弹窗配置 API Key（[REDACTED]）
+5. **享受三国帝王的人生**
+
+详细：[README_WINDOWS.md](README_WINDOWS.md)
+
+### 🐧 Linux / macOS 开发者
 
 ```bash
-# 克隆项目
+# 克隆
 git clone https://github.com/lz2026km/han-empire.git
 cd han-empire
 
 # 安装依赖（推荐 uv）
 uv sync
 
-# 或使用 pip
+# 或 pip
 pip install -e .
 
 # 启动游戏（桌面窗口）
 python launcher.py
+# 或 python main.py
 
-# 启动 Web 版（Flask API，默认 5555 端口）
+# Web 版（Flask API + 浏览器）
 python server.py
 # 浏览器访问 http://localhost:5555
+
+# CLI 古风终端
+python main.py --cli
 ```
 
-> **Web 版无需公网暴露**：本地运行，通过浏览器访问。
+### 🔑 配置 API Key
+
+游戏需要 **OpenAI 兼容 API**（推荐 [MiniMax](https://api.minimaxi.com)）：
+
+```bash
+# 方法 1: 环境变量
+export MINIMAX_API_KEY="sk-cp-你的key"
+
+# 方法 2: 首次启动弹窗配置（自动写入 runtime_llm.json）
+python launcher.py
+
+# 方法 3: 手动编辑 runtime_llm.json
+{
+  "provider": "minimax",
+  "api_key": "sk-cp-你的key",
+  "base_url": "https://api.minimaxi.com/v1",
+  "model": "MiniMax-M2.5"
+}
+```
 
 ---
 
-## 项目结构
+## 🏗️ 项目结构
 
 ```
 han-empire/
-├── web/                     # React + Vite Web前端
+├── web/                              # React + Vite 前端
 │   ├── src/
-│   │   ├── components/      # React组件
-│   │   ├── styles/          # CSS（古风动画/主题样式）
-│   │   ├── hooks/           # React hooks
-│   │   └── api.ts           # REST API客户端
-│   └── dist/                # 构建输出
+│   │   ├── components/
+│   │   │   ├── tabs/                 # 9 个汉风命名 Tab
+│   │   │   │   ├── OverviewTab.tsx   # 朝会
+│   │   │   │   ├── DecreeTab.tsx     # 诏书
+│   │   │   │   ├── MinisterTab.tsx   # 朝堂
+│   │   │   │   ├── FactionTab.tsx    # 派系
+│   │   │   │   ├── SkillTab.tsx      # 天子技能
+│   │   │   │   ├── BuildingTab.tsx   # 营造
+│   │   │   │   ├── MapTab.tsx        # 舆图
+│   │   │   │   ├── OrdersTab.tsx     # 密诏
+│   │   │   │   ├── LogTab.tsx        # 起居注
+│   │   │   │   └── (含 v1.17 后宫 Tab)
+│   │   │   └── Header.tsx
+│   │   ├── hooks/                    # 3 个 React Hook
+│   │   │   ├── useGame.ts            # 游戏状态
+│   │   │   ├── useSettlement.ts      # 月末推演
+│   │   │   └── useChatModal.ts       # 召对+作弊控制台
+│   │   ├── App.tsx                   # 354 行 (原 936, -62%)
+│   │   ├── api.ts                    # REST API 客户端
+│   │   └── types.ts                  # TypeScript 类型
+│   └── dist/                         # Vite 构建输出
 │
-├── web_app.py               # Gradio Web 界面
-├── launcher.py              # pywebview 桌面窗口
-├── server.py                # Flask REST API（36端点）
+├── .agno_skills/                     # 18 个 LLM Skill (v2.0.0 核心)
+│   ├── decree-drafting/              # 诏书拟定
+│   ├── court-deliberation/           # 廷议/票拟
+│   ├── secret-investigation/         # 密查案验
+│   ├── audience-control/             # 召对/私语
+│   ├── yidai-zhao/                   # 衣带诏 (Phase 4.8)
+│   └── ... 13 个借鉴 ming
 │
-├── han_sim/                 # 核心游戏引擎
-│   ├── models.py            # 数据类（GameState/CourtContext等）
-│   ├── db.py                # SQLite 持久化（40+张表）
-│   ├── session.py           # 回合流转、初始化、大臣召对
-│   ├── simulation.py        # 月末推演（双Agent + JSON提取）
-│   ├── flows.py             # 财政流/派系/藩镇动态
-│   ├── decree.py            # 诏书系统
-│   ├── diary.py             # 天子日记生成器
-│   ├── portraits.py         # 头像渲染（含好感度边框）
-│   ├── cli/terminal.py      # 古风CLI终端界面
-│   └── content/             # 内容加载器
+├── han_sim/                          # 36 模块核心引擎 (14433 行)
+│   ├── models.py                     # GameState/CourtContext 等数据类
+│   ├── db.py                         # SQLite (41 张表)
+│   ├── session.py                    # 回合流转
+│   ├── simulation.py                 # 月末推演
+│   ├── flows.py                      # 财政流/派系/藩镇
+│   ├── flows_faction.py              # 派系动力学
+│   ├── decree.py                     # 诏书系统
+│   ├── decree_templates.py           # 诏书模板库
+│   ├── issues.py                     # 事项追踪
+│   ├── issues_crisis.py              # 阈值危机注入
+│   ├── agents.py                     # 5 个 LLM agent
+│   ├── agent_tools.py                # 4 个 tool_call
+│   ├── llm_model.py                  # LLM 工厂 (借鉴 ming)
+│   ├── llm_config.py / contract.py   # LLM 配置/契约
+│   ├── event_selector.py             # 候选判选官
+│   ├── memories.py                   # 召对记忆抽取
+│   ├── diary.py                      # 天子日记
+│   ├── portraits.py                  # 头像渲染
+│   ├── content.py / assets.py        # 内容加载
+│   ├── map_view.py / theme.py        # 视图/主题
+│   ├── token_stats.py                # LLM token 统计
+│   ├── utils.py / context.py         # 工具
+│   ├── matching.py / skills.py       # 匹配/技能
+│   ├── registry.py / paths.py        # 注册/路径
+│   ├── exceptions.py                 # 异常类
+│   ├── report.py                     # 战报生成
+│   ├── conversation.py               # 对话管理
+│   └── cli/terminal.py               # 古风 CLI
 │
-├── content/                 # 游戏内容（JSON）
-│   ├── characters.json      # 人物数据（120人）
-│   ├── regions.json          # 州郡数据（50州郡）
-│   ├── powers.json           # 诸侯势力（30势力）
-│   ├── events.json           # 历史事件（79条）
-│   ├── emperor_skills.json   # 天子技能树（48条）
-│   └── buildings.json        # 建筑数据（26个）
+├── content/                          # 游戏内容 (JSON)
+│   ├── characters.json               # 158 人物 (Phase 4.7 +6)
+│   ├── events.json                   # 92 事件 (Phase 4.6 扩 3 大+衣带诏)
+│   ├── seed_events.json              # 40 种子事件
+│   ├── regions.json                  # 51 州郡
+│   ├── powers.json                   # 30 诸侯势力
+│   ├── decrees.json                  # 30 诏书模板
+│   ├── emperor_skills.json           # 48 天子技能
+│   ├── buildings.json                # 14 建筑
+│   ├── armies.json / consorts.json   # 军队/妃嫔
+│   ├── opening_crises.json           # 6 开局危机
+│   ├── opening_gazette.md            # 开局圣旨
+│   └── classes.json / skills.json    # 类别/技能
 │
-└── scripts/                 # 运维脚本
-    └── e2e_test.py          # 端到端测试
+├── server.py                         # Flask REST API (48 端点)
+├── launcher.py                       # pywebview 桌面启动器
+├── main.py                           # 入口
+├── run_windows.py                    # Win 双击启动 (含单实例锁)
+├── build_windows.bat                 # Win 一键打包 EXE
+├── han_empire.spec                   # PyInstaller 配置
+├── pyproject.toml                    # 项目配置
+├── CHANGELOG.md                      # 完整更新日志
+├── README.md                         # 本文件
+└── README_WINDOWS.md                 # Win 用户说明
 ```
 
 ---
 
-## 数据库架构（40+张核心表）
+## 📊 v2.0.0 大修统计
+
+| Phase | 提交 | 关键成果 | 变化 |
+|-------|------|---------|------|
+| **Phase 1** | `944266c` | 11 P0 bug 修复 | +4 后端 +7 前端 |
+| **Phase 2** | `022ec22` | 后端拆解 | **-654 行**（4 模块抽出） |
+| **Phase 3** | `ced90a4` | 前端重做 | **App.tsx -62%**（9 Tab + 2 hook） |
+| **Phase 4.1+4.2** | `fe30423` | LLM 工厂 + 4 SKILL | 188+行新模块 |
+| **Phase 4.3-4.5** | `55c85ce` | 4 tool + 自由对话 + Win EXE | 145 行新工具 + 5 文件 |
+| **Phase 4.6-4.8** | (待推送) | 3 大事件 + 6 名臣 + 衣带诏 | +92 事件 + 158 大臣 |
+
+**累计 5 个 Phase，6 个 commit 推送 GitHub**
+
+---
+
+## 🧪 测试
+
+```bash
+# 后端 83 个单元测试
+/home/admin/.hermes/hermes-agent/venv/bin/python -m pytest tests/ -q
+
+# 前端 TypeScript 校验
+cd web && npx tsc --noEmit
+```
+
+**当前状态**：83/83 通过 ✓ · tsc 0 错 ✓
+
+---
+
+## 🗃️ 数据库（41 张表）
 
 | 表名 | 用途 |
 |------|------|
@@ -152,117 +368,111 @@ han-empire/
 | `characters` | 人物数据（含派系/能力/忠诚） |
 | `factions` | 四大派系影响力 |
 | `powers` | 诸侯势力（含军力/立场/盟友） |
-| `regions` | 州郡数据 |
-| `armies` | 军队数据 |
-| `buildings` | 建筑状态 |
+| `regions` | 51 州郡数据 |
+| `armies` / `buildings` | 军队/建筑 |
 | `economy_ledger` | 财政流水账 |
-| `events` / `event_triggers` | 历史事件系统 |
+| `events` / `event_triggers` | 92 历史事件系统 |
+| `seed_events` | 40 种子事件 |
 | `issues` | 事项追踪（进度/级联/危机） |
-| `directives` | 指令状态机（草稿/已发布/过期） |
+| `directives` | 诏书状态机（草稿/已发布/过期） |
 | `emperor_diary` | 天子日记 |
 | `minister_affection` | 大臣好感度 |
 | `emperor_skills` | 天子已激活技能 |
 | `chat_messages` | 召对历史消息 |
 | `secret_orders` | 密诏记录 |
+| `consorts` / `consort_skills` | 妃嫔系统 |
+| ... | 还有 20+ 表 |
 
 ---
 
-## 核心指标
+## 📈 核心指标
 
 | 指标 | 范围 | 说明 |
 |------|------|------|
 | 威权 | 0-100 | 核心数值，影响所有系统 |
 | 藩镇 | 0-100 | 军阀势力，越低越好 |
 | 声望 | 0-100 | 汉室威望 |
-| 汉室库 | 0-∞ | 财政储备 |
+| 汉室库 | 0-∞ | 财政储备（万两） |
 | 技能点 | 0-10 | 技能激活代币 |
 
 ### 威权等级
 
-| 威权 | 等级标签 | 诏书倍率 |
-|------|----------|----------|
-| 0-9 | 形同虚设 | 30% |
-| 10-19 | 权臣操弄 | 40% |
-| 20-39 | 阳奉阴违 | 60-70% |
-| 40-59 | 勉强维持 | 80% |
-| 60-79 | 略有起色 | 100% |
-| 80-99 | 号令四方 | 120% |
-| 100 | 至高无上 | 150% |
+| 等级 | 威权 | 效果 |
+|------|------|------|
+| 天子 | ≥80 | 诏书如山，大臣俯首 |
+| 守成 | ≥50 | 诏书有效，谨慎遵从 |
+| 弱主 | ≥20 | 诏书无力，阳奉阴违 |
+| 亡国 | <20 | 声音无人理会 |
 
 ---
 
-## 版本历程
+## 🌐 REST API（48 端点）
 
-| 版本 | 日期 | 里程碑 |
-|------|------|--------|
-| **v1.8.8** | 2026-06-01 | 代码审查修复8个Bug：诏书API分发/turn边界/无限循环/key重复/chat API |
-| **v1.8.6** | 2026-06-01 | 全面移除移动端适配，精简README文档 |
-| **v1.8.5** | 2026-06-01 | React 19 + Vite 7 前端框架升级，古风CSS动画，generate_portraits.py |
-| **v1.7** | 2026-06-01 | 恢复CLI终端/天子日记/好感度/战役API，删除废弃脚本 |
-| **v1.6** | 2026-05-31 | 天子日记/好感度/战役前端/历史事件四大系统 |
-| **v1.5** | 2026-05-31 | CLI终端/存读档UI/战役推演API |
-| **v1.2** | 2026-05-31 | 删除重复函数apply_building_maintenance，移除所有移动端breakpoint |
-| **v1.1.0** | 2026-05-31 | 前端完整化：朝会布局/派系关系图/省份地图/头像组件 |
-| **v1.0.1** | 2026-05-31 | MinisterChat/SkillTab/BuildingTab/古风动画/launcher DPI适配 |
-| **v1.0.0** | 2026-05-30 | 核心系统完成：回合制+LLM召对+圣旨系统+Gradio界面 |
-| **v0.9.9** | 2026-05-30 | Animation expansion and new UI components（朝会动画/41keyframes） |
-| **v0.9.8** | 2026-05-29 | 大明风UI升级：Dashboard/情报/日记/诏令/建筑/东归/讨伐/势力/派系全系列Tab升级 |
-| **v0.9.8 step11** | 2026-05-29 | Python 3.6兼容修复+Session初始化+AGNO fallback降级策略 |
-| **v0.9.8 step10** | 2026-05-28 | 技能/建筑Tab大明风最终升级（渐变header/库银徽章/可建卡片化） |
-| **v0.9.8 step9** | 2026-05-28 | 情报/日记Tab大明风升级（渐变header/军力排行/库银显示） |
-| **v0.9.8 step8** | 2026-05-28 | 诏令/建筑/东归/讨伐Tab大明风升级（渐变header/进度条/卡片布局） |
-| **v0.9.8 step7** | 2026-05-27 | 势力Tab卡片化+派系Tab大明风升级（威权徽章/趋势指示/影响力进度条） |
-| **v0.9.8 step6** | 2026-05-27 | Dashboard UI升级（大明风仪表盘/威权藩镇进度条/4色状态指示） |
-| **v0.9.7** | 2026-05-26 | 侧栏固定260px，桌面1920分辨率适配 |
-| **v0.9.6** | 2026-05-26 | 新游戏崩溃修复（do_new_game缺少relocate_html初始化） |
-| **v0.9.5** | 2026-05-25 | 技能树参数字段错位修复+集成验证 |
-| **v0.9.4** | 2026-05-25 | 端到端测试套件（e2e_test.py）+Claude Code风格项目配置 |
-| **v0.9.3** | 2026-05-24 | models.py can_activate_skill重复赋值+缩进错误修复 |
-| **v0.9.0** | 2026-05-23 | 对比ming-salvage-sim全面补全：40+张数据库表/完整UI组件/Flask REST API |
-| **v0.5.0** | 2026-05-20 | 初始版本：基础框架+核心游戏逻辑 |
+| 端点 | 用途 |
+|------|------|
+| `GET /api/health` | 服务健康检查 |
+| `POST /api/campaigns` | 创建新游戏 |
+| `GET /api/campaigns/<id>` | 加载存档 |
+| `GET /api/campaigns/<id>/state` | 获取游戏状态 |
+| `POST /api/campaigns/<id>/next_turn` | 推演下一回合 |
+| `GET /api/campaigns/<id>/ministers` | 大臣列表 |
+| `POST /api/campaigns/<id>/chat/<minister>` | **大臣召对 (LLM)** |
+| `POST /api/campaigns/<id>/free_chat` | **群臣廷议 (Phase 4.4)** |
+| `POST /api/campaigns/<id>/chat/<minister>/reset` | **重置会话 (Phase 4.4)** |
+| `GET /api/campaigns/<id>/secret_orders` | 密诏列表 |
+| `POST /api/campaigns/<id>/receive_minister` | 接收大臣 |
+| `GET /api/campaigns/<id>/factions` | 派系状态 |
+| `POST /api/campaigns/<id>/decree/issue` | 发布诏书 |
+| ... | 还有 30+ 端点 |
 
 ---
 
-## 游戏结局
+## 🎯 借鉴 & 上游
 
-游戏时间跨度 **189-220年**，四种结局：
-
-1. **兴复汉室**（胜利）：联吴抗曹 → 赤壁翻盘 → 还于旧都
-2. **三分天下**（平局）：鼎足之势 → 缓缓图之
-3. **禅让延续**（历史结局）：220年曹丕篡汉，汉室禅让
-4. **提前灭亡**（失败）：皇权彻底丧失 → 游戏结束
+- **ming-salvage-sim**（明末力挽狂澜）— `.agno_skills/` 18 个 skill + `llm_model.py` 工厂模式
+- **Agno** — 多 Agent 编排框架
+- **MiniMax-M2.5** — 主公钦点的 LLM
 
 ---
 
-## 开发说明
+## 🤝 贡献指南
 
-### Python 版本要求
+欢迎提交 PR！建议流程：
+1. Fork 仓库
+2. 创建 feature 分支（`git checkout -b feature/your-feature`）
+3. 提交（`git commit -m "feat: 添加 XXX"`）
+4. 推送（`git push origin feature/your-feature`）
+5. 提 PR
 
-- **Python 3.11+**（推荐）
-
-### AGNO 降级策略
-
-AGNO（LLM Agent 框架）**可选安装**，无 AGNO 时系统自动使用 fallback：
-
-- `decree.py`：使用模板生成诏书
-- `simulation.py`：跳过 LLM 叙事
-- `agents.py`：`Agent = None` 时不创建 Agent
-
-### 开发命令
-
-```bash
-# 语法检查
-python3 -m py_compile han_sim/*.py web_app.py server.py
-
-# 端到端测试
-python3 scripts/e2e_test.py
-
-# 启动 Flask API
-python3 server.py
-```
+**主公大修原则**（v2.0.0 确立）：
+- 汉风优先，不留明末元素
+- LLM 驱动核心
+- 桌面 1920×1080，零移动端适配
+- 侧栏 width=260
+- 数据实测后再写 CHANGELOG
 
 ---
 
-## License
+## 📜 版本历史
 
-MIT · [lz2026km/han-empire](https://github.com/lz2026km/han-empire)
+详见 [CHANGELOG.md](CHANGELOG.md)
+
+- **v2.0.0** (2026-06-01)：6 Phase 大修（LLM 驱动 + 5 历史事件 + Win EXE）
+- **v1.18.0**：东汉 SVG 背景图
+- **v1.17.0**：后宫系统 Web 化
+- **v1.16.0**：候选情势判选官
+- ... 早期 14+ 版本
+
+---
+
+## 📄 许可证
+
+[MIT License](LICENSE)
+
+---
+
+## 🙏 致谢
+
+主公大修指导 · 姜维（OpenCode CLI）代码审查 · 袁天罡/法正知识库同步
+
+—— 享三国，品汉风。

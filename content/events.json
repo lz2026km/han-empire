@@ -107,7 +107,7 @@
     "trigger_gate": {
       "metrics.威权": ">0"
     },
-"trigger_condition": {},
+    "trigger_condition": {},
     "resolve_condition": "",
     "fail_condition": ""
   },
@@ -256,7 +256,7 @@
     "id": "guandu_battle",
     "title": "官渡之战",
     "kind": "historical",
-    "summary": "200年，袁绍与曹操在官渡决战，曹操奇袭乌巢，烧毁袁绍军粮，以少胜多，奠定统一北方的基础。",
+    "summary": "200年官渡之战，曹操以2万兵对袁绍12万。曹操奇袭乌巢，烧毁袁军全部粮草，袁绍大败，奠定统一北方基础。",
     "urgency": 100,
     "severity": 95,
     "credibility": 100,
@@ -282,13 +282,35 @@
       "powers.yuanshao.status": "active"
     },
     "resolve_condition": "",
-    "fail_condition": ""
+    "fail_condition": "",
+    "year": 200,
+    "month": 10,
+    "options": [
+      {
+        "label": "支持曹操",
+        "effect": "威权-15, 曹操+30, 袁绍-20"
+      },
+      {
+        "label": "密诏袁绍",
+        "effect": "威权+5(高风险), 袁绍+15"
+      },
+      {
+        "label": "中立观望",
+        "effect": "威权-5, 维持现状"
+      }
+    ],
+    "impact": {
+      "曹操": 30,
+      "袁绍": -20,
+      "威权": -5
+    },
+    "historical": true
   },
   {
     "id": "chibi_battle",
     "title": "赤壁之战",
     "kind": "historical",
-    "summary": "208年，曹操率83万大军南下，刘备与孙权联手抗曹，周瑜黄盖用火攻大破曹军，曹操败走华容道，三国鼎立格局奠定。",
+    "summary": "208年赤壁之战，孙刘联军3.5万对曹操20余万。周瑜黄盖火攻，曹操大败。三国鼎立之势自此始定。",
     "urgency": 100,
     "severity": 95,
     "credibility": 100,
@@ -316,7 +338,30 @@
       "powers.dongwu.status": "active"
     },
     "resolve_condition": "",
-    "fail_condition": ""
+    "fail_condition": "",
+    "year": 208,
+    "month": 12,
+    "options": [
+      {
+        "label": "支持孙刘",
+        "effect": "威权+10, 孙权+20, 刘备+15, 曹操-30"
+      },
+      {
+        "label": "亲曹自保",
+        "effect": "威权-20, 曹操+10, 孙刘-10"
+      },
+      {
+        "label": "密诏反曹",
+        "effect": "威权+5(极高风险), 触发衣带诏剧情"
+      }
+    ],
+    "impact": {
+      "曹操": -30,
+      "孙权": 20,
+      "刘备": 15,
+      "威权": 5
+    },
+    "historical": true
   },
   {
     "id": "hanzhong_battle",
@@ -353,7 +398,7 @@
     "id": "caopi_abdication",
     "title": "曹丕篡汉",
     "kind": "ending",
-    "summary": "220年，曹丕逼迫汉献帝禅让，代汉建魏，历经400余年的汉朝终结，三国时代正式开始。",
+    "summary": "220年曹丕篡汉，逼迫汉献帝禅让。历经407年的汉朝正式终结。",
     "urgency": 100,
     "severity": 100,
     "credibility": 100,
@@ -377,8 +422,30 @@
       "state.year": 220,
       "powers.caowei.status": "active"
     },
-"resolve_condition": "",
-    "fail_condition": ""
+    "resolve_condition": "",
+    "fail_condition": "",
+    "year": 220,
+    "month": 10,
+    "options": [
+      {
+        "label": "禅让(历史)",
+        "effect": "威权-100, 游戏结束(汉亡)"
+      },
+      {
+        "label": "拒绝禅让",
+        "effect": "威权+30, 极高概率被弑"
+      },
+      {
+        "label": "衣带诏决战",
+        "effect": "需已发动衣带诏线"
+      }
+    ],
+    "impact": {
+      "威权": -100,
+      "声望": 50
+    },
+    "historical": true,
+    "game_ending": "汉朝终结"
   },
   {
     "id": "e_189_hejin",
@@ -578,17 +645,38 @@
     "title": "官渡之战",
     "type": "military",
     "location": "官渡",
-    "summary": "曹操与袁绍对峙于官渡，曹操奇袭乌巢，大破袁绍。",
+    "summary": "200年官渡之战，曹操以2万兵对袁绍12万。许攸献计乌巢，曹操亲率精兵夜袭，烧毁袁军全部粮草。袁绍军心大乱，曹操趁势追击，袁绍仅率800骑北逃，从此无力南顾。",
     "impact": {
-      "yuanshao_power": -60,
-      "caowei_power": 40,
-      "han_authority": 10
+      "曹操": 30,
+      "袁绍": -20,
+      "威权": -5,
+      "声望": 5
     },
     "tags": [
+      "三国",
+      "官渡",
       "曹操",
       "袁绍",
-      "官渡"
-    ]
+      "许攸",
+      "乌巢",
+      "汉末转折点"
+    ],
+    "narrative": "建安五年(200年)，袁绍自恃兵多粮足，进军黎阳。曹操以少胜多，奠定统一北方基础。天子此时困于许昌，名为汉相实为汉贼。",
+    "options": [
+      {
+        "label": "支持曹操",
+        "effect": "威权-15, 曹操+30, 袁绍-20, 历史锁定"
+      },
+      {
+        "label": "密诏袁绍",
+        "effect": "威权+5(高风险), 袁绍+15, 曹操警觉-10, 若被泄露则崩盘"
+      },
+      {
+        "label": "中立观望",
+        "effect": "威权-5, 维持现状, 后续可改立场"
+      }
+    ],
+    "historical": true
   },
   {
     "id": "e_208_chibi",
@@ -597,18 +685,39 @@
     "title": "赤壁之战",
     "type": "military",
     "location": "赤壁",
-    "summary": "曹操南征，刘备孙权联合，周瑜火烧赤壁，曹操大败，三分天下始定。",
+    "summary": "208年赤壁之战，孙刘联军3.5万对曹操20余万。周瑜任大都督，黄盖诈降火攻，曹操水军船舰尽焚，败走华容道。三国鼎立之势自此始定。",
     "impact": {
-      "caowei_power": -30,
-      "sunquan_power": 15,
-      "liubei_power": 15
+      "曹操": -30,
+      "孙权": 20,
+      "刘备": 15,
+      "威权": 5,
+      "声望": 10
     },
     "tags": [
-      "曹操",
-      "孙权",
-      "刘备",
-      "赤壁"
-    ]
+      "三国",
+      "赤壁",
+      "周瑜",
+      "黄盖",
+      "诸葛亮",
+      "孙刘联军",
+      "三分天下"
+    ],
+    "narrative": "建安十三年(208年)，曹操南征得荆州，号称83万大军南下。孙权在鲁肃、周瑜力主下与刘备结盟。周瑜以火攻破曹，曹操从此无力统一天下。天子欲借机脱曹，幸被曹识破。",
+    "options": [
+      {
+        "label": "支持孙刘",
+        "effect": "威权+10, 孙权+20, 刘备+15, 曹操-30, 衣带诏机会"
+      },
+      {
+        "label": "亲曹自保",
+        "effect": "威权-20, 曹操+10, 孙刘-10, 历史锁定"
+      },
+      {
+        "label": "密诏反曹",
+        "effect": "威权+5(极高风险), 触发衣带诏剧情"
+      }
+    ],
+    "historical": true
   },
   {
     "id": "e_190_liugong_tongmeng",
@@ -724,25 +833,6 @@
   },
   {
     "id": "e_219_yiling",
-  {
-    "id": "e_220_caopi_zhouyan",
-    "year": 220,
-    "month": 12,
-    "title": "曹丕篡汉",
-    "type": "political",
-    "location": "洛阳",
-    "summary": "曹丕逼迫汉献帝禅让，代汉建魏，改元黄初，汉朝正式终结。",
-    "impact": {
-      "han_authority": -100,
-      "caowei_faction": 100
-    },
-    "tags": [
-      "曹丕",
-      "汉献帝",
-      "禅让",
-      "魏"
-    ]
-  },
     "year": 222,
     "month": 6,
     "title": "夷陵之战",
@@ -761,13 +851,50 @@
     ]
   },
   {
-    "id": "e_220_caopi_daihan",
+    "id": "e_220_caopi_zhouyan",
     "year": 220,
     "month": 12,
-    "title": "曹丕代汉建魏",
+    "title": "曹丕篡汉",
     "type": "political",
     "location": "洛阳",
-    "summary": "曹丕受禅代汉建立曹魏，改元黄初，汉朝正式终结。",
+    "summary": "220年曹丕篡汉，逼迫汉献帝禅让，代汉建魏，改元黄初。历经407年的汉朝正式终结。",
+    "impact": {
+      "威权": -100,
+      "声望": 50,
+      "汉室": -100
+    },
+    "tags": [
+      "曹丕",
+      "汉献帝",
+      "禅让",
+      "魏"
+    ],
+    "narrative": "建安二十五年(220年)，曹操病逝于洛阳，其子曹丕继魏王。同年十月，华歆、王朗等大臣逼献帝禅让。献帝降封山阳公，居浊鹿城。",
+    "options": [
+      {
+        "label": "禅让(历史)",
+        "effect": "威权-100, 游戏结束(汉亡), 转入三国剧本"
+      },
+      {
+        "label": "拒绝禅让",
+        "effect": "威权+30, 曹丕警觉+50, 极高概率被弑, 不推荐"
+      },
+      {
+        "label": "衣带诏决战",
+        "effect": "需在 200-220 年间已发动衣带诏线, 触发篡汉保卫战"
+      }
+    ],
+    "historical": true,
+    "game_ending": "汉朝终结, 转三国"
+  },
+  {
+    "id": "e_222_yiling",
+    "year": 222,
+    "month": 6,
+    "title": "夷陵之战",
+    "type": "political",
+    "location": "夷陵",
+    "summary": "刘备东征孙权，陆逊火烧连营，刘备大败，蜀汉元气大伤。",
     "impact": {
       "han_authority": -100,
       "caowei_power": 0,
@@ -1626,26 +1753,6 @@
     ]
   },
   {
-    "id": "e_216_ruoruo_battle",
-    "year": 209,
-    "month": 12,
-    "title": "赤壁之战",
-    "type": "military",
-    "location": "赤壁",
-    "summary": "孙刘联军在赤壁火烧曹操水军，曹操大败北还，三国鼎立局面奠定。",
-    "impact": {
-      "caowei_military": -40,
-      "dongwu_military": 15,
-      "shu_military": 10
-    },
-    "tags": [
-      "赤壁",
-      "周瑜",
-      "黄盖",
-      "火攻"
-    ]
-  },
-  {
     "id": "e_189_hejin_death",
     "year": 189,
     "month": 8,
@@ -1653,8 +1760,15 @@
     "type": "political",
     "location": "洛阳",
     "summary": "何进欲诛宦官，反为宦官所杀，京师大乱。",
-    "impact": { "han_authority": -15, "chaos": 20 },
-    "tags": ["何进", "宦官", "洛阳"]
+    "impact": {
+      "han_authority": -15,
+      "chaos": 20
+    },
+    "tags": [
+      "何进",
+      "宦官",
+      "洛阳"
+    ]
   },
   {
     "id": "e_189_tenchangshi",
@@ -1664,8 +1778,14 @@
     "type": "political",
     "location": "洛阳",
     "summary": "十常侍杀何进后把持朝政，何后之兄何进部将攻入宫中。",
-    "impact": { "han_authority": -20, "chaos": 25 },
-    "tags": ["十常侍", "宦官"]
+    "impact": {
+      "han_authority": -20,
+      "chaos": 25
+    },
+    "tags": [
+      "十常侍",
+      "宦官"
+    ]
   },
   {
     "id": "e_196_xu_chang_capital",
@@ -1675,8 +1795,16 @@
     "type": "political",
     "location": "许昌",
     "summary": "曹操迎献帝迁都许昌，从此汉室名存实亡，曹操挟天子以令诸侯。",
-    "impact": { "han_authority": -10, "caowei_power": 20, "xundi_authority": 5 },
-    "tags": ["曹操", "献帝", "许昌"]
+    "impact": {
+      "han_authority": -10,
+      "caowei_power": 20,
+      "xundi_authority": 5
+    },
+    "tags": [
+      "曹操",
+      "献帝",
+      "许昌"
+    ]
   },
   {
     "id": "e_193_yongnian",
@@ -1686,8 +1814,15 @@
     "type": "military",
     "location": "徐州",
     "summary": "曹操为报父仇，攻陷徐州后屠城，泗水为之不流。",
-    "impact": { "caowei_reputation": -20, "xuzhou_unrest": 30 },
-    "tags": ["曹操", "徐州", "屠杀"]
+    "impact": {
+      "caowei_reputation": -20,
+      "xuzhou_unrest": 30
+    },
+    "tags": [
+      "曹操",
+      "徐州",
+      "屠杀"
+    ]
   },
   {
     "id": "e_198_pangxi",
@@ -1697,7 +1832,50 @@
     "type": "political",
     "location": "兖州",
     "summary": "曹操击败黄巾军，被朝廷任为兖州牧，势力大增。",
-    "impact": { "caowei_power": 15 },
-    "tags": ["曹操", "兖州"]
+    "impact": {
+      "caowei_power": 15
+    },
+    "tags": [
+      "曹操",
+      "兖州"
+    ]
+  },
+  {
+    "id": "e_200_yidai_zhau",
+    "year": 200,
+    "month": 6,
+    "title": "衣带诏事件",
+    "type": "secret",
+    "location": "许昌",
+    "summary": "天子亲笔血书缝入衣带，密令国舅董承诛杀曹操。董承联络种辑、吴硕、王子服、刘备等五人。后事发，董承、种辑、吴硕、王子服皆夷三族。",
+    "narrative": "官渡之战前夕，天子不甘为曹操傀儡，于衣带中暗藏血诏，授意董承。建安五年正月事发，曹操屠董承等三族。",
+    "options": [
+      {
+        "label": "发动衣带诏",
+        "effect": "威权+15, 曹操警觉+30, 触发谋反线, 高风险高收益"
+      },
+      {
+        "label": "暂缓不动",
+        "effect": "维持现状, 继续隐忍"
+      },
+      {
+        "label": "亲自操办",
+        "effect": "威权+25, 失败率最高, 但若成功可除曹"
+      }
+    ],
+    "impact": {
+      "威权": 15,
+      "曹操": -10,
+      "董承": -100
+    },
+    "historical": true,
+    "tags": [
+      "衣带诏",
+      "汉献帝",
+      "董承",
+      "曹操",
+      "血诏",
+      "衣带密令"
+    ]
   }
 ]

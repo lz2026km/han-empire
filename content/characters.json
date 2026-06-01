@@ -3158,8 +3158,13 @@
     "office": "骠骑将军",
     "office_type": "warlord",
     "faction": "凉州军",
-    "aliases": ["张济"],
-    "personal_skills": ["凉州铁骑", "攻略南阳"],
+    "aliases": [
+      "张济"
+    ],
+    "personal_skills": [
+      "凉州铁骑",
+      "攻略南阳"
+    ],
     "loyalty": 40,
     "ability": 70,
     "integrity": 35,
@@ -3181,8 +3186,12 @@
     "office": "都督",
     "office_type": "warlord",
     "faction": "凉州军",
-    "aliases": ["华雄"],
-    "personal_skills": ["骁勇善战"],
+    "aliases": [
+      "华雄"
+    ],
+    "personal_skills": [
+      "骁勇善战"
+    ],
     "loyalty": 60,
     "ability": 65,
     "integrity": 30,
@@ -3204,8 +3213,14 @@
     "office": "大都督",
     "office_type": "warlord",
     "faction": "东吴",
-    "aliases": ["陆逊", "伯言"],
-    "personal_skills": ["火烧连营", "石兵八阵"],
+    "aliases": [
+      "陆逊",
+      "伯言"
+    ],
+    "personal_skills": [
+      "火烧连营",
+      "石兵八阵"
+    ],
     "loyalty": 80,
     "ability": 92,
     "integrity": 75,
@@ -3227,8 +3242,14 @@
     "office": "东吴景帝",
     "office_type": "emperor",
     "faction": "东吴",
-    "aliases": ["孙休", "子烈"],
-    "personal_skills": ["制衡之术", "兴学育才"],
+    "aliases": [
+      "孙休",
+      "子烈"
+    ],
+    "personal_skills": [
+      "制衡之术",
+      "兴学育才"
+    ],
     "loyalty": 95,
     "ability": 72,
     "integrity": 70,
@@ -3250,8 +3271,12 @@
     "office": "司徒",
     "office_type": "minister",
     "faction": "汉室",
-    "aliases": ["周章"],
-    "personal_skills": ["忠汉"],
+    "aliases": [
+      "周章"
+    ],
+    "personal_skills": [
+      "忠汉"
+    ],
     "loyalty": 92,
     "ability": 55,
     "integrity": 90,
@@ -3273,8 +3298,14 @@
     "office": "典农中郎将",
     "office_type": "minister",
     "faction": "曹魏",
-    "aliases": ["丁斐", "丁昭"],
-    "personal_skills": ["机智应变", "清廉自律"],
+    "aliases": [
+      "丁斐",
+      "丁昭"
+    ],
+    "personal_skills": [
+      "机智应变",
+      "清廉自律"
+    ],
     "loyalty": 60,
     "ability": 68,
     "integrity": 88,
@@ -3296,8 +3327,15 @@
     "office": "侍中",
     "office_type": "minister",
     "faction": "曹魏",
-    "aliases": ["王粲", "仲宣", "建安七子"],
-    "personal_skills": ["才藻艳逸", "七子之冠冕"],
+    "aliases": [
+      "王粲",
+      "仲宣",
+      "建安七子"
+    ],
+    "personal_skills": [
+      "才藻艳逸",
+      "七子之冠冕"
+    ],
     "loyalty": 55,
     "ability": 85,
     "integrity": 50,
@@ -3319,8 +3357,14 @@
     "office": "将军",
     "office_type": "warlord",
     "faction": "幽州军阀",
-    "aliases": ["公孙瓒", "伯珪"],
-    "personal_skills": ["白马义从", "守边抗胡"],
+    "aliases": [
+      "公孙瓒",
+      "伯珪"
+    ],
+    "personal_skills": [
+      "白马义从",
+      "守边抗胡"
+    ],
     "loyalty": 50,
     "ability": 78,
     "integrity": 45,
@@ -3342,8 +3386,14 @@
     "office": "宛侯",
     "office_type": "warlord",
     "faction": "凉州军",
-    "aliases": ["张绣", "张绣"],
-    "personal_skills": ["铁骑冲击", "贾诩之计"],
+    "aliases": [
+      "张绣",
+      "张绣"
+    ],
+    "personal_skills": [
+      "铁骑冲击",
+      "贾诩之计"
+    ],
     "loyalty": 65,
     "ability": 75,
     "integrity": 40,
@@ -3365,8 +3415,13 @@
     "office": "执金吾",
     "office_type": "minister",
     "faction": "汉室",
-    "aliases": ["尹赏"],
-    "personal_skills": ["整饬京师", "捕盗安民"],
+    "aliases": [
+      "尹赏"
+    ],
+    "personal_skills": [
+      "整饬京师",
+      "捕盗安民"
+    ],
     "loyalty": 88,
     "ability": 62,
     "integrity": 80,
@@ -3388,8 +3443,13 @@
     "office": "太尉",
     "office_type": "minister",
     "faction": "汉室",
-    "aliases": ["袁汤", "袁汤"],
-    "personal_skills": ["四世三公"],
+    "aliases": [
+      "袁汤",
+      "袁汤"
+    ],
+    "personal_skills": [
+      "四世三公"
+    ],
     "loyalty": 75,
     "ability": 58,
     "integrity": 55,
@@ -3411,8 +3471,13 @@
     "office": "屯骑校尉",
     "office_type": "minister",
     "faction": "汉室",
-    "aliases": ["文轨", "伏完"],
-    "personal_skills": ["汉室忠臣"],
+    "aliases": [
+      "文轨",
+      "伏完"
+    ],
+    "personal_skills": [
+      "汉室忠臣"
+    ],
     "loyalty": 88,
     "ability": 60,
     "integrity": 85,
@@ -3434,8 +3499,13 @@
     "office": "少府",
     "office_type": "minister",
     "faction": "汉室",
-    "aliases": ["季行", "耿纪"],
-    "personal_skills": ["起兵勤王"],
+    "aliases": [
+      "季行",
+      "耿纪"
+    ],
+    "personal_skills": [
+      "起兵勤王"
+    ],
     "loyalty": 90,
     "ability": 60,
     "integrity": 85,
@@ -3457,8 +3527,12 @@
     "office": "冀州刺史",
     "office_type": "minister",
     "faction": "汉室",
-    "aliases": ["韦康"],
-    "personal_skills": ["守冀城"],
+    "aliases": [
+      "韦康"
+    ],
+    "personal_skills": [
+      "守冀城"
+    ],
     "loyalty": 85,
     "ability": 65,
     "integrity": 80,
@@ -3480,8 +3554,12 @@
     "office": "司徒",
     "office_type": "minister",
     "faction": "汉室",
-    "aliases": ["赵温"],
-    "personal_skills": ["司徒"],
+    "aliases": [
+      "赵温"
+    ],
+    "personal_skills": [
+      "司徒"
+    ],
     "loyalty": 75,
     "ability": 58,
     "integrity": 70,
@@ -3503,8 +3581,12 @@
     "office": "董卓谋士",
     "office_type": "minister",
     "faction": "董卓",
-    "aliases": ["李儒"],
-    "personal_skills": ["董卓谋士"],
+    "aliases": [
+      "李儒"
+    ],
+    "personal_skills": [
+      "董卓谋士"
+    ],
     "loyalty": 50,
     "ability": 80,
     "integrity": 25,
@@ -3526,8 +3608,12 @@
     "office": "王允从事",
     "office_type": "minister",
     "faction": "汉室",
-    "aliases": ["胡母班"],
-    "personal_skills": ["名士"],
+    "aliases": [
+      "胡母班"
+    ],
+    "personal_skills": [
+      "名士"
+    ],
     "loyalty": 60,
     "ability": 50,
     "integrity": 55,
@@ -3549,8 +3635,12 @@
     "office": "济北相",
     "office_type": "minister",
     "faction": "汉室",
-    "aliases": ["鲍信"],
-    "personal_skills": ["讨董"],
+    "aliases": [
+      "鲍信"
+    ],
+    "personal_skills": [
+      "讨董"
+    ],
     "loyalty": 80,
     "ability": 62,
     "integrity": 75,
@@ -3572,8 +3662,12 @@
     "office": "南阳太守",
     "office_type": "warlord",
     "faction": "南阳",
-    "aliases": ["张咨"],
-    "personal_skills": ["南阳太守"],
+    "aliases": [
+      "张咨"
+    ],
+    "personal_skills": [
+      "南阳太守"
+    ],
     "loyalty": 0,
     "ability": 55,
     "integrity": 45,
@@ -3595,8 +3689,14 @@
     "office": "交趾太守",
     "office_type": "minister",
     "faction": "东吴",
-    "aliases": ["士燮", "彦靖"],
-    "personal_skills": ["交州割据", "家族势力"],
+    "aliases": [
+      "士燮",
+      "彦靖"
+    ],
+    "personal_skills": [
+      "交州割据",
+      "家族势力"
+    ],
     "loyalty": 45,
     "ability": 68,
     "integrity": 50,
@@ -3618,8 +3718,12 @@
     "office": "平原相",
     "office_type": "minister",
     "faction": "汉室",
-    "aliases": ["阎忠"],
-    "personal_skills": ["平原相"],
+    "aliases": [
+      "阎忠"
+    ],
+    "personal_skills": [
+      "平原相"
+    ],
     "loyalty": 70,
     "ability": 58,
     "integrity": 65,
@@ -3641,8 +3745,14 @@
     "office": "荆州牧",
     "office_type": "warlord",
     "faction": "刘表",
-    "aliases": ["景升", "刘表"],
-    "personal_skills": ["单骑入荆", "坐保江汉"],
+    "aliases": [
+      "景升",
+      "刘表"
+    ],
+    "personal_skills": [
+      "单骑入荆",
+      "坐保江汉"
+    ],
     "loyalty": 0,
     "ability": 70,
     "integrity": 60,
@@ -3664,8 +3774,12 @@
     "office": "扬州刺史",
     "office_type": "warlord",
     "faction": "袁氏",
-    "aliases": ["袁遗"],
-    "personal_skills": ["扬州刺史"],
+    "aliases": [
+      "袁遗"
+    ],
+    "personal_skills": [
+      "扬州刺史"
+    ],
     "loyalty": 0,
     "ability": 58,
     "integrity": 40,
@@ -3687,8 +3801,12 @@
     "office": "泰山太守",
     "office_type": "minister",
     "faction": "汉室",
-    "aliases": ["应劭"],
-    "personal_skills": ["著书立说"],
+    "aliases": [
+      "应劭"
+    ],
+    "personal_skills": [
+      "著书立说"
+    ],
     "loyalty": 65,
     "ability": 62,
     "integrity": 60,
@@ -3710,8 +3828,13 @@
     "office": "陈留太守",
     "office_type": "warlord",
     "faction": "张邈",
-    "aliases": ["张邈", "孟卓"],
-    "personal_skills": ["叛迎吕布"],
+    "aliases": [
+      "张邈",
+      "孟卓"
+    ],
+    "personal_skills": [
+      "叛迎吕布"
+    ],
     "loyalty": 0,
     "ability": 60,
     "integrity": 35,
@@ -3733,8 +3856,12 @@
     "office": "扬州刺史",
     "office_type": "warlord",
     "faction": "扬州",
-    "aliases": ["陈温"],
-    "personal_skills": ["扬州刺史"],
+    "aliases": [
+      "陈温"
+    ],
+    "personal_skills": [
+      "扬州刺史"
+    ],
     "loyalty": 0,
     "ability": 52,
     "integrity": 40,
@@ -3756,8 +3883,12 @@
     "office": "吕布部将",
     "office_type": "general",
     "faction": "吕布",
-    "aliases": ["曹豹"],
-    "personal_skills": ["吕布部将"],
+    "aliases": [
+      "曹豹"
+    ],
+    "personal_skills": [
+      "吕布部将"
+    ],
     "loyalty": 40,
     "ability": 55,
     "integrity": 35,
@@ -3779,8 +3910,14 @@
     "office": "司空",
     "office_type": "minister",
     "faction": "袁绍",
-    "aliases": ["陈琳", "孔璋"],
-    "personal_skills": ["建安七子", "为袁绍作檄文"],
+    "aliases": [
+      "陈琳",
+      "孔璋"
+    ],
+    "personal_skills": [
+      "建安七子",
+      "为袁绍作檄文"
+    ],
     "loyalty": 40,
     "ability": 75,
     "integrity": 35,
@@ -3802,8 +3939,14 @@
     "office": "丞相府记室",
     "office_type": "minister",
     "faction": "曹魏",
-    "aliases": ["阮瑀", "元瑜"],
-    "personal_skills": ["建安七子", "音乐才能"],
+    "aliases": [
+      "阮瑀",
+      "元瑜"
+    ],
+    "personal_skills": [
+      "建安七子",
+      "音乐才能"
+    ],
     "loyalty": 50,
     "ability": 78,
     "integrity": 55,
@@ -3825,8 +3968,13 @@
     "office": "五官将文学",
     "office_type": "minister",
     "faction": "曹魏",
-    "aliases": ["徐干", "伟才"],
-    "personal_skills": ["建安七子"],
+    "aliases": [
+      "徐干",
+      "伟才"
+    ],
+    "personal_skills": [
+      "建安七子"
+    ],
     "loyalty": 55,
     "ability": 72,
     "integrity": 60,
@@ -4094,7 +4242,7 @@
     "style": "稳重",
     "power_id": "shuhan",
     "location": "成都",
-    "birth_year": ?,
+    "birth_year": 227,
     "historical_death_year": 246,
     "debut_year": 234,
     "debut_month": 1,
@@ -4123,7 +4271,7 @@
     "style": "温和",
     "power_id": "shuhan",
     "location": "成都",
-    "birth_year": ?,
+    "birth_year": 227,
     "historical_death_year": 253,
     "debut_year": 234,
     "debut_month": 1,
@@ -4179,7 +4327,7 @@
     "style": "谨慎",
     "power_id": "caowei",
     "location": "洛阳",
-    "birth_year": ?,
+    "birth_year": 227,
     "historical_death_year": 263,
     "debut_year": 220,
     "debut_month": 1,
@@ -4206,12 +4354,172 @@
     "style": "勇猛",
     "power_id": "caowei",
     "location": "关中",
-    "birth_year": ?,
+    "birth_year": 227,
     "historical_death_year": 230,
     "debut_year": 211,
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操部将，镇守关右，屡次抵御蜀军。",
     "portrait_id": "general_pool_44"
+  },
+  {
+    "name": "董承",
+    "office": "车骑将军",
+    "faction": "汉室",
+    "power_id": "han",
+    "ability": 55,
+    "loyalty": 90,
+    "courage": 85,
+    "style": "忠直",
+    "birth_year": 160,
+    "historical_death_year": 200,
+    "debut_year": 196,
+    "debut_month": 1,
+    "status": "dead",
+    "location": "许昌",
+    "summary": "汉献帝亲信国舅，受衣带诏，联络种辑等谋诛曹操。建安五年事败，夷三族。其女为献帝贵人。",
+    "personal_skills": [
+      "衣带诏",
+      "外戚",
+      "忠贞",
+      "刚烈"
+    ],
+    "tags": [
+      "外戚",
+      "衣带诏",
+      "忠汉"
+    ]
+  },
+  {
+    "name": "种辑",
+    "office": "御史中丞",
+    "faction": "汉室",
+    "power_id": "han",
+    "ability": 50,
+    "loyalty": 88,
+    "courage": 80,
+    "style": "刚正",
+    "birth_year": 165,
+    "historical_death_year": 200,
+    "debut_year": 196,
+    "debut_month": 1,
+    "status": "dead",
+    "location": "许昌",
+    "summary": "汉献帝近臣，与董承同受衣带诏。事败后与董承同被夷三族，是衣带诏五臣之一。",
+    "personal_skills": [
+      "密议",
+      "忠贞",
+      "监察"
+    ],
+    "tags": [
+      "衣带诏",
+      "忠汉",
+      "密谋"
+    ]
+  },
+  {
+    "name": "王子服",
+    "office": "议郎",
+    "faction": "汉室",
+    "power_id": "han",
+    "ability": 45,
+    "loyalty": 85,
+    "courage": 75,
+    "style": "谨慎",
+    "birth_year": 168,
+    "historical_death_year": 200,
+    "debut_year": 196,
+    "debut_month": 1,
+    "status": "dead",
+    "location": "许昌",
+    "summary": "汉献帝近臣，衣带诏五臣之一。事败后被曹操诛杀。",
+    "personal_skills": [
+      "议政",
+      "忠贞"
+    ],
+    "tags": [
+      "衣带诏",
+      "忠汉"
+    ]
+  },
+  {
+    "name": "吴硕",
+    "office": "散骑常侍",
+    "faction": "汉室",
+    "power_id": "han",
+    "ability": 40,
+    "loyalty": 82,
+    "courage": 70,
+    "style": "温和",
+    "birth_year": 170,
+    "historical_death_year": 200,
+    "debut_year": 196,
+    "debut_month": 1,
+    "status": "dead",
+    "location": "许昌",
+    "summary": "汉献帝近臣，衣带诏五臣之一。事败被杀。",
+    "personal_skills": [
+      "近侍",
+      "忠贞"
+    ],
+    "tags": [
+      "衣带诏",
+      "忠汉",
+      "近侍"
+    ]
+  },
+  {
+    "name": "伏寿",
+    "office": "皇后",
+    "faction": "汉室",
+    "power_id": "han",
+    "ability": 35,
+    "loyalty": 95,
+    "courage": 70,
+    "style": "刚烈",
+    "birth_year": 180,
+    "historical_death_year": 214,
+    "debut_year": 195,
+    "debut_month": 1,
+    "status": "dead",
+    "location": "许昌",
+    "summary": "汉献帝皇后，伏完之女。曾助父谋诛曹操，事败后被幽禁至死。",
+    "personal_skills": [
+      "后妃",
+      "忠贞",
+      "刚烈"
+    ],
+    "tags": [
+      "后妃",
+      "忠汉",
+      "刚烈"
+    ]
+  },
+  {
+    "name": "程昱",
+    "office": "卫尉",
+    "faction": "曹营",
+    "power_id": "we",
+    "ability": 88,
+    "loyalty": 78,
+    "courage": 65,
+    "style": "刚直",
+    "birth_year": 141,
+    "historical_death_year": 220,
+    "debut_year": 196,
+    "debut_month": 1,
+    "status": "dead",
+    "location": "许昌",
+    "summary": "曹操五大谋主之一，刚直敢谏。反对曹操进魏公。曾预言孙权必称雄。",
+    "personal_skills": [
+      "谋略",
+      "刚直",
+      "战略"
+    ],
+    "tags": [
+      "谋主",
+      "刚直",
+      "战略"
+    ]
   }
 ]
