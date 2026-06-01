@@ -295,7 +295,28 @@ def construct(campaign_id):
 
 @app.route('/api/campaigns/<campaign_id>/faction_info', methods=['GET'])
 def faction_info(campaign_id):
-    return jsonify({'factions': []})
+    # v2.1.0 Phase 5: 加派系深度 (密谋/外交/目标链)
+    from han_sim.flows_faction import (
+        get_faction_goals, calc_faction_diplomacy, generate_faction_conspiracy
+    )
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+    session = GAMES[campaign_id]
+    state = session.state
+
+    # 4 派系目标链
+    goals = {f: get_faction_goals(f) for f in ("忠汉派", "务实派", "离心派", "叛逆派")}
+    # 派系外交
+    diplomacy = calc_faction_diplomacy(state)
+    # 当回合密谋
+    conspiracies = generate_faction_conspiracy(state, session.db)
+
+    return jsonify({
+        'factions': [],
+        'goals': goals,
+        'diplomacy': diplomacy,
+        'conspiracies': conspiracies,
+    })
 
 
 @app.route('/api/campaigns/<campaign_id>/faction_influence', methods=['POST'])
