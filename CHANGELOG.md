@@ -4,6 +4,103 @@
 
 ---
 
+## 🏯 v2.5.0 — 2026-06-02 (UI/UX 旗舰版)
+
+> **三栏布局 + 8 类组件 + TTS 全栈 · 1 commit · 46 文件**
+
+### 📊 总体数据 (实测)
+
+| 维度 | 数据 |
+|------|------|
+| commits | **1** |
+| 文件变更 | **46 (28 新增 + 18 重写/补) / 4295 insertions / 21 deletions** |
+| 8 大组件目录 | court(4) / dashboard(4) / edict(5) / events(1) / inbox(1) / intro(1) / system(3) / topbar(1) = **20 tsx** |
+| CSS 文件 | **20 个 (每个组件 1 对 css)** |
+| 前端总行数 | **3980 行 (仅组件 + layout + hook, 不含 src/ 存量)** |
+| 后端新增 | `han_sim/tts.py` 77 行 (edge-tts 微软中文语音) |
+| 测试 | `tests/test_e2e_v25.py` 80 行 (2 项静态校验) |
+| 文档 | `docs/SCREENSHOTS_v2.5.0.md` 99 行 (截图说明) |
+| 主 commit | `3ac40c2` |
+
+### 🎨 UI/UX 升级清单 (20 组件)
+
+| # | 目录 | 组件 | 功能 |
+|---|------|------|------|
+| 1 | **court** | CourtBackdrop | 议政厅背景层 (网格 + 蓝调径向) |
+| 2 | court | CourtStage | 议政厅舞台容器 |
+| 3 | court | DebateBubble | 大臣辩论气泡 |
+| 4 | court | MinistersPanel | 5 派系大臣侧栏 |
+| 5 | **dashboard** | HexagonDashboard | 6 维雷达图 (国库/军权/民心/朝堂/信息/时间) |
+| 6 | dashboard | InfoGapCard | 主公信息差卡片 (3-9 真实度) |
+| 7 | dashboard | ProvinceList | 13 州刺史清单 |
+| 8 | dashboard | FactionBacklashBadge | 派系反弹徽章 (无/拖延/曲解/反扑) |
+| 9 | **edict** | EdictComposer | 9 维旨意拟旨核心 (235 行, 旗舰组件) |
+| 10 | edict | AuthoritySlider | 5 档权限滑块 (口谕/谕旨/圣旨/密旨/廷议) |
+| 11 | edict | ImperialSeal | 玉玺印章 (107 行, SVG 矢量) |
+| 12 | edict | EdictHistory | 圣旨历史时间轴 |
+| 13 | edict | VerdictPopup | 回奏结果弹窗 (代价/隐患 3 段) |
+| 14 | **events** | EventTicker | 事件 ticker 滚动条 |
+| 15 | **inbox** | Inbox + InboxItem | 4 类奏报列表 (月奏/紧急/密奏/奏报) |
+| 16 | **intro** | Intro | 3 幕启动动画 (taiji/ascension/chamber) |
+| 17 | **system** | MenuDrawer | 主菜单抽屉 (320px 侧滑) |
+| 18 | system | SpeedControl | 1×/2×/4× 速度档位 |
+| 19 | system | NotificationToast | 事件通知 toast (右上角) |
+| 20 | **topbar** | TopBar | 顶栏 (年号/皇帝/操作) |
+
+### 🎯 全局壳层
+
+| 模块 | 改动 |
+|------|------|
+| **AppLayout** (49 行 TSX + 40 行 CSS) | 三栏骨架 (topbar 56px + sidebar 260 + main 自适应), 1920×1080 锁死, 1280×720 兜底 |
+| **useKeyboard** 升级 (60 行改) | 8 类快捷键: J/K 切换奏折 / Esc 弹窗 / 1-5 拟旨 / Space 推进 / m 菜单 / s 设置 / h 起居注 |
+| **useTTS** (113 行新) | 前端 TTS hook, 调用 /api/tts 边缘合成 |
+
+### 🗣️ TTS 全栈 (主公语音点题)
+
+| 层 | 文件 | 说明 |
+|----|------|------|
+| 前端 | `web/src/hooks/useTTS.ts` (113 行) | React hook, 自动播放/停止/队列 |
+| 后端 | `han_sim/tts.py` (77 行) | edge-tts 微软免费中文, 3 男声可选 (云健/云希/云扬) |
+| 接口 | (tts.py 提供) | `POST /api/tts {text, voice, rate, pitch} → {audio: base64 mp3}` |
+
+### ⚠️ CSS 占位声明 (主公 2026-06-02 明令)
+
+**3 个 CSS 文件为占位实现** (后续专业 GUI 软件到位后替换为正式设计稿):
+- `web/src/AppLayout.css` — 三栏骨架
+- `web/src/components/system/system.css` — 通用系统层 (Menu/Speed/Toast)
+- `web/src/components/court/CourtBackdrop.css` — 议政厅背景
+
+每个文件均含 `TODO 待专业 GUI 软件补正` 注释, 头部用 `v2.5.0` 标记版本。功能跑得通, 视觉走极简基础风, 主公 GUI 软件 (Figma/Sketch) 导入后可批量替换。
+
+### 🧪 测试 (2 项静态校验)
+
+| ID | 测试点 | 校验内容 |
+|----|--------|----------|
+| UI-1 | Intro 三幕过场 | phase === 'taiji'/'ascension'/'chamber' + Escape 跳过 |
+| UI-3 | HexagonDashboard 雷达 | 6 维 (国库/军权/民心/朝堂/信息/时间) |
+
+### 📊 端到端验证
+
+| 验证项 | 结果 |
+|--------|------|
+| 本地 HEAD | `3ac40c2` |
+| 远端 origin/master | `3ac40c2` |
+| 一致 | ✅ |
+| 推进范围 | `5fe323b..3ac40c2` (从 v2.2.0 终止点 → v2.5.0 旗舰版) |
+| push 输出 | `master -> master` ✅ |
+| 工作区残留 | 0 (clean) |
+
+### 🔒 设计基线 (主公明令, 全部遵守)
+
+- ✅ 1920×1080 锁死 / 1280×720 兜底 (零移动端)
+- ✅ 侧栏 `width=260` (非 min_width 避免撑开)
+- ✅ 主色 `#3b82f6` 蓝调 (非紫色)
+- ✅ 零 emoji 头像 (portraits.py 失败教训)
+- ✅ 零借鉴/明末 字眼 (法律合规)
+- ✅ 0 行借鉴标注/调研降级法 (对外文档合规)
+
+---
+
 ## 🏯 v2.2.0 — 2026-06-01 (诏书系统终极版)
 
 > **借鉴明末 + Tavily 调研降级 · 8 项 P0+P1 全部完工 · 8 commits**
