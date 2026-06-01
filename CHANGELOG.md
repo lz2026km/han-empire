@@ -95,6 +95,37 @@
 
 ---
 
+## 🔧 v1.13.1 — 2026-06-01
+
+> 乾坤大挪移·修小版本 · 修 v1.13.0 实测发现 3 个 BUG
+
+### 🐛 修复
+
+| 编号 | BUG | 修复 | 文件 |
+|------|-----|------|------|
+| #1 | `parse_agent_json_full` 不支持 ```json``` 代码块包裹（LLM 99% 会包） | 加策略 0：先剥 ```...``` 再原文直解 | `han_sim/agents.py`（+9 行） |
+| #2 | `constants.py` 缺 `PHASE_ISSUED/REVIEWING/SUMMONING`（`session.py` import 必失败） | 补 3 个字符串常量（值为字面量） | `han_sim/constants.py`（+11 行） |
+| #3 | `load_runtime_llm` 路径硬编码 + api_key 为空 | 多路径回退（2 runtime + auth-profiles）+ api_key 兜底 | `han_sim/llm_config.py`（+38 行） |
+
+### ✅ 验收 8/8 全过
+
+- BUG #1 4/4：纯 JSON / 代码块 / 垃圾前缀+代码块 / 破损 graceful
+- BUG #2 2/2：`from han_sim.session import GameSession` 成功 + TurnPhase 三值字符串
+- BUG #3 2/2：`load_runtime_llm()` 返非空 + api_key ≥ 100 字符
+
+### 🔍 实测发现的环境问题（不属本次修复）
+
+- `runtime_llm.json` 已有 `base_url = https://api.minimaxi.com/v1` + `model = deepseek-v4-flash`，**与 auth-profiles.json 的 minimax key 不匹配**
+- 修复后**实际 LLM 调用仍可能失败**（key/model/base_url 三者错配）
+- **建议**：用户运行 `python -c "from han_sim.llm_config import save_runtime_llm; save_runtime_llm(base_url='https://api.minimaxi.com/v1', model='MiniMax-Text-01', api_key='<minimax_key>')"` 修正配置
+- **不属本次范围**（是历史配置错误）
+
+### 📂 施工底册
+
+- `/home/admin/.openclaw/workspace/han-empire/docs/phaseB1_v1.13.1_proposal.md`
+
+---
+
 ## 💬 v1.13.0 — 2026-06-01
 
 > 乾坤大挪移一号方案 · Phase B · 召对即时记忆系统完整化

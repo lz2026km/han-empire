@@ -121,3 +121,12 @@ PORTRAIT_POOLS = {
     "general": [f"general_pool_{i}" for i in range(1, 30)],
     "warlord": [f"warlord_pool_{i}" for i in range(1, 25)],
 }
+
+# ── 回合阶段（v1.13.1 乾坤大挪移修小版本补）──
+# 历史遗留 BUG：session.py 引用这三个常量但 constants.py 没定义。
+# TurnPhase Enum 的字符串值，session.py 用作默认 turn_phase。
+# v1.9.0 同步明末时未补全，导致 session.py 实际 import 必失败。
+# 旧 server 进程（pid 4116087）能跑通仅因缓存了老 GAMES 字典。
+PHASE_SUMMONING = "SUMMONING"   # 召对中：等大臣入宫
+PHASE_REVIEWING = "REVIEWING"   # 御览中：月末奏章/推演中
+PHASE_ISSUED    = "ISSUED"      # 诏书已下：执行/调兵

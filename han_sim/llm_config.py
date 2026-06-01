@@ -114,13 +114,45 @@ def save_llm_config(config: LLMConfig) -> None:
 
 
 def load_runtime_llm() -> Dict[str, str]:
-    if not os.path.isfile(RUNTIME_LLM_PATH):
-        return {}
-    try:
-        with open(RUNTIME_LLM_PATH, "r", encoding="utf-8") as fh:
-            data = json.load(fh)
-    except (OSError, json.JSONDecodeError):
-        return {}
+    """多路径回退读取 LLM 配置（v1.13.1 乾坤大挪移修小版本改）：
+    1. RUNTIME_LLM_PATH（~/.hermes/han-empire/runtime_llm.json，标准路径）
+    2. <工作目录>/runtime_llm.json（开发期常用）
+    3. ~/.openclaw/agents/main/agent/auth-profiles.json 的 minimax:cn profile（兜底）
+    任一找到后即停。若 api_key 仍空，自动从 auth-profiles.json 读取 minimax:cn.key。
+    """
+    candidates = [RUNTIME_LLM_PATH]
+    cwd_rt = os.path.join(os.getcwd(), "runtime_llm.json")
+    if cwd_rt not in candidates:
+        candidates.append(cwd_rt)
+    auth_path = os.path.expanduser("~/.openclaw/agents/main/agent/auth-profiles.json")
+
+    data: Dict = {}
+    for path in candidates:
+        if os.path.isfile(path):
+            try:
+                with open(path, "r", encoding="utf-8") as fh:
+                    loaded = json.load(fh)
+                if isinstance(loaded, dict):
+                    data = loaded
+                    break
+            except (OSError, json.JSONDecodeError):
+                pass
+
+    # api_key 兜底：从 auth-profiles.json 的 minimax:cn profile 读
+    if not data.get("api_key") and os.path.isfile(auth_path):
+        try:
+            with open(auth_path, "r", encoding="utf-8") as fh:
+                auth_data = json.load(fh)
+            profile = auth_data.get("profiles", {}).get("minimax:cn", {})
+            if profile.get("key"):
+                data["api_key"] = profile["key"]
+                if not data.get("base_url"):
+                    data["base_url"] = "https://api.minimaxi.com/v1"
+                if not data.get("model"):
+                    data["model"] = "MiniMax-Text-01"
+        except (OSError, json.JSONDecodeError):
+            pass
+
     if not isinstance(data, dict):
         return {}
     out = {

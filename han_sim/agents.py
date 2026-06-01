@@ -114,6 +114,7 @@ def run_agent_text(agent: Agent, prompt: str) -> str:
 
 def parse_agent_json_full(text: str) -> Optional[Dict]:
     """多策略 JSON 解析：
+    - 策略0：剥离 ```json ... ``` 或 ``` ... ``` 代码块包裹（v1.13.1 修）
     - 策略1：原文直解
     - 策略2：截取最外层{...}
     - 策略3：净化控制字符
@@ -121,6 +122,14 @@ def parse_agent_json_full(text: str) -> Optional[Dict]:
     """
     import json as _json
     text = text.strip()
+    # 策略0：剥离 ```json ... ``` 或 ``` ... ``` 代码块包裹
+    m = re.search(r'```(?:json)?\s*\n?(.*?)\n?```', text, re.DOTALL)
+    if m:
+        candidate = m.group(1).strip()
+        try:
+            return _json.loads(candidate)
+        except Exception:
+            pass  # 落入策略1
     # 策略1：原文直解
     try:
         return _json.loads(text)
