@@ -18,6 +18,10 @@ from han_sim.models import Event, GameState
 _content: Optional[GameContent] = None
 
 
+
+# ════════════════════════════════════════════════════════════════
+# 1. 基础设施 (binding/上下文/应用)
+# ════════════════════════════════════════════════════════════════
 def bind_content(content: GameContent) -> None:
     global _content
     _content = content
@@ -104,6 +108,10 @@ def _apply_faction_dict(db: GameDB, factions: Dict[str, int]) -> List[Dict]:
     return applied
 
 
+
+# ════════════════════════════════════════════════════════════════
+# 2. issue 序列化 (payload/事件注入)
+# ════════════════════════════════════════════════════════════════
 def issue_to_payload(row: sqlite3.Row, recent_advances: List[sqlite3.Row]) -> Dict[str, object]:
     """喂给推演 agent 的事项精简视图：状态、进度、效果、最近一次推进。"""
     keys = row.keys() if hasattr(row, "keys") else []
@@ -166,6 +174,10 @@ _GATE_AGG_FUNCS = {
 }
 
 
+
+# ════════════════════════════════════════════════════════════════
+# 3. gate 解析 旧版 3 参数 (key, metrics, db)
+# ════════════════════════════════════════════════════════════════
 def _eval_gate_key(key: str, metrics: Dict[str, int], db: GameDB) -> Optional[int]:
     """把 gate key 解析成一个 int 值。形式：
       - 'metric_name'                           → metrics[key]
@@ -243,6 +255,10 @@ def _gate_passed(gate: Dict[str, str], metrics: Dict[str, int], db: GameDB) -> b
     return True
 
 
+
+# ════════════════════════════════════════════════════════════════
+# 4. 事件筛选 (gate 触发 → 候选事件)
+# ════════════════════════════════════════════════════════════════
 def gather_candidate_events(state: GameState, db: GameDB) -> List[Event]:
     """程序筛选：历史锚定事件按 trigger 时间到点+trigger_condition 达标、
     seed 情势按 trigger_gate 达标，都排除已触发过的。
@@ -274,6 +290,10 @@ def gather_candidate_events(state: GameState, db: GameDB) -> List[Event]:
     return candidates
 
 
+
+# ════════════════════════════════════════════════════════════════
+# 5. UI 展示 (bar/格式化)
+# ════════════════════════════════════════════════════════════════
 def _bar_ascii(value: int, width: int = 20) -> str:
     value = max(0, min(100, int(value)))
     pos = int(round(value / 100 * (width - 1)))
@@ -320,6 +340,10 @@ _COLLAPSIBLE_KINDS = frozenset({
 })
 
 
+
+# ════════════════════════════════════════════════════════════════
+# 6. issue 转换 (event→issue)
+# ════════════════════════════════════════════════════════════════
 def _normalize_cancellable(raw: object) -> str:
     """归一化 cancellable 值。"""
     val = str(raw or "").strip().lower()
@@ -401,6 +425,10 @@ def event_to_issue(db: GameDB, state: GameState, ev: Event) -> Optional[int]:
 # ── 诏书联动 ────────────────────────────────────────────────────────────────────
 
 
+
+# ════════════════════════════════════════════════════════════════
+# 7. tracker 输出 + inertia 旧版 (apply_issue_inertia_and_ongoing L598 老版)
+# ════════════════════════════════════════════════════════════════
 def apply_issue_tracker_output(
     db: GameDB,
     state: GameState,
@@ -699,6 +727,10 @@ def apply_issue_inertia_and_ongoing(
     state.clamp()
 
 
+
+# ════════════════════════════════════════════════════════════════
+# 8. active issue 查询 (get_active_issues/by_tag/by_kind/deadline)
+# ════════════════════════════════════════════════════════════════
 def get_active_issues(db: GameDB) -> List[Dict]:
     """返回所有进行中的事项列表。"""
     return db.list_active_issues()
@@ -718,6 +750,10 @@ from han_sim.issues_crisis import (  # noqa: F401
 # ── 阈值危机注入 ────────────────────────────────────────────────────────────
 
 
+
+# ════════════════════════════════════════════════════════════════
+# 9. 危机注入 (threshold crisis)
+# ════════════════════════════════════════════════════════════════
 def _inject_threshold_crisis_events(
     candidate_events: List[Event],
     existing_candidates: List[Event],
@@ -801,6 +837,10 @@ _GATE_AGG_FUNCS = {
 }
 
 
+
+# ════════════════════════════════════════════════════════════════
+# 10. gate 解析 新版 payload 字典 (gate, payload) - 与 §3 老版并存
+# ════════════════════════════════════════════════════════════════
 def _eval_gate_key(gate: Dict[str, str], payload: Dict[str, Any]) -> Optional[bool]:
     """解析 trigger_gate 条件。
 
@@ -839,6 +879,10 @@ def _eval_gate_key(gate: Dict[str, str], payload: Dict[str, Any]) -> Optional[bo
     return True
 
 
+
+# ════════════════════════════════════════════════════════════════
+# 10. gate 解析 新版 payload 字典 (gate, payload) - 与 §3 老版并存
+# ════════════════════════════════════════════════════════════════
 def _eval_gate_key_single(key: str, metrics: Dict[str, int], db: Optional[object]) -> Optional[int]:
     """解析单个 gate key 为 int 值。"""
     if "." not in key:
@@ -912,6 +956,10 @@ def _compare_op(op: str, val: int, num: int) -> bool:
 # ── 终结效果计算 ────────────────────────────────────────────────────────────
 
 
+
+# ════════════════════════════════════════════════════════════════
+# 11. situation 应用 (apply_issue_inertia_and_ongoing L937 新版)
+# ════════════════════════════════════════════════════════════════
 def _situation_terminal_effects(issue_id: int, reason: str) -> Dict[str, Any]:
     """终结效果计算（resolved/failed）。
 
@@ -1051,6 +1099,10 @@ def apply_issue_inertia_and_ongoing(
 # 密令核议系统
 # ═══════════════════════════════════════════════════════════════════════════
 
+
+# ════════════════════════════════════════════════════════════════
+# 12. secret order 密令 (含 deadline/状态/审查/日志)
+# ════════════════════════════════════════════════════════════════
 def check_secret_order_deadline(db: GameDB, turn: int) -> list:
     """检查期限届满的密令，自动转为 pending_review。
     

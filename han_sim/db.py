@@ -23,6 +23,10 @@ ECONOMY_ACCOUNTS = ("汉室库", "内库")
 
 
 class GameDB:
+
+# ════════════════════════════════════════════════════════════════
+# 1. 基础设施 (连接/初始化/schema)
+# ════════════════════════════════════════════════════════════════
     def __init__(self, path: str, content: Optional["GameContent"] = None):
         self.path = path
         self.content = content
@@ -634,6 +638,10 @@ class GameDB:
         """)
         self.conn.commit()
 
+
+# ════════════════════════════════════════════════════════════════
+# 2. 财政/分类/好感度 (fiscal/classes/affection)
+# ════════════════════════════════════════════════════════════════
     def init_fiscal_config(self) -> None:
         rows = [
             ("辽饷_base",   15,  "base", "辽东加派月额，万两"),
@@ -773,6 +781,10 @@ class GameDB:
 
     # ── 种子数据 ───────────────────────────────────────────────────
 
+
+# ════════════════════════════════════════════════════════════════
+# 3. 种子/状态/经济 (seed/state/treasury)
+# ════════════════════════════════════════════════════════════════
     def seed_static_data(self) -> None:
         pass  # TODO: docstring
         if self.table_has_rows("characters"):
@@ -1157,6 +1169,10 @@ class GameDB:
 
     # ── 人物状态 ───────────────────────────────────────────────────
 
+
+# ════════════════════════════════════════════════════════════════
+# 4. 人物/州郡/建筑/军/势力 (character/region/building/army/power)
+# ════════════════════════════════════════════════════════════════
     def set_character_status(
         self, state: "GameState", name: str, status: str, reason: str = ""
     ) -> None:
@@ -1396,6 +1412,10 @@ class GameDB:
 
     # ── 事件记忆 ───────────────────────────────────────────────
 
+
+# ════════════════════════════════════════════════════════════════
+# 5. 事件/记忆/issue (event/memory/issue)
+# ════════════════════════════════════════════════════════════════
     def upsert_event_memory(
         self,
         state: "GameState",
@@ -1908,6 +1928,10 @@ class GameDB:
             result.append(d)
         return result
 
+
+# ════════════════════════════════════════════════════════════════
+# 6. 指令/技能/日记/记账/统计 (directive/skill/diary/legacy/kv/report/faction/class/token/hold/consort)
+# ════════════════════════════════════════════════════════════════
     def load_state_key(self, key: str, default=None):
         row = self.conn.execute(
             "SELECT value FROM metrics WHERE key=?", (key,)
