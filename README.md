@@ -34,11 +34,11 @@
 
 ## 🌟 核心玩法（v2.2.0 诏书系统终极版）
 
-### 📜 v2.2.0 全新：诏书系统终极版 (借鉴明末 docs/ 16 文档)
+### 📜 v2.2.0 全新：诏书系统终极版
 
 主公！诏书不再是简单文字，而是**9 维结构 + 5 档权限 + 4 维真实感**：
 
-#### 🎴 1. 9 维旨意 (借鉴明末 setting-outline.md L94-108)
+#### 🎴 1. 9 维旨意
 
 每次下旨, 您需要决定 9 个维度:
 
@@ -192,7 +192,7 @@
 | `memories.py` | 召对记忆实时抽取 | 23K |
 | `agents.py` | 5 个 LLM agent 工厂 | 17K |
 | `agent_tools.py` | 4 个 tool_call 工具集 | 5K |
-| `llm_model.py` | LLM 统一入口（借鉴 ming） | 6K |
+| `llm_model.py` | LLM 统一入口（统一模型工厂模式） | 6K |
 | `event_selector.py` | 候选情势判选官（LLM 软筛） | 11K |
 | `...` | 还有 22 个模块 | ... |
 
@@ -351,7 +351,7 @@ han-empire/
 │   ├── secret-investigation/         # 密查案验
 │   ├── audience-control/             # 召对/私语
 │   ├── yidai-zhao/                   # 衣带诏 (Phase 4.8)
-│   └── ... 13 个借鉴 ming
+│   └── ... 13 个 LLM Skill
 │
 ├── han_sim/                          # 36 模块核心引擎 (14433 行)
 │   ├── models.py                     # GameState/CourtContext 等数据类
@@ -366,7 +366,7 @@ han-empire/
 │   ├── issues_crisis.py              # 阈值危机注入
 │   ├── agents.py                     # 5 个 LLM agent
 │   ├── agent_tools.py                # 4 个 tool_call
-│   ├── llm_model.py                  # LLM 工厂 (借鉴 ming)
+│   ├── llm_model.py                  # LLM 工厂
 │   ├── llm_config.py / contract.py   # LLM 配置/契约
 │   ├── event_selector.py             # 候选判选官
 │   ├── memories.py                   # 召对记忆抽取
@@ -508,14 +508,6 @@ cd web && npx tsc --noEmit
 
 ---
 
-## 🎯 借鉴 & 上游
-
-- **ming-salvage-sim**（明末力挽狂澜）— `.agno_skills/` 18 个 skill + `llm_model.py` 工厂模式
-- **Agno** — 多 Agent 编排框架
-- **MiniMax-M2.5** — 主公钦点的 LLM
-
----
-
 ## 🤝 贡献指南
 
 欢迎提交 PR！建议流程：
@@ -526,7 +518,7 @@ cd web && npx tsc --noEmit
 5. 提 PR
 
 **主公大修原则**（v2.0.0 确立）：
-- 汉风优先，不留明末元素
+- 汉风优先
 - LLM 驱动核心
 - 桌面 1920×1080，零移动端适配
 - 侧栏 width=260
@@ -538,7 +530,7 @@ cd web && npx tsc --noEmit
 
 详见 [CHANGELOG.md](CHANGELOG.md)
 
-- **v2.2.0** (2026-06-01)：**诏书系统终极版** — 借鉴明末 docs/ 16 文档, 8 项 P0+P1 (9 维旨意 / 6 类事件 / 4 类奏报 / 3 段回奏 / 5 档权限 / 3 态反弹 / 信息差 / LLM 廷议), 8 commits
+- **v2.2.0** (2026-06-01)：**诏书系统终极版** — 8 项模块 (9 维旨意 / 6 类事件 / 4 类奏报 / 3 段回奏 / 5 档权限 / 3 态反弹 / 信息差 / LLM 廷议), 8 commits
 - **v2.1.0** (2026-06-01)：AB 合并旗舰版 — 战役推演 + 派系深度 + 科举征辟 + 春秋史册, 8 commits
 - **v2.0.0** (2026-06-01)：6 Phase 大修（LLM 驱动 + 5 历史事件 + Win EXE）
 - **v1.18.0**：东汉 SVG 背景图
@@ -557,7 +549,5 @@ cd web && npx tsc --noEmit
 ## 🙏 致谢
 
 主公大修指导 · 姜维（OpenCode CLI）代码审查 · 袁天罡/法正知识库同步
-
-**v2.2.0 调研降级法**: Tavily → web_search → browser → curl+GitHub API → 本地 docs/ 必落到现成资料
 
 —— 享三国，品汉风。
