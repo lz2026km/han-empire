@@ -2382,7 +2382,18 @@ class GameDB:
             "SELECT * FROM consorts WHERE campaign_id=? AND name=?",
             (campaign_id, name),
         ).fetchone()
-        return dict(row) if row else None
+        if not row:
+            return None
+        d = dict(row)
+        # v1.15.0 BUG 修复：反序列化 traits/skills（add_consort 存为 json str）
+        for k in ("traits", "skills"):
+            v = d.get(k)
+            if isinstance(v, str):
+                try:
+                    d[k] = json.loads(v) if v else []
+                except Exception:
+                    d[k] = []
+        return d
 
     def add_consort(
         self,

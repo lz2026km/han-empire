@@ -81,6 +81,27 @@ class GameContent:
                 return f.read()
         return ""
 
+    # ── 后宫（v1.15.0 Phase D） ─────────────────────────────────
+
+    def load_consorts(self) -> List[Dict]:
+        """v1.15.0 乾坤大挪移 Phase D · 加载后宫人物画像（consorts.json）。
+
+        与 characters.json 解耦，独立文件避免触发 characters.json 4097 行损坏 BUG。
+        """
+        path = content_path("consorts.json")
+        if not os.path.isfile(path):
+            return []
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            return []
+        if isinstance(data, dict) and "consorts" in data:
+            return data["consorts"]
+        if isinstance(data, list):
+            return data
+        return []
+
     # ── 工具 ─────────────────────────────────────────────────
 
     def _load_json(self, filename: str) -> List[Dict]:
@@ -115,17 +136,28 @@ def seed_consort_candidates(db: "GameDB") -> None:
     if not path.exists():
         return
     with open(path, "r", encoding="utf-8") as f:
-        candidates = json.load(f)
+        data = json.load(f)
+    # v1.15.0 兼容：consorts.json 可能是 list 也可能是 {"consorts": [...]}
+    if isinstance(data, dict) and "consorts" in data:
+        candidates = data["consorts"]
+    elif isinstance(data, list):
+        candidates = data
+    else:
+        candidates = [data]
     for c in candidates:
+        # v1.15.0 兼容：人物对象可能是 {name:..., ...} 或 {canonical_name:..., ...}
+        nm = c.get("name") or c.get("canonical_name", "")
+        if not nm:
+            continue
         existing = db.conn.execute(
-            "SELECT id FROM consort_candidates WHERE name=?", (c["name"],)
+            "SELECT id FROM consort_candidates WHERE name=?", (nm,)
         ).fetchone()
         if existing:
             continue
         db.add_consort_candidate(
-            name=c["name"],
+            name=nm,
             age=c.get("age", 18),
-            background=c.get("background", ""),
+            background=c.get("background", "") or c.get("summary", ""),
             appearance=c.get("appearance", 50),
             talent=c.get("talent", 50),
             temperament=c.get("temperament", "温婉"),

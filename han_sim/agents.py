@@ -375,3 +375,66 @@ def create_chat_memory_agent() -> Agent:
         add_history_to_context=False,
         markdown=False,
     )
+
+
+def create_consort_agent(consort_id: str, db, state):
+    """v1.15.0 乾坤大挪移 Phase D 后宫妃嫔 agent。
+
+    工厂函数，与现有 create_*_agent 同款风格。
+    输入：consort_id（对应 consorts.json 里的 id，如 "consort_fu_shou"）。
+    返：一个 Agno Agent 实例，prompt 注入 consort_agent.md + 7. 当前被召妃嫔画像。
+    """
+    import json as _json
+    from agno.agent import Agent
+    from han_sim.content import _ctx as content_ctx
+    from han_sim.llm_config import load_runtime_llm, create_chat_model
+
+    cfg = load_runtime_llm() or {}
+    ctx = content_ctx()
+    # 加载 prompt
+    prompt = ctx.load_prompt("consort_agent") if ctx else ""
+
+    # 加载当前妃嫔画像（优先 consorts.json → fallback db.consorts）
+    consort_obj: Dict = {}
+    if ctx:
+        try:
+            consorts = ctx.load_consorts()
+            for c in consorts:
+                if c.get("id") == consort_id:
+                    consort_obj = c
+                    break
+        except Exception:
+            pass
+    if not consort_obj:
+        try:
+            ci = consort_id.replace("consort_", "")
+            consort_obj = db.get_consort(state.campaign_id, ci) or {}
+        except Exception:
+            consort_obj = {}
+
+    # 加载调教记录（取最近 3 条）
+    recent_records: List[Dict] = []
+    try:
+        ci = consort_id.replace("consort_", "")
+        recent_records = db.list_consort_events(state.campaign_id, ci)[:3]
+    except Exception:
+        pass
+
+    consort_block = _json.dumps({
+        "consort": consort_obj,
+        "recent_cultivate_records": recent_records,
+    }, ensure_ascii=False, indent=2)
+
+    full_instructions = [
+        ctx.game_world_prompt if hasattr(ctx, "game_world_prompt") else "",
+        prompt,
+        f"---\n## 7. 当前被召妃嫔\n{consort_block}",
+    ]
+
+    return Agent(
+        name=f"ConsortAgent({consort_id})",
+        model=create_chat_model(cfg, temperature=0.7, top_p=0.8, enable_thinking=False),
+        instructions=full_instructions,
+        add_history_to_context=True,
+        markdown=False,
+    )

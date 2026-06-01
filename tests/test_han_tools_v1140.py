@@ -215,12 +215,13 @@ class TestBuildEmperorTools(unittest.TestCase):
         self.tool_names = [t.__name__ for t in self.tools]
 
     def test_count(self):
-        self.assertEqual(len(self.tools), 7, f"应 7 工具，实际 {len(self.tools)}")
+        self.assertEqual(len(self.tools), 8, f"应 8 工具，实际 {len(self.tools)}")
 
     def test_names(self):
         expected = {
             "view_authority_level", "activate_emperor_skill", "issue_royal_decree",
             "cancel_royal_decree", "forge_alliance", "sow_dissent", "propose_empress",
+            "cultivate_consort",  # v1.15.0 乾坤大挪移 Phase D 新增
         }
         self.assertEqual(set(self.tool_names), expected)
 

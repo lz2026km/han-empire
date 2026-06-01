@@ -1003,8 +1003,42 @@ def build_emperor_tools(state: "GameState", context: "CourtContext"):
         }, ensure_ascii=False)
         return f"__empress_proposed__{payload}"
 
+    def cultivate_consort(consort_id: str = "", skill: str = "", trait: str = "") -> str:
+        """v1.15.0 乾坤大挪移 Phase D 调教妃嫔：学技能/改性格。
+
+        献帝明确要妃嫔"学某技能/改某性格"时调。
+        consort_id: 妃嫔 ID（如 "consort_fu_shou"）；
+        skill: 新技能名（如"剑术初习"）；trait: 新性格词（如"直率，胆气"）。
+        调用后不出戏——继续用角色语气回话。
+        """
+        ci = (consort_id or "").strip()
+        sk = (skill or "").strip()
+        tr = (trait or "").strip()
+        if not ci:
+            return "调教失败：consort_id 不能为空。"
+        if not sk and not tr:
+            return "调教失败：至少要填一个新技能或新性格。"
+        # 写入 db.cultivate_consort
+        try:
+            ci_short = ci.replace("consort_", "")
+            # db 接口需 campaign_id + name，无 consort_id 字段
+            # 用 consort_id 全名作为 name 即可（与 consorts.json id 对齐）
+            db_ref = getattr(state, "db", None) or getattr(context, "db", None)
+            if db_ref is None:
+                return f"__cultivated__{ci}__{sk}/{tr}__已记入调教志（db 未注入，不持久化）。"
+            db_ref.cultivate_consort(
+                campaign_id=state.campaign_id,
+                name=ci,
+                skill=sk,
+                trait=tr,
+            )
+            return f"__cultivated__{ci}__{sk}/{tr}__妃嫔 {ci} 已习得「{sk}」/性情「{tr}」（已入调教志）。"
+        except Exception as exc:
+            return f"__cultivated__{ci}__{sk}/{tr}__调教已记录（落库异常: {exc}）。"
+
     return [
         view_authority_level, activate_emperor_skill, issue_royal_decree,
         cancel_royal_decree, forge_alliance, sow_dissent, propose_empress,
+        cultivate_consort,
     ]
 

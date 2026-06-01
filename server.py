@@ -842,6 +842,161 @@ def trigger_battle(campaign_id):
     })
 
 
+# ════════════════════════════════════════════════════════════════
+# v1.15.0 乾坤大挪移 Phase D · 后宫 API
+# ════════════════════════════════════════════════════════════════
+
+@app.route('/api/campaigns/<campaign_id>/consorts', methods=['GET'])
+def list_consorts_api(campaign_id):
+    """后宫名册：返回已入宫妃嫔列表（按 rank 排序）。"""
+    if campaign_id not in GAMES:
+        return jsonify({'error': 'Campaign not found'}), 404
+    session = GAMES[campaign_id]
+    db = session.db
+    rows = db.list_consorts(campaign_id)
+    # rank 排序：皇后 > 贵妃 > 妃 > 嫔 > 贵人 > 常在 > 答应 > 采女
+    rank_order = ['皇后', '贵妃', '妃', '嫔', '贵人', '常在', '答应', '采女']
+    rows.sort(key=lambda r: rank_order.index(r['rank']) if r.get('rank') in rank_order else 99)
+    return jsonify({'consorts': rows})
+
+
+@app.route('/api/campaigns/<campaign_id>/consorts/<consort_id>', methods=['GET'])
+def get_consort_detail_api(campaign_id, consort_id):
+    """妃嫔详情：从 consorts.json 画像 + db consorts 表。"""
+    if campaign_id not in GAMES:
+        return jsonify({'error': 'Campaign not found'}), 404
+    session = GAMES[campaign_id]
+    db = session.db
+    # 1. 画像（consorts.json）
+    from han_sim.content import _ctx as content_ctx
+    ctx = content_ctx()
+    portrait = {}
+    if ctx:
+        try:
+            for c in ctx.load_consorts():
+                if c.get('id') == consort_id:
+                    portrait = c
+                    break
+        except Exception:
+            pass
+    # 2. db 数据
+    ci_short = consort_id.replace('consort_', '')
+    db_row = db.get_consort(campaign_id, ci_short) or db.get_consort(campaign_id, consort_id) or {}
+    # 3. 调教记录
+    events = db.list_consort_events(campaign_id, ci_short) if ci_short else []
+    return jsonify({
+        'consort_id': consort_id,
+        'portrait': portrait,
+        'db': db_row,
+        'events': events,
+    })
+
+
+@app.route('/api/campaigns/<campaign_id>/consorts/<consort_id>/audience', methods=['POST'])
+def consort_audience_api(campaign_id, consort_id):
+    """v1.15.0 Phase D 召幸对话端点（后宫妃嫔 agent）。"""
+    if campaign_id not in GAMES:
+        return jsonify({'error': 'Campaign not found'}), 404
+    data = request.get_json() or {}
+    message = (data.get('message', '') or '').strip()
+    if not message:
+        return jsonify({'result': '献帝陛下未发一言。'})
+
+    session = GAMES[campaign_id]
+    db = session.db
+
+    try:
+        from han_sim.agents import create_consort_agent
+        agent = create_consort_agent(consort_id, db, session.state)
+        response = agent.run(message)
+        text = response.content if hasattr(response, 'content') else str(response)
+
+        return jsonify({
+            'result': text,
+            'consort_id': consort_id,
+            'chat_history': [
+                {'role': 'emperor', 'text': message},
+                {'role': 'consort', 'text': text},
+            ],
+        })
+    except Exception as e:
+        return jsonify({'result': f'召幸失败: {e}'})
+
+
+@app.route('/api/campaigns/<campaign_id>/consorts/<consort_id>/records', methods=['GET'])
+def list_consort_records_api(campaign_id, consort_id):
+    """妃嫔调教记录（consort_events 事件流）。"""
+    if campaign_id not in GAMES:
+        return jsonify({'error': 'Campaign not found'}), 404
+    session = GAMES[campaign_id]
+    db = session.db
+    ci_short = consort_id.replace('consort_', '')
+    events = db.list_consort_events(campaign_id, ci_short)
+    return jsonify({'records': events, 'consort_id': consort_id})
+
+
+@app.route('/api/campaigns/<campaign_id>/consorts/<consort_id>/cultivate', methods=['POST'])
+def cultivate_consort_api(campaign_id, consort_id):
+    """调教妃嫔：学技能/改性格（后端接口，前端可单独调）。"""
+    if campaign_id not in GAMES:
+        return jsonify({'error': 'Campaign not found'}), 404
+    data = request.get_json() or {}
+    skill = (data.get('skill', '') or '').strip()
+    trait = (data.get('trait', '') or '').strip()
+    if not skill and not trait:
+        return jsonify({'error': '调教失败：至少要填一个新技能或新性格。'}), 400
+
+    session = GAMES[campaign_id]
+    db = session.db
+    try:
+        result = db.cultivate_consort(
+            campaign_id=campaign_id,
+            name=consort_id,
+            skill=skill,
+            trait=trait,
+        )
+        return jsonify({'ok': True, 'consort': result})
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)}), 500
+
+
+@app.route('/api/campaigns/<campaign_id>/consorts/<consort_id>/traits', methods=['GET'])
+def get_consort_traits_api(campaign_id, consort_id):
+    """妃嫔当前永久性情/技能（来自 consort_traits 表）。"""
+    if campaign_id not in GAMES:
+        return jsonify({'error': 'Campaign not found'}), 404
+    session = GAMES[campaign_id]
+    db = session.db
+    ci_short = consort_id.replace('consort_', '')
+    traits = db.get_consort_traits(ci_short) if ci_short else {'extra_skills': [], 'extra_traits': []}
+    return jsonify({'consort_id': consort_id, **traits})
+
+
+@app.route('/api/campaigns/<campaign_id>/consort_tab', methods=['GET'])
+def consort_tab_api(campaign_id):
+    """后宫 13 号 Tab 整体数据：名册 + 调教统计 + 当前提示。"""
+    if campaign_id not in GAMES:
+        return jsonify({'error': 'Campaign not found'}), 404
+    session = GAMES[campaign_id]
+    db = session.db
+    consorts = db.list_consorts(campaign_id)
+    # 6 候选人物（来自 consorts.json）
+    from han_sim.content import _ctx as content_ctx
+    ctx = content_ctx()
+    candidates = ctx.load_consorts() if ctx else []
+    # 妃嫔事件统计
+    total_events = sum(len(db.list_consort_events(campaign_id)) for _ in [None])
+    return jsonify({
+        'consorts': consorts,
+        'candidates': candidates,
+        'stats': {
+            'total_consorts': len(consorts),
+            'total_candidates': len(candidates),
+            'total_events': total_events,
+        },
+    })
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5555))
     app.run(host='0.0.0.0', port=port, debug=False)
