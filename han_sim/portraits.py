@@ -1,70 +1,41 @@
 """人物头像服务。L6。
 
-三国志7/8风格头像映射。
-优先使用网络头像，失败时使用Emoji占位。
+汉风头像映射。
+主公原则: 禁用明朝头像, 不用失效 URL, 走本地池 + Emoji 兜底。
 
-头像来源策略：
-1. 优先：从网络素材站直接拼URL
-2. 兜底：Emoji头像 + 首字标注
+头像来源策略:
+1. 优先: 本地池 (16 张汉风池图 minister_pool_1~16)
+2. 兜底: Emoji头像 + 首字标注
 
-Version: 0.2.0
+Version: 2.0.0 (v2.0.0 Phase 5.1)
 """
 
 from typing import Dict, List, Optional
 import os
+import hashlib
 
 from han_sim.paths import user_data_path
 
-# ── 头像URL映射表（按portrait_id）────────────────────────────────────────────
-# 格式：portrait_id -> 图片URL或空（走emoji兜底）
-PORTRAIT_URLS: Dict[str, Optional[str]] = {
-    # ── 君主/诸侯 ─────────────────────────────────
-    "warlord_pool_1":   "https://img.3keengames.net/avatar/rothsaga/cao_cao.png",     # 曹操
-    "warlord_pool_2":   "https://img.3keengames.net/avatar/rothsaga/liu_bei.png",      # 刘备
-    "warlord_pool_3":   "https://img.3keengames.net/avatar/rothsaga/sun_quan.png",     # 孙权
-    "warlord_pool_4":   "https://img.3keengames.net/avatar/rothsaga/sun_ce.png",        # 孙策
-    "warlord_pool_5":   "https://img.3keengames.net/avatar/rothsaga/yuan_shao.png",     # 袁绍
-    "warlord_pool_6":   "https://img.3keengames.net/avatar/rothsaga/dong_zhuo.png",     # 董卓
-    "warlord_pool_7":   "https://img.3keengames.net/avatar/rothsaga/lu_bu.png",         # 吕布
-    "warlord_pool_8":   "https://img.3keengames.net/avatar/rothsaga/zhang_jiao.png",    # 张角
-    "warlord_pool_9":   "https://img.3keengames.net/avatar/rothsaga/yuan_shu.png",      # 袁术
-    "warlord_pool_10":  "https://img.3keengames.net/avatar/rothsaga/zhang_xiu.png",      # 张绣
-    # ── 魏国文臣 ─────────────────────────────────
-    "minister_pool_1":   "https://img.3keengames.net/avatar/rothsaga/xun_yu.png",       # 荀彧
-    "minister_pool_2":   "https://img.3keengames.net/avatar/rothsaga/guo_jia.png",      # 郭嘉
-    "minister_pool_3":   "https://img.3keengames.net/avatar/rothsaga/wei_yan.png",       # 魏延
-    "minister_pool_4":   "https://img.3keengames.net/avatar/rothsaga/zhu_ge.png",       # 诸葛亮
-    "minister_pool_5":   "https://img.3keengames.net/avatar/rothsaga/zhong_hui.png",    # 钟会
-    "minister_pool_6":   "https://img.3keengames.net/avatar/rothsaga/zhou_yu.png",      # 周瑜
-    "minister_pool_7":   "https://img.3keengames.net/avatar/rothsaga/lu_xun.png",       # 陆逊
-    "minister_pool_8":   "https://img.3keengames.net/avatar/rothsaga/sima_yi.png",      # 司马懿
-    # ── 蜀国文臣 ─────────────────────────────────
-    "minister_pool_9":   "https://img.3keengames.net/avatar/rothsaga/fa_zheng.png",      # 法正
-    "minister_pool_10":  "https://img.3keengames.net/avatar/rothsaga/wei_yan.png",       # 魏延
-    # ── 吴国文臣 ─────────────────────────────────
-    "minister_pool_11":  "https://img.3keengames.net/avatar/rothsaga/lu_xun.png",        # 陆逊
-    "minister_pool_12":  "https://img.3keengames.net/avatar/rothsaga/zhang_zhao.png",    # 张昭
-    # ── 皇帝/汉室 ────────────────────────────────
-    "emperor_pool_1":    "https://img.3keengames.net/avatar/rothsaga/huang_emperor.png",  # 献帝
-    "emperor_pool_2":    "https://img.3keengames.net/avatar/rothsaga/huang_emperor.png",  # 献帝
-    "han_pool_1":        "https://img.3keengames.net/avatar/rothsaga/huang_emperor.png",  # 献帝
-    # ── 后宫妃嫔 ─────────────────────────────────────────
-    "consort_pool_1":   "https://img.3keengames.net/avatar/rothsaga/zhenji.png",      # 甄宓
-    "consort_pool_2":   "https://img.3keengames.net/avatar/rothsaga/huizhen.png",     # 慧珍
-    "consort_pool_3":   "https://img.3keengames.net/avatar/rothsaga/daqiao.png",      # 大乔
-    "consort_pool_4":   "https://img.3keengames.net/avatar/rothsaga/xiaoqiao.png",    # 小乔
-    "consort_pool_5":   "https://img.3keengames.net/avatar/rothsaga/ganji.png",       # 甘夫人
-    "consort_pool_6":   "https://img.3keengames.net/avatar/rothsaga/sunshangxiang.png", # 孙尚香
-    "consort_pool_7":   "https://img.3keengames.net/avatar/rothsaga/mishi.png",      # 糜夫人
-    "consort_pool_8":   "https://img.3keengames.net/avatar/rothsaga/bu.png",         # 步氏
-    "consort_pool_9":   "https://img.3keengames.net/avatar/rothsaga/zhang.png",      # 张氏
-    "consort_pool_10":  "https://img.3keengames.net/avatar/rothsaga/dui.png",        # 堕姬
-    "consort_pool_11":  "https://img.3keengames.net/avatar/rothsaga/other.png",      # 其他妃嫔
-    "consort_pool_12":  "https://img.3keengames.net/avatar/rothsaga/other.png",
-    "consort_pool_13":  "https://img.3keengames.net/avatar/rothsaga/other.png",
-    "consort_pool_14":  "https://img.3keengames.net/avatar/rothsaga/other.png",
-    "consort_pool_15":  "https://img.3keengames.net/avatar/rothsaga/other.png",
+# ── 头像映射表（v2.0.0 Phase 5.1: 移除 3keengames.net 失效 URL）────────────
+# 格式：portrait_id -> 本地文件名
+# 头部 minister_pool 已存在 (16 张汉风图), 缺图走 emoji 兜底
+LOCAL_POOL_DIR = "portraits"
+AVAILABLE_POOLS = {
+    "minister_pool": [f"minister_pool_{i}" for i in [1,2,3,4,5,6,7,8,9,10,11,12,13,15,16]],
+    "consort_pool":  [f"consort_pool_{i}"  for i in [1,2,3,4,5,6,7,8,9,10,11,12,13,15,16]],
+    "emperor_pool":  [f"emperor_pool_{i}"  for i in [1,2,3,4,5,6,7,8,9,10,11,12,13,15,16]],
+    "warlord_pool":  [f"minister_pool_{i}" for i in [1,2,3,4,5,6,7,8,9,10,11,12,13,15,16]],  # 共用
+    "han_pool":      [f"emperor_pool_{i}"  for i in [1,2,3,4,5,6,7,8,9,10,11,12,13,15,16]],   # 共用
 }
+
+# ── 字符→池号映射 (按角色名哈希稳定分配) ───────────────────────
+def _hash_to_pool(name: str, pool_size: int = 16) -> int:
+    """角色名 → 池号 1-16 (稳定哈希, 改名也不变)"""
+    h = int(hashlib.md5(name.encode("utf-8")).hexdigest(), 16)
+    return (h % pool_size) + 1
+
+# ── 兼容旧接口: PORTRAIT_URLS 保留键名, 值改为 None (走本地池/兜底) ──
+PORTRAIT_URLS: Dict[str, Optional[str]] = {}  # v2.0.0 Phase 5.1: 全部失效, 走本地
 
 # ── Emoji 兜底配置 ───────────────────────────────────────────────────────────
 OFFICE_EMOJI: Dict[str, str] = {
@@ -78,13 +49,31 @@ OFFICE_EMOJI: Dict[str, str] = {
 
 
 def get_portrait_url(portrait_id: str) -> Optional[str]:
-    """返回头像URL，无则返回None走兜底。"""
+    """返回头像URL，无则返回None走本地池/兜底。
+
+    v2.0.0 Phase 5.1: 全部失效 URL 已移除, 此函数永远返回 None。
+    保留仅为兼容旧接口。实际头像走 get_local_portrait_path()。
+    """
     return PORTRAIT_URLS.get(portrait_id)
 
 
 def get_office_emoji(office_type: str) -> str:
     """根据官职类型返回emoji。"""
     return OFFICE_EMOJI.get(office_type, OFFICE_EMOJI["default"])
+
+
+def get_local_portrait_path(name: str, pool: str = "minister_pool") -> str:
+    """v2.0.0 Phase 5.1: 返回本地头像相对路径。
+
+    规则: 角色名 hash → 池号 1-16 → 本地 PNG 文件名。
+    无网络依赖, 启动即可用。
+    """
+    pool_files = AVAILABLE_POOLS.get(pool, AVAILABLE_POOLS["minister_pool"])
+    pool_num = _hash_to_pool(name, pool_size=len(pool_files))
+    # AVAILABLE_POOLS 里有的池号 (1-13, 15, 16) — 取最接近
+    candidates = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16]
+    actual = min(candidates, key=lambda x: abs(x - pool_num))
+    return f"{LOCAL_POOL_DIR}/{pool}_{actual}.png"
 
 
 def get_affection_border_color(affection: int) -> str:

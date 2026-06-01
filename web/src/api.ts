@@ -202,6 +202,10 @@ export const api = {
     request<{ consort_id: string; extra_skills: string[]; extra_traits: string[] }>(
       `/campaigns/${campaignId}/consorts/${consortId}/traits`
     ),
+
+  // v2.0.0 Phase 5.2: 全局州郡数据 (51 州郡)
+  getRegions: () =>
+    request<{ regions: any[]; count: number }>('/regions'),
 }
 
 export interface SecretOrder {

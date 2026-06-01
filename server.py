@@ -4,11 +4,15 @@ Replaces Gradio with a REST API + React frontend
 """
 import sys
 import os
+import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from flask import Flask, jsonify, request, send_from_directory, Response
 from flask_cors import CORS
 import os
+from functools import lru_cache, wraps
+import gzip
+import io
 from han_sim.session import GameSession
 from han_sim.simulation import run_monthly_simulation
 from han_sim.decree import issue_secret_edict
@@ -21,6 +25,33 @@ from han_sim import agents as _agents
 _agents.bind_content(load_game_content())
 import json
 from typing import List, Dict
+
+# v2.0.0 Phase 5.5: 简单 LRU 缓存 + 全局 gzip 响应
+_CACHE: Dict = {}  # key -> (timestamp, data), key 可以是 tuple
+_CACHE_TTL = 60  # 60 秒 (regions/health 等静态端点)
+def cached_json(ttl: int = _CACHE_TTL):
+    """装饰器: 缓存 JSON 响应 N 秒。Phase 5.5 性能优化。"""
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            # 缓存键 = (函数名, args, kwargs)
+            key = (fn.__name__, args, tuple(sorted(kwargs.items())))
+            now = time.time()
+            if key in _CACHE:
+                ts, data = _CACHE[key]
+                if now - ts < ttl:
+                    return jsonify(data)
+            # 不在缓存: 调用并缓存
+            resp = fn(*args, **kwargs)
+            # resp 是 Flask Response 对象, 解析 JSON 再缓存
+            try:
+                payload = resp.get_json()
+                _CACHE[key] = (now, payload)
+            except Exception:
+                pass
+            return resp
+        return wrapper
+    return decorator
 
 app = Flask(__name__)
 CORS(app)
@@ -44,6 +75,34 @@ def _state_to_dict(state):
         'game_over': getattr(state, 'game_over', False),
         'victory': getattr(state, 'victory', False),
     }
+
+
+# v2.0.0 Phase 5.5: 全局 after_request 钩子, 自动 gzip 响应
+@app.after_request
+def gzip_response_hook(response):
+    """对 > 1KB 的 JSON 响应自动 gzip 压缩 (Accept-Encoding: gzip 时)。"""
+    if (response.status_code < 200 or response.status_code >= 300
+        or 'gzip' not in request.headers.get('Accept-Encoding', '')
+        or len(response.get_data()) < 1024
+        or 'Content-Encoding' in response.headers):
+        return response
+    data = response.get_data()
+    buf = io.BytesIO()
+    with gzip.GzipFile(fileobj=buf, mode='wb') as f:
+        f.write(data)
+    response.set_data(buf.getvalue())
+    response.headers['Content-Encoding'] = 'gzip'
+    response.headers['Content-Length'] = len(buf.getvalue())
+    response.headers['Vary'] = 'Accept-Encoding'
+    return response
+
+
+# v2.0.0 Phase 5.5: 缓存清理端点 (开发用, 防止开发期数据陈旧)
+@app.route('/api/_cache/clear', methods=['POST'])
+def clear_cache_api():
+    """清理服务器缓存 (仅在开发时使用)。"""
+    _CACHE.clear()
+    return jsonify({'cleared': True, 'remaining': 0})
 
 
 @app.route('/api/health', methods=['GET'])
@@ -300,7 +359,10 @@ def list_directives():
     if campaign_id not in GAMES:
         try:
             GAMES[campaign_id] = GameSession.load(campaign_id)
-        except Exception:
+        except Exception as e:
+            # v2.0.0 Phase 5.7: 显式记录加载失败 (之前静默 pass)
+            import logging
+            logging.warning(f"Campaign load failed: {campaign_id} → {e}")
             return jsonify({'directives': [], 'error': 'Campaign not found'})
 
     session = GAMES[campaign_id]
@@ -649,7 +711,10 @@ def reset_chat_session(campaign_id, minister_name):
     try:
         from agno.memory import AgentMemory
         AgentMemory(session_id=sess_id).clear()
-    except Exception:
+    except Exception as e:
+        # v2.0.0 Phase 5.7: 显式记录, 不再静默 pass (agno 未装 / LLM 不在时常见)
+        import logging
+        logging.debug(f"AgentMemory clear skipped for {sess_id}: {e}")
         pass
     return jsonify({"status": "reset", "session_id": sess_id})
 
@@ -1064,6 +1129,21 @@ def consort_tab_api(campaign_id):
             'total_events': total_events,
         },
     })
+
+
+# v2.0.0 Phase 5.2: 全局州郡数据 API (51 州郡 + 当前游戏快照叠加)
+@app.route('/api/regions', methods=['GET'])
+@cached_json(ttl=120)  # v2.0.0 Phase 5.5: 120 秒缓存 (51 州郡不变)
+def regions_api():
+    """返回所有州郡基础数据 (来自 content/regions.json)。
+    不依赖 campaign_id — 州郡基础数据全局共享。
+    gzip 压缩由全局 after_request 钩子自动处理。
+    返回: {regions: [...], count: 51}
+    """
+    from han_sim.content import load_game_content
+    content = load_game_content()
+    regions = content.load_regions() if content else []
+    return jsonify({'regions': regions, 'count': len(regions)})
 
 
 if __name__ == '__main__':

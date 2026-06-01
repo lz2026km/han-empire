@@ -1,6 +1,6 @@
 // v2.0.0 Phase 3.1: 抽自 App.tsx:541-626 (86 行)
 // 汉风术语："朝堂"对应 courtMode 视图，"在朝"指官员在朝任职状态
-import { useState } from 'react'
+import { useState, useMemo } from 'react'  // v2.0.0 Phase 5.6: 加 useMemo
 import type { MinisterStats } from '../../types'
 import { CourtLayout } from '../CourtLayout'
 import { MinisterPortrait } from '../MinisterPortrait'
@@ -17,7 +17,8 @@ export function MinisterTab({ ministers }: MinisterTabProps) {
     console.log('Selected minister:', m.name)
   }
 
-  const courtMinisters = ministers.map(m => ({
+  // v2.0.0 Phase 5.6: 缓存 courtMinisters 转换, 避免每次 render 重算
+  const courtMinisters = useMemo(() => ministers.map(m => ({
     id: String(m.id),
     name: m.name,
     office: m.position,
@@ -26,7 +27,7 @@ export function MinisterTab({ ministers }: MinisterTabProps) {
     status_label: '在朝',
     summary: `忠诚${m.loyalty} | 能力${m.ability}`,
     portrait_id: m.portrait,
-  }))
+  })), [ministers])
 
   return (
     <div className="fade-in">
