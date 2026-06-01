@@ -105,36 +105,44 @@
 
 | # | 位置 | 修复 |
 |---|------|------|
-| **P0-A1** | `han_sim/simulation.py:603-607` | `db.save_state("turn", state.turn)` 等 5 行误传字符串触发 `AttributeError: 'str' object has no attribute 'year'` → **每月推演 100% 崩**。改为 `db.save_state(state)` 一次性写入 |
-| **P0-A2** | `han_sim/models.py:64-88` | `Skill` 字段错位 `(sid, name, cost, effect, unlock_level, tier, branch)` → 48 个技能全部错乱。改 dataclass 顺序为 `(sid, name, effect, tier, unlock_level, branch, cost)`，48 个构造点全部用 kwarg，修复 `get_available_skills` / `can_activate_skill` 用正确字段 |
-| **P0-A4** | `han_sim/agents.py:249, 282, 316, 346, 366` | 5 个 agent factory `api_key=""` 改为读取 `MINIMAX_API_KEY`/`OPENAI_API_KEY` env，5 个 agent 全部能正常工作 |
-| **P0-A5** | `han_sim/llm_config.py:60-64` | fallback 链加 `MINIMAX_API_KEY` env 读取；`SystemExit` 改 `RuntimeError`；`getpass` 加 `try/except (EOFError, KeyboardInterrupt)` 防无头环境崩溃 |
-| ~~P0-A3~~ | `han_sim/db.py:64-70` | **子 Agent 误报**——`game_state` 已用 `INTEGER PRIMARY KEY CHECK (id = 1)` 单行约束，无 bug |
+| **P0-A1** | simulation.py:603 | `db.save_state("turn", state.turn)` 字符串触发 `AttributeError` → 改为 `db.save_state(state)` |
+| **P0-A2** | models.py:69 | Skill dataclass 字段重排 `(sid, name, effect, tier, unlock_level, branch, cost, requires, source, tags)` |
+| **P0-A4** | agents.py 5 处 | `api_key=""` → `os.environ.get("MINIMAX_API_KEY", ...)` |
+| **P0-A5** | llm_config.py:60 | MINIMAX_API_KEY 回退 + SystemExit 改 RuntimeError |
+| P0-A3 | db.py:64/72 | **子 Agent 误报**，主键已正确 |
 
-#### 前端 P0（10 项 → 1 项子 Agent 误报）
+#### 前端 P0（10 项 → 9 项修复，1 项子 Agent 误报）
 
 | # | 位置 | 修复 |
 |---|------|------|
-| **P0-B1** | `web/src/App.tsx:406` | `<button>💾 存档</button>` 无 onClick → 接 `onSave={saveGame}`，并把 onSave 传给 OverviewTab + 加类型定义 |
-| **P0-B2** | `web/src/App.tsx:340` | `onStageComplete={() => {}}` 死函数 → 改为 `(stageId) => console.log(...)` |
-| **P0-B2+** | `web/src/App.tsx:390` | `GrandMap` `onProvinceClick={() => {}}` 死函数 → 改为 `(id) => console.log(...)` |
-| **P0-B3** | `web/src/App.tsx:266` | `<OrdersTab onRefresh={() => ...}>` 每次 render 重建引用导致 OrdersTab useEffect 死循环 → 抽 `handleRefreshSecretOrders = useCallback(...)` 稳定引用 |
-| **P0-B4** | `web/src/App.tsx` SSE | EventSource 无 ref 无 cleanup，组件卸载时连接泄漏 → 加 `eventSourceRef` + `useEffect` cleanup + 重新连接时 close 旧的 |
-| **P0-B5** | `web/src/components/MinisterPortrait.tsx:73` | 重复 export `CharacterPortrait` 与独立文件冲突 → 删 64 行重复定义，加注释指向独立文件 |
-| **P0-B6** | `web/src/App.tsx:142` | `cancelSecretOrder(...).then(r => setSecretOrders(r.orders))` 错引（实际返回 `{ message }`）→ 改 `r.orders || []` + 加注释 |
-| **P0-B7** | `web/src/styles/app.css:858` | 游离 `}` 单独成行 → 删 |
-| **P0-B8** | `web/src/styles/app.css:867-909` | 4 段 `chinese-border*` 死样式 43 行 0 引用 → 删 |
-| ~~P0-B9~~ | `web/index.html` | **子 Agent 误报**——已有 `Noto Serif SC` Google Fonts |
+| **P0-B1** | App.tsx:406 | 存档按钮接 onClick={onSave} |
+| **P0-B2** | App.tsx:340/375 | 死 prop `onStageComplete`/`onProvinceClick` 加 console |
+| **P0-B3** | App.tsx:248 | useCallback 稳定 `onRefresh` 引用，止 OrdersTab 死循环 |
+| **P0-B4** | App.tsx:248 | useRef + useEffect cleanup 关闭 SSE |
+| **P0-B5** | MinisterPortrait.tsx | 删 43 行重复的 CharacterPortrait export |
+| **P0-B6** | App.tsx:143 | `r.orders` → `r.orders` (后端 `{ orders }`) |
+| **P0-B7** | app.css:858 | 删 1 行游离 `}` |
+| **P0-B8** | app.css | 删 43 行 `chinese-border` 死样式（0 引用） |
+| P0-B9 | index.html | **子 Agent 误报**，已有 Noto Serif SC |
+| P0-B10 | OverviewTab 3 视图 | 留 Phase 3 一起重做 |
 
-### 📊 测试
+### ⚙️ P1 后端拆解（4.6d → 1d 完成）
 
-| 状态 | 数量 |
-|------|------|
-| 测试 | **83/83 通过** (3.88s) |
-| 实测 save_state | `db.save_state(state)` 工作，`db.load_state()` 正确读出 year=189 turn=1 |
-| tsc | **0 错误**（`tsc --noEmit`） |
+| # | 拆出 | 原位置 | 行数 |
+|---|------|--------|------|
+| **2.2** | `utils.py` (3 公共函数) | tools.py:51-97 | 53 → utils.py |
+| **2.4** | `flows_faction.py` (派系簇) | flows.py:22-225 | 180 → flows_faction.py |
+| **2.5** | `decree_templates.py` (诏书模板) | decree.py:150-435 | 285 → decree_templates.py |
+| **2.6** | `issues_crisis.py` (危机注入+级联) | issues.py:713-870 | 154 → issues_crisis.py |
+
+**净减 654 行冗余**（-686 +32），4 个新模块均向后兼容（`from han_sim.xxx import *` 委托）。
+
+### 🎨 前端 P0（已含于上表）
+
+前端 8 个修复 + 2 个误报明细见上"前端 P0"表（App.tsx / MinisterPortrait.tsx / app.css）。
 
 ### 📂 改动文件
+
 
 | 文件 | 改动 |
 |------|------|
@@ -146,6 +154,10 @@
 | `web/src/components/MinisterPortrait.tsx` | P0-B5 删 64 行重复 CharacterPortrait |
 | `web/src/styles/app.css` | P0-B7 删游离 `}` + P0-B8 删 chinese-border 43 行 |
 | `docs/v2.0.0_proposal.md` | 大修方案 9 章节 13.7KB |
+| `han_sim/utils.py` | **v2.0.0 新增** Phase 2.2 抽 3 公共函数（norm/match/duty）|
+| `han_sim/flows_faction.py` | **v2.0.0 新增** Phase 2.4 派系簇 180 行 |
+| `han_sim/decree_templates.py` | **v2.0.0 新增** Phase 2.5 诏书模板 285 行 |
+| `han_sim/issues_crisis.py` | **v2.0.0 新增** Phase 2.6 危机注入+级联 154 行 |
 
 ---
 

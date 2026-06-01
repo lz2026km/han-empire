@@ -12,7 +12,6 @@ v1.14.0 乾坤大挪移 Phase C 扩展：
 """
 
 
-import difflib
 import json
 import re
 from typing import Callable, Dict, List, TYPE_CHECKING
@@ -48,51 +47,27 @@ _STATUS_CN = {
 }
 
 
+# v2.0.0 Phase 2.2: 抽 3 个公共函数到 utils.py
+from han_sim.utils import (
+    normalize_person_name,
+    match_character_by_name,
+    duty_location,
+)
+
+
 def _normalize_person_name(text: str) -> str:
-    return re.sub(r"\s+", "", str(text or "").strip())
+    """向后兼容别名，v2.0.0 Phase 2.2 起请直接用 normalize_person_name"""
+    return normalize_person_name(text)
 
 
 def _match_character_by_name(name: str, characters: List[Dict]) -> Dict | None:
-    key = _normalize_person_name(name)
-    if not key:
-        return None
-    # 精确匹配
-    for c in characters:
-        names = [c.get("name", ""), *(c.get("aliases", []) or [])]
-        if any(_normalize_person_name(n) == key for n in names):
-            return c
-    # 包含匹配
-    for c in characters:
-        names = [c.get("name", ""), *(c.get("aliases", []) or [])]
-        if any(key in _normalize_person_name(n) or _normalize_person_name(n) in key for n in names):
-            return c
-    # 模糊匹配
-    choices = {c.get("name", ""): c for c in characters}
-    match = difflib.get_close_matches(key, list(choices.keys()), n=1, cutoff=0.6)
-    return choices[match[0]] if match else None
+    """向后兼容别名，v2.0.0 Phase 2.2 起请直接用 match_character_by_name"""
+    return match_character_by_name(name, characters)
 
 
 def _duty_location(office: str, office_type: str, status: str) -> str:
-    if status == "dead":
-        return "已故，不在任事。"
-    if status == "imprisoned":
-        return "系狱待勘。"
-    if status in {"dismissed", "exiled", "retired", "offstage"}:
-        return "不在朝任事。"
-    text = office or office_type
-    if not text:
-        return "在朝但现职未明。"
-    region_markers = ["司隶", "豫州", "兖州", "徐州", "扬州", "荆州", "益州", "凉州", "并州", "幽州", "冀州", "青州"]
-    for marker in region_markers:
-        if marker in text:
-            return f"按现职在{marker}任事。"
-    if office_type in {"三公", "九卿", "尚书", "御史", "太尉", "司徒", "司空", "大将军", "侍中", "散骑"}:
-        return f"按现职在朝。"
-    if office_type == "太守":
-        return f"按现职为{office}。"
-    if office_type == "刺史":
-        return f"按现职刺{office}。"
-    return "按现职任事。"
+    """向后兼容别名，v2.0.0 Phase 2.2 起请直接用 duty_location"""
+    return duty_location(office, office_type, status)
 
 
 def build_minister_tools(character: Dict, context: "CourtContext"):
