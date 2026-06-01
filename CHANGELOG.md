@@ -95,6 +95,80 @@
 
 ---
 
+## 🛠️ v1.14.0 — 2026-06-01
+
+> 乾坤大挪移一号方案 · Phase C · 明末 tools.py 移植汉献帝
+
+### ✨ 新增
+
+| 分类 | build 函数 | 工具数 | 汉末独家 |
+|------|-----------|--------|---------|
+| 🆕 **Phase C 工具** | `build_phase_c_tools` | 12 | — |
+| 🆕 **抽取工具** | `build_extractor_tools` | 10 (9 盘面 + 1 submit) | — |
+| 🆕 **天子专属** | `build_emperor_tools` | 7 | **汉末独家** |
+| 📊 **合计** | 3 个新 build | **29 工具** | 7 汉末独家 |
+
+### 🗃️ 工具清单（v1.14.0 终态 18+9+1+29=57 工具）
+
+**Phase C 大臣 12**：
+- A. 在办事项 2：`list_memorials` / `inspect_memorial`
+- B. 建筑 2：`list_buildings` / `inspect_building`
+- C. 人事 1：`inspect_personnel_changes`
+- E. 铨选 1：`propose_appointment`
+- F. 密令 3：`report_secret_order_progress` / `submit_secret_order_for_review` / `rush_secret_order`
+- G. 邸报/记忆 2：`read_past_report` / `recall_memory_detail`
+- H. 阻力 1：`estimate_resistance`
+
+**抽取 10**：原 9 盘面 + 1 `submit_extraction` (16 字段 JSON 契约)
+
+**天子 7**（汉末独家）：
+- `view_authority_level` (诏书如山/阳奉阴违/形同虚设)
+- `activate_emperor_skill` (联吴抗曹/借刀杀人/以退为进)
+- `issue_royal_decree` (衣带密诏/讨伐/迁都/嘉奖/罪己/大赦)
+- `cancel_royal_decree`
+- `forge_alliance` (天子撮合)
+- `sow_dissent` (离间)
+- `propose_empress` (纳妃/册封)
+
+### 🎯 关键设计
+
+- ✅ **不动现有 18 大臣工具 / 9 盘面工具 / 1 推演工具**（0 业务影响）
+- ✅ **3 个新 build 函数并存**，agents.py 可选择性注入
+- ✅ **天子 7 工具全汉化**（衣带诏/诏书如山/离间/纳妃）
+- ✅ **16 字段 JSON 契约**（v1.13.1 修兼容代码块包裹）
+- ✅ **db 字段缺返"待接入"**（不阻塞工具层）
+- ✅ **零明朝漏网词**（辽东/锦衣卫/阉党 等 14 词 0 出现）
+
+### 🐛 顺手发现（已记入法正 v1.14.0）
+
+| BUG | 现象 | 修复 |
+|-----|------|------|
+| 1. `db.get_active_issues` / `db.list_buildings` 接口未建 | 工具层返空但 graceful | 后续版本接入 |
+| 2. `state.authority` 字段可能缺 | 阻力估算 fallback 50 | v1.15.0 接入 |
+| 3. `directives` 表实为 `secret_orders`（明译汉改） | 工具 `report_*` 返伪码 | v1.15.0 接入 |
+
+### 📊 GitHub 进度
+
+```
+[新]   v1.14.0: 乾坤大挪移 Phase C · tools.py 移植  ← 最新
+d76b4f0 v1.13.1: 乾坤大挪移修小版本 · 修3 BUG
+795a751 v1.13.0: 乾坤大挪移 Phase B · 召对即时记忆系统完整化
+56cb690 v1.12.0: 乾坤大挪移 Phase A · game_world 宪法 + 权威源引用
+767f9f9 v1.11.0: 推演奏章完整汉化+CHANGELOG修正
+```
+
+### ✅ 验收 39/39
+
+| 套件 | 数量 | 通过 |
+|------|------|------|
+| 旧 18 工具回归 | 6 | 6 |
+| Phase C 12 工具 | 17 | 17 |
+| 抽取 10 工具 | 5 | 5 |
+| 天子 7 工具 | 11 | 11 |
+| 明朝漏网词 0 | 1 | 1 |
+
+---
+
 ## 🔧 v1.13.1 — 2026-06-01
 
 > 乾坤大挪移·修小版本 · 修 v1.13.0 实测发现 3 个 BUG
