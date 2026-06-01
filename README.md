@@ -1,4 +1,4 @@
-# 汉献帝之末路 (v2.2.0)
+# 汉献帝之末路 (v2.5.0)
 
 > **LLM 驱动的回合制古风帝王策略游戏**。你扮演汉献帝刘协，在董卓乱政、曹操"挟天子以令诸侯"的二十年中，寻求兴复汉室之道。
 >
@@ -7,7 +7,7 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-lz2026km%2Fhan--empire-brightgreen)](https://github.com/lz2026km/han-empire)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![v2.2.0](https://img.shields.io/badge/version-2.2.0-orange)](CHANGELOG.md)
+[![v2.5.0](https://img.shields.io/badge/version-2.5.0-orange)](CHANGELOG.md)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6)](README_WINDOWS.md)
 
 ---
@@ -32,7 +32,71 @@
 
 ---
 
-## 🌟 核心玩法（v2.2.0 诏书系统终极版）
+## 🌟 核心玩法（v2.5.0 UI/UX 旗舰版 + v2.2.0 诏书系统终极版）
+
+### 🎨 v2.5.0 全新：UI/UX 旗舰版 (1 commit · 46 文件 · 4295+ 行)
+
+主公！v2.5.0 抛弃单文件 4619 行巨型 React，**组件化拆为 8 大目录 20 组件**，三栏布局 + TTS 全栈。
+
+#### 🖼️ 1. AppLayout 三栏骨架 (1920×1080 锁死)
+
+```
+┌─────────────────────────────────────────────────────┐
+│ TopBar (年号/皇帝)            56px                  │
+├──────────┬──────────────────────────┬───────────────┤
+│ Inbox    │   CourtStage (议政厅)   │ ProvinceList  │
+│ 4类奏报  │   DebateBubble 5派系    │ 13州刺史      │
+│ 260px    │   MinistersPanel        │ 信息差卡片    │
+│ sidebar  │   HexagonDashboard 6维  │ 反弹徽章      │
+└──────────┴──────────────────────────┴───────────────┘
+```
+
+#### ⌨️ 2. 全局快捷键 (useKeyboard 升级)
+
+| 键 | 动作 |
+|----|------|
+| **J / K** | 下一封 / 上一封奏折 |
+| **Esc** | 关闭弹窗 |
+| **1 / 2 / 3 / 4 / 5** | 拟旨档位 (口谕/谕旨/圣旨/密旨/廷议) |
+| **Space** | 推进一回合 |
+| **m** | 主菜单 |
+| **s** | 设置 |
+| **h** | 起居注 |
+
+#### 🗣️ 3. TTS 圣旨朗读 (主公语音点题)
+
+- 前端 hook: `useTTS` 调 `/api/tts`
+- 后端: `han_sim/tts.py` 用 edge-tts 微软免费中文
+- 3 男声可选: 云健 (威压) / 云希 (温润) / 云扬 (通用)
+
+#### 📦 4. 20 组件 / 8 目录
+
+| 目录 | 组件 | 功能 |
+|------|------|------|
+| **court** (4) | Backdrop/Stage/DebateBubble/MinistersPanel | 议政厅全套 |
+| **dashboard** (4) | Hexagon/InfoGap/Province/Backlash | 6 维雷达 + 13 州 + 反弹徽章 |
+| **edict** (5) | Composer/Slider/Seal/History/VerdictPopup | 9 维拟旨 + 玉玺 + 回奏 |
+| **events** (1) | EventTicker | 事件滚动条 |
+| **inbox** (2) | Inbox + InboxItem | 4 类奏报 |
+| **intro** (1) | Intro (3 幕 taiji/ascension/chamber) | 启动过场 |
+| **system** (3) | MenuDrawer / SpeedControl / NotificationToast | 系统层 |
+| **topbar** (1) | TopBar | 顶栏 |
+
+#### ⚠️ 5. CSS 占位声明 (主公 2026-06-02 明令)
+
+3 个 CSS 文件为占位实现 (后续专业 GUI 软件到位后批量替换为正式设计稿):
+- `web/src/AppLayout.css` — 三栏骨架
+- `web/src/components/system/system.css` — 通用系统层
+- `web/src/components/court/CourtBackdrop.css` — 议政厅背景
+
+每个文件含 `TODO 待专业 GUI 软件补正` 注释, **功能跑得通, 视觉走极简基础风**。
+
+#### 🧪 6. 测试 (2 项静态校验)
+
+| ID | 测试点 |
+|----|--------|
+| UI-1 | Intro 3 幕过场 (taiji/ascension/chamber + Esc 跳过) |
+| UI-3 | HexagonDashboard 6 维雷达 (国库/军权/民心/朝堂/信息/时间) |
 
 ### 📜 v2.2.0 全新：诏书系统终极版
 
@@ -323,23 +387,24 @@ python launcher.py
 han-empire/
 ├── web/                              # React + Vite 前端
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── tabs/                 # 9 个汉风命名 Tab
-│   │   │   │   ├── OverviewTab.tsx   # 朝会
-│   │   │   │   ├── DecreeTab.tsx     # 诏书
-│   │   │   │   ├── MinisterTab.tsx   # 朝堂
-│   │   │   │   ├── FactionTab.tsx    # 派系
-│   │   │   │   ├── SkillTab.tsx      # 天子技能
-│   │   │   │   ├── BuildingTab.tsx   # 营造
-│   │   │   │   ├── MapTab.tsx        # 舆图
-│   │   │   │   ├── OrdersTab.tsx     # 密诏
-│   │   │   │   ├── LogTab.tsx        # 起居注
-│   │   │   │   └── (含 v1.17 后宫 Tab)
+│   │   ├── components/                # v2.5.0: 8 目录 20 组件
+│   │   │   ├── court/                 # 4 个 (Backdrop/Stage/DebateBubble/MinistersPanel)
+│   │   │   ├── dashboard/             # 4 个 (Hexagon/InfoGap/Province/Backlash)
+│   │   │   ├── edict/                 # 5 个 (Composer/Slider/Seal/History/VerdictPopup)
+│   │   │   ├── events/                # 1 个 (EventTicker)
+│   │   │   ├── inbox/                 # 2 个 (Inbox + InboxItem)
+│   │   │   ├── intro/                 # 1 个 (Intro 3 幕)
+│   │   │   ├── system/                # 3 个 (MenuDrawer/SpeedControl/NotificationToast)
+│   │   │   └── topbar/                # 1 个 (TopBar)
 │   │   │   └── Header.tsx
-│   │   ├── hooks/                    # 3 个 React Hook
+│   │   ├── hooks/                    # React Hook (v2.5.0 增至 5 个)
 │   │   │   ├── useGame.ts            # 游戏状态
 │   │   │   ├── useSettlement.ts      # 月末推演
-│   │   │   └── useChatModal.ts       # 召对+作弊控制台
+│   │   │   ├── useChatModal.ts       # 召对+作弊控制台
+│   │   │   ├── useKeyboard.ts        # v2.5.0: 8 类快捷键
+│   │   │   └── useTTS.ts             # v2.5.0: TTS hook
+│   │   ├── AppLayout.tsx             # v2.5.0: 三栏骨架 (49 行)
+│   │   ├── AppLayout.css             # v2.5.0: 三栏样式 (占位)
 │   │   ├── App.tsx                   # 354 行 (原 936, -62%)
 │   │   ├── api.ts                    # REST API 客户端
 │   │   └── types.ts                  # TypeScript 类型
@@ -381,6 +446,7 @@ han-empire/
 │   ├── exceptions.py                 # 异常类
 │   ├── report.py                     # 战报生成
 │   ├── conversation.py               # 对话管理
+│   ├── tts.py                        # v2.5.0: edge-tts 边缘合成 (77 行)
 │   └── cli/terminal.py               # 古风 CLI
 │
 ├── content/                          # 游戏内容 (JSON)
@@ -423,6 +489,34 @@ han-empire/
 | **Phase 4.6-4.8** | (待推送) | 3 大事件 + 6 名臣 + 衣带诏 | +92 事件 + 158 大臣 |
 
 **累计 5 个 Phase，6 个 commit 推送 GitHub**
+
+---
+
+## 🎨 v2.5.0 大修统计 (2026-06-02)
+
+| 项 | 提交 | 关键成果 | 变化 |
+|----|------|---------|------|
+| **v2.5.0 旗舰版** | `3ac40c2` | UI/UX 三栏 + 8 组件目录 + TTS 全栈 | **+4295 行 / -21 行** · 46 文件 |
+| **v2.5.0 文档** | `bd9dd80` | CHANGELOG v2.5.0 段 | +97 行 |
+
+**v2.5.0 子项 (实测非画饼)**:
+
+| 子项 | 数量 | 关键文件 |
+|------|------|----------|
+| 8 大组件目录 | 20 tsx + 20 css | court/dashboard/edict/events/inbox/intro/system/topbar |
+| 全局壳层 | 1 layout + 2 hook | AppLayout.tsx + useKeyboard + useTTS |
+| TTS 全栈 | 前端 hook + 后端 edge-tts | useTTS.ts + han_sim/tts.py (3 中文男声) |
+| 测试 | 2 项静态校验 | test_e2e_v25.py (UI-1 Intro / UI-3 Hexagon) |
+| 文档 | 1 截图说明 | SCREENSHOTS_v2.5.0.md |
+
+**v2.5.0 设计基线 (主公明令 6 条)**:
+
+- ✅ 1920×1080 锁死 / 1280×720 兜底 (零移动端适配)
+- ✅ 侧栏 `width=260` (非 min_width 避免撑开)
+- ✅ 主色 `#3b82f6` 蓝调
+- ✅ 零 emoji 头像 (portraits.py 失败教训)
+- ✅ 3 CSS 占位声明 (待专业 GUI 软件替换)
+- ✅ 零借鉴/明末 字眼 (法律合规)
 
 ---
 
@@ -549,5 +643,7 @@ cd web && npx tsc --noEmit
 ## 🙏 致谢
 
 主公大修指导 · 姜维（OpenCode CLI）代码审查 · 袁天罡/法正知识库同步
+
+v2.5.0 (2026-06-02): 主公明令推进 v2.5.0 UI/UX 旗舰版 + 3 个 CSS 占位 (待 GUI 软件替换)
 
 —— 享三国，品汉风。
