@@ -1,26 +1,64 @@
-// v2.1.0 Phase 3.1: 全局快捷键 hook
-// 用法: useKeyboard({ '1': () => switchTab(0), '2': () => switchTab(1), ... })
-import { useEffect } from 'react'
+// ============================================
+// 汉献帝之末路 v2.5.0 — 全局快捷键 useKeyboard
+// J/K 切换奏折 / Esc 关闭弹窗 / 1-5 切档 / Space 推进
+// ============================================
 
-export type ShortcutMap = Record<string, (e: KeyboardEvent) => void>
+import { useEffect, useCallback, useRef } from 'react';
 
-export function useKeyboard(shortcuts: ShortcutMap, enabled = true) {
-  useEffect(() => {
-    if (!enabled) return
-    const handler = (e: KeyboardEvent) => {
-      // 忽略输入框
-      const target = e.target as HTMLElement
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
-        return
-      }
-      const key = e.key.toLowerCase()
-      const action = shortcuts[key] || shortcuts[e.key]
-      if (action) {
-        e.preventDefault()
-        action(e)
-      }
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [shortcuts, enabled])
+export interface KeyBindings {
+  // 奏折切换
+  j?: () => void;        // 下一封
+  k?: () => void;        // 上一封
+  // 弹窗
+  Escape?: () => void;
+  // 拟旨
+  '1'?: () => void;      // 口谕
+  '2'?: () => void;
+  '3'?: () => void;
+  '4'?: () => void;
+  '5'?: () => void;
+  // 推进
+  ' ': () => void;
+  // 菜单
+  m?: () => void;        // 菜单
+  s?: () => void;        // 设置
+  h?: () => void;        // 起居注
+  // 任意自定义
+  [key: string]: (() => void) | undefined;
 }
+
+export function useKeyboard(bindings: KeyBindings, enabled = true) {
+  const bindingsRef = useRef(bindings);
+  bindingsRef.current = bindings;
+
+  const handler = useCallback(
+    (e: KeyboardEvent) => {
+      if (!enabled) return;
+
+      // 输入框内不触发
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      const key = e.key === ' ' ? ' ' : e.key;
+      const handler = bindingsRef.current[key];
+      if (handler) {
+        e.preventDefault();
+        handler();
+      }
+    },
+    [enabled]
+  );
+
+  useEffect(() => {
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [handler]);
+}
+
+export default useKeyboard;

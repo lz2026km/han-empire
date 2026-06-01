@@ -1,0 +1,24 @@
+/* ============================================
+ * 汉献帝之末路 v2.5.0 — 议政厅背景层
+ * TODO 待专业 GUI 软件到位后替换为正式样式
+ * ============================================ */
+
+.court-backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at top, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+    linear-gradient(180deg, #0f0f18 0%, #0a0a0f 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.court-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0, transparent 39px, rgba(255, 255, 255, 0.02) 40px),
+    repeating-linear-gradient(90deg, transparent 0, transparent 39px, rgba(255, 255, 255, 0.02) 40px);
+  opacity: 0.6;
+}

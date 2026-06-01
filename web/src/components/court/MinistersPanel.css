@@ -1,0 +1,89 @@
+/* MinistersPanel 大臣立绘 CSS */
+.ministers-panel {
+  position: absolute;
+  bottom: 80px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: var(--space-6);
+  padding: 0 var(--space-6);
+  z-index: var(--z-elevated);
+}
+
+.minister {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+  min-width: 80px;
+}
+
+.minister:hover {
+  background: var(--color-bg-glass);
+  transform: translateY(-4px);
+}
+
+.minister-active {
+  background: var(--color-bg-glass);
+  transform: translateY(-8px);
+  filter: drop-shadow(0 0 12px var(--faction-color, #c9a84c));
+}
+
+.minister-silhouette {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.minister-hat {
+  width: 50px;
+  height: 24px;
+  background: linear-gradient(180deg, var(--faction-color, #c9a84c) 0%, #2a2a30 100%);
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #0a0a0d;
+  font-weight: bold;
+  margin-bottom: -4px;
+}
+
+.minister-body {
+  width: 60px;
+  height: 90px;
+  background: linear-gradient(180deg, var(--faction-color, #c9a84c) 0%, #2a2a30 100%);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-imperial);
+  font-size: 32px;
+  color: #0a0a0d;
+  font-weight: bold;
+  border: 2px solid #0a0a0d;
+}
+
+.minister-name {
+  font-size: var(--fs-sm);
+  color: var(--color-fg-primary);
+  font-weight: var(--fw-medium);
+  margin-top: 4px;
+}
+
+.minister-title {
+  font-size: var(--fs-xs);
+  color: var(--color-fg-tertiary);
+}
+
+.minister-faction-tag {
+  font-size: 10px;
+  font-weight: bold;
+  margin-top: 2px;
+  letter-spacing: 0.1em;
+}

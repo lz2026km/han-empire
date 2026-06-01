@@ -1,0 +1,56 @@
+/* DebateBubble 大臣发言气泡 CSS */
+.debate-bubble {
+  position: absolute;
+  top: 80px;
+  right: 24px;
+  max-width: 360px;
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(8px);
+  z-index: var(--z-elevated);
+  animation: bubble-pop 0.3s ease-out;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+@keyframes bubble-pop {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.debate-bubble-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.debate-bubble-speaker {
+  font-family: var(--font-imperial);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
+}
+
+.debate-bubble-stance {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  letter-spacing: 0.1em;
+}
+
+.debate-bubble-line {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
+  font-family: var(--font-body);
+}
+
+.debate-bubble-cursor {
+  display: inline-block;
+  animation: cursor-blink 0.8s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}

@@ -1,0 +1,39 @@
+/* FactionBacklashBadge 反弹徽章 CSS */
+.backlash-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: var(--fw-medium);
+  border: 1px solid;
+  border-radius: var(--radius-full);
+  background: rgba(0,0,0,0.3);
+  cursor: default;
+  letter-spacing: 0.05em;
+  transition: all var(--transition-fast);
+}
+
+.backlash-badge-active {
+  animation: backlash-pulse 2s ease-in-out infinite;
+}
+
+@keyframes backlash-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 currentColor; }
+  50% { box-shadow: 0 0 8px 2px currentColor; }
+}
+
+.backlash-badge-icon {
+  font-size: 14px;
+}
+
+.backlash-badge-faction {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.backlash-badge-count {
+  font-size: 10px;
+  opacity: 0.8;
+  margin-left: 2px;
+}

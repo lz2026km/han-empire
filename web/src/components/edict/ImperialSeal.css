@@ -1,0 +1,121 @@
+/* ImperialSeal 玉玺砸印 CSS */
+.imperial-seal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: var(--z-modal);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -50%);
+}
+
+.imperial-seal-raising .imperial-seal-body {
+  transform: translateY(-200px) scale(0.6);
+  opacity: 0;
+}
+
+.imperial-seal-striking .imperial-seal-body {
+  transform: translateY(0) scale(1.2);
+  transition: all 0.3s cubic-bezier(0.7, 0, 0.3, 1);
+}
+
+.imperial-seal-settled .imperial-seal-body {
+  transform: translateY(0) scale(1);
+  opacity: 0;
+  transition: all 0.5s ease-in;
+}
+
+.imperial-seal-body {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 3px solid var(--color-gold);
+  border-radius: 8px;
+  position: relative;
+  transition: all 0.3s ease-out;
+}
+
+.imperial-seal-dragon {
+  width: 60px;
+  height: 30px;
+  background: linear-gradient(180deg, #c9a84c, #8b6f30);
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-imperial);
+  font-size: 18px;
+  color: #0a0a0d;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.imperial-seal-face {
+  width: 100px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #c9a84c;
+  border-radius: 4px;
+  font-family: var(--font-imperial);
+  font-weight: bold;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+}
+
+.imperial-seal-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+.imperial-seal-splash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+.imperial-seal-splash-drop {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: splash-out 0.6s ease-out forwards;
+  opacity: 0.9;
+}
+
+@keyframes splash-out {
+  from {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: translate(var(--tx, 80px), var(--ty, 80px)) scale(0);
+    opacity: 0;
+  }
+}
+
+.imperial-seal-mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-family: var(--font-imperial);
+  font-size: 64px;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  transform: translate(-50%, -50%);
+  animation: seal-mark-fadein 0.6s ease-out;
+}
+
+@keyframes seal-mark-fadein {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+  to { opacity: 0.85; transform: translate(-50%, -50%) scale(1); }
+}

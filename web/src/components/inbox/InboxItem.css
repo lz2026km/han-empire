@@ -1,0 +1,98 @@
+/* InboxItem 单封奏折 CSS */
+.inbox-item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+  background: var(--color-bg-tertiary);
+  border-left: 3px solid;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  animation: item-foldin 0.4s ease-out;
+}
+
+@keyframes item-foldin {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) rotateZ(-1deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateZ(0);
+  }
+}
+
+.inbox-item:hover {
+  background: var(--color-bg-card);
+  transform: translateX(2px);
+}
+
+.inbox-item-selected {
+  background: rgba(59, 130, 246, 0.15);
+  border-left-width: 4px;
+}
+
+.inbox-item-unread .inbox-item-title {
+  color: var(--color-fg-primary);
+  font-weight: var(--fw-semibold);
+}
+
+.inbox-item-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.inbox-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.inbox-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.inbox-item-title {
+  font-size: var(--fs-sm);
+  color: var(--color-fg-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.inbox-item-time {
+  font-size: var(--fs-xs);
+  color: var(--color-fg-tertiary);
+  flex-shrink: 0;
+}
+
+.inbox-item-meta {
+  font-size: var(--fs-xs);
+  color: var(--color-fg-tertiary);
+  margin-top: 2px;
+}
+
+.inbox-item-preview {
+  font-size: var(--fs-xs);
+  color: var(--color-fg-tertiary);
+  margin-top: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.inbox-item-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent-red-bright);
+  flex-shrink: 0;
+  align-self: center;
+  box-shadow: 0 0 6px var(--color-accent-red-bright);
+}
