@@ -13,6 +13,12 @@ from han_sim.session import GameSession
 from han_sim.simulation import run_monthly_simulation
 from han_sim.decree import issue_secret_edict
 from han_sim.portraits import save_custom_portrait, delete_custom_portrait, list_custom_portraits
+from han_sim.content import load_game_content
+from han_sim import agents as _agents
+
+# ── v1.13.0 乾坤大挪移 Phase B：注入 GameContent 到 agents 模块 ──
+# 让 create_chat_memory_agent / create_minister_agent 等能拿到 prompt 字段
+_agents.bind_content(load_game_content())
 import json
 from typing import List, Dict
 
@@ -548,12 +554,32 @@ def chat_with_minister(campaign_id, minister_name):
         response = agent.run(message)
         text = response.content if hasattr(response, 'content') else str(response)
 
+        # ── v1.13.0 乾坤大挪移 Phase B：召对结束 → chat_memory 实时抽取 ──
+        # 失败 graceful（不阻断主流程），不抛错给前端
+        chat_memory_count = 0
+        try:
+            from han_sim.agents import create_chat_memory_agent
+            chat_memory_agent = create_chat_memory_agent()
+            chat_history_for_memory = [
+                {'role': 'user', 'content': message},
+                {'role': 'assistant', 'content': text},
+            ]
+            chat_memory_count = extract_chat_memories_for_minister(
+                chat_memory_agent, db, session.state, minister_name, chat_history_for_memory
+            )
+            if chat_memory_count:
+                print(f"[chat_memory] {minister_name}:{session.state.turn} 抽取 {chat_memory_count} 条记忆")
+        except Exception as chat_err:
+            # 失败不阻断召对主流程
+            print(f"[chat_memory] 抽取失败 (不阻断召对): {chat_err}")
+
         return jsonify({
             'result': text,
             'chat_history': [
                 {'role': 'emperor', 'text': message},
                 {'role': 'minister', 'text': text}
-            ]
+            ],
+            'chat_memory_extracted': chat_memory_count,  # v1.13.0 新增字段
         })
     except Exception as e:
         return jsonify({'result': f'召对失败: {str(e)}'})

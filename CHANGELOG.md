@@ -95,6 +95,48 @@
 
 ---
 
+## 💬 v1.13.0 — 2026-06-01
+
+> 乾坤大挪移一号方案 · Phase B · 召对即时记忆系统完整化
+
+### ✨ 新增
+
+| 分类 | 功能 | 描述 | 文件 |
+|------|------|------|------|
+| 🆕 **Prompt** | `chat_memory_extractor.md` | 178 行 6 章节宪法：权威源声明 / 核心职责 / 记忆类型 / 输出格式 / 汉献帝特例 / 控制膨胀 | `content/prompts/chat_memory_extractor.md`（新增） |
+| 📋 **字段注册** | GameContent 10 个 `*_prompt` 字段 | 让 `create_*_agent()` 的 `hasattr(ctx, '*_prompt')` 检查通过 | `han_sim/content.py`（+12 行） |
+| 🔌 **hook** | server.py 召对端点 chat_memory 抽取 | 主流程结束后插入 try/except 包裹的抽取（**失败 graceful**）；新增 `chat_memory_extracted` 字段返回 | `server.py`（+28 行） |
+| 🛡️ **bind_content** | server.py 启动时注入 | 让 `create_chat_memory_agent` / `create_minister_agent` 都能拿到 prompt 字段 | `server.py`（+6 行） |
+
+### 🔧 行为变更
+
+| 端点 | 旧 | 新 |
+|------|-----|-----|
+| `POST /api/campaigns/<id>/chat/<minister>` | 返回 `{result, chat_history}` | **新增** `chat_memory_extracted: int`（抽取条数） |
+| `create_chat_memory_agent()` | 走 fallback 简陋 prompt | **走完整 prompt**（game_world 权威 + 衣带诏规则 + 10条上限） |
+
+### ⚙️ 关键设计
+
+1. **衣带诏/密旨** → `importance=5` + `expires_turn=null`（永久记忆）
+2. **同一大臣本回合最多 10 条** → 按 importance 排序截断
+3. **密令去重** → 同 minister+content 已写过不重写
+4. **失败 graceful** → chat_memory 抽取报错**不阻断**召对主流程，前端仍能收到 text
+5. **强制 source_kind=chat_message, source_id={minister}:{turn}**
+
+### 🐛 顺手发现的现有 BUG（不属本次任务，登记 v1.13.1）
+
+1. **`parse_agent_json_full` 不支持 ```json``` 代码块包裹**（LLM 99% 会包）→ 但本次 prompt 明确要求**纯 JSON 输出无代码块**，且函数本身 graceful 返 0 条
+2. **`han_sim/constants.py` 缺 PHASE_ISSUED/REVIEWING/SUMMONING** → session.py 实际 import 必失败；server 当前跑得通是因 5月31日启动的老进程缓存了 GAMES
+3. **`runtime_llm.json` 路径硬编码** `~/.hermes/han-empire/` 但实际在 `~/.openclaw/workspace/han-empire/` → load_llm_config 走 getpass 提示
+
+### 📂 施工底册
+
+- `/home/admin/.openclaw/workspace/han-empire/docs/phaseB_v1.13.0_proposal.md`（v1.13.0 实施方案）
+- `/home/admin/.openclaw/workspace/han-empire/docs/game-bible-localization-plan.md` §4（乾坤大挪移总方案）
+- `/home/admin/.openclaw/workspace/han-empire/docs/tools_transplant_plan.md`（v1.14.0 工具移植底册）
+
+---
+
 ## 📜 v1.12.0 — 2026-06-01
 
 > 乾坤大挪移一号方案 · Phase A · game_world 宪法 + 权威源引用

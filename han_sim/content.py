@@ -12,6 +12,18 @@ from han_sim.paths import content_path, user_data_path
 class GameContent:
     def __init__(self, data_dir: str = ""):
         self.data_dir = data_dir or os.path.dirname(content_path(""))
+        # ── 提示词缓存（v1.13.0 乾坤大挪移 Phase B 新增）──
+        # 让 agents.create_*_agent() 的 ctx.xxx_prompt hasattr 检查通过
+        self.game_world_prompt: str = self.load_prompt("game_world")
+        self.season_simulator_prompt: str = self.load_prompt("season_simulator")
+        self.simulator_prompt: str = self.load_prompt("simulator")
+        self.minister_agent_prompt: str = self.load_prompt("minister_agent")
+        self.memory_extractor_prompt: str = self.load_prompt("memory_extractor")
+        self.extractor_prompt: str = self.load_prompt("extractor")
+        self.score_extractor_prompt: str = self.load_prompt("score_extractor")
+        self.decree_writer_prompt: str = self.load_prompt("decree_writer")
+        self.opening_gazette_prompt: str = self.load_prompt("opening_gazette")
+        self.chat_memory_extractor_prompt: str = self.load_prompt("chat_memory_extractor")
 
     # ── 人物 ─────────────────────────────────────────────────
 
