@@ -95,6 +95,60 @@
 
 ---
 
+## 🏯 v2.0.0 — 2026-06-01
+
+> **大修版**：代码全审查 + UI 优化 + 内容补完 + 架构升级
+
+### 🔧 P0 致命 bug 修复（5+8 项实测）
+
+#### 后端 P0（5 项 → 4 项子 Agent 误报，1 项 DDL 子 Agent 误报）
+
+| # | 位置 | 修复 |
+|---|------|------|
+| **P0-A1** | `han_sim/simulation.py:603-607` | `db.save_state("turn", state.turn)` 等 5 行误传字符串触发 `AttributeError: 'str' object has no attribute 'year'` → **每月推演 100% 崩**。改为 `db.save_state(state)` 一次性写入 |
+| **P0-A2** | `han_sim/models.py:64-88` | `Skill` 字段错位 `(sid, name, cost, effect, unlock_level, tier, branch)` → 48 个技能全部错乱。改 dataclass 顺序为 `(sid, name, effect, tier, unlock_level, branch, cost)`，48 个构造点全部用 kwarg，修复 `get_available_skills` / `can_activate_skill` 用正确字段 |
+| **P0-A4** | `han_sim/agents.py:249, 282, 316, 346, 366` | 5 个 agent factory `api_key=""` 改为读取 `MINIMAX_API_KEY`/`OPENAI_API_KEY` env，5 个 agent 全部能正常工作 |
+| **P0-A5** | `han_sim/llm_config.py:60-64` | fallback 链加 `MINIMAX_API_KEY` env 读取；`SystemExit` 改 `RuntimeError`；`getpass` 加 `try/except (EOFError, KeyboardInterrupt)` 防无头环境崩溃 |
+| ~~P0-A3~~ | `han_sim/db.py:64-70` | **子 Agent 误报**——`game_state` 已用 `INTEGER PRIMARY KEY CHECK (id = 1)` 单行约束，无 bug |
+
+#### 前端 P0（10 项 → 1 项子 Agent 误报）
+
+| # | 位置 | 修复 |
+|---|------|------|
+| **P0-B1** | `web/src/App.tsx:406` | `<button>💾 存档</button>` 无 onClick → 接 `onSave={saveGame}`，并把 onSave 传给 OverviewTab + 加类型定义 |
+| **P0-B2** | `web/src/App.tsx:340` | `onStageComplete={() => {}}` 死函数 → 改为 `(stageId) => console.log(...)` |
+| **P0-B2+** | `web/src/App.tsx:390` | `GrandMap` `onProvinceClick={() => {}}` 死函数 → 改为 `(id) => console.log(...)` |
+| **P0-B3** | `web/src/App.tsx:266` | `<OrdersTab onRefresh={() => ...}>` 每次 render 重建引用导致 OrdersTab useEffect 死循环 → 抽 `handleRefreshSecretOrders = useCallback(...)` 稳定引用 |
+| **P0-B4** | `web/src/App.tsx` SSE | EventSource 无 ref 无 cleanup，组件卸载时连接泄漏 → 加 `eventSourceRef` + `useEffect` cleanup + 重新连接时 close 旧的 |
+| **P0-B5** | `web/src/components/MinisterPortrait.tsx:73` | 重复 export `CharacterPortrait` 与独立文件冲突 → 删 64 行重复定义，加注释指向独立文件 |
+| **P0-B6** | `web/src/App.tsx:142` | `cancelSecretOrder(...).then(r => setSecretOrders(r.orders))` 错引（实际返回 `{ message }`）→ 改 `r.orders || []` + 加注释 |
+| **P0-B7** | `web/src/styles/app.css:858` | 游离 `}` 单独成行 → 删 |
+| **P0-B8** | `web/src/styles/app.css:867-909` | 4 段 `chinese-border*` 死样式 43 行 0 引用 → 删 |
+| ~~P0-B9~~ | `web/index.html` | **子 Agent 误报**——已有 `Noto Serif SC` Google Fonts |
+
+### 📊 测试
+
+| 状态 | 数量 |
+|------|------|
+| 测试 | **83/83 通过** (3.88s) |
+| 实测 save_state | `db.save_state(state)` 工作，`db.load_state()` 正确读出 year=189 turn=1 |
+| tsc | **0 错误**（`tsc --noEmit`） |
+
+### 📂 改动文件
+
+| 文件 | 改动 |
+|------|------|
+| `han_sim/simulation.py` | P0-A1 save_state 5 行→1 行 |
+| `han_sim/models.py` | P0-A2 Skill 字段顺序 + 48 个 kwarg + 修 2 个函数 |
+| `han_sim/agents.py` | P0-A4 5 个 factory 改读 env |
+| `han_sim/llm_config.py` | P0-A5 fallback + RuntimeError + try/except |
+| `web/src/App.tsx` | P0-B1/B2/B3/B4/B6 存档按钮 + SSE cleanup + useCallback |
+| `web/src/components/MinisterPortrait.tsx` | P0-B5 删 64 行重复 CharacterPortrait |
+| `web/src/styles/app.css` | P0-B7 删游离 `}` + P0-B8 删 chinese-border 43 行 |
+| `docs/v2.0.0_proposal.md` | 大修方案 9 章节 13.7KB |
+
+---
+
 ## 🎨 v1.18.0 — 2026-06-01
 
 > 乾坤大挪移一号方案 · Phase G · 古风背景图 + 视觉系统

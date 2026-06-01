@@ -62,75 +62,84 @@ def get_authority_level(authority: int) -> AuthorityLevel:
 
 @dataclass
 class Skill:
-    sid: str           # 唯一标识，如 "jx_03"
-    name: str          # 技能名，如 "重农抑商"
-    cost: int          # 激活消耗技能点
-    effect: str        # 效果描述
-    unlock_level: int  # 威权等级要求（威权>=此值才能激活）
-    tier: int          # 层阶（1-3，层阶越高越强）
-    branch: str = ""    # 所属流派（允许空字符串兼容旧调用）
-    requires: List[str] = field(default_factory=list)  # 前置技能（需先激活）
-    source: str = ""        # 技能来源标签：system/military/politics/culture
-    tags: List[str] = field(default_factory=list)  # 标签列表
+    """v2.0.0 P0-A2: 字段顺序修正
+    - sid: 唯一标识
+    - name: 技能名
+    - effect: 效果描述
+    - tier: 层阶（1-3）
+    - unlock_level: 威权等级要求（威权>=此值才能激活）
+    - cost: 激活消耗技能点
+    - branch: 所属流派
+    """
+    sid: str
+    name: str
+    effect: str
+    tier: int                # 层阶 1-3
+    unlock_level: int = 0    # 威权要求
+    branch: str = ""         # 流派
+    cost: int = 0            # 技能点消耗
+    requires: List[str] = field(default_factory=list)
+    source: str = ""
+    tags: List[str] = field(default_factory=list)
 
 
 # 四系技能树定义（每系12条，共48条）
 SKILL_TREES: Dict[str, List[Skill]] = {
     "经略": [
-        Skill("jx_01", "轻赋薄敛", "田赋收入+15%", 0, 1, "经略", source="system", tags=["财政"]),
-        Skill("jx_02", "重农抑商", "农业税收+20%，商业税收-10%", 20, 1, "经略", requires=["jx_01"], source="system", tags=["财政"]),
-        Skill("jx_03", "修养生息", "人口增长+10%/年", 30, 1, "经略", requires=["jx_02"], source="system", tags=["人口"]),
-        Skill("jx_04", "盐铁专营", "盐铁专营收入+25%", 40, 2, "经略", requires=["jx_03"], source="system", tags=["财政"]),
-        Skill("jx_05", "漕运畅通", "各州联系紧密度+5%", 40, 2, "经略", source="system", tags=["交通"]),
-        Skill("jx_06", "屯田制度", "军粮自给+20%", 50, 2, "经略", requires=["jx_04"], source="system", tags=["军事"]),
-        Skill("jx_07", "兴修水利", "农业税收+额外10%", 50, 2, "经略", requires=["jx_03"], source="system", tags=["农业"]),
-        Skill("jx_08", "均输平准", "物价稳定，财政波动-30%", 60, 3, "经略", requires=["jx_05", "jx_07"], source="system", tags=["经济"]),
-        Skill("jx_09", "调控粮价", "荒年粮食充足，粮价稳定", 60, 3, "经略", requires=["jx_08"], source="system", tags=["农业"]),
-        Skill("jx_10", "深耕细作", "农业税收+30%", 70, 3, "经略", requires=["jx_09"], source="system", tags=["农业"]),
-        Skill("jx_11", "工商并举", "商税+20%且不影响农业", 80, 3, "经略", requires=["jx_10"], source="system", tags=["财政"]),
-        Skill("jx_12", "民富国强", "田赋+商税+30%，藩镇-5", 90, 3, "经略", requires=["jx_11"], source="system", tags=["终极"]),
+        Skill("jx_01", "轻赋薄敛", "田赋收入+15%", tier=1, unlock_level=0, branch="经略", source="system", tags=["财政"]),
+        Skill("jx_02", "重农抑商", "农业税收+20%，商业税收-10%", tier=1, unlock_level=20, branch="经略", requires=["jx_01"], source="system", tags=["财政"]),
+        Skill("jx_03", "修养生息", "人口增长+10%/年", tier=1, unlock_level=30, branch="经略", requires=["jx_02"], source="system", tags=["人口"]),
+        Skill("jx_04", "盐铁专营", "盐铁专营收入+25%", tier=2, unlock_level=40, branch="经略", requires=["jx_03"], source="system", tags=["财政"]),
+        Skill("jx_05", "漕运畅通", "各州联系紧密度+5%", tier=2, unlock_level=40, branch="经略", source="system", tags=["交通"]),
+        Skill("jx_06", "屯田制度", "军粮自给+20%", tier=2, unlock_level=50, branch="经略", requires=["jx_04"], source="system", tags=["军事"]),
+        Skill("jx_07", "兴修水利", "农业税收+额外10%", tier=2, unlock_level=50, branch="经略", requires=["jx_03"], source="system", tags=["农业"]),
+        Skill("jx_08", "均输平准", "物价稳定，财政波动-30%", tier=3, unlock_level=60, branch="经略", requires=["jx_05", "jx_07"], source="system", tags=["经济"]),
+        Skill("jx_09", "调控粮价", "荒年粮食充足，粮价稳定", tier=3, unlock_level=60, branch="经略", requires=["jx_08"], source="system", tags=["农业"]),
+        Skill("jx_10", "深耕细作", "农业税收+30%", tier=3, unlock_level=70, branch="经略", requires=["jx_09"], source="system", tags=["农业"]),
+        Skill("jx_11", "工商并举", "商税+20%且不影响农业", tier=3, unlock_level=80, branch="经略", requires=["jx_10"], source="system", tags=["财政"]),
+        Skill("jx_12", "民富国强", "田赋+商税+30%，藩镇-5", tier=3, unlock_level=90, branch="经略", requires=["jx_11"], source="system", tags=["终极"]),
     ],
     "权谋": [
-        Skill("qm_01", "以退为进", "示弱待变，诸侯警惕-10%", 0, 1, "权谋", source="politics", tags=["计谋"]),
-        Skill("qm_02", "借刀杀人", "唆使诸侯内斗，藩镇+5", 20, 1, "权谋", requires=["qm_01"], source="politics", tags=["计谋"]),
-        Skill("qm_03", "离间计", "指定诸侯忠诚度-15", 30, 1, "权谋", requires=["qm_02"], source="politics", tags=["计谋"]),
-        Skill("qm_04", "缓兵之计", "叛逃事件触发延迟1回合", 40, 2, "权谋", requires=["qm_01"], source="politics", tags=["计谋"]),
-        Skill("qm_05", "纵横捭阖", "联盟关系改善速度+50%", 40, 2, "权谋", requires=["qm_02"], source="politics", tags=["外交"]),
-        Skill("qm_06", "挟天子令诸侯", "声望≥50时，诏书效果+0.3", 50, 2, "权谋", requires=["qm_03", "qm_05"], source="politics", tags=["终极"]),
-        Skill("qm_07", "暗度陈仓", "秘密行动成功率+30%", 50, 2, "权谋", requires=["qm_04"], source="politics", tags=["情报"]),
-        Skill("qm_08", "联吴抗曹", "联合孙权势力，抗曹联盟强度+20%", 60, 3, "权谋", requires=["qm_06"], source="politics", tags=["外交"]),
-        Skill("qm_09", "上屋抽梯", "使某诸侯完全孤立", 60, 3, "权谋", requires=["qm_07"], source="politics", tags=["计谋"]),
-        Skill("qm_10", "假途伐虢", "借道伐敌，损耗-30%", 70, 3, "权谋", requires=["qm_08", "qm_09"], source="politics", tags=["军事"]),
-        Skill("qm_11", "草木皆兵", "威吓敌军，敌军士气-20%", 80, 3, "权谋", requires=["qm_10"], source="politics", tags=["军事"]),
-        Skill("qm_12", "天下为棋", "所有诸侯忠诚度+10，威权判定+0.2", 90, 3, "权谋", requires=["qm_11"], source="politics", tags=["终极"]),
+        Skill("qm_01", "以退为进", "示弱待变，诸侯警惕-10%", tier=1, unlock_level=0, branch="权谋", source="politics", tags=["计谋"]),
+        Skill("qm_02", "借刀杀人", "唆使诸侯内斗，藩镇+5", tier=1, unlock_level=20, branch="权谋", requires=["qm_01"], source="politics", tags=["计谋"]),
+        Skill("qm_03", "离间计", "指定诸侯忠诚度-15", tier=1, unlock_level=30, branch="权谋", requires=["qm_02"], source="politics", tags=["计谋"]),
+        Skill("qm_04", "缓兵之计", "叛逃事件触发延迟1回合", tier=2, unlock_level=40, branch="权谋", requires=["qm_01"], source="politics", tags=["计谋"]),
+        Skill("qm_05", "纵横捭阖", "联盟关系改善速度+50%", tier=2, unlock_level=40, branch="权谋", requires=["qm_02"], source="politics", tags=["外交"]),
+        Skill("qm_06", "挟天子令诸侯", "声望≥50时，诏书效果+0.3", tier=2, unlock_level=50, branch="权谋", requires=["qm_03", "qm_05"], source="politics", tags=["终极"]),
+        Skill("qm_07", "暗度陈仓", "秘密行动成功率+30%", tier=2, unlock_level=50, branch="权谋", requires=["qm_04"], source="politics", tags=["情报"]),
+        Skill("qm_08", "联吴抗曹", "联合孙权势力，抗曹联盟强度+20%", tier=3, unlock_level=60, branch="权谋", requires=["qm_06"], source="politics", tags=["外交"]),
+        Skill("qm_09", "上屋抽梯", "使某诸侯完全孤立", tier=3, unlock_level=60, branch="权谋", requires=["qm_07"], source="politics", tags=["计谋"]),
+        Skill("qm_10", "假途伐虢", "借道伐敌，损耗-30%", tier=3, unlock_level=70, branch="权谋", requires=["qm_08", "qm_09"], source="politics", tags=["军事"]),
+        Skill("qm_11", "草木皆兵", "威吓敌军，敌军士气-20%", tier=3, unlock_level=80, branch="权谋", requires=["qm_10"], source="politics", tags=["军事"]),
+        Skill("qm_12", "天下为棋", "所有诸侯忠诚度+10，威权判定+0.2", tier=3, unlock_level=90, branch="权谋", requires=["qm_11"], source="politics", tags=["终极"]),
     ],
     "武功": [
-        Skill("wg_01", "整军经武", "军事演练效果+20%", 0, 1, "武功", source="military", tags=["军事"]),
-        Skill("wg_02", "以寡敌众", "以少胜多概率+15%", 20, 1, "武功", requires=["wg_01"], source="military", tags=["战术"]),
-        Skill("wg_03", "精兵简政", "军队维持成本-15%", 30, 1, "武功", requires=["wg_01"], source="military", tags=["后勤"]),
-        Skill("wg_04", "坚壁清野", "城池防御+20%", 40, 2, "武功", requires=["wg_02"], source="military", tags=["防御"]),
-        Skill("wg_05", "知己知彼", "情报精确度+30%", 40, 2, "武功", requires=["wg_01"], source="military", tags=["情报"]),
-        Skill("wg_06", "名将养成", "武将能力培养速度+25%", 50, 2, "武功", requires=["wg_04"], source="military", tags=["人才"]),
-        Skill("wg_07", "连环计", "战术配合效果+30%", 50, 2, "武功", requires=["wg_04", "wg_05"], source="military", tags=["战术"]),
-        Skill("wg_08", "火攻决", "火攻战术伤害+50%", 60, 3, "武功", requires=["wg_06", "wg_07"], source="military", tags=["战术"]),
-        Skill("wg_09", "谋定后动", "先手必胜，战斗先手+1", 60, 3, "武功", requires=["wg_05"], source="military", tags=["战术"]),
-        Skill("wg_10", "破釜沉舟", "背水一战，危急时刻爆发+40%", 70, 3, "武功", requires=["wg_08", "wg_09"], source="military", tags=["终极"]),
-        Skill("wg_11", "韩信点兵", "军队指挥效率+25%", 80, 3, "武功", requires=["wg_10"], source="military", tags=["指挥"]),
-        Skill("wg_12", "威震华夏", "威权+15，声望+10，藩镇-10", 90, 3, "武功", requires=["wg_11"], source="military", tags=["终极"]),
+        Skill("wg_01", "整军经武", "军事演练效果+20%", tier=1, unlock_level=0, branch="武功", source="military", tags=["军事"]),
+        Skill("wg_02", "以寡敌众", "以少胜多概率+15%", tier=1, unlock_level=20, branch="武功", requires=["wg_01"], source="military", tags=["战术"]),
+        Skill("wg_03", "精兵简政", "军队维持成本-15%", tier=1, unlock_level=30, branch="武功", requires=["wg_01"], source="military", tags=["后勤"]),
+        Skill("wg_04", "坚壁清野", "城池防御+20%", tier=2, unlock_level=40, branch="武功", requires=["wg_02"], source="military", tags=["防御"]),
+        Skill("wg_05", "知己知彼", "情报精确度+30%", tier=2, unlock_level=40, branch="武功", requires=["wg_01"], source="military", tags=["情报"]),
+        Skill("wg_06", "名将养成", "武将能力培养速度+25%", tier=2, unlock_level=50, branch="武功", requires=["wg_04"], source="military", tags=["人才"]),
+        Skill("wg_07", "连环计", "战术配合效果+30%", tier=2, unlock_level=50, branch="武功", requires=["wg_04", "wg_05"], source="military", tags=["战术"]),
+        Skill("wg_08", "火攻决", "火攻战术伤害+50%", tier=3, unlock_level=60, branch="武功", requires=["wg_06", "wg_07"], source="military", tags=["战术"]),
+        Skill("wg_09", "谋定后动", "先手必胜，战斗先手+1", tier=3, unlock_level=60, branch="武功", requires=["wg_05"], source="military", tags=["战术"]),
+        Skill("wg_10", "破釜沉舟", "背水一战，危急时刻爆发+40%", tier=3, unlock_level=70, branch="武功", requires=["wg_08", "wg_09"], source="military", tags=["终极"]),
+        Skill("wg_11", "韩信点兵", "军队指挥效率+25%", tier=3, unlock_level=80, branch="武功", requires=["wg_10"], source="military", tags=["指挥"]),
+        Skill("wg_12", "威震华夏", "威权+15，声望+10，藩镇-10", tier=3, unlock_level=90, branch="武功", requires=["wg_11"], source="military", tags=["终极"]),
     ],
     "文治": [
-        Skill("wz_01", "兴学育才", "每回合+0.5技能点（威权≥40时）", 0, 1, "文治", source="culture", tags=["文化"]),
-        Skill("wz_02", "举孝廉", "忠诚人才出现概率+20%", 20, 1, "文治", requires=["wz_01"], source="culture", tags=["人才"]),
-        Skill("wz_03", "太学立学", "大臣能力上限+5", 30, 1, "文治", requires=["wz_01"], source="culture", tags=["文化"]),
-        Skill("wz_04", "科举取士", "寒门人才出现概率+30%", 40, 2, "文治", requires=["wz_02"], source="culture", tags=["人才"]),
-        Skill("wz_05", "以德治国", "声望+5，威权衰减减缓10%", 40, 2, "文治", source="culture", tags=["政治"]),
-        Skill("wz_06", "修律定刑", "政务效率+20%，政务处理消耗-20%", 50, 2, "文治", requires=["wz_03"], source="culture", tags=["法制"]),
-        Skill("wz_07", "儒道传承", "大臣忠诚度自然+1/季度", 50, 2, "文治", requires=["wz_05"], source="culture", tags=["政治"]),
-        Skill("wz_08", "文景之治", "民望大增，声望+15", 60, 3, "文治", requires=["wz_06", "wz_07"], source="culture", tags=["终极"]),
-        Skill("wz_09", "开疆拓土", "新州郡开发速度+40%", 60, 3, "文治", requires=["wz_06"], source="culture", tags=["扩张"]),
-        Skill("wz_10", "光武中兴", "汉室中兴，声望+20，威权+10", 70, 3, "文治", requires=["wz_08", "wz_09"], source="culture", tags=["终极"]),
-        Skill("wz_11", "万邦来朝", "外交影响力大增，诸侯贡金+50%", 80, 3, "文治", requires=["wz_10"], source="culture", tags=["外交"]),
-        Skill("wz_12", "千古一帝", "威权+20，声望+25，藩镇-15，所有技能效果+10%", 90, 3, "文治", requires=["wz_11"], source="culture", tags=["终极"]),
+        Skill("wz_01", "兴学育才", "每回合+0.5技能点（威权≥40时）", tier=1, unlock_level=0, branch="文治", source="culture", tags=["文化"]),
+        Skill("wz_02", "举孝廉", "忠诚人才出现概率+20%", tier=1, unlock_level=20, branch="文治", requires=["wz_01"], source="culture", tags=["人才"]),
+        Skill("wz_03", "太学立学", "大臣能力上限+5", tier=1, unlock_level=30, branch="文治", requires=["wz_01"], source="culture", tags=["文化"]),
+        Skill("wz_04", "科举取士", "寒门人才出现概率+30%", tier=2, unlock_level=40, branch="文治", requires=["wz_02"], source="culture", tags=["人才"]),
+        Skill("wz_05", "以德治国", "声望+5，威权衰减减缓10%", tier=2, unlock_level=40, branch="文治", source="culture", tags=["政治"]),
+        Skill("wz_06", "修律定刑", "政务效率+20%，政务处理消耗-20%", tier=2, unlock_level=50, branch="文治", requires=["wz_03"], source="culture", tags=["法制"]),
+        Skill("wz_07", "儒道传承", "大臣忠诚度自然+1/季度", tier=2, unlock_level=50, branch="文治", requires=["wz_05"], source="culture", tags=["政治"]),
+        Skill("wz_08", "文景之治", "民望大增，声望+15", tier=3, unlock_level=60, branch="文治", requires=["wz_06", "wz_07"], source="culture", tags=["终极"]),
+        Skill("wz_09", "开疆拓土", "新州郡开发速度+40%", tier=3, unlock_level=60, branch="文治", requires=["wz_06"], source="culture", tags=["扩张"]),
+        Skill("wz_10", "光武中兴", "汉室中兴，声望+20，威权+10", tier=3, unlock_level=70, branch="文治", requires=["wz_08", "wz_09"], source="culture", tags=["终极"]),
+        Skill("wz_11", "万邦来朝", "外交影响力大增，诸侯贡金+50%", tier=3, unlock_level=80, branch="文治", requires=["wz_10"], source="culture", tags=["外交"]),
+        Skill("wz_12", "千古一帝", "威权+20，声望+25，藩镇-15，所有技能效果+10%", tier=3, unlock_level=90, branch="文治", requires=["wz_11"], source="culture", tags=["终极"]),
     ],
 }
 
@@ -146,18 +155,15 @@ def get_skill_by_id(sid: str) -> Optional[Skill]:
 
 def get_available_skills(authority: int, activated: List[str]) -> List[Skill]:
     """获取当前威权下可激活的技能（未激活且满足威权要求）。
-    
-    注意：技能数据的 unlock_level 实际存储在 tier 位置，
-    cost 存储在 unlock_level 位置。这是历史遗留的参数字段错位。
-    - skill.tier = 威权要求（1/2/3）
-    - skill.unlock_level = 技能点消耗（0/20/30/40...）
+
+    v2.0.0 P0-A2: 字段已修正，unlock_level 才是威权要求
     """
     available = []
     for tree in SKILL_TREES.values():
         for skill in tree:
             if skill.sid in activated:
                 continue
-            if authority >= skill.unlock_level:  # unlock_level is the authority requirement
+            if authority >= skill.unlock_level:
                 # 检查前置技能
                 if not skill.requires:
                     available.append(skill)
@@ -168,23 +174,18 @@ def get_available_skills(authority: int, activated: List[str]) -> List[Skill]:
 
 def can_activate_skill(skill: Skill, authority: int, activated: List[str], skill_points: int) -> Tuple[bool, str]:
     """检查技能是否可以激活，返回(是否可激活, 原因)。
-    
-    注意：参数字段错位（历史原因）：
-    - skill.unlock_level = 技能消耗点数（0/20/30...）
-    - skill.cost = 效果描述字符串（无实际用途）
+
+    v2.0.0 P0-A2: 字段已修正
+    - skill.unlock_level = 威权要求
+    - skill.cost = 技能点消耗
     """
-    required = skill.unlock_level  # unlock_level is the actual authority requirement
-    if not isinstance(required, int):
-        required = 0
-    if authority < required:
-        return False, f"威权不足（需{required}，当前{authority}）"
+    if authority < skill.unlock_level:
+        return False, f"威权不足（需{skill.unlock_level}，当前{authority}）"
     if not all(r in activated for r in skill.requires):
         missing = [r for r in skill.requires if r not in activated]
         return False, f"需先激活前置技能：{', '.join(missing)}"
-    # skill.unlock_level is the cost (int), skill.cost is the effect string
-    actual_cost = skill.unlock_level if isinstance(skill.unlock_level, int) else 0
-    if skill_points < actual_cost:
-        return False, f"技能点不足（需{actual_cost}，当前{skill_points}）"
+    if skill_points < skill.cost:
+        return False, f"技能点不足（需{skill.cost}，当前{skill_points}）"
     return True, "可激活"
 
 

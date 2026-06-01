@@ -2,7 +2,7 @@
    App.tsx - Main Application Component
    汉献帝之末路 - React Frontend
    ============================================= */
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Header } from './components/Header'
 import { useGame } from './hooks/useGame'
 import { MinisterChat } from './components/MinisterChat'
@@ -100,6 +100,24 @@ export default function App() {
     }
   }, [campaignId])
 
+  // v2.0.0 P0-B3: useCallback 稳定引用，避免 OrdersTab useEffect 死循环
+  const handleRefreshSecretOrders = useCallback(() => {
+    if (campaignId) {
+      api.getSecretOrders(campaignId).then(r => setSecretOrders(r.orders || []))
+    }
+  }, [campaignId])
+
+  const eventSourceRef = useRef<EventSource | null>(null)
+  // v2.0.0 P0-B4: 组件卸载时关闭 SSE
+  useEffect(() => {
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close()
+        eventSourceRef.current = null
+      }
+    }
+  }, [])
+
   const handleStreamSettlement = useCallback(async () => {
     if (!campaignId) return
     setShowSettlement(true)
@@ -112,15 +130,20 @@ export default function App() {
     setCurrentSettlementStage('fiscal')
 
     try {
+      // v2.0.0 P0-B4: 用 ref 持有 EventSource 以便 cleanup
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close()
+      }
       const eventSource = api.streamSettlement(campaignId)
-      
+      eventSourceRef.current = eventSource
+
       eventSource.addEventListener('stage', (e) => {
         const data = JSON.parse(e.data)
         if (data.stage === 'thinking') {
           setCurrentSettlementStage(data.stage)
         } else {
           setCurrentSettlementStage(data.stage.replace('_done', ''))
-          setSettlementStages(prev => prev.map(s => 
+          setSettlementStages(prev => prev.map(s =>
             s.id === data.stage.replace('_done', '') ? { ...s, status: 'done' } : s
           ))
         }
@@ -136,11 +159,13 @@ export default function App() {
 
       eventSource.addEventListener('done', () => {
         eventSource.close()
+        eventSourceRef.current = null
         setShowSettlement(false)
       })
 
-      eventSource.addEventListener('error', (e) => {
+      eventSource.addEventListener('error', () => {
         eventSource.close()
+        eventSourceRef.current = null
         setShowSettlement(false)
       })
     } catch (e) {
@@ -221,7 +246,7 @@ export default function App() {
 
               <SceneTransition key={activeTab} type="fade" duration={400}>
                 {activeTab === 'overview' && (
-                  <OverviewTab gameState={gameState} ministers={ministers} factions={factions} onNextTurn={handleStreamSettlement} />
+                  <OverviewTab gameState={gameState} ministers={ministers} factions={factions} onNextTurn={handleStreamSettlement} onSave={saveGame} />
                 )}
                 {activeTab === 'decree' && (
                   <DecreeTab gameState={gameState} ministers={ministers} onIssue={issueDecree} />
@@ -245,7 +270,8 @@ export default function App() {
                   <MapTab />
                 )}
                 {activeTab === 'orders' && campaignId && (
-                  <OrdersTab secretOrders={secretOrders} onRefresh={() => api.getSecretOrders(campaignId).then(r => setSecretOrders(r.orders))} />
+                  // v2.0.0 P0-B3: useCallback 稳定引用，避免 OrdersTab useEffect 死循环
+                  <OrdersTab key={campaignId} secretOrders={secretOrders} onRefresh={handleRefreshSecretOrders} />
                 )}
                 {activeTab === 'log' && (
                   <LogTab entries={log} />
@@ -336,7 +362,7 @@ export default function App() {
         year={gameState?.year || 189}
         stages={settlementStages.map(s => ({ id: s.id, name: s.name, status: s.status as any }))}
         currentStage={currentSettlementStage}
-        onStageComplete={() => {}}
+        onStageComplete={(stageId) => { console.log('v2.0.0 P0-B2 阶段完成', stageId) }}
         changes={{}}
       />
 
@@ -348,7 +374,8 @@ export default function App() {
         onCancelOrder={(orderId) => {
           if (campaignId) {
             api.cancelSecretOrder(campaignId, orderId).then(() => {
-              api.getSecretOrders(campaignId).then(r => setSecretOrders(r.orders))
+              // v2.0.0 P0-B6: cancelSecretOrder 返回 { message }，不应取 r.orders
+              api.getSecretOrders(campaignId).then(r => setSecretOrders(r.orders || []))
             })
           }
         }}
@@ -362,11 +389,12 @@ export default function App() {
       />
 
       {/* Grand Map */}
+      {/* v2.0.0 P0-B2: provinces 为空数组时 onProvinceClick 应可空调用 */}
       <GrandMap
         isOpen={showGrandMap}
         onClose={() => setShowGrandMap(false)}
         provinces={[]}
-        onProvinceClick={() => {}}
+        onProvinceClick={(id) => { console.log('v2.0.0 P0-B2 选中州郡', id) }}
       />
     </div>
   )
@@ -391,19 +419,21 @@ function WelcomeScreen({ onNewGame }: { onNewGame: () => void }) {
 }
 
 function OverviewTab({
-  gameState, ministers, factions, onNextTurn
+  gameState, ministers, factions, onNextTurn, onSave
 }: {
   gameState: GameState | null
   ministers: MinisterStats[]
-  factions: FactionStats[]
+  factions: any[]
   onNextTurn: () => void
+  onSave: () => void
 }) {
   if (!gameState) return null
   return (
     <div className="fade-in">
       <div className="action-row">
         <button className="btn btn--primary" onClick={onNextTurn}>⏭️ 下一个月</button>
-        <button className="btn btn--gold">💾 存档</button>
+        {/* v2.0.0 P0-B1: 存档按钮接 saveGame */}
+        <button className="btn btn--gold" onClick={onSave}>💾 存档</button>
       </div>
 
       <div className="grid-3" style={{ marginBottom: '20px' }}>

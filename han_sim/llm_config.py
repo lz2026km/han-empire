@@ -57,11 +57,16 @@ def load_llm_config(
     advanced_api_key: str = "",
 ) -> LLMConfig:
     runtime = load_runtime_llm()
-    api_key = (api_key or runtime.get("api_key", "") or os.environ.get("OPENAI_API_KEY", "")).strip()
+    # v2.0.0 P0-A5: 优先用调用方传入的 api_key，其次 runtime，再读 env（MiniMax→OpenAI→DeepSeek）
+    api_key = (api_key or runtime.get("api_key", "") or os.environ.get("MINIMAX_API_KEY", "") or os.environ.get("OPENAI_API_KEY", "")).strip()
     if not api_key:
-        api_key = getpass.getpass("请输入 API key（不会保存，回车取消）：").strip()
+        # 无头环境下 getpass 不可用，改为显式 raise RuntimeError
+        try:
+            api_key = getpass.getpass("请输入 API key（不会保存，回车取消）：").strip()
+        except (EOFError, KeyboardInterrupt):
+            api_key = ""
     if not api_key:
-        raise SystemExit("未提供 API key，无法使用 LLM。")
+        raise RuntimeError("未提供 API key，无法使用 LLM。请设置 MINIMAX_API_KEY 或 OPENAI_API_KEY 环境变量。")
     cfg_base_url = (base_url or runtime.get("base_url", "") or "").strip()
     cfg_model = (model or runtime.get("model", "") or "").strip()
     if not cfg_base_url:

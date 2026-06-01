@@ -600,11 +600,9 @@ def run_monthly_simulation(
     )
 
     # ── 8. 写入 db ─────────────────────────────────────────────
-    db.save_state("turn", state.turn)
-    db.save_state("year", state.year)
-    db.save_state("period", state.period)
-    db.save_state("metrics", state.metrics)
-    db.save_state("triggered_events", triggered_this_round)
+    # v2.0.0 P0-A1: save_state(state) 一次性写入，原 5 行误传字符串
+    # 会触发 AttributeError: 'str' object has no attribute 'year'
+    db.save_state(state)
     db.commit()
 
     return SimulationResult(

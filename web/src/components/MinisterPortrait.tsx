@@ -56,64 +56,9 @@ export function MinisterPortrait({
   );
 }
 
-/* =============================================
-   CharacterPortrait - 角色全身立绘组件
-   用于展示重要角色的高清立绘
-   ============================================= */
-
-interface CharacterPortraitProps {
-  characterId: string;
-  name: string;
-  faction?: string;
-  status?: 'active' | 'dismissed' | 'imprisoned' | 'exiled' | 'dead';
-  onClick?: () => void;
-  selected?: boolean;
-}
-
-export function CharacterPortrait({
-  characterId,
-  name,
-  faction,
-  status = 'active',
-  onClick,
-  selected = false
-}: CharacterPortraitProps) {
-  const portraitUrl = `/portraits/minister_${characterId}.png`;
-
-  const getStatusClass = () => {
-    switch (status) {
-      case 'active': return '';
-      case 'dismissed': return 'portrait-dismissed';
-      case 'imprisoned': return 'portrait-imprisoned';
-      case 'exiled': return 'portrait-exiled';
-      case 'dead': return 'portrait-dead';
-      default: return '';
-    }
-  };
-
-  return (
-    <button
-      className={`character-portrait ${getStatusClass()} ${selected ? 'portrait-selected' : ''}`}
-      onClick={onClick}
-      title={name}
-    >
-      <div className="portrait-frame">
-        <img
-          src={portraitUrl}
-          alt={name}
-          className="portrait-image"
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
-          }}
-        />
-        <div className="portrait-overlay">
-          <span className="portrait-name">{name}</span>
-          {faction && <span className="portrait-faction">{faction}</span>}
-        </div>
-      </div>
-    </button>
-  );
-}
+/* CharacterPortrait 已迁移到独立文件 CharacterPortrait.tsx
+   v2.0.0 P0-B5: 避免同名 export 冲突
+*/
 
 /* =============================================
    PortraitUploadButton - 头像上传按钮

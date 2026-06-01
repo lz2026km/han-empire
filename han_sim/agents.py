@@ -242,11 +242,13 @@ def create_season_simulator_agent(
     simulator_payload: Optional[Dict[str, Any]] = None,
 ) -> Agent:
     """月末推演官 Agent。"""
+    import os as _os
     from han_sim.llm_config import load_llm_config
+    _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
     cfg = load_llm_config(
         base_url="https://api.minimaxi.com/v1",
         model="MiniMax-M2.5",
-        api_key="",
+        api_key=_api_key,
         timeout_seconds=180.0,
     )
     turn_header = ""
@@ -275,11 +277,13 @@ def create_season_simulator_agent(
 
 def create_score_extractor_agent(game_content: Any) -> Agent:
     """档房书办 Agent（打分提取）。"""
+    import os as _os
     from han_sim.llm_config import load_llm_config
+    _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
     cfg = load_llm_config(
         base_url="https://api.minimaxi.com/v1",
         model="MiniMax-M2.5",
-        api_key="",
+        api_key=_api_key,
         timeout_seconds=120.0,
     )
     ctx = _ctx()
@@ -309,11 +313,13 @@ _MEMORY_RETRIEVAL_PROMPT = (
 
 def create_memory_retrieval_agent() -> Agent:
     """记忆检索 Agent（提取实体用于记忆检索）。"""
+    import os as _os
     from han_sim.llm_config import load_llm_config
+    _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
     cfg = load_llm_config(
         base_url="https://api.minimaxi.com/v1",
         model="MiniMax-M2.5",
-        api_key="",
+        api_key=_api_key,
         timeout_seconds=60.0,
     )
     return Agent(
@@ -335,11 +341,13 @@ JSON_SANITIZER_PROMPT = (
 
 def create_json_sanitizer_agent() -> Agent:
     """JSON 修复 Agent。"""
+    import os as _os
     from han_sim.llm_config import load_llm_config
+    _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
     cfg = load_llm_config(
         base_url="https://api.minimaxi.com/v1",
         model="MiniMax-M2.5",
-        api_key="",
+        api_key=_api_key,
         timeout_seconds=60.0,
     )
     return Agent(
@@ -355,11 +363,13 @@ def create_json_sanitizer_agent() -> Agent:
 
 def create_chat_memory_agent() -> Agent:
     """对话记忆提取 Agent（从召对聊天提取承诺/建议/情报）。"""
+    import os as _os
     from han_sim.llm_config import load_llm_config
+    _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
     cfg = load_llm_config(
         base_url="https://api.minimaxi.com/v1",
         model="MiniMax-M2.5",
-        api_key="",
+        api_key=_api_key,
         timeout_seconds=60.0,
     )
     ctx = _ctx()
