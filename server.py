@@ -986,6 +986,40 @@ def trigger_battle(campaign_id):
 
 
 # ════════════════════════════════════════════════════════════════
+# v2.1.0 Phase 4.2: 历史战役推演 API (3 个东汉末年著名战役)
+# ════════════════════════════════════════════════════════════════
+
+@app.route('/api/battles', methods=['GET'])
+def list_battles_api():
+    """列出 3 个历史战役 (官渡/赤壁/夷陵)"""
+    from han_sim.battle import list_battles
+    return jsonify({"battles": list_battles()})
+
+
+@app.route('/api/battles/simulate', methods=['POST'])
+def simulate_battle_api():
+    """推演指定战役 (返回完整战报)"""
+    from han_sim.battle import simulate_battle
+    data = request.get_json() or {}
+    battle_key = data.get('battle_key', 'guandu')
+    player_side_str = data.get('player_side')
+
+    player_side = None
+    if player_side_str:
+        from han_sim.battle import Side
+        try:
+            player_side = Side(player_side_str)
+        except ValueError:
+            return jsonify({"error": f"无效 player_side: {player_side_str}"}), 400
+
+    try:
+        report = simulate_battle(battle_key, player_side)
+        return jsonify({"report": report.to_dict()})
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+
+# ════════════════════════════════════════════════════════════════
 # v1.15.0 乾坤大挪移 Phase D · 后宫 API
 # ════════════════════════════════════════════════════════════════
 
