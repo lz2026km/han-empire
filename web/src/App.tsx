@@ -2,13 +2,17 @@
    App.tsx - Main Application Component
    汉献帝之末路 - React Frontend
    ============================================= */
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { Header } from './components/Header'
 import { useGame } from './hooks/useGame'
 // v2.0.0 Phase 3.2: useSettlement 抽自 App.tsx:131-184 (55 行)
 import { useSettlement } from './hooks/useSettlement'
 // v2.0.0 Phase 3.3: useChatModal + useCheatConsole 抽自 App.tsx:86-113 (28 行)
 import { useChatModal, useCheatConsole } from './hooks/useChatModal'
+// v2.1.0 Phase 3.2: 全局快捷键 (1-9 切 Tab / Ctrl+` cheat / Space 推演)
+import { useKeyboard } from './hooks/useKeyboard'
+// v2.1.0 Phase 3.2: 主题 (暗/亮 + 4 季节)
+import { useTheme } from './hooks/useTheme'
 import { MinisterChat } from './components/MinisterChat'
 import { EmperorPanel } from './components/EmperorPanel'
 import { SceneTransition } from './components/SceneTransition'
@@ -68,17 +72,22 @@ export default function App() {
     handleExecuteCheat,
   } = useCheatConsole(campaignId)
 
-  // Cheat console keyboard shortcut
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === '`') {
-        e.preventDefault()
-        setShowCheatConsole(prev => !prev)
+  // v2.1.0 Phase 3.2: 主题 hook (暗/亮 + 4 季节, 持久化)
+  const { theme, setTheme, cycleSeason, season } = useTheme()
+
+  // v2.1.0 Phase 3.2: 全局快捷键
+  // 1-9 → 切前 9 Tab, Ctrl+` → cheat, Space → 推演, T → 切主题, S → 切季节
+  const keyboardShortcuts = useMemo(() => {
+    const map: Record<string, (e: KeyboardEvent) => void> = {}
+    const tabKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+    tabKeys.forEach((k, i) => {
+      if (i < tabs.length) {
+        map[k] = () => setActiveTab(tabs[i].id)
       }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    })
+    return map
   }, [])
+  useKeyboard(keyboardShortcuts, !!campaignId)
 
   const handleNewGame = async () => {
     setShowNewGameModal(false)
@@ -107,18 +116,18 @@ export default function App() {
     await issueDecree('edict')
   }, [campaignId, issueDecree])
 
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'overview', label: '🏠 总览' },
-    { id: 'decree', label: '📜 诏书' },
-    { id: 'chat', label: '💬 召对' },
-    { id: 'ministers', label: '👥 大臣' },
-    { id: 'factions', label: '⚔️ 派系' },
-    { id: 'skills', label: '🌲 技能' },
-    { id: 'buildings', label: '🏛️ 建筑' },
-    { id: 'map', label: '🗺️ 地图' },
-    { id: 'orders', label: '🔐 密令' },
-    { id: 'log', label: '📋 日志' },
-    { id: 'consort', label: '🏯 后宫' },
+  const tabs: { id: Tab; label: string; key: string }[] = [
+    { id: 'overview', label: '🏠 总览', key: '1' },
+    { id: 'decree', label: '📜 诏书', key: '2' },
+    { id: 'chat', label: '💬 召对', key: '3' },
+    { id: 'ministers', label: '👥 大臣', key: '4' },
+    { id: 'factions', label: '⚔️ 派系', key: '5' },
+    { id: 'skills', label: '🌲 技能', key: '6' },
+    { id: 'buildings', label: '🏛️ 建筑', key: '7' },
+    { id: 'map', label: '🗺️ 地图', key: '8' },
+    { id: 'orders', label: '🔐 密令', key: '9' },
+    { id: 'log', label: '📋 日志', key: 'L' },
+    { id: 'consort', label: '🏯 后宫', key: 'C' },
   ]
 
   return (
@@ -127,6 +136,10 @@ export default function App() {
         gameState={gameState}
         onSave={saveGame}
         onNewGame={() => setShowNewGameModal(true)}
+        theme={theme}
+        season={season}
+        onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        onCycleSeason={cycleSeason}
       />
 
       <main className="app-main">
@@ -139,8 +152,10 @@ export default function App() {
                 key={tab.id}
                 className={`sidebar__item ${activeTab === tab.id ? 'sidebar__item--active' : ''}`}
                 onClick={() => setActiveTab(tab.id)}
+                data-tooltip={`按 <kbd>${tab.key}</kbd> 切换`}
               >
-                {tab.label}
+                <span className="sidebar__item-label">{tab.label}</span>
+                <kbd className="sidebar__item-kbd">{tab.key}</kbd>
               </div>
             ))}
           </div>
@@ -167,8 +182,10 @@ export default function App() {
                     key={tab.id}
                     className={`tab ${activeTab === tab.id ? 'tab--active' : ''}`}
                     onClick={() => setActiveTab(tab.id)}
+                    data-tooltip={`快捷键 ${tab.key}`}
                   >
                     {tab.label}
+                    <kbd className="tab__kbd">{tab.key}</kbd>
                   </div>
                 ))}
               </div>

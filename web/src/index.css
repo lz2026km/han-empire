@@ -197,3 +197,50 @@ kbd {
   border-radius: 4px;
   box-shadow: 0 1px 0 var(--border);
 }
+
+
+/* ════════════════════════════════════════════════════════════════
+ * v2.1.0 Phase 3.3: Header 主题/季节按钮 + Tab 快捷键提示
+ * ════════════════════════════════════════════════════════════════ */
+.btn--theme,
+.btn--season {
+  font-size: 16px;
+  padding: 6px 12px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn--theme:hover,
+.btn--season:hover {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* sidebar item 加 kbd 提示 */
+.sidebar__item {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+}
+.sidebar__item-label {
+  flex: 1;
+}
+.sidebar__item-kbd {
+  margin-left: auto;
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+/* tab 加 kbd 提示 */
+.tab {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+}
+.tab__kbd {
+  font-size: 10px;
+  opacity: 0.5;
+}
