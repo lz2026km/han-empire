@@ -2098,3 +2098,129 @@ input:focus, select:focus {
   color: var(--color-accent-red);
   background: rgba(239, 68, 68, 0.1) !important;
 }
+
+
+/* ════════════════════════════════════════════════════════════════
+   v1.18.0 Phase G · 古风背景图 + 视觉系统
+   全面抄袭 ming-salvage-sim (明末力挽狂阑) 的视觉方案
+   注：明末用紫禁城/明制背景图 → 汉献帝也复用，
+       按主公指示"满足东汉末年+全面抄袭明末"轻量复用
+   ════════════════════════════════════════════════════════════════ */
+
+/* 弹窗背景：背景图铺满，去掉 fullscreen-modal 的深色渐变 */
+.modal-bg-state,
+.modal-bg-chat,
+.modal-bg-edict {
+  background-color: #f4ecd8;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.modal-bg-state {
+  background-image: url("/bg_state.png");
+}
+
+.modal-bg-chat {
+  background: rgba(255, 255, 255, 0.8) !important;
+}
+
+.modal-bg-edict {
+  background: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 弹窗内所有元素背景一律透明（通配），文字直贴背景图 */
+.modal-bg-state *,
+.modal-bg-chat *,
+.modal-bg-edict * {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+/* 文字承载块加半透明白底，背景图太花时字看得清 */
+.modal-bg-state .document-hero,
+.modal-bg-state .document-section {
+  background: rgba(252, 249, 240, 0.5) !important;
+  border-radius: 6px;
+}
+
+/* 大臣奏对 + 奏疏：白底 80% */
+.modal-bg-chat .chat-message,
+.modal-bg-chat .chat-system-note,
+.modal-bg-chat .modal-pane,
+.modal-bg-edict .modal-pane,
+.modal-bg-edict .directive-item {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 6px;
+}
+
+.modal-bg-state .summary-table th {
+  background: rgba(158, 42, 43, 0.16) !important;
+}
+
+/* 弹窗标题栏：透明、大字居中、无深色底 */
+.modal-bg-state .modal-header,
+.modal-bg-chat .modal-header,
+.modal-bg-edict .modal-header {
+  justify-content: center;
+  min-height: 78px;
+  border-bottom: 1px solid rgba(255, 232, 170, 0.18);
+}
+
+.modal-bg-state .modal-title,
+.modal-bg-chat .modal-title,
+.modal-bg-edict .modal-title {
+  text-align: center;
+}
+
+/* 朝堂抽屉背景 */
+.court-drawer {
+  background-image: url("/bg_chat.webp");
+  background-size: cover;
+  background-position: center;
+}
+
+/* 后宫独立弹窗背景：寝宫风格 */
+.harem-drawer {
+  background-image: url("/bg_harem.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* 后宫弹窗文字：温柔暖色调 */
+.harem-drawer,
+.harem-drawer * {
+  color: #2a1a10 !important;
+  font-weight: 700 !important;
+}
+
+.harem-drawer .panel-title,
+.harem-drawer .minister-name {
+  color: #5a1a2a !important;
+  font-weight: 700 !important;
+}
+
+.harem-drawer .minister-bio {
+  font-weight: 700 !important;
+  color: #4a2a2a !important;
+}
+
+.harem-drawer .segmented button.active,
+.harem-drawer .segmented button:hover {
+  color: #f9e0aa !important;
+}
+
+/* 朝堂全屏沉浸模式文字 */
+.court-drawer .panel-title,
+.court-drawer .drawer-brand span {
+  color: #ffe8a0 !important;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+}
+
+.court-drawer .icon-button {
+  color: #ffe8a0 !important;
+  background: rgba(0,0,0,0.35) !important;
+  border-radius: 50%;
+}
