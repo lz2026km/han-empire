@@ -46,6 +46,7 @@ class GameDB:
             self._schema_initialized = True
             self.init_schema()
             self.init_fiscal_config()
+            self.init_classes()
             if self.content is None:
                 from han_sim.content import load_game_content
                 self.content = load_game_content()
@@ -604,6 +605,22 @@ class GameDB:
                 reason TEXT NOT NULL,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS token_stats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                turn INTEGER NOT NULL,
+                role TEXT NOT NULL,
+                model TEXT NOT NULL,
+                input_tokens INTEGER NOT NULL,
+                output_tokens INTEGER NOT NULL,
+                reasoning_tokens INTEGER NOT NULL,
+                total_tokens INTEGER NOT NULL,
+                cost REAL NOT NULL,
+                duration_ms INTEGER NOT NULL,
+                timestamp TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_token_stats_turn ON token_stats(turn);
         """)
         self.conn.commit()
 
@@ -654,6 +671,26 @@ class GameDB:
                     "INSERT OR IGNORE INTO fiscal_config (key, value, kind, note) VALUES (?, ?, ?, ?)",
                     (key, value, kind, note),
                 )
+        self.conn.commit()
+
+    def init_classes(self) -> None:
+        """初始化阶级数据（汉末7阶级）"""
+        CLASSES_DATA = [
+            ("流民", "", 5000, 40, 50, "求食活命"),
+            ("豪族", "", 500, 60, 70, "护庄园抗国家"),
+            ("官僚", "", 100, 55, 60, "维护科举仕途"),
+            ("军户", "", 800, 40, 50, "养家不满欠饷"),
+            ("商贾", "", 200, 50, 45, "通商求稳"),
+            ("匠人", "", 300, 45, 35, "出卖手艺糊口"),
+            ("宗室", "", 50, 70, 80, "维护刘姓江山"),
+        ]
+        for name, region_id, pop, sat, lev, agenda in CLASSES_DATA:
+            self.conn.execute(
+                """INSERT OR IGNORE INTO classes
+                   (name, region_id, population, satisfaction, leverage, agenda)
+                   VALUES (?, ?, ?, ?, ?, ?)""",
+                (name, region_id, pop, sat, lev, agenda),
+            )
         self.conn.commit()
 
     def get_fiscal_config(self) -> Dict[str, int]:
@@ -2547,4 +2584,96 @@ class GameDB:
                 "SELECT * FROM consort_events WHERE campaign_id=? ORDER BY turn DESC LIMIT 50",
                 (campaign_id,),
             ).fetchall()
+        return [dict(r) for r in rows]
+
+    # ── 阶级系统 ──────────────────────────────────────────────────
+
+    def get_class_state(self) -> Dict[str, Dict]:
+        """获取所有阶级当前状态（满意度/影响力）"""
+        rows = self.conn.execute(
+            "SELECT name, satisfaction, leverage, agenda FROM classes"
+        ).fetchall()
+        return {
+            str(row["name"]): {
+                "satisfaction": int(row["satisfaction"]),
+                "leverage": int(row["leverage"]),
+            }
+            for row in rows
+        }
+
+    def upsert_class(self, name: str, satisfaction: int, leverage: int, region_id: str = "") -> None:
+        """更新阶级满意度/影响力"""
+        self.conn.execute(
+            """INSERT INTO classes (name, region_id, population, satisfaction, leverage, agenda)
+               VALUES (?, ?, 0, ?, ?, '')
+               ON CONFLICT(name, region_id) DO UPDATE SET
+                   satisfaction=excluded.satisfaction,
+                   leverage=excluded.leverage""",
+            (name, region_id, satisfaction, leverage),
+        )
+
+    def apply_class_delta(self, class_delta: Dict[str, Dict]) -> None:
+        """应用阶级满意度变化（如 {"流民": {"satisfaction": -5}, "豪族": {"leverage": +10}}）"""
+        for cls_name, delta in class_delta.items():
+            # 支持 "农民" 全局 或 "农民@shaanxi" 省级
+            region_id = ""
+            if "@" in cls_name:
+                cls_name, region_id = cls_name.split("@", 1)
+
+            row = self.conn.execute(
+                "SELECT satisfaction, leverage FROM classes WHERE name=? AND region_id=?",
+                (cls_name, region_id),
+            ).fetchone()
+            if row:
+                new_sat = max(0, min(100, int(row["satisfaction"]) + int(delta.get("satisfaction", 0))))
+                new_lev = max(0, min(100, int(row["leverage"]) + int(delta.get("leverage", 0))))
+                self.upsert_class(cls_name, new_sat, new_lev, region_id)
+
+    def get_faction_class_linkage(self) -> Dict[str, Dict[str, int]]:
+        """派系-阶级联动表（汉末版）"""
+        return {
+            "忠汉派": {"流民": +2, "豪族": +1, "官僚": +3, "军户": +1, "宗室": +2},
+            "务实派": {"商贾": +2, "军户": +1, "官僚": +2, "豪族": +1},
+            "离心派": {"流民": +1, "豪族": +2, "宗室": -1, "官僚": -1},
+            "叛逆派": {"军户": -2, "官僚": -3, "宗室": +2, "豪族": +1},
+        }
+
+    def apply_faction_class_linkage(self, faction_name: str, faction_delta: int) -> Dict[str, int]:
+        """应用派系变化对阶级的联动影响，返回各类满意度变化值"""
+        linkage = self.get_faction_class_linkage()
+        if faction_name not in linkage:
+            return {}
+        class_delta = {}
+        for cls_name, delta_per_unit in linkage[faction_name].items():
+            class_delta[cls_name] = delta_per_unit * faction_delta // 10
+        return class_delta
+
+    # ── Token 统计 ──────────────────────────────────────────────────
+
+    def record_token_stats(self, stats: dict, turn: int) -> None:
+        """将 TokenStats 记录到数据库"""
+        self.conn.execute("""
+            INSERT INTO token_stats (turn, role, model, input_tokens, output_tokens,
+                                     reasoning_tokens, total_tokens, cost, duration_ms, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            turn,
+            stats.get('role', ''),
+            stats.get('model', ''),
+            stats.get('input_tokens', 0),
+            stats.get('output_tokens', 0),
+            stats.get('reasoning_tokens', 0),
+            stats.get('total_tokens', 0),
+            stats.get('cost', 0.0),
+            stats.get('duration_ms', 0),
+            stats.get('timestamp', ''),
+        ))
+        self.conn.commit()
+
+    def get_token_stats_by_turn(self, turn: int) -> List[dict]:
+        """获取指定回合的 token 统计记录"""
+        rows = self.conn.execute(
+            "SELECT * FROM token_stats WHERE turn=? ORDER BY id",
+            (turn,)
+        ).fetchall()
         return [dict(r) for r in rows]

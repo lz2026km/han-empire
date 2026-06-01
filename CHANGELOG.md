@@ -4,6 +4,70 @@
 
 ---
 
+## ⚔️ v1.9.0 — 2026-06-01
+
+> 明末系统全面借鉴 · 记忆+局势+结算三大核心升级
+
+### ✨ 新增/同步功能
+
+| 分类 | 功能 | 描述 | 借鉴来源 |
+|------|------|------|----------|
+| 🧠 **记忆系统** | LLM+规则双轨记忆抽取 | 渐进式事件记忆卡（subject/event/title/cause/process/outcome/sentiment/importance/tags） | ming_sim/memories.py:310-629 |
+| 🧠 **记忆系统** | 大臣召对记忆检索 | 按时间/关键词检索历史承诺/建议/情报，召对时自动注入 | ming_sim/memories.py:337-381 |
+| 📊 **局势系统** | Issue惯性漂移 | 每月±10自动漂移，局势不会一次性解决完 | ming_sim/issues.py:1156-1266 |
+| 📊 **局势系统** | Ongoing Effects折扣 | bar≥80→30%、40-80→60%、<40→100%折扣 | ming_sim/issues.py:1156-1266 |
+| 📊 **局势系统** | 阈值危机自动生成 | 藩镇>70→诸侯坐大、威权<10→天子虚设、声望<15→民心尽失 | ming_sim/issues.py:268-319 |
+| 🔧 **Agent系统** | JSON多策略修复 | 4阶段解析：原文直解→外层截取→控制符净化→首个平衡子串 | ming_sim/agents.py:167-232 |
+| 🔧 **Agent系统** | 流式推理+Token统计 | reasoning_content实时回调，record_stream_metrics记录用量 | ming_sim/agents.py:51-164 |
+| 🏛️ **Agno Skills** | 17个技能目录 | board-query/memory-recall/decree-drafting/military-operations等 | ming_sim/.agno_skills/ |
+| 📜 **推演系统** | 16字段Score Extractor | metric_delta/faction_delta/class_delta/region_delta等20字段完整结算 | content/prompts/score_extractor.md:311行 |
+| 📜 **推演系统** | 推演官奏章模板 | 固定章节结构+默会知识驱动+五维密令核议 | content/prompts/season_simulator.md:231行 |
+| 👥 **派系系统** | 派系+阶级双维度 | 7阶级×4派系联动，满意度/影响力双轨 | ming_sim/content.py:232-253 |
+| 👥 **派系系统** | 派系-阶级联动 | 忠汉→官僚+3、离心→豪族+2、叛逆→军户-2等 | han_sim/db.py |
+| 💰 **密令系统** | 密令核议五维判定 | 可行性/承办能力/目标实力/暴露风险/陈词真伪 | ming_sim/issues.py:1071-1132 |
+| 💰 **密令系统** | 密令状态机 | active→pending_review→done/failed/exposed | han_sim/issues.py |
+| 📊 **Token统计** | TokenStatsCollector | 单例模式，内存收集+DB持久化 | han_sim/token_stats.py |
+
+### 📦 新增文件
+
+| 文件 | 行数 | 说明 |
+|------|------|------|
+| `han_sim/token_stats.py` | 75 | LLM Token统计单例 |
+| `content/prompts/score_extractor.md` | 311 | 16字段结算提取器完整规范 |
+| `content/prompts/season_simulator.md` | 231 | 推演官奏章完整规范 |
+| `.agno_skills/` (17个目录) | ~350 | 标准化大臣工具调用 |
+
+### 📊 模块增长
+
+| 模块 | v1.8.5 | v1.9.0 | 增长 |
+|------|---------|---------|------|
+| `agents.py` | 102行 | 368行 | +266行 |
+| `memories.py` | ~200行 | 664行 | +464行 |
+| `issues.py` | ~300行 | 1518行 | +1218行 |
+| `db.py` | ~500行 | 2679行 | +2179行 |
+| `token_stats.py` | 0 | 75行 | +75行 |
+
+### 🔧 技术改进
+
+- **记忆系统**：LLM智能抽取+规则兜底双轨制，每主题最多3条记忆
+- **局势系统**：inertia漂移+ongoing_effects折扣+建筑变更唯一入口
+- **Agent系统**：多策略JSON解析（4阶段fallback）
+- **派系系统**：阶级表+派系-阶级联动表
+- **Agno Skills**：17个标准化skill，汉末背景适配（董卓/曹操/献帝）
+
+### 📋 汉末适配
+
+| 明末 | 汉末 |
+|------|------|
+| 大明/明廷 | 汉室/汉廷 |
+| 崇祯/皇帝 | 献帝/天子 |
+| 国库/内库 | 汉室库/内库 |
+| 后金/蒙古/朝鲜 | 董卓/袁绍/曹操/吕布 |
+| 阉党/东林/军队 | 忠汉派/务实派/离心派/叛逆派 |
+| 锦衣卫/东厂 | 司隶校尉/绣衣使者 |
+
+---
+
 ## ⚔️ v1.8.5 — 2026-06-01
 
 > Ming-Salvage-Sim 架构同步 · 古风UI增强 · 头像无版权争议

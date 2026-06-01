@@ -87,6 +87,9 @@ THEME_COLORS = {
     "error": "#ef4444",        # 红色
 }
 
+# 界面配置
+TURN_UNIT = "月"  # 回合时长单位
+
 # 动画配置
 ANIMATION_DURATION = {
     "fast": 150,

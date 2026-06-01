@@ -8,7 +8,7 @@
 import json
 import re
 import sqlite3
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from han_sim.constants import TURN_UNIT
 from han_sim.content import GameContent
@@ -866,3 +866,653 @@ def _cascade_issue(db: GameDB, state: GameState, issue_row: Union[sqlite3.Row, D
                     effect_on_resolve={"metrics": {"威权": 30, "声望": 20, "藩镇": -10}},
                     effect_on_fail={"metrics": {"威权": -10}},
                 )
+
+
+# ── 阈值危机注入 ────────────────────────────────────────────────────────────
+
+
+def _inject_threshold_crisis_events(
+    candidate_events: List[Event],
+    existing_candidates: List[Event],
+    state: GameState,
+    db: GameDB,
+) -> None:
+    """根据指标阈值自动注入危机事项到候选列表。
+
+    - 藩镇 > 70 → "诸侯坐大"危机
+    - 威权 < 10 → "天子形同虚设"危机
+    - 声望 < 15 → "民心尽失"危机
+
+    防重复：existing_candidates 中查重
+    """
+    fanzhen = state.metrics.get("藩镇", 0)
+    authority = state.metrics.get("威权", 0)
+    reputation = state.metrics.get("声望", 0)
+
+    existing_titles = {ev.title for ev in existing_candidates}
+
+    # 藩镇 > 70 → 诸侯坐大
+    if fanzhen > 70 and "诸侯坐大" not in existing_titles:
+        crisis_ev = Event(
+            id="threshold_crisis_fanzhen",
+            title="诸侯坐大",
+            kind="危机",
+            summary=f"藩镇值突破70（当前{fanzhen}），各地诸侯日益坐大，不奉朝命。",
+            urgency=75,
+            severity=75,
+            credibility=100,
+            interests=["藩镇", "朝廷"],
+            audiences=["天子", "大臣"],
+            trigger_year=0,
+            trigger_month=0,
+        )
+        candidate_events.append(crisis_ev)
+
+    # 威权 < 10 → 天子形同虚设
+    if authority < 10 and "天子形同虚设" not in existing_titles:
+        crisis_ev = Event(
+            id="threshold_crisis_authority",
+            title="天子形同虚设",
+            kind="危机",
+            summary=f"威权跌破10（当前{authority}），朝廷大事实由权臣决断，天子沦为傀儡。",
+            urgency=90,
+            severity=90,
+            credibility=100,
+            interests=["威权", "朝廷"],
+            audiences=["天子", "权臣"],
+            trigger_year=0,
+            trigger_month=0,
+        )
+        candidate_events.append(crisis_ev)
+
+    # 声望 < 15 → 民心尽失
+    if reputation < 15 and "民心尽失" not in existing_titles:
+        crisis_ev = Event(
+            id="threshold_crisis_reputation",
+            title="民心尽失",
+            kind="危机",
+            summary=f"声望跌破15（当前{reputation}），民间已不再信任汉室，天下思乱。",
+            urgency=85,
+            severity=85,
+            credibility=100,
+            interests=["声望", "民心"],
+            audiences=["天子", "百姓"],
+            trigger_year=0,
+            trigger_month=0,
+        )
+        candidate_events.append(crisis_ev)
+
+
+# ── trigger_gate 解析 ───────────────────────────────────────────────────────
+
+
+_GATE_AGG_FUNCS = {
+    "max": max,
+    "min": min,
+    "sum": sum,
+    "avg": lambda xs: sum(xs) // max(1, len(xs)),
+}
+
+
+def _eval_gate_key(gate: Dict[str, str], payload: Dict[str, Any]) -> Optional[bool]:
+    """解析 trigger_gate 条件。
+
+    支持格式：
+    - 'region.<id>.<field>' → regions 表字段
+    - 'region.<id1>|<id2>|.<field>.<agg>' → 多省聚合
+    - 'army.<id>.<field>' → armies 表
+    - 'class.<id>.<field>' → classes 表
+    - 'metrics.<metric>' → state.metrics
+
+    Args:
+        gate: 形如 {"region.幽州.稳定": ">=80", "metrics.藩镇": "<50"} 的字典
+        payload: 包含 metrics/state/db 的上下文
+
+    Returns:
+        True if all conditions passed, False if any failed, None if evaluation error
+    """
+    metrics = payload.get("metrics", {})
+    db = payload.get("db")
+
+    for key, cond in gate.items():
+        m = re.match(r"^(>=|<=|>|<|==)\s*(-?\d+)$", cond.strip())
+        if not m:
+            return None  # 格式错误
+        op, num = m.group(1), int(m.group(2))
+
+        # 解析 key
+        val = _eval_gate_key_single(key, metrics, db)
+        if val is None:
+            return False  # key 不存在视为不通过
+
+        passed = _compare_op(op, val, num)
+        if not passed:
+            return False
+
+    return True
+
+
+def _eval_gate_key_single(key: str, metrics: Dict[str, int], db: Optional[object]) -> Optional[int]:
+    """解析单个 gate key 为 int 值。"""
+    if "." not in key:
+        # 直接是 metrics
+        if key in metrics:
+            return int(metrics[key])
+        return None
+
+    parts = key.split(".")
+    table = parts[0]
+    if table == "metrics" and len(parts) >= 2:
+        return int(metrics.get(parts[1], 0))
+
+    if table not in ("region", "army", "class", "building", "power"):
+        return None
+
+    # 末段可能是 agg
+    agg = None
+    if parts[-1] in _GATE_AGG_FUNCS:
+        agg = parts[-1]
+        parts = parts[:-1]
+
+    if len(parts) < 3:
+        return None
+
+    field = parts[-1]
+    id_segment = ".".join(parts[1:-1])
+    ids = id_segment.split("|") if "|" in id_segment else [id_segment]
+    ids = [x for x in ids if x]
+
+    if not ids or db is None:
+        return None
+
+    values: List[int] = []
+    for cid in ids:
+        try:
+            row = db.conn.execute(f"SELECT {field} FROM {table}s WHERE id=?", (cid,)).fetchone()
+        except Exception:
+            row = None
+        if row is None:
+            return None
+        try:
+            values.append(int(row[0]))
+        except (TypeError, ValueError):
+            return None
+
+    if not values:
+        return None
+    if len(values) == 1:
+        return values[0]
+    if agg is None:
+        agg = "min"
+    return _GATE_AGG_FUNCS[agg](values)
+
+
+def _compare_op(op: str, val: int, num: int) -> bool:
+    """比较操作符。"""
+    if op == ">=":
+        return val >= num
+    if op == "<=":
+        return val <= num
+    if op == ">":
+        return val > num
+    if op == "<":
+        return val < num
+    if op == "==":
+        return val == num
+    return False
+
+
+# ── 终结效果计算 ────────────────────────────────────────────────────────────
+
+
+def _situation_terminal_effects(issue_id: int, reason: str) -> Dict[str, Any]:
+    """终结效果计算（resolved/failed）。
+
+    Args:
+        issue_id: 事项ID
+        reason: "resolved" 或 "failed"
+
+    Returns:
+        effect dict，包含 metrics/economy/faction 等
+    """
+    effects: Dict[str, Any] = {}
+
+    # 这里需要查 db 获取 issue 信息
+    # 已在 apply_issue_tracker_output 中处理
+    _ = issue_id
+    _ = reason
+    return effects
+
+
+# ── 惯性漂移 + ongoing effects ──────────────────────────────────────────────
+
+
+def apply_issue_inertia_and_ongoing(
+    db: GameDB,
+    state: GameState,
+    touched_ids: Optional[set] = None,
+) -> None:
+    """每月末应用进行中 issue 的惯性漂移和 ongoing_effects。
+
+    惯性漂移：每月 ±10 随机漂移（基于 inertia 字段）
+    ongoing_effects 折扣：
+      - bar >= 80: 30%
+      - bar 40-80: 60%
+      - bar < 40: 100%
+    """
+    _ = touched_ids  # 未使用
+    active = db.list_active_issues()
+    period_metric_acc: Dict[str, int] = {}
+
+    for row in active:
+        issue_id = int(row["id"])
+        bar = int(row.get("bar_value", 0))
+        inertia = int(row.get("inertia", 0))
+
+        # 1) inertia 漂移
+        if inertia != 0:
+            new_bar = max(0, min(100, bar + inertia))
+            actual = new_bar - bar
+            if actual != 0:
+                new_row = db.advance_issue(
+                    state, issue_id,
+                    trigger_kind="inertia",
+                    delta_bar=actual,
+                    stage_text=row["stage_text"],
+                    narrative="局势自有其势，本月按其本然推移。",
+                    metric_delta={},
+                )
+                if new_row is None:
+                    continue
+                if new_row["status"] == "resolved":
+                    effect = json.loads(new_row["effect_on_resolve"] or "{}")
+                    _apply_metric_dict(state, effect.get("metrics") or {})
+                    _apply_economy_list(db, state, effect.get("economy") or [])
+                    continue
+                elif new_row["status"] == "failed":
+                    effect = json.loads(new_row["effect_on_fail"] or "{}")
+                    _apply_metric_dict(state, effect.get("metrics") or {})
+                    _apply_economy_list(db, state, effect.get("economy") or [])
+                    continue
+                # 重新读取最新 bar
+                row = db.conn.execute("SELECT * FROM issues WHERE id=?", (issue_id,)).fetchone()
+                if row is None:
+                    continue
+                bar = int(row["bar_value"])
+
+        # 2) ongoing_effects
+        ongoing = json.loads(row.get("ongoing_effects") or "{}")
+        if not ongoing:
+            continue
+
+        # 折扣系数
+        if bar >= 80:
+            scale = 0.3
+        elif bar >= 40:
+            scale = 0.6
+        else:
+            scale = 1.0
+
+        metric_part: Dict[str, int] = {}
+        for k, v in (ongoing.get("metrics") or {}).items():
+            try:
+                raw = int(v)
+            except (TypeError, ValueError):
+                continue
+            if raw == 0:
+                continue
+            scaled = int(round(raw * scale))
+            if scaled == 0:
+                continue
+            cap = 5  # 每月最多 +/-5
+            already = period_metric_acc.get(k, 0)
+            remaining = cap - abs(already)
+            if remaining <= 0:
+                continue
+            if scaled > 0:
+                allowed = min(scaled, remaining)
+            else:
+                allowed = max(scaled, -remaining)
+            if allowed == 0:
+                continue
+            state.metrics[k] = int(state.metrics.get(k, 0)) + allowed
+            period_metric_acc[k] = already + allowed
+            metric_part[k] = allowed
+
+        economy_part = _apply_economy_list(db, state, ongoing.get("economy") or [])
+
+        if metric_part or economy_part:
+            db.conn.execute(
+                """
+                INSERT INTO issue_advances (
+                    issue_id, turn, trigger_kind, delta_bar,
+                    from_value, to_value, narrative, metric_delta
+                ) VALUES (?, ?, 'ongoing', 0, ?, ?, ?, ?)
+                """,
+                (
+                    issue_id, state.turn, bar, bar,
+                    f"持续效果落账 (折扣 {int(scale*100)}%)",
+                    json.dumps({"metrics": metric_part, "economy": economy_part}, ensure_ascii=False),
+                ),
+            )
+            db.conn.commit()
+
+    state.clamp()
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 密令核议系统
+# ═══════════════════════════════════════════════════════════════════════════
+
+def check_secret_order_deadline(db: GameDB, turn: int) -> list:
+    """检查期限届满的密令，自动转为 pending_review。
+    
+    查找所有 status='active' 且 due_turn <= turn 的密令，更新其状态为 'pending_review'。
+    
+    Args:
+        db: GameDB 实例
+        turn: 当前回合
+        
+    Returns:
+        pending_order_ids: 被转为待核议状态的密令 ID 列表
+    """
+    pending = []
+    orders = db.conn.execute(
+        'SELECT * FROM secret_orders WHERE status=? AND due_turn<=? AND due_turn>0',
+        ('active', turn)
+    ).fetchall()
+    for order in orders:
+        db.conn.execute(
+            'UPDATE secret_orders SET status=?, updated_at=CURRENT_TIMESTAMP WHERE id=?',
+            ('pending_review', order['id'])
+        )
+        pending.append(order['id'])
+    if pending:
+        db.conn.commit()
+    return pending
+
+
+def get_secret_orders_by_status(db: GameDB, status: str) -> list:
+    """获取指定状态的密令列表。
+    
+    Args:
+        db: GameDB 实例
+        status: 密令状态，如 'active', 'pending_review', 'done', 'failed', 'exposed'
+        
+    Returns:
+        符合条件的密令记录列表
+    """
+    return db.conn.execute(
+        'SELECT * FROM secret_orders WHERE status=? ORDER BY importance DESC, turn_issued DESC',
+        (status,)
+    ).fetchall()
+
+
+def apply_secret_order_review(
+    db: GameDB,
+    state: GameState,
+    turn: int,
+    year: int,
+    period: int,
+) -> dict:
+    """月末密令核议 - 处理 pending_review 密令，执行五维判定。
+    
+    五维判定逻辑：
+    1. 任务可行性（物理上是否可行）- 解析 content/tags 判断任务类型
+    2. 承办人能力（ability/loyalty/integrity）- 查 characters 表
+    3. 目标实力（被对付者的 leverage）- 查 factions/powers 表
+    4. 暴露风险（sim_note 中的走漏线索）- 解析 sim_note 关键词
+    5. 陈词真伪（承办人是否虚报）- 综合评估
+    
+    判定结果写入 result 字段，状态转为 done/failed/exposed。
+    
+    Args:
+        db: GameDB 实例
+        state: 当前游戏状态
+        turn: 当前回合
+        year: 当前年份
+        period: 当前期
+        
+    Returns:
+        {
+            'done': [{order_id, title, narrative}, ...],   # 成功密令
+            'failed': [{order_id, title, reason, narrative}, ...],  # 失败密令
+            'exposed': [{order_id, title, narrative}, ...]  # 暴露密令
+        }
+    """
+    results = {'done': [], 'failed': [], 'exposed': []}
+    
+    # 1. 查找所有 pending_review 密令
+    pending_orders = get_secret_orders_by_status(db, 'pending_review')
+    if not pending_orders:
+        return results
+    
+    for order in pending_orders:
+        order_id = order['id']
+        minister_name = order['minister_name']
+        title = order['title']
+        content = order['content']
+        tags = json.loads(order['tags'] or '[]')
+        importance = int(order['importance'])
+        sim_note = order['sim_note']
+        
+        # 五维判定变量
+        feasibility_score = 50   # 任务可行性 0-100
+        capability_score = 50    # 承办人能力 0-100
+        target_score = 50         # 目标实力 0-100 (越低越容易被对付)
+        exposure_score = 0        # 暴露风险 0-100 (越高越容易暴露)
+        truth_score = 50          # 陈词真伪 0-100 (越高越可信)
+        
+        # ── 维度1：任务可行性 ──────────────────────────────────────────
+        # 基于任务类型和标签判断物理可行性
+        tags_lower = [t.lower() for t in tags]
+        
+        # 刺杀类任务需要特殊条件
+        if '刺杀' in tags or '暗杀' in tags:
+            if '武力' in tags or '军事' in tags:
+                feasibility_score = 30  # 刺杀难度高
+            else:
+                feasibility_score = 20
+        # 监视/刺探类
+        elif '监视' in tags or '刺探' in tags:
+            feasibility_score = 70
+        # 离间/策反类
+        elif '离间' in tags or '策反' in tags:
+            feasibility_score = 50
+        # 暗杀/行刺类
+        elif '行刺' in tags or '暗杀' in tags:
+            feasibility_score = 25
+        # 传递情报类
+        elif '传递' in tags or '送信' in tags:
+            feasibility_score = 80
+        # 政治手腕类（默认）
+        else:
+            feasibility_score = 60
+        
+        # 重要性影响：越重要的任务难度可能更高
+        if importance <= 2:
+            feasibility_score -= 10  # 极高重要性任务更难
+        elif importance >= 5:
+            feasibility_score += 10  # 低重要性任务较易
+        
+        # ── 维度2：承办人能力 ──────────────────────────────────────────
+        minister_row = db.conn.execute(
+            'SELECT ability, loyalty, integrity FROM characters WHERE name=?',
+            (minister_name,)
+        ).fetchone()
+        
+        if minister_row:
+            ability = int(minister_row['ability'])
+            loyalty = int(minister_row['loyalty'])
+            integrity = int(minister_row['integrity'])
+            # 能力综合分 = 能力值*0.4 + 忠诚度*0.3 + 正值*0.3
+            capability_score = ability * 0.4 + loyalty * 0.3 + integrity * 0.3
+            # 忠诚度影响完成任务意愿
+            if loyalty < 30:
+                capability_score *= 0.5  # 低忠诚大幅降低
+            elif loyalty < 50:
+                capability_score *= 0.8
+        else:
+            capability_score = 30  # 未找到承办人，默认低分
+        
+        # ── 维度3：目标实力 ────────────────────────────────────────────
+        # 从 content 中解析目标（简化版：查找势力名称）
+        target_leverage = 50  # 默认中等实力
+        # 尝试从 sim_note 中获取目标信息
+        if sim_note:
+            # 查找是否有目标势力相关信息
+            powers = db.conn.execute('SELECT id, name, leverage FROM powers').fetchall()
+            for power in powers:
+                if power['name'] in content or power['name'] in sim_note:
+                    target_leverage = int(power['leverage'])
+                    break
+            # 查找派系
+            if target_leverage == 50:
+                factions = db.conn.execute('SELECT name, leverage FROM factions').fetchall()
+                for faction in factions:
+                    if faction['name'] in content or faction['name'] in sim_note:
+                        target_leverage = int(faction['leverage'])
+                        break
+        # 目标实力越低（leverage小），越容易被对付
+        target_score = 100 - target_leverage
+        
+        # ── 维度4：暴露风险 ───────────────────────────────────────────
+        # 解析 sim_note 中的走漏线索
+        exposure_keywords = [
+            '泄露', '暴露', '走漏', '被告发', '被察觉',
+            '有人知道', '风声', '传开', '传出去',
+            '被发现', '目击', '有人看见', '泄露',
+            '暴露风险', '高风险', '警惕', '怀疑',
+        ]
+        for keyword in exposure_keywords:
+            if keyword in sim_note:
+                exposure_score += 15
+        # 重要性高的任务暴露后果更严重
+        if importance <= 2:
+            exposure_score += 20
+        elif importance >= 5:
+            exposure_score -= 10
+        exposure_score = min(100, max(0, exposure_score))
+        
+        # ── 维度5：陈词真伪 ───────────────────────────────────────────
+        # 基于承办人能力和忠诚度判断其报告的真实性
+        truth_score = capability_score  # 简单复用能力分
+        # 检查 sim_note 中是否有虚报嫌疑
+        false_report_keywords = ['虚报', '夸大', '隐瞒', '伪造', '欺骗']
+        for keyword in false_report_keywords:
+            if keyword in sim_note:
+                truth_score -= 30
+        truth_score = min(100, max(0, truth_score))
+        
+        # ── 综合判定 ──────────────────────────────────────────────────
+        # 成功概率 = 可行性 * 0.3 + 承办人能力 * 0.3 + 目标实力 * 0.2 + 真伪 * 0.2
+        success_prob = (
+            feasibility_score * 0.3 +
+            capability_score * 0.3 +
+            target_score * 0.2 +
+            truth_score * 0.2
+        )
+        
+        # 暴露风险单独判定
+        exposed = exposure_score > 60
+        
+        # 生成判定叙事
+        narrative_parts = [
+            f"【五维判定】",
+            f"可行性:{feasibility_score:.0f} | 承办能力:{capability_score:.0f}",
+            f"目标难度:{target_score:.0f} | 暴露风险:{exposure_score:.0f}",
+            f"陈词真伪:{truth_score:.0f}",
+            f"综合成功率:{success_prob:.1f}%"
+        ]
+        
+        if exposed:
+            # 暴露情况
+            new_status = 'exposed'
+            narrative_parts.append("【结果】密令暴露！任务失败，承办人可能被追查。")
+            narrative = "；".join(narrative_parts)
+            results['exposed'].append({
+                'order_id': order_id,
+                'title': title,
+                'narrative': narrative,
+                'feasibility': feasibility_score,
+                'capability': capability_score,
+                'target': target_score,
+                'exposure': exposure_score,
+                'truth': truth_score,
+            })
+        elif success_prob >= 60:
+            # 成功
+            new_status = 'done'
+            narrative_parts.append("【结果】密令执行成功！")
+            narrative = "；".join(narrative_parts)
+            results['done'].append({
+                'order_id': order_id,
+                'title': title,
+                'narrative': narrative,
+                'success_prob': success_prob,
+            })
+        else:
+            # 失败
+            new_status = 'failed'
+            narrative_parts.append("【结果】密令执行失败。")
+            narrative = "；".join(narrative_parts)
+            results['failed'].append({
+                'order_id': order_id,
+                'title': title,
+                'narrative': narrative,
+                'success_prob': success_prob,
+                'reason': '综合判定失败',
+            })
+        
+        # 更新密令状态和结果
+        db.conn.execute(
+            '''UPDATE secret_orders 
+               SET status=?, result=?, turn_closed=?, updated_at=CURRENT_TIMESTAMP
+               WHERE id=?''',
+            (new_status, narrative, turn, order_id)
+        )
+    
+    if pending_orders:
+        db.conn.commit()
+    
+    return results
+
+
+def append_secret_order_sim_note(
+    db: GameDB,
+    order_id: int,
+    note: str,
+    turn: int,
+) -> None:
+    """为密令追加推演副作用记录到 sim_note 字段。
+    
+    Args:
+        db: GameDB 实例
+        order_id: 密令 ID
+        note: 要追加的副作用描述
+        turn: 当前回合
+    """
+    if not note:
+        return
+    
+    # 获取当前 sim_note
+    row = db.conn.execute(
+        'SELECT sim_note FROM secret_orders WHERE id=?',
+        (order_id,)
+    ).fetchone()
+    
+    if row is None:
+        return
+    
+    current_note = row['sim_note'] or ''
+    # 追加新记录，带回合标记
+    if current_note:
+        new_note = current_note + f"\n[T{turn}] {note}"
+    else:
+        new_note = f"[T{turn}] {note}"
+    
+    db.conn.execute(
+        'UPDATE secret_orders SET sim_note=?, updated_at=CURRENT_TIMESTAMP WHERE id=?',
+        (new_note, order_id)
+    )
+    db.conn.commit()

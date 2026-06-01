@@ -1,178 +1,75 @@
-"""Token 用量统计：monkey-patch openai client 抓取每次 completion 的 usage。L1。
-
-TOKEN_STATS 是进程级遥测，留模块级单例。
-_TOKEN_PATCH_INSTALLED 守卫保证补丁只打一次。
-"""
-
-
+"""LLM Token 统计与流式推理日志。"""
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict
+from typing import Optional, List, Dict
+import threading
 
-TOKEN_STATS: Dict[str, Dict[str, int]] = {}
-_TOKEN_PATCH_INSTALLED = False
+@dataclass
+class TokenStats:
+    input_tokens: int = 0
+    output_tokens: int = 0
+    reasoning_tokens: int = 0
+    total_tokens: int = 0
+    cost: float = 0.0
+    model: str = ""
+    duration_ms: int = 0
+    timestamp: str = ""
+    role: str = ""  # simulator/extractor/decree_writer/memory_retrieval/...
 
+class TokenStatsCollector:
+    """全局 Token 统计收集器（单例）"""
+    _instance = None
 
-def ts() -> str:
-    now = datetime.now()
-    return now.strftime("%H:%M:%S.") + f"{now.microsecond // 1000:03d}"
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._stats: List[TokenStats] = []
+            cls._instance._lock = threading.Lock()
+        return cls._instance
 
+    def record(self, stats: TokenStats):
+        with self._lock:
+            self._stats.append(stats)
 
-def tlog(msg: str) -> None:
-    print(f"[{ts()}] {msg}", flush=True)
+    def get_stats(self, role: Optional[str] = None) -> List[TokenStats]:
+        with self._lock:
+            if role:
+                return [s for s in self._stats if s.role == role]
+            return list(self._stats)
 
+    def summary(self) -> dict:
+        with self._lock:
+            if not self._stats:
+                return {"total_calls": 0, "total_tokens": 0, "total_cost": 0.0}
+            return {
+                "total_calls": len(self._stats),
+                "total_tokens": sum(s.total_tokens for s in self._stats),
+                "total_cost": sum(s.cost for s in self._stats),
+                "by_role": {
+                    role: {"calls": len([s for s in self._stats if s.role == role]),
+                           "tokens": sum(s.total_tokens for s in self._stats if s.role == role)}
+                    for role in set(s.role for s in self._stats)
+                }
+            }
 
-def _guess_caller_tag(kwargs: Dict[str, object]) -> str:
-    """从 messages 的所有 system 段拼合后猜哪个 agent 在调用。"""
-    messages = kwargs.get("messages") or []
-    sys_text = ""
-    for msg in messages:
-        if not isinstance(msg, dict) or msg.get("role") != "system":
-            continue
-        c = msg.get("content")
-        if isinstance(c, str):
-            sys_text += c
-        elif isinstance(c, list):
-            for item in c:
-                if isinstance(item, dict):
-                    sys_text += str(item.get("text", ""))
-    if "召对" in sys_text or "模拟" in sys_text:
-        return "minister"
-    if "拟旨" in sys_text or "诏书" in sys_text:
-        return "decree-writer"
-    if "推演" in sys_text or "日讲" in sys_text:
-        return "simulator"
-    if "记忆" in sys_text or "档房" in sys_text:
-        return "memory-extractor"
-    if "评分" in sys_text or "抽取" in sys_text:
-        return "extractor"
-    return "?"
+    def clear(self):
+        with self._lock:
+            self._stats.clear()
 
-
-def _record_usage(model_id: str, usage: object, caller_tag: str = "?") -> None:
-    if usage is None:
-        return
-    bucket = TOKEN_STATS.setdefault(
-        model_id,
-        {"calls": 0, "prompt": 0, "completion": 0, "cached": 0, "reasoning": 0, "total": 0},
+def record_stream_metrics(role: str, model: str, input_tokens: int,
+                          output_tokens: int, reasoning_tokens: int,
+                          duration_ms: int, cost: float = 0.0) -> TokenStats:
+    """记录单次 LLM 调用"""
+    collector = TokenStatsCollector()
+    stats = TokenStats(
+        input_tokens=input_tokens, output_tokens=output_tokens,
+        reasoning_tokens=reasoning_tokens,
+        total_tokens=input_tokens + output_tokens + reasoning_tokens,
+        cost=cost, model=model, duration_ms=duration_ms,
+        timestamp=datetime.now().isoformat(), role=role,
     )
-    prompt = int(getattr(usage, "prompt_tokens", 0) or 0)
-    completion = int(getattr(usage, "completion_tokens", 0) or 0)
-    total = int(getattr(usage, "total_tokens", prompt + completion) or 0)
-    prompt_details = getattr(usage, "prompt_tokens_details", None)
-    cached = int(getattr(prompt_details, "cached_tokens", 0) or 0) if prompt_details else 0
-    completion_details = getattr(usage, "completion_tokens_details", None)
-    reasoning = int(getattr(completion_details, "reasoning_tokens", 0) or 0) if completion_details else 0
-    bucket["calls"] += 1
-    bucket["prompt"] += prompt
-    bucket["completion"] += completion
-    bucket["cached"] += cached
-    bucket["reasoning"] += reasoning
-    bucket["total"] += total
-    print(
-        f"[TOKEN] caller={caller_tag} model={model_id} prompt={prompt} cached={cached} "
-        f"completion={completion} reasoning={reasoning} total={total}",
-        flush=True,
-    )
+    collector.record(stats)
+    return stats
 
-
-def _get_client_base_url(self_client_holder: object) -> str:
-    """从 openai Completions self 拿 client.base_url。"""
-    try:
-        client = getattr(self_client_holder, "_client", None)
-        if client is None:
-            return ""
-        base = getattr(client, "base_url", "")
-        return str(base) if base else ""
-    except Exception:
-        return ""
-
-
-def _inject_cache_mark(kwargs: Dict[str, object]) -> None:
-    """对请求注入 cache_control 显式缓存标记。"""
-    messages = kwargs.get("messages")
-    if not isinstance(messages, list):
-        return
-    for msg in messages:
-        if not isinstance(msg, dict):
-            continue
-        if msg.get("role") != "system":
-            continue
-        content = msg.get("content")
-        if isinstance(content, str) and len(content) >= 800:
-            msg["content"] = [{
-                "type": "text",
-                "text": content,
-                "cache_control": {"type": "ephemeral"},
-            }]
-        elif isinstance(content, list) and content:
-            last = content[-1]
-            if isinstance(last, dict) and "cache_control" not in last:
-                last["cache_control"] = {"type": "ephemeral"}
-        break  # 只标第一条 system
-
-
-def install_token_stats_patch() -> None:
-    """Monkey-patch openai client to capture usage on every chat completion."""
-    global _TOKEN_PATCH_INSTALLED
-    if _TOKEN_PATCH_INSTALLED:
-        return
-    try:
-        from openai.resources.chat.completions import Completions, AsyncCompletions  # type: ignore
-    except Exception:
-        return
-    orig_create = Completions.create
-    orig_acreate = AsyncCompletions.create
-
-    def patched_create(self, *args, **kwargs):
-        base_url = _get_client_base_url(self)
-        caller_tag = _guess_caller_tag(kwargs)
-        if "minimax" in base_url.lower() or "ark" in base_url.lower():
-            _inject_cache_mark(kwargs)
-        resp = orig_create(self, *args, **kwargs)
-        try:
-            model_id = getattr(resp, "model", kwargs.get("model", "unknown"))
-            _record_usage(model_id, getattr(resp, "usage", None), caller_tag)
-        except Exception:
-            pass
-        return resp
-
-    async def patched_acreate(self, *args, **kwargs):
-        base_url = _get_client_base_url(self)
-        caller_tag = _guess_caller_tag(kwargs)
-        if "minimax" in base_url.lower() or "ark" in base_url.lower():
-            _inject_cache_mark(kwargs)
-        resp = await orig_acreate(self, *args, **kwargs)
-        try:
-            model_id = getattr(resp, "model", kwargs.get("model", "unknown"))
-            _record_usage(model_id, getattr(resp, "usage", None), caller_tag)
-        except Exception:
-            pass
-        return resp
-
-    Completions.create = patched_create  # type: ignore
-    AsyncCompletions.create = patched_acreate  # type: ignore
-    _TOKEN_PATCH_INSTALLED = True
-
-
-def print_token_summary() -> None:
-    if not TOKEN_STATS:
-        print("[TOKEN-SUMMARY] no LLM calls captured")
-        return
-    print("\n========== TOKEN USAGE SUMMARY ==========")
-    grand: Dict[str, int] = {}
-    for model_id, bucket in TOKEN_STATS.items():
-        hit_rate = (bucket["cached"] / bucket["prompt"] * 100) if bucket["prompt"] else 0
-        print(
-            f"  {model_id}: calls={bucket['calls']} prompt={bucket['prompt']} "
-            f"cached={bucket['cached']} ({hit_rate:.1f}%) completion={bucket['completion']} "
-            f"reasoning={bucket['reasoning']} total={bucket['total']}"
-        )
-        for key, value in bucket.items():
-            grand[key] = grand.get(key, 0) + int(value)
-    grand_hit = (grand.get("cached", 0) / grand.get("prompt", 0) * 100) if grand.get("prompt") else 0
-    print(
-        f"  TOTAL: calls={grand.get('calls',0)} prompt={grand.get('prompt',0)} "
-        f"cached={grand.get('cached',0)} ({grand_hit:.1f}%) completion={grand.get('completion',0)} "
-        f"reasoning={grand.get('reasoning',0)} total={grand.get('total',0)}"
-    )
-    print("=========================================")
+def get_token_summary() -> dict:
+    return TokenStatsCollector().summary()
