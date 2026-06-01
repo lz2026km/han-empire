@@ -60,6 +60,9 @@ class GameSession:
 
     @staticmethod
     def new(campaign_id: str, content: GameContent) -> "GameSession":
+        # v2.0.0 Phase 6: campaign_id 为 None 时自动生成 uuid
+        if not campaign_id:
+            campaign_id = f"c{uuid.uuid4().hex[:8]}"
         db_path = user_data_path(f"campaign_{campaign_id}.db")
         db = GameDB.new(db_path)
         state = GameState()

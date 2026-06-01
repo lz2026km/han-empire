@@ -158,24 +158,33 @@ def create_campaign():
 
 @app.route('/api/campaigns/<campaign_id>', methods=['GET'])
 def get_campaign(campaign_id):
+    # v2.0.0 Phase 6: try/except 避免 GameSession.load 抛异常 500
     if campaign_id not in GAMES:
-        GAMES[campaign_id] = GameSession.load(campaign_id)
+        try:
+            GAMES[campaign_id] = GameSession.load(campaign_id)
+        except Exception as e:
+            import logging
+            logging.warning(f"GameSession.load failed for {campaign_id}: {e}")
+            return jsonify({'error': f'Campaign {campaign_id} not found', 'detail': str(e)}), 404
 
     session = GAMES[campaign_id]
     state = _state_to_dict(session.state)
     ministers = session.get_active_ministers()
     factions = []
 
-    from han_sim.models import FACTION_DATA
-    for fid, fdata in FACTION_DATA.items():
-        influence = session.state.faction_influence.get(fid, 50)
+    # v2.0.0 Phase 6.2: FACTION_DATA → FACTION_META (修正 v1.x 时代 import 错)
+    # v2.0.0 Phase 6.2: faction_influence 在 state.metrics 而非 state 属性
+    from han_sim.models import FACTION_META
+    faction_influence = session.state.metrics.get('faction_influence', {})
+    for fid, fdata in FACTION_META.items():
+        influence = faction_influence.get(fid, 50)
         factions.append({
             'id': fid,
-            'name': fdata['name'],
-            'leader_name': fdata['leader'],
+            'name': fid,
+            'leader_name': '',  # v1.x FACTION_DATA 有 leader, v2.0.0 FACTION_META 不含
             'influence': influence,
-            'color': fdata['color'],
-            'description': fdata['desc'],
+            'color': fdata.get('color', '#6b7280'),
+            'description': fdata.get('description', ''),
             'dominant_ministers': len([m for m in ministers if m.get('faction') == fid]),
         })
 

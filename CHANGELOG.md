@@ -4,6 +4,110 @@
 
 ---
 
+## 🏯 v2.0.0 — 2026-06-01
+
+> **大修版 · LLM 驱动核心 + Windows 10/11 EXE 启动器 + P2 优化 · 7 commits**
+
+### 📊 总体数据 (实测)
+
+| 维度 | 数据 |
+|------|------|
+| commits | 7 (Phase 1+2+3+4+5+6 全部 push) |
+| 后端模块 | 36 (`han_sim/`) + 18 `.agno_skills/` |
+| 事件库 | **92 事件** (含衣带诏+3 大事件扩写) |
+| 大臣 | **158 名** (含 6 新东汉名臣: 董承/种辑/王子服/吴硕/伏寿/程昱) |
+| 测试 | **83/83 通过** (pytest 3.34s) |
+| tsc | **0 错** |
+| 性能 | regions gzip **-86%** (21018→2837 字节) |
+| 头像 | 删 54 明朝 + 加 30 汉风池图 |
+| 后端净改 | +203 / -79 (Phase 5 统计) |
+
+### 5 个阶段详情
+
+#### Phase 1: P0 崩溃性 Bug 修复 (commit `944266c`)
+- 后端 4 + 前端 7 = 11 真修
+- **P0-1**: `simulation.run_monthly_simulation` 100% 崩 500
+- 5 P0 后端 + 10 P0 前端崩溃修
+- 3 大历史事件缺失补 (官渡/赤壁/曹丕)
+
+#### Phase 2: 后端拆解 (commit `022ec22`)
+- 4 个新模块抽出, 净减 654 行
+- **"委托 re-export 模式"** = 抽函数簇到新模块 + 大文件 `from 新 import *` + 删原函数体
+- 外部 API 100% 兼容
+
+#### Phase 3: 前端拆解 (commit `ced90a4`)
+- App.tsx 906 → 285 行 (**-69%**)
+- 21 个 TSX 组件化
+- CSS 119.9 KB
+
+#### Phase 4: LLM 驱动补全 + 东汉内容 (commits `fe30423`/`55c85ce`/`0226d8a`)
+
+| 子项 | 内容 |
+|------|------|
+| 4.1+4.2 | `han_sim/llm_model.py` (LLM 工厂) + 4 SKILL.md |
+| 4.3+4.5 | `agent_tools.py` + `agents.py` + `server.py` + `run_windows.py` + spec + bat + `README_WINDOWS.md` |
+| 4.6+4.8 | `events.json` 92 事件含衣带诏+3 大事件扩写 + `characters.json` 158 大臣 + `.agno_skills/yidai-zhao/SKILL.md` + `README.md` 19K 重写 + `pyproject.toml` 2.0.0 |
+
+**Windows 10/11 EXE 启动**: 双击 `.exe` 即玩, PyInstaller 单文件打包 ~80-120MB
+
+**新增东汉名臣** (衣带诏核心人物):
+- **董承** (汉献帝血书衣带诏接收人)
+- **种辑** (衣带诏同谋)
+- **王子服** (衣带诏同谋)
+- **吴硕** (衣带诏同谋)
+- **伏寿** (汉献帝皇后, 衣带诏知情)
+- **程昱** (曹操谋主)
+
+**新增重大事件**:
+- **e_200_yidai_zhau** 衣带诏 (200年, 3 options: 奉诏/缓图/告密)
+- **e_200_guandu_battle** 官渡之战
+- **e_208_chibi_battle** 赤壁之战
+- **e_220_caopi_abdication** 曹丕篡汉
+- **e_222_yiling** 夷陵之战
+
+#### Phase 5: P2 优化 (commit `f20d740`)
+
+| 任务 | 内容 |
+|------|------|
+| 5.1 头像换源 | 删 54 明朝 PNG (袁崇焕/魏忠贤/洪承畴/皇太极/李自成/朱祁镇...) + 加 30 池图 + 重写 `portraits.py` 移除 `3keengames.net` 失效 URL + 新增 `get_local_portrait_path()` 角色名 hash → 池号 |
+| 5.2 真 API 集成 | `GET /api/regions` 端点 (51 州郡) + MapTab 改用真 API 取代 mock |
+| 5.3+5.4 组件集成 | MinisterTab 用 `CourtLayout` (Phase 3.1) + FactionTab 用 `FactionRelationDiagram` (Phase 3.1) |
+| 5.5 性能 | `cached_json(ttl)` 装饰器 + `@app.after_request` 全局 `gzip_response_hook` (max compression) + `POST /api/_cache/clear` 端点 + regions 启用 120 秒缓存 |
+| 5.6 useMemo | MinisterTab 加 `useMemo` 缓存 158 大臣转换 |
+| 5.7 错误处理 | 2 处静默 `except: pass` 改 `logging.warning` |
+
+#### Phase 6: 测试+文档+推送 (commit `phase6`)
+
+| 任务 | 内容 |
+|------|------|
+| 6.1 pytest | 83/83 通过 (3.34s) |
+| 6.2 端到端 API | health/regions/campaign 创建+GET 全 200, regions gzip 2837 字节, 4 派系 influence 正确 |
+| 6.3 tsc strict | 0 错 |
+| 6.4 CHANGELOG | 完整 v2.0.0 段 (本段) |
+| 6.5 README | 19K v2.0.0 完整重写 |
+| 6.6 push | 7 commits 全部 push GitHub + .git/config 脱敏验证 |
+| 6.7 修 v1.x bug | `GameSession.new` 自动生成 campaign_id uuid (修 P1.1) + `FACTION_DATA → FACTION_META` (修 P1.2) + `faction_influence` 从 `state.metrics` 读 (修 P1.3) + `get_campaign` 404 兜底 (修 P1.4) |
+
+### 🗑️ 删除资产
+
+- **54 个明朝头像 PNG**: 5 consort (周皇后/周贵人/慧妃/田贵妃/袁贵妃) + 49 minister (袁崇焕/魏忠贤/洪承畴/皇太极/李自成/朱由检/徐阶/张居正...)
+- **3keengames.net 失效 URL**: 全部移除, 走本地池
+
+### 🔒 安全
+
+- `.git/config` 无 token 残留 (grep 空)
+- `.git-credentials` 0 字节
+- 临时 push 完立即 `git remote set-url` 改回脱敏版
+- 主公 token 永不入 .git-credentials
+
+### 📦 仓库
+
+- **主仓**: https://github.com/lz2026km/han-empire
+- **branch**: master
+- **version**: pyproject.toml 1.8.8 → 2.0.0
+
+---
+
 ## ⚔️ v1.9.0 — 2026-06-01
 
 > 明末系统全面借鉴 · 记忆+局势+结算三大核心升级
