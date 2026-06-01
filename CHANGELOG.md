@@ -95,7 +95,54 @@
 
 ---
 
+## 🎯 v1.16.0 — 2026-06-01
+
+> 乾坤大挪移一号方案 · Phase E · 候选情势判选官（event_selector）
+
+### ✨ 新增
+
+| 类别 | 文件 | 内容 |
+|------|------|------|
+| 📜 prompt | `content/prompts/event_selector.md` | 候选情势判选官提示词（154 行 / 5 章节） |
+| 🧠 判选模块 | `han_sim/event_selector.py` | 程序内 quick_check + LLM 软筛 + 缓存 + 退避（330 行） |
+| 🗃️ db | `db.py` | event_hold_counters 表 + 5 方法（increment/reset/get/list/cleanup） |
+| 🔗 simulation | `simulation.py` | L451 前插入 LLM 软筛 try/except（不破坏推演） |
+| 🔧 tools | `tools.py` | build_event_selector_tools 2 工具（inspect/reset） |
+| 🤖 agent | `agents.py` | create_event_selector_agent 工厂（force_json_output） |
+
+### 🐛 顺手修 v1.9.0 / v1.12.0 隐藏 BUG 1 个
+
+| BUG | 现象 | 修复 |
+|-----|------|------|
+| GameState 缺 campaign_id | 早期汉献帝版 GameState 设计为单战役，没 campaign_id 字段；event_selector 要用 | 外部传参 campaign_id="default"（v1.18.0 多战役时再升级） |
+
+### 🧪 测试
+
+- `tests/test_event_selector_v1160.py` 27 测试
+  - 5 db 方法（表存在/increment/reset/get/list/cleanup）
+  - 7 event_selector 模块（quick_check ×3 / parse ×3 / build_input / cache / force_fire）
+  - 5 tools（build_2 / inspect 空+具体 / reset 单+全）
+  - 2 agents（create 可调）
+  - 2 simulation（run_monthly_simulation 可调 / 模块导入）
+  - 5 集成（LLM 失败 fallback / 退避 / 缓存复用 / 缺候选返空 / 明朝漏网词 0）
+
+### 📊 业务影响
+
+- 0 业务破坏（run_monthly_simulation try/except 包裹）
+- 83/83 全测试通过
+- 0 明朝漏网词
+
+---
+
 ## 👑 v1.15.0 — 2026-06-01
+
+> 乾坤大挪移一号方案 · Phase D · 汉献帝后宫系统完整化
+
+### ✨ 新增
+
+| 类别 | 文件 | 内容 |
+|------|------|------|
+| 📜 prompt | `content/prompts/event_selector.md` | 候选情势判选官提示词（154 行 / 5 章节） |...[truncated]
 
 > 乾坤大挪移一号方案 · Phase D · 汉献帝后宫系统完整化
 

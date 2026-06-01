@@ -621,6 +621,16 @@ class GameDB:
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
             CREATE INDEX IF NOT EXISTS idx_token_stats_turn ON token_stats(turn);
+
+            -- v1.16.0 乾坤大挪移 Phase E · 候选情势 hold 计数
+            CREATE TABLE IF NOT EXISTS event_hold_counters (
+                campaign_id TEXT NOT NULL,
+                event_id TEXT NOT NULL,
+                hold_count INTEGER NOT NULL DEFAULT 0,
+                last_hold_turn INTEGER NOT NULL DEFAULT 0,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (campaign_id, event_id)
+            );
         """)
         self.conn.commit()
 
@@ -2688,3 +2698,61 @@ class GameDB:
             (turn,)
         ).fetchall()
         return [dict(r) for r in rows]
+
+    # ════════════════════════════════════════════════════════════════
+    # v1.16.0 乾坤大挪移 Phase E · event_hold_counters 表 5 方法
+    # ════════════════════════════════════════════════════════════════
+
+    def increment_hold(self, campaign_id: str, event_id: str, turn: int) -> int:
+        """候选情势被 hold 时 +1，返新计数。"""
+        existing = self.conn.execute(
+            "SELECT hold_count FROM event_hold_counters WHERE campaign_id=? AND event_id=?",
+            (campaign_id, event_id),
+        ).fetchone()
+        if existing:
+            new_count = existing["hold_count"] + 1
+            self.conn.execute(
+                "UPDATE event_hold_counters SET hold_count=?, last_hold_turn=?, updated_at=CURRENT_TIMESTAMP WHERE campaign_id=? AND event_id=?",
+                (new_count, turn, campaign_id, event_id),
+            )
+        else:
+            new_count = 1
+            self.conn.execute(
+                "INSERT INTO event_hold_counters (campaign_id, event_id, hold_count, last_hold_turn) VALUES (?, ?, ?, ?)",
+                (campaign_id, event_id, 1, turn),
+            )
+        self.conn.commit()
+        return new_count
+
+    def reset_hold(self, campaign_id: str, event_id: str) -> None:
+        """候选情势 fire 时清零 hold 计数。"""
+        self.conn.execute(
+            "DELETE FROM event_hold_counters WHERE campaign_id=? AND event_id=?",
+            (campaign_id, event_id),
+        )
+        self.conn.commit()
+
+    def get_hold_count(self, campaign_id: str, event_id: str) -> int:
+        """查询候选情势的 hold 计数。"""
+        row = self.conn.execute(
+            "SELECT hold_count FROM event_hold_counters WHERE campaign_id=? AND event_id=?",
+            (campaign_id, event_id),
+        ).fetchone()
+        return row["hold_count"] if row else 0
+
+    def list_holds(self, campaign_id: str) -> List[dict]:
+        """列出某 campaign 全部 hold 计数（按 hold_count DESC）。"""
+        rows = self.conn.execute(
+            "SELECT * FROM event_hold_counters WHERE campaign_id=? ORDER BY hold_count DESC, event_id",
+            (campaign_id,),
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+    def cleanup_old_holds(self, campaign_id: str) -> int:
+        """清理某 campaign 全部 hold 计数（用于测试 / 战役重置）。返删除条数。"""
+        cur = self.conn.execute(
+            "DELETE FROM event_hold_counters WHERE campaign_id=?",
+            (campaign_id,),
+        )
+        self.conn.commit()
+        return cur.rowcount

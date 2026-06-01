@@ -15,9 +15,10 @@ v1.14.0 乾坤大挪移 Phase C 扩展：
 import difflib
 import json
 import re
-from typing import Dict, List, TYPE_CHECKING
+from typing import Callable, Dict, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from han_sim.db import GameDB
     from han_sim.models import CourtContext, GameState
     from han_sim.context import _ctx as _content_ctx
 
@@ -1041,4 +1042,64 @@ def build_emperor_tools(state: "GameState", context: "CourtContext"):
         cancel_royal_decree, forge_alliance, sow_dissent, propose_empress,
         cultivate_consort,
     ]
+
+
+# ════════════════════════════════════════════════════════════════
+# v1.16.0 乾坤大挪移 Phase E · 候选情势判选 2 工具
+# ════════════════════════════════════════════════════════════════
+
+def build_event_selector_tools(db: "GameDB", state: "GameState") -> List[Callable]:
+    """2 工具：inspect_event_holds / reset_event_hold。
+
+    暴露候选情势 hold 计数给玩家/大臣 agent，
+    允许查询/重置（仅 dm/admin 类人物）。
+    """
+    if TYPE_CHECKING:
+        from han_sim.models import GameState
+
+    def inspect_event_holds(event_id: str = "") -> str:
+        """查询候选情势 hold 计数（乾坤大挪移 Phase E）。
+
+        event_id 留空 → 列出该 campaign 全部 hold 计数。
+        event_id 非空 → 仅查该情势的计数。
+        """
+        cid = getattr(state, "campaign_id", "default")
+        # v1.16.0 汉献帝版：单战役兜底
+        if not hasattr(state, "campaign_id"):
+            cid = "default"
+        if not event_id:
+            rows = db.list_holds(cid)
+            if not rows:
+                return "当前无任何候选情势被 hold。"
+            lines = ["【候选情势 hold 计数】"]
+            for r in rows:
+                lines.append(
+                    f"- {r['event_id']}: hold {r['hold_count']} 次 "
+                    f"(最近 hold：第 {r['last_hold_turn']} 回合)"
+                )
+            return "\n".join(lines)
+        else:
+            cnt = db.get_hold_count(cid, event_id)
+            return f"候选情势 {event_id} 当前被 hold {cnt} 次（≥ 3 次将自动 fire）。"
+
+    def reset_event_hold(event_id: str = "", all_holds: bool = False) -> str:
+        """重置候选情势 hold 计数。
+
+        all_holds=True → 清空该 campaign 全部 hold 计数（仅 dm/admin 工具）。
+        event_id 非空 → 仅重置该情势。
+        """
+        if not db:
+            return "重置失败：db 未注入。"
+        cid = getattr(state, "campaign_id", "default")
+        if not hasattr(state, "campaign_id"):
+            cid = "default"
+        if all_holds:
+            n = db.cleanup_old_holds(cid)
+            return f"已清空该 campaign 全部 hold 计数，共清理 {n} 条。"
+        if not event_id:
+            return "重置失败：event_id 必填或设 all_holds=True。"
+        db.reset_hold(cid, event_id)
+        return f"已重置候选情势 {event_id} 的 hold 计数。"
+
+    return [inspect_event_holds, reset_event_hold]
 

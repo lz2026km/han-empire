@@ -448,6 +448,16 @@ def run_monthly_simulation(
     threshold_crisis: List[Dict] = []
     random_events: List[Dict] = []
 
+    # 乾坤大挪移 Phase E：LLM 软筛（程序内 quick_check → LLM 因果判选）
+    if candidates:
+        try:
+            from han_sim.event_selector import judge_candidates
+            # 汉献帝版用单一战役（game_state 单例），campaign_id 硬编码为 "default"
+            fired_ids = judge_candidates(state, db, candidates, campaign_id="default")
+            candidates = [ev for ev in candidates if ev.id in fired_ids]
+        except Exception:
+            pass  # LLM 失败 → 全量 fire（不破坏推演）
+
     for ev in candidates:
         iid = event_to_issue(db, state, ev)
         if iid is not None:

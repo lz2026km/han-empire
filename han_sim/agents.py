@@ -438,3 +438,37 @@ def create_consort_agent(consort_id: str, db, state):
         add_history_to_context=True,
         markdown=False,
     )
+
+
+def create_event_selector_agent() -> Agent:
+    """v1.16.0 乾坤大挪移 Phase E · 候选情势判选 agent。
+
+    工厂函数，与现有 create_*_agent 同款风格。
+    加载 content/prompts/event_selector.md + game_world 双层 prompt。
+    """
+    from agno.agent import Agent
+    from han_sim.content import _ctx as content_ctx
+    from han_sim.llm_config import load_runtime_llm, create_chat_model
+
+    cfg = load_runtime_llm() or {}
+    ctx = content_ctx()
+    prompt = ctx.load_prompt("event_selector") if ctx else ""
+
+    full_instructions = [
+        ctx.game_world_prompt if hasattr(ctx, "game_world_prompt") else "",
+        prompt,
+        "\n\n你只输出合法 JSON object, 严禁输出其他文字。",
+    ]
+
+    return Agent(
+        name="候选情势判选官",
+        id="event-selector",
+        session_id="event-selector",
+        model=create_chat_model(
+            cfg, temperature=0.2, top_p=0.7, enable_thinking=False, max_tokens=600,
+            force_json_output=True,
+        ),
+        instructions=full_instructions,
+        add_history_to_context=False,
+        markdown=False,
+    )
