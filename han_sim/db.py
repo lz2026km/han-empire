@@ -505,11 +505,144 @@ class GameDB:
                 content TEXT NOT NULL DEFAULT '',
                 issued_turn INTEGER NOT NULL DEFAULT 0,
                 expires_turn INTEGER NOT NULL DEFAULT 0,
+                target TEXT NOT NULL DEFAULT '',
+                executor TEXT NOT NULL DEFAULT '',
+                scope TEXT NOT NULL DEFAULT '京畿',
+                resources TEXT NOT NULL DEFAULT '{}',
+                deadline_turns INTEGER NOT NULL DEFAULT 3,
+                authority_level TEXT NOT NULL DEFAULT '圣旨',
+                incentive TEXT NOT NULL DEFAULT '[]',
+                constraints TEXT NOT NULL DEFAULT '[]',
+                publicity TEXT NOT NULL DEFAULT '明发天下',
+                interest_impact TEXT NOT NULL DEFAULT '[]',
+                execution_delay INTEGER NOT NULL DEFAULT 0,
+                info_gap TEXT NOT NULL DEFAULT '[]',
+                faction_backlash TEXT NOT NULL DEFAULT '',
+                verdict TEXT NOT NULL DEFAULT '',
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
             CREATE INDEX IF NOT EXISTS idx_directives_campaign ON directives(campaign_id, status);
             CREATE INDEX IF NOT EXISTS idx_directives_turn ON directives(issued_turn, status);
+            CREATE INDEX IF NOT EXISTS idx_directives_authority ON directives(authority_level);
+
+
+            CREATE TABLE IF NOT EXISTS imperial_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                category TEXT NOT NULL DEFAULT '朝政',
+                title TEXT NOT NULL,
+                description TEXT NOT NULL DEFAULT '',
+                urgency INTEGER NOT NULL DEFAULT 5,
+                severity INTEGER NOT NULL DEFAULT 5,
+                credibility INTEGER NOT NULL DEFAULT 5,
+                stake TEXT NOT NULL DEFAULT '[]',
+                turn INTEGER NOT NULL DEFAULT 0,
+                status TEXT NOT NULL DEFAULT '未处理',
+                response_directive_id INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_events_campaign ON imperial_events(campaign_id, status);
+
+            CREATE TABLE IF NOT EXISTS memorials (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                memorial_type TEXT NOT NULL DEFAULT '月奏',
+                from_official TEXT NOT NULL DEFAULT '尚书',
+                title TEXT NOT NULL,
+                content TEXT NOT NULL,
+                is_secret INTEGER NOT NULL DEFAULT 0,
+                is_urgent INTEGER NOT NULL DEFAULT 0,
+                suggested_directive TEXT NOT NULL DEFAULT '{}',
+                event_id INTEGER NOT NULL DEFAULT 0,
+                status TEXT NOT NULL DEFAULT '已呈',
+                emperor_remark TEXT NOT NULL DEFAULT '',
+                turn INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_memorials_campaign ON memorials(campaign_id, status);
+
+            CREATE TABLE IF NOT EXISTS verdicts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                directive_id INTEGER NOT NULL,
+                result TEXT NOT NULL DEFAULT '',
+                cost TEXT NOT NULL DEFAULT '{}',
+                hidden_risk TEXT NOT NULL DEFAULT '[]',
+                truthfulness INTEGER NOT NULL DEFAULT 8,
+                reporter TEXT NOT NULL DEFAULT '尚书',
+                turn INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_verdicts_campaign ON verdicts(campaign_id, directive_id);
+
+            CREATE TABLE IF NOT EXISTS faction_backlashes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                directive_id INTEGER NOT NULL,
+                faction_id TEXT NOT NULL DEFAULT '',
+                backlash_type TEXT NOT NULL DEFAULT '拖延',
+                delay_turns INTEGER NOT NULL DEFAULT 0,
+                distortion TEXT NOT NULL DEFAULT '',
+                counter_action TEXT NOT NULL DEFAULT '',
+                turn INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_backlashes_campaign ON faction_backlashes(campaign_id, directive_id);
+
+            CREATE TABLE IF NOT EXISTS court_debates (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                topic TEXT NOT NULL,
+                participants TEXT NOT NULL DEFAULT '[]',
+                statements TEXT NOT NULL DEFAULT '[]',
+                outcome TEXT NOT NULL DEFAULT '',
+                emperor_decision TEXT NOT NULL DEFAULT '',
+                turn INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_debates_campaign ON court_debates(campaign_id, turn);
+
+            CREATE TABLE IF NOT EXISTS authority_levels (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                level TEXT NOT NULL UNIQUE,
+                scope TEXT NOT NULL DEFAULT '',
+                prestige_cost INTEGER NOT NULL DEFAULT 1,
+                visibility TEXT NOT NULL DEFAULT '',
+                enforce_strength REAL NOT NULL DEFAULT 1.0,
+                description TEXT NOT NULL DEFAULT ''
+            );
+            INSERT OR IGNORE INTO authority_levels (level, scope, prestige_cost, visibility, enforce_strength, description) VALUES
+                ('口谕', '身边太监/亲信', 0, '单独面授', 0.4, '皇帝口信, 形式轻, 易被忽视'),
+                ('谕旨', '六部/院', 1, '只给部院', 0.6, '正式但有限, 仅限京官'),
+                ('圣旨', '全国/州郡', 3, '明发天下', 1.0, '正诏, 强力, 但可被曲解'),
+                ('密旨', '暗中执行', 2, '密发厂卫', 0.85, '秘密行动, 易反扑'),
+                ('廷议', '朝堂决议', 2, '明发朝堂', 0.95, '百官共议, 阻力小但需辩论');
+
+            CREATE TABLE IF NOT EXISTS info_gaps (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                subject TEXT NOT NULL,
+                truth TEXT NOT NULL,
+                perceived TEXT NOT NULL DEFAULT '',
+                severity INTEGER NOT NULL DEFAULT 3,
+                turn INTEGER NOT NULL DEFAULT 0,
+                revealed INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_infogaps_campaign ON info_gaps(campaign_id, revealed);
+
+            CREATE TABLE IF NOT EXISTS imperial_chronicle (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                year INTEGER NOT NULL,
+                period INTEGER NOT NULL,
+                event TEXT NOT NULL,
+                result TEXT NOT NULL DEFAULT '',
+                impact TEXT NOT NULL DEFAULT '',
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_chronicle_campaign ON imperial_chronicle(campaign_id, year, period);
 
             CREATE TABLE IF NOT EXISTS consorts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -626,7 +759,6 @@ class GameDB:
             );
             CREATE INDEX IF NOT EXISTS idx_token_stats_turn ON token_stats(turn);
 
-            -- v1.16.0 乾坤大挪移 Phase E · 候选情势 hold 计数
             CREATE TABLE IF NOT EXISTS event_hold_counters (
                 campaign_id TEXT NOT NULL,
                 event_id TEXT NOT NULL,
