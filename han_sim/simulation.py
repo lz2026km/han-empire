@@ -37,6 +37,7 @@ from han_sim.flows import (
     apply_building_maintenance,
     collect_tribute,
     apply_intel_expense,
+    apply_class_delta_from_factions,
     LOYALTY_RECOVERY_ACTIONS,
 )
 from han_sim.issues import (
@@ -399,6 +400,10 @@ def run_monthly_simulation(
 
     # ── 1. 财政流 ──────────────────────────────────────────────
     fiscal = apply_monthly_flow(state, db)
+
+    # ── 1a. 派系-阶级联动结算（fiscal 之后）──────────────────────
+    # 自动从 factions 表读取本月满意度变化，联动影响 classes 表
+    class_delta = apply_class_delta_from_factions(state, db)
 
     # ── 1b. 建筑维护费（年度扣除，Step2/5新增）─────────────────
     building_maint = apply_building_maintenance(state)

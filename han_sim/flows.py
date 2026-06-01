@@ -414,6 +414,87 @@ def apply_monthly_flow(state: GameState, db: GameDB) -> Dict:
     }
 
 
+# ── 派系-阶级联动结算 ─────────────────────────────────────────────────────
+
+def apply_class_delta_from_factions(
+    state: GameState,
+    db: GameDB,
+    faction_satisfaction_delta: Optional[Dict[str, int]] = None,
+) -> Dict[str, Dict[str, int]]:
+    """派系-阶级联动结算。
+
+    月末时根据派系满意度的变化，联动影响各阶级满意度。
+
+    联动规则来自 ``db.get_faction_class_linkage()``：
+        忠汉派 → 流民+2 / 豪族+1 / 官僚+3 / 军户+1 / 宗室+2
+        务实派 → 商贾+2 / 军户+1 / 官僚+2 / 豪族+1
+        离心派 → 流民+1 / 豪族+2 / 宗室-1 / 官僚-1
+        叛逆派 → 军户-2 / 官僚-3 / 宗室+2 / 豪族+1
+
+    每个阶级的 delta 计算：
+        class_delta = linkage_per_unit × faction_satisfaction_delta
+
+    如果未提供 ``faction_satisfaction_delta``，函数会自动从
+    ``state.metrics["_prev_faction_satisfaction"]`` 与当前 factions
+    表的 satisfaction 字段比对，得到本月变化量。
+
+    Args:
+        state: 当前游戏状态。
+        db: 数据库连接。
+        faction_satisfaction_delta: 可选的派系满意度变化字典
+            ``{派系名: 增量}``。为 None 时自动从 db 读取并计算。
+
+    Returns:
+        ``{阶级名: {"satisfaction": 增量, "leverage": 0}}`` 字典，
+        同时已通过 ``db.apply_class_delta()`` 持久化到 classes 表。
+    """
+    linkage = db.get_faction_class_linkage()
+
+    # 1) 解析派系满意度变化
+    if faction_satisfaction_delta is None:
+        # 读取 factions 表快照，对比 state.prev_faction_satisfaction
+        rows = db.conn.execute(
+            "SELECT name, satisfaction FROM factions"
+        ).fetchall()
+        prev_map = state.prev_faction_satisfaction or {}
+        faction_satisfaction_delta = {}
+        for r in rows:
+            name = r["name"]
+            cur = int(r["satisfaction"] or 0)
+            prev = int(prev_map.get(name, cur))
+            delta = cur - prev
+            if delta != 0:
+                faction_satisfaction_delta[name] = delta
+
+    # 2) 按 linkage 累加得到各阶级 delta
+    class_delta: Dict[str, Dict[str, int]] = {}
+    for faction_name, f_delta in faction_satisfaction_delta.items():
+        if f_delta == 0 or faction_name not in linkage:
+            continue
+        per_class = linkage[faction_name]
+        for cls_name, per_unit in per_class.items():
+            sat_delta = per_unit * f_delta
+            entry = class_delta.setdefault(cls_name, {"satisfaction": 0, "leverage": 0})
+            entry["satisfaction"] += sat_delta
+
+    # 3) 写入 db
+    if class_delta:
+        db.apply_class_delta(class_delta)
+        # 写日志
+        summary = " / ".join(
+            f"{cls}{delta['satisfaction']:+d}" for cls, delta in class_delta.items()
+        )
+        state.log.append(f"【派系-阶级联动】{summary}")
+
+    # 4) 更新 satisfaction 快照
+    rows = db.conn.execute("SELECT name, satisfaction FROM factions").fetchall()
+    state.prev_faction_satisfaction = {
+        r["name"]: int(r["satisfaction"] or 0) for r in rows
+    }
+
+    return class_delta
+
+
 def apply_warlord_actions(state: GameState, db: GameDB) -> List[Dict]:
     """每回合各路诸侯自动行动：写入 powers.last_action，推进藩镇值。
     参照 ming_sim/db.apply_power_deltas() + power_payload()。

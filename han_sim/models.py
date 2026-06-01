@@ -981,6 +981,8 @@ class GameState:
     emperor_escaped_turn: int = 0     # 献帝出逃回合（>0表示触发东归线）
     emperor_safe_turn: int = 0        # 献帝抵达许昌回合（>0表示东归完成）
     log: List[str] = field(default_factory=list)
+    # 派系-阶级联动：上月各派系满意度快照（月末结算对比用）
+    prev_faction_satisfaction: Dict[str, int] = field(default_factory=dict)
 
     def clamp(self) -> None:
         for key, value in list(self.metrics.items()):
