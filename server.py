@@ -1100,6 +1100,66 @@ def civil_exile_api():
 
 
 # ════════════════════════════════════════════════════════════════
+# v2.1.0 Phase 7.2: 春秋史册 + 时间轴 API
+# ════════════════════════════════════════════════════════════════
+
+@app.route('/api/chronicle/historical', methods=['GET'])
+def chronicle_historical_api():
+    """列出东汉末年 13 件重大历史事件"""
+    from han_sim.chronicle import list_historical_events
+    year_min = int(request.args.get('year_min', 184))
+    year_max = int(request.args.get('year_max', 280))
+    return jsonify({
+        "events": list_historical_events(year_min, year_max),
+        "total": len(list_historical_events(year_min, year_max)),
+    })
+
+
+@app.route('/api/chronicle/timeline', methods=['GET'])
+def chronicle_timeline_api():
+    """生成时间轴 (按年分组)"""
+    from han_sim.chronicle import get_timeline
+    year_min = int(request.args.get('year_min', 184))
+    year_max = int(request.args.get('year_max', 280))
+    return jsonify({"timeline": get_timeline(year_min, year_max)})
+
+
+@app.route('/api/chronicle/historian', methods=['POST'])
+def chronicle_historian_api():
+    """4 史官评语 (司马/班/范/陈)"""
+    from han_sim.chronicle import generate_historian_comment
+    data = request.get_json() or {}
+    year = data.get('year', 220)
+    title = data.get('title', '曹丕代汉')
+    historian = data.get('historian', '司马氏')
+    comment = generate_historian_comment(year, title, historian)
+    return jsonify({"comment": comment, "historian": historian, "year": year, "title": title})
+
+
+@app.route('/api/chronicle/historians', methods=['GET'])
+def chronicle_historians_api():
+    """4 史官立场"""
+    from han_sim.chronicle import HISTORIAN_STANCES
+    return jsonify({"historians": HISTORIAN_STANCES})
+
+
+@app.route('/api/chronicle/record', methods=['POST'])
+def chronicle_record_api():
+    """记录游戏事件到史记"""
+    from han_sim.chronicle import record_event
+    data = request.get_json() or {}
+    year = data.get('year', 200)
+    month = data.get('month', 1)
+    event_type = data.get('event_type', '诏书')
+    title = data.get('title', '未知')
+    description = data.get('description', '')
+    impact = data.get('impact', {})
+    source = data.get('source', 'player')
+    event = record_event(year, month, event_type, title, description, impact, source)
+    return jsonify({"event": event.to_dict()})
+
+
+# ════════════════════════════════════════════════════════════════
 # v1.15.0 乾坤大挪移 Phase D · 后宫 API
 # ════════════════════════════════════════════════════════════════
 
