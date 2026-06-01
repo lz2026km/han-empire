@@ -4521,5 +4521,247 @@
       "刚直",
       "战略"
     ]
+  },
+  {
+    "id": "c_caiyong",
+    "name": "蔡邕",
+    "office": "左中郎将",
+    "office_type": "文官",
+    "faction": "忠汉派",
+    "aliases": [
+      "蔡中郎",
+      "蔡伯喈"
+    ],
+    "personal_skills": [
+      "书法",
+      "辞赋",
+      "史学"
+    ],
+    "loyalty": 75,
+    "ability": 92,
+    "integrity": 85,
+    "courage": 30,
+    "style": "温文尔雅",
+    "power_id": "c_cai",
+    "location": "洛阳",
+    "birth_year": 133,
+    "historical_death_year": 192,
+    "historical_death_month": 4,
+    "debut_year": 189,
+    "debut_month": 1,
+    "status": "historical",
+    "summary": "东汉末年文学家、书法家, 蔡文姬之父。董卓被诛后为王允所捕, 死于狱中。",
+    "portrait_id": "minister_pool_1"
+  },
+  {
+    "id": "c_caiw enji",
+    "name": "蔡文姬",
+    "office": "待诏",
+    "office_type": "文官",
+    "faction": "忠汉派",
+    "aliases": [
+      "蔡琰",
+      "文姬"
+    ],
+    "personal_skills": [
+      "音律",
+      "辞赋",
+      "书法"
+    ],
+    "loyalty": 50,
+    "ability": 90,
+    "integrity": 80,
+    "courage": 20,
+    "style": "才情绝世",
+    "power_id": "c_cai",
+    "location": "南匈奴",
+    "birth_year": 177,
+    "historical_death_year": 249,
+    "historical_death_month": 0,
+    "debut_year": 195,
+    "debut_month": 1,
+    "status": "historical",
+    "summary": "蔡邕之女, 博学多才, 通经史音律。兴平年间被匈奴掳走, 曹操遣使赎归。",
+    "portrait_id": "consort_pool_2"
+  },
+  {
+    "id": "c_lu_zhi",
+    "name": "卢植",
+    "office": "尚书",
+    "office_type": "文官",
+    "faction": "忠汉派",
+    "aliases": [
+      "卢子干"
+    ],
+    "personal_skills": [
+      "经学",
+      "统兵",
+      "治民"
+    ],
+    "loyalty": 95,
+    "ability": 88,
+    "integrity": 90,
+    "courage": 70,
+    "style": "刚正不阿",
+    "power_id": "c_lu",
+    "location": "洛阳",
+    "birth_year": 0,
+    "historical_death_year": 192,
+    "historical_death_month": 0,
+    "debut_year": 184,
+    "debut_month": 6,
+    "status": "historical",
+    "summary": "大儒, 灵帝时讨黄巾军统帅。后因谏董卓忤旨, 险些被杀。",
+    "portrait_id": "minister_pool_4"
+  },
+  {
+    "id": "c_zhang_jiao",
+    "name": "张角",
+    "office": "天公将军",
+    "office_type": "起义",
+    "faction": "叛逆派",
+    "aliases": [
+      "大贤良师"
+    ],
+    "personal_skills": [
+      "太平道",
+      "医卜",
+      "组织"
+    ],
+    "loyalty": 30,
+    "ability": 75,
+    "integrity": 70,
+    "courage": 95,
+    "style": "神棍煽动",
+    "power_id": "c_zhang_jiao",
+    "location": "钜鹿",
+    "birth_year": 0,
+    "historical_death_year": 184,
+    "historical_death_month": 12,
+    "debut_year": 184,
+    "debut_month": 2,
+    "status": "historical",
+    "summary": "太平道教主张角, 以苍天已死黄天当立为号, 率黄巾起义, 动摇汉室根基。",
+    "portrait_id": "minister_pool_6"
+  },
+  {
+    "id": "c_hua_tuo",
+    "name": "华佗",
+    "office": "神医",
+    "office_type": "方术",
+    "faction": "忠汉派",
+    "aliases": [
+      "华元化",
+      "神医华佗"
+    ],
+    "personal_skills": [
+      "麻沸散",
+      "针灸",
+      "五禽戏"
+    ],
+    "loyalty": 60,
+    "ability": 95,
+    "integrity": 90,
+    "courage": 50,
+    "style": "仁心妙手",
+    "power_id": "c_hua",
+    "location": "谯县",
+    "birth_year": 0,
+    "historical_death_year": 208,
+    "historical_death_month": 0,
+    "debut_year": 190,
+    "debut_month": 1,
+    "status": "historical",
+    "summary": "东汉末年神医, 精通内外科、针灸、药疗。欲为曹操开颅治病, 被疑杀之。",
+    "portrait_id": "minister_pool_7"
+  },
+  {
+    "id": "c_zhang_zhongjing",
+    "name": "张仲景",
+    "office": "长沙太守",
+    "office_type": "文官",
+    "faction": "忠汉派",
+    "aliases": [
+      "张机"
+    ],
+    "personal_skills": [
+      "伤寒杂病",
+      "辨证施治"
+    ],
+    "loyalty": 80,
+    "ability": 90,
+    "integrity": 95,
+    "courage": 40,
+    "style": "仁心济世",
+    "power_id": "c_zhang",
+    "location": "长沙",
+    "birth_year": 150,
+    "historical_death_year": 219,
+    "historical_death_month": 0,
+    "debut_year": 196,
+    "debut_month": 1,
+    "status": "historical",
+    "summary": "东汉末年医学家, 医圣, 著《伤寒杂病论》, 开创辨证论治先河。",
+    "portrait_id": "minister_pool_8"
+  },
+  {
+    "id": "c_man_chong",
+    "name": "满宠",
+    "office": "征东将军",
+    "office_type": "武官",
+    "faction": "务实派",
+    "aliases": [
+      "满伯宁"
+    ],
+    "personal_skills": [
+      "执法",
+      "治军",
+      "外交"
+    ],
+    "loyalty": 80,
+    "ability": 85,
+    "integrity": 90,
+    "courage": 75,
+    "style": "刚正不阿",
+    "power_id": "c_man",
+    "location": "许昌",
+    "birth_year": 0,
+    "historical_death_year": 242,
+    "historical_death_month": 0,
+    "debut_year": 200,
+    "debut_month": 1,
+    "status": "historical",
+    "summary": "曹魏名臣, 历任汝南太守、征东将军, 三国时期著名的刚正执法之臣。",
+    "portrait_id": "minister_pool_11"
+  },
+  {
+    "id": "c_tian_feng",
+    "name": "田丰",
+    "office": "冀州别驾",
+    "office_type": "文官",
+    "faction": "离心派",
+    "aliases": [
+      "田元皓"
+    ],
+    "personal_skills": [
+      "谋略",
+      "战略",
+      "识人"
+    ],
+    "loyalty": 40,
+    "ability": 88,
+    "integrity": 80,
+    "courage": 70,
+    "style": "直言进谏",
+    "power_id": "c_tian",
+    "location": "邺",
+    "birth_year": 0,
+    "historical_death_year": 200,
+    "historical_death_month": 0,
+    "debut_year": 196,
+    "debut_month": 1,
+    "status": "historical",
+    "summary": "袁绍谋主, 多奇谋。屡谏袁绍不用, 官渡战前被囚, 后被袁绍赐死。",
+    "portrait_id": "minister_pool_12"
   }
 ]

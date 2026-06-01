@@ -531,7 +531,41 @@
       "董卓",
       "吕布",
       "王允"
-    ]
+    ],
+    "options": [
+      {
+        "id": "op_reward",
+        "title": "嘉奖王允",
+        "description": "下诏嘉奖王允, 复位朝政"
+      },
+      {
+        "id": "op_avoid",
+        "title": "暂避锋芒",
+        "description": "暂不出手, 让王允与西凉军互斗"
+      },
+      {
+        "id": "op_seek_friend",
+        "title": "亲近西凉军",
+        "description": "暗中联络李傕郭汜"
+      }
+    ],
+    "choices": {
+      "op_reward": {
+        "authority": 15,
+        "favor_王允": 30,
+        "favor_西凉军": -40
+      },
+      "op_avoid": {
+        "authority": 0,
+        "favor_王允": 0,
+        "favor_西凉军": 0
+      },
+      "op_seek_friend": {
+        "authority": -10,
+        "favor_西凉军": 30,
+        "favor_王允": -30
+      }
+    }
   },
   {
     "id": "e_193_licuo",
@@ -717,7 +751,25 @@
         "effect": "威权+5(极高风险), 触发衣带诏剧情"
       }
     ],
-    "historical": true
+    "historical": true,
+    "choices": {
+      "op_persuade": {
+        "authority": 5,
+        "favor_孙权": 20,
+        "favor_刘备": 20,
+        "favor_曹操": -30
+      },
+      "op_surrender": {
+        "authority": -30,
+        "favor_曹操": 50,
+        "loyalty": -20
+      },
+      "op_escape": {
+        "authority": -10,
+        "favor_曹操": -40,
+        "defection": 20
+      }
+    }
   },
   {
     "id": "e_190_liugong_tongmeng",
@@ -885,7 +937,25 @@
       }
     ],
     "historical": true,
-    "game_ending": "汉朝终结, 转三国"
+    "game_ending": "汉朝终结, 转三国",
+    "choices": {
+      "op_refuse": {
+        "authority": 5,
+        "favor_曹丕": -50,
+        "loyalty": 10
+      },
+      "op_three_relay": {
+        "authority": -10,
+        "favor_曹丕": 30,
+        "loyalty": -10
+      },
+      "op_protest": {
+        "authority": 3,
+        "favor_蜀汉": 30,
+        "favor_东吴": 20,
+        "favor_曹丕": -50
+      }
+    }
   },
   {
     "id": "e_222_yiling",
@@ -904,7 +974,37 @@
       "曹丕",
       "代汉",
       "献帝"
-    ]
+    ],
+    "options": [
+      {
+        "id": "op_celebrate",
+        "title": "嘉奖刘备",
+        "description": "下诏嘉奖刘备讨伐东吴"
+      },
+      {
+        "id": "op_criticize",
+        "title": "谴责刘备",
+        "description": "下诏谴责刘备兴兵"
+      },
+      {
+        "id": "op_neutral",
+        "title": "保持沉默",
+        "description": "不参与, 观望成败"
+      }
+    ],
+    "choices": {
+      "op_celebrate": {
+        "favor_蜀汉": 25,
+        "favor_东吴": -25
+      },
+      "op_criticize": {
+        "favor_蜀汉": -25,
+        "favor_东吴": 25
+      },
+      "op_neutral": {
+        "authority": -3
+      }
+    }
   },
   {
     "id": "e_221_liubei_chengdi",
@@ -1047,11 +1147,40 @@
     "type": "political",
     "location": "洛阳",
     "summary": "司马炎受禅代魏建立西晋，曹魏灭亡。",
-    "impact": {},
+    "impact": "汉献帝以山阳公身份目睹晋朝建立, 14 年后薨",
     "tags": [
       "司马炎",
       "代魏"
-    ]
+    ],
+    "options": [
+      {
+        "id": "op_denounce",
+        "title": "下诏谴责",
+        "description": "以山阳公名义下诏谴责司马氏"
+      },
+      {
+        "id": "op_endorse",
+        "title": "承认晋朝",
+        "description": "承认晋朝正统"
+      },
+      {
+        "id": "op_ignore",
+        "title": "不表态"
+      }
+    ],
+    "choices": {
+      "op_denounce": {
+        "fame": 5,
+        "favor_晋": -20
+      },
+      "op_endorse": {
+        "favor_晋": 30,
+        "authority": -10
+      },
+      "op_ignore": {
+        "authority": -5
+      }
+    }
   },
   {
     "id": "e_280_jin_wu",
@@ -1863,11 +1992,7 @@
         "effect": "威权+25, 失败率最高, 但若成功可除曹"
       }
     ],
-    "impact": {
-      "威权": 15,
-      "曹操": -10,
-      "董承": -100
-    },
+    "impact": "衣带诏密谋失败, 董承三族被诛, 献帝自此孤立",
     "historical": true,
     "tags": [
       "衣带诏",
@@ -1876,6 +2001,25 @@
       "曹操",
       "血诏",
       "衣带密令"
-    ]
+    ],
+    "choices": {
+      "op_yizhao": {
+        "authority": 10,
+        "favor_曹操": -30,
+        "loyalty": 15,
+        "fame": 10
+      },
+      "op_delay": {
+        "authority": 0,
+        "favor_曹操": 0,
+        "loyalty": 5,
+        "fame": 0
+      },
+      "op_expose": {
+        "authority": -15,
+        "favor_曹操": 40,
+        "loyalty": -20
+      }
+    }
   }
 ]
