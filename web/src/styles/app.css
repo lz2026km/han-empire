@@ -2305,3 +2305,104 @@ input:focus, select:focus {
   margin-top: 20px; display: flex; justify-content: center; gap: 12px;
 }
 .settlement-lock--exiting { opacity: 0; transition: opacity 0.2s; }
+   FactionRelationDiagram Styles
+   ============================================= */
+
+.faction-relation-diagram {
+  position: relative;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 16px;
+}
+
+.faction-diagram-svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.faction-node {
+  transition: transform 0.2s ease;
+}
+
+.faction-node:hover {
+  transform: scale(1.1);
+}
+
+.node-circle {
+  transition: all 0.2s ease;
+}
+
+.node-glow {
+  transition: opacity 0.2s ease;
+}
+
+.emperor-center {
+  animation: emperorCenterPulse 3s ease-in-out infinite;
+}
+
+@keyframes emperorCenterPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px rgba(201, 168, 76, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(201, 168, 76, 0.5));
+  }
+}
+
+.faction-legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.legend-line {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.legend-line.alliance {
+  background: #4a9c5d;
+}
+
+.legend-line.rival {
+  background: #c42b2b;
+}
+
+.legend-line.neutral {
+  background: #6b5f4f;
+  background-image: repeating-linear-gradient(
+    90deg,
+    #6b5f4f 0,
+    #6b5f4f 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
+
+.faction-tooltip {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-gold-dim);
+  border-radius: var(--border-radius);
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  max-width: 300px;
+  text-align: center;
+}

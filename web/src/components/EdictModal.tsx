@@ -8,7 +8,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { X, Send, Lock, Unlock, FileText, Trash2, Edit3, Check, XCircle, ArrowRight } from 'lucide-react'
 import { SettlementLock } from './SettlementLock'
-import { api } from '../api'
+import { api, IS_DEMO } from '../api'
 
 interface Directive {
   id: number
@@ -164,6 +164,21 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
     setReport(null)
     setDone(false)
     setError(null)
+    // v2.2.0 GitHub Pages 演示模式: 模拟 SSE 流
+    if (IS_DEMO) {
+      const mockStages = ['稽首', '明诏', '颁旨', '回奏']
+      const mockDecree = '朕以大汉天子之名, 诏曰: 讨逆兴汉, 天下共举。'
+      const mockReport = { result: '成功', cost: '银 5 万两', hidden: '无' }
+      for (let i = 0; i < mockStages.length; i++) {
+        setStage(mockStages[i])
+        await new Promise(r => setTimeout(r, 300))
+      }
+      setDecree(mockDecree)
+      setReport(mockReport)
+      setDone(true)
+      setSettling(false)
+      return
+    }
     try {
       const response = await fetch('/api/decree/issue/stream', {
         method: 'POST',
@@ -232,6 +247,19 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
     setReport(null)
     setDone(false)
     setError(null)
+    // v2.2.0 GitHub Pages 演示模式: 模拟推演
+    if (IS_DEMO) {
+      const mockStages = ['朝议', '廷推', '退朝']
+      const mockNarrative = '是日朝会, 群臣议论纷纷, 然未有定策, 乃退朝。'
+      for (const s of mockStages) {
+        setStage(s)
+        await new Promise(r => setTimeout(r, 300))
+      }
+      setNarrative(mockNarrative)
+      setDone(true)
+      setSettling(false)
+      return
+    }
     try {
       const response = await fetch('/api/decree/advance/stream', {
         method: 'POST',
