@@ -1329,6 +1329,111 @@ def regions_api():
     return jsonify({'regions': regions, 'count': len(regions)})
 
 
+# ════════════════════════════════════════════════════════════════
+# v2.2.0 借鉴明末: SSE 流式颁诏 (P0-1+P0-2+P0-3+P0-4+P0-5)
+# ════════════════════════════════════════════════════════════════
+@app.route('/api/decree/issue/stream', methods=['POST'])
+def api_issue_decree_stream():
+    """SSE 流式颁诏 - 主公实时看到 5 阶段推演 (拟诏/研判/推演/月结/完成)
+
+    事件类型: stage / thinking / text / done / error
+    """
+    import queue
+    import threading
+    from han_sim.decree_stream import stream_issue_decree
+
+    data = request.get_json() or {}
+    campaign_id = data.get('campaign_id', '')
+
+    if campaign_id not in GAMES:
+        try:
+            GAMES[campaign_id] = GameSession.load(campaign_id)
+        except Exception:
+            return jsonify({'error': 'Campaign not found'}), 404
+
+    session = GAMES[campaign_id]
+    db = session.db
+    state = session.state
+
+    ev_queue = queue.Queue()
+
+    def on_event(kind, content):
+        ev_queue.put((kind, content))
+
+    def worker():
+        try:
+            result = stream_issue_decree(state, db, campaign_id, on_event)
+            ev_queue.put(('__done__', result))
+        except Exception as e:
+            ev_queue.put(('__error__', str(e)))
+
+    def generate():
+        thread = threading.Thread(target=worker, daemon=True)
+        thread.start()
+        while True:
+            kind, content = ev_queue.get()
+            if kind == '__done__':
+                yield f"event: done\ndata: {json.dumps(content, ensure_ascii=False)}\n\n"
+                break
+            if kind == '__error__':
+                yield f"event: error\ndata: {json.dumps({'message': content}, ensure_ascii=False)}\n\n"
+                break
+            # stage / thinking / text
+            yield f"event: {kind}\ndata: {json.dumps({'content': content}, ensure_ascii=False)}\n\n"
+
+    return Response(generate(), mimetype='text/event-stream',
+                    headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'})
+
+
+@app.route('/api/decree/advance/stream', methods=['POST'])
+def api_advance_stream():
+    """SSE 流式退朝 - 不下旨, 仅推演月度结算 (P0-4)"""
+    import queue
+    import threading
+    from han_sim.decree_stream import advance_without_edict
+
+    data = request.get_json() or {}
+    campaign_id = data.get('campaign_id', '')
+
+    if campaign_id not in GAMES:
+        try:
+            GAMES[campaign_id] = GameSession.load(campaign_id)
+        except Exception:
+            return jsonify({'error': 'Campaign not found'}), 404
+
+    session = GAMES[campaign_id]
+    db = session.db
+    state = session.state
+
+    ev_queue = queue.Queue()
+
+    def on_event(kind, content):
+        ev_queue.put((kind, content))
+
+    def worker():
+        try:
+            result = advance_without_edict(state, db, on_event)
+            ev_queue.put(('__done__', result))
+        except Exception as e:
+            ev_queue.put(('__error__', str(e)))
+
+    def generate():
+        thread = threading.Thread(target=worker, daemon=True)
+        thread.start()
+        while True:
+            kind, content = ev_queue.get()
+            if kind == '__done__':
+                yield f"event: done\ndata: {json.dumps(content, ensure_ascii=False)}\n\n"
+                break
+            if kind == '__error__':
+                yield f"event: error\ndata: {json.dumps({'message': content}, ensure_ascii=False)}\n\n"
+                break
+            yield f"event: {kind}\ndata: {json.dumps({'content': content}, ensure_ascii=False)}\n\n"
+
+    return Response(generate(), mimetype='text/event-stream',
+                    headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'})
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5555))
     app.run(host='0.0.0.0', port=port, debug=False)

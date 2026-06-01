@@ -111,10 +111,7 @@ export default function App() {
     startSettlement: handleStreamSettlement,
   } = useSettlement(campaignId)
 
-  const handleEdictPublish = useCallback(async (content: string, isSecret: boolean) => {
-    if (!campaignId) return
-    await issueDecree('edict')
-  }, [campaignId, issueDecree])
+  // v2.2.0: EdictModal 自带 SSE 流式颁诏, 旧的 handleEdictPublish 已被取代 (此处不再保留)
 
   const tabs: { id: Tab; label: string; key: string }[] = [
     { id: 'overview', label: '🏠 总览', key: '1' },
@@ -285,31 +282,24 @@ export default function App() {
         onSendMessage={handleSendMessage}
       />
 
-      {/* Edict Modal */}
+      {/* Edict Modal - v2.2.0 借鉴明末: 3 阶段 (草稿池/拟诏/颁布 SSE 流式) */}
       <EdictModal
         isOpen={showEdictModal}
         onClose={() => setShowEdictModal(false)}
-        onPublish={handleEdictPublish}
-        edictTypes={[
-          { id: 'edict', name: '颁布政令', description: '提升威权，降低忠诚', authorityCost: 6 },
-          { id: 'appoint', name: '任命诏书', description: '任命大臣，提升忠诚', authorityCost: 5 },
-          { id: 'dismiss', name: '贬谪诏书', description: '贬谪大臣，降低其威权', authorityCost: 8 },
-          { id: 'inspect', name: '巡视州郡', description: '提升威权，降低派系影响', authorityCost: 3 },
-          { id: 'recruit', name: '招贤纳士', description: '随机获得大臣', authorityCost: 10 },
-          { id: 'grant', name: '封赏功臣', description: '提升大臣忠诚，降低威权', authorityCost: 7 },
-        ]}
+        campaignId={gameState?.campaign_id || ''}
       />
 
-      {/* Settlement Lock Modal */}
+      {/* Settlement Lock Modal - v2.2.0 借鉴明末: 全屏锁 + 3 态推演 */}
       <SettlementLock
-        isOpen={showSettlement}
+        stage=""
+        thinking=""
+        narrative=""
+        done={!showSettlement}
         onClose={() => setShowSettlement(false)}
-        month={gameState?.month || 1}
-        year={gameState?.year || 189}
-        stages={settlementStages.map(s => ({ id: s.id, name: s.name, status: s.status as any }))}
-        currentStage={currentSettlementStage}
-        onStageComplete={(stageId) => { console.log('v2.0.0 P0-B2 阶段完成', stageId) }}
-        changes={{}}
+        {...(showSettlement ? {
+          stage: (settlementStages.find(s => s.id === currentSettlementStage)?.name) || '推演中',
+          thinking: '主公稍候...',
+        } : {})}
       />
 
       {/* Secret Orders Modal */}
