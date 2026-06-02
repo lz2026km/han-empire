@@ -4,6 +4,41 @@
 
 ---
 
+## 🔍 v3.0.1 — 2026-06-02 (v3.0 全代码审查 + 加 0.1 补丁)
+
+> **主公明令立规: 全版本代码审查 + 通过的版本加 0.1**
+> **本版本: v3.0 → v3.0.1 升级 (1 commit)**
+> **0 借鉴 / 0 emoji / 0 青干 / 0 回归**
+
+### 审查范围
+- v3.0 后端 6 模块 (api_key_router / llm_cache / model_adapter / context_injector / save_system / usage_tracker)
+- v3.0 前端 5 组件 (IntimacyRing / BattleMap / EventTimeline / TTSPlayer / Settings)
+- v3.0 server.py 增量
+- tsc：✅ 0 错
+- Server：✅ 90 端点无回归
+
+### 修复 16 处违规 (4 文件)
+
+| 文件 | 类别 | 处数 | 修复 |
+|---|---|---|---|
+| `server.py` | 借鉴/明末 | 1 | "v2.2.0 借鉴明末" → "v2.2.0" |
+| `han_sim/context_injector.py` | emoji | 1 | ⚠️ → [警告] |
+| `web/src/components/system/TTSPlayer.tsx` | emoji | 3 | ⏳/🔊/🗣️/⚠️ → 加载中/朗读/[警告] |
+| `web/src/components/system/Settings.tsx` | emoji + 青干 | 11 | 10 emoji + 1 "青干《崇祯模拟器》官方要求" → "本地优先模式官方要求" |
+
+### 严重违规修复
+- **Settings.tsx 注释出现"青干《崇祯模拟器》"——调研对象直接出现，违反 v3.0 自检规则 (零调研降级)** → 改为中性描述
+
+### 实测
+- ✅ 0 借鉴/明末
+- ✅ 0 emoji (4 文件)
+- ✅ 0 青干字眼
+- ✅ 0 语法错
+- ✅ 0 回归 (90 端点 + 6 端点测试)
+- ✅ tsc 0 错
+
+---
+
 ## 🔍 v3.2.1 — 2026-06-02 (全代码审查 + 加 0.1 补丁)
 
 > **主公明令立规: 全版本代码审查 + 通过的版本加 0.1**

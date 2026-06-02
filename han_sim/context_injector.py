@@ -90,7 +90,7 @@ def build_npc_hint_block(mentioned_npcs: List[str], npc_db: Dict[str, Dict[str, 
     for name in mentioned_npcs[:10]:  # 最多 10 人
         npc = npc_db.get(name)
         if not npc:
-            lines.append(f"  ⚠️ {name}: 不在档案中, 请勿编造")
+            lines.append(f"  [警告] {name}: 不在档案中, 请勿编造")
             continue
         lines.append(
             f"  • {name}: 派系={npc.get('faction', '?')}, "

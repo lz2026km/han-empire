@@ -1,4 +1,4 @@
-# 汉献帝之末路 (v3.2.1)
+# 汉献帝之末路 (v3.0.1)
 
 > **LLM 驱动的回合制古风帝王策略游戏**。你扮演汉献帝刘协，在董卓乱政、曹操"挟天子以令诸侯"的二十年中，寻求兴复汉室之道。
 >
@@ -7,7 +7,7 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-lz2026km%2Fhan--empire-brightgreen)](https://github.com/lz2026km/han-empire)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![v3.2.1](https://img.shields.io/badge/version-3.2.1-orange)](CHANGELOG.md)
+[![v3.0.1](https://img.shields.io/badge/version-3.0.1-orange)](CHANGELOG.md)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6)](README_WINDOWS.md)
 
 ---
@@ -32,17 +32,19 @@
 
 ---
 
-## 🌟 核心玩法（v3.2.1 全代码审查 + v3.2 体验优化 + v3.1 科技树/后果链 + v3.0 全方位大升级 + v2.5.0 UI/UX 旗舰版 + v2.2.0 诏书系统终极版）
+## 🌟 核心玩法（v3.0.1 全代码审查 + v3.0 全方位大升级 + v2.5.0 UI/UX 旗舰版 + v2.2.0 诏书系统终极版）
 
-### 🔍 v3.2.1 全新：全代码审查补丁 (1 commit)
+### 🔍 v3.0.1 全新：全代码审查补丁 (1 commit)
 
 **主公明令: 全版本代码审查 + 通过加 0.1**
-- 审查范围: v1.12.0 → v3.2 (50+ commit)
-- 修复 14 处违规 (7 个核心模块): "借鉴 ming_sim/明末" → 中性描述
-- 0 借鉴 / 0 明末 / 0 回归 / 0 语法错
-- 严守主公"最新版要严"原则
+- 审查范围: v3.0 后端 6 模块 + 前端 5 组件 (含 TTSPlayer/Settings)
+- 修复 16 处违规:
+  - 1 处 "借鉴明末" (server.py: v2.2.0 注释)
+  - 14 处 emoji (TTSPlayer 3 + Settings 10 + context_injector 1)
+  - 1 处 "青干《崇祯模拟器》" (Settings 注释调研对象直提)
+- 0 借鉴 / 0 emoji / 0 青干 / 0 回归
 
-### 🎨 v3.2 全新：体验优化 A 完整版 (1 commit · 11 files · +3200 行)
+### 🏗️ v3.0 全新：全方位大升级 (5 commit · 67 files · +11673 行)
 
 **主公！v3.2 是 v3.1 策略深度后的体验打磨。3 个后端模块 + 7 步引导数据 + 6 个 API 端点 + 4 个前端组件。**
 

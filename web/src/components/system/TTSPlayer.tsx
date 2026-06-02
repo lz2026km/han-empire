@@ -85,7 +85,7 @@ export function TTSPlayer({
           fontSize: 12,
         }}
       >
-        {loading ? '⏳' : '🔊'} 朗读
+        {loading ? '加载中' : '朗读'} 朗读
       </button>
     );
   }
@@ -98,7 +98,7 @@ export function TTSPlayer({
       padding: 14,
     }}>
       <div style={{ marginBottom: 10, fontSize: 13, fontWeight: 600, color: '#e8e8ea' }}>
-        🗣️ 圣旨朗读
+         圣旨朗读
       </div>
 
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 10 }}>
@@ -139,7 +139,7 @@ export function TTSPlayer({
       </div>
 
       {error && (
-        <div style={{ color: '#ef4444', fontSize: 12, marginBottom: 8 }}>⚠️ {error}</div>
+        <div style={{ color: '#ef4444', fontSize: 12, marginBottom: 8 }}>[警告]  {error}</div>
       )}
 
       {audioUrl && (

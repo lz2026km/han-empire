@@ -126,11 +126,11 @@ export function Settings() {
 
   return (
     <div style={{ padding: 20, maxWidth: 720, margin: '0 auto' }}>
-      <h2 style={{ color: '#e8e8ea', fontSize: 20, marginBottom: 16 }}>⚙️ 设置</h2>
+      <h2 style={{ color: '#e8e8ea', fontSize: 20, marginBottom: 16 }}>[设置] 设置</h2>
 
       {/* API Key 路由模式 */}
       <div style={sectionStyle}>
-        <h3 style={{ fontSize: 14, marginBottom: 12, color: '#3b82f6' }}>🔑 API Key 路由模式</h3>
+        <h3 style={{ fontSize: 14, marginBottom: 12, color: '#3b82f6' }}>API Key API Key 路由模式</h3>
         <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
           {[
             { v: 'local',  l: '本地 (推荐)', d: '你的 Key 不上传' },
@@ -157,13 +157,13 @@ export function Settings() {
           ))}
         </div>
         <div style={{ fontSize: 11, color: '#6b7280', lineHeight: 1.5 }}>
-          💡 本地模式: Key 存浏览器 LocalStorage, 不发给服务器 (青干《崇祯模拟器》官方要求)
+          提示: 本地模式: Key 存浏览器 LocalStorage, 不发给服务器 (本地优先模式官方要求)
         </div>
       </div>
 
       {/* 模型 Provider */}
       <div style={sectionStyle}>
-        <h3 style={{ fontSize: 14, marginBottom: 12, color: '#3b82f6' }}>🤖 模型 Provider</h3>
+        <h3 style={{ fontSize: 14, marginBottom: 12, color: '#3b82f6' }}>模型 Provider</h3>
         <label style={labelStyle}>提供商</label>
         <select value={provider} onChange={e => setProvider(e.target.value)} style={{ ...inputStyle, marginBottom: 10 }}>
           {PROVIDERS.map(p => <option key={p.name} value={p.name}>{p.label}</option>)}
@@ -202,7 +202,7 @@ export function Settings() {
               padding: '8px 16px', borderRadius: 4, cursor: 'pointer', fontSize: 13,
             }}
           >
-            💾 保存
+            [存储] 保存
           </button>
           <button
             onClick={test}
@@ -213,25 +213,25 @@ export function Settings() {
               cursor: testStatus === 'testing' ? 'wait' : 'pointer', fontSize: 13,
             }}
           >
-            {testStatus === 'testing' ? '测试中...' : '🔌 测试连通'}
+            {testStatus === 'testing' ? '测试中...' : '测试连通'}
           </button>
         </div>
 
         {testStatus === 'success' && (
           <div style={{ marginTop: 10, padding: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid #10b981', borderRadius: 4, color: '#10b981', fontSize: 12 }}>
-            ✅ {testMsg}
+            [OK] {testMsg}
           </div>
         )}
         {testStatus === 'fail' && (
           <div style={{ marginTop: 10, padding: 8, background: 'rgba(239,68,68,0.1)', border: '1px solid #ef4444', borderRadius: 4, color: '#ef4444', fontSize: 12 }}>
-            ❌ {testMsg}
+            [FAIL] {testMsg}
           </div>
         )}
       </div>
 
       {/* Token 用量 */}
       <div style={sectionStyle}>
-        <h3 style={{ fontSize: 14, marginBottom: 12, color: '#3b82f6' }}>📊 Token 用量</h3>
+        <h3 style={{ fontSize: 14, marginBottom: 12, color: '#3b82f6' }}>[统计] Token 用量</h3>
         {usage ? (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
             <Stat label="今日" value={usage.today} suffix="tokens" />
@@ -249,7 +249,7 @@ export function Settings() {
             color: '#9ca3af', padding: '6px 12px', borderRadius: 4, cursor: 'pointer', fontSize: 12,
           }}
         >
-          🔄 刷新
+          [刷新] 刷新
         </button>
       </div>
     </div>
