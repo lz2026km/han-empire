@@ -1434,6 +1434,178 @@ def api_advance_stream():
                     headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'})
 
 
+# ============================================
+# v3.0 阶段四: 11 个新端点 (主公明令施工)
+# ============================================
+
+# --- 1) /api/settings/api-key (本地 Key CRUD) ---
+@app.route('/api/settings/api-key', methods=['GET'])
+def api_settings_get_key():
+    """返回服务端兜底 Key 状态 (不暴露 Key 内容)."""
+    from han_sim.api_key_router import get_server_routes_summary
+    return jsonify(get_server_routes_summary())
+
+
+@app.route('/api/settings/api-key', methods=['POST'])
+def api_settings_post_key():
+    """前端提交 (但服务端不存, 仅校验格式 + 模式决策)."""
+    from han_sim.api_key_router import decide_route, KeyMode
+    data = request.get_json() or {}
+    mode = data.get('mode', 'server')
+    client_keys = {
+        'api_key': data.get('api_key', ''),
+        'base_url': data.get('base_url', ''),
+        'model': data.get('model', ''),
+    }
+    try:
+        route = decide_route(mode, client_keys, purpose=data.get('purpose', 'general'))
+        return jsonify({
+            'ok': True,
+            'mode': route.mode.value,
+            'from_local': route.from_local,
+            'warning': route.warning,
+        })
+    except RuntimeError as e:
+        return jsonify({'ok': False, 'error': str(e)}), 400
+
+
+# --- 2) /api/llm/test (测试连通) ---
+@app.route('/api/llm/test', methods=['POST'])
+def api_llm_test():
+    """测试 LLM 连通. 不暴露 Key."""
+    from han_sim.api_key_router import decide_route
+    data = request.get_json() or {}
+    mode = data.get('mode', 'server')
+    client_keys = {
+        'api_key': data.get('api_key', ''),
+        'base_url': data.get('base_url', ''),
+        'model': data.get('model', ''),
+    }
+    try:
+        route = decide_route(mode, client_keys, purpose='general')
+        # 仅校验路由可达, 不真发请求
+        return jsonify({
+            'ok': True,
+            'message': f'路由可达: mode={route.mode.value}, model={route.model or "(default)"}',
+        })
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)}), 400
+
+
+# --- 3) /api/usage/stats (Token 用量统计) ---
+@app.route('/api/usage/stats', methods=['GET'])
+def api_usage_stats():
+    from han_sim.usage_tracker import get_stats
+    return jsonify(get_stats())
+
+
+# --- 4) /api/usage/recent (最近 N 条记录) ---
+@app.route('/api/usage/recent', methods=['GET'])
+def api_usage_recent():
+    from han_sim.usage_tracker import get_recent
+    limit = int(request.args.get('limit', 20))
+    return jsonify({'records': get_recent(limit)})
+
+
+# --- 5) /api/llm/models (列出可用模型) ---
+@app.route('/api/llm/models', methods=['GET'])
+def api_llm_models():
+    from han_sim.model_adapter import list_supported_providers
+    return jsonify({'providers': list_supported_providers()})
+
+
+# --- 6) /api/llm/cache-stats (KV cache 命中率) ---
+@app.route('/api/llm/cache-stats', methods=['GET'])
+def api_llm_cache_stats():
+    from han_sim.llm_cache import get_cache_stats, estimate_cache_savings
+    stats = get_cache_stats()
+    saved = estimate_cache_savings()
+    return jsonify({'cache_stats': stats, 'savings': saved})
+
+
+# --- 7) /api/saves/list (存档列表含元数据) ---
+@app.route('/api/saves/list', methods=['GET'])
+def api_saves_list():
+    from han_sim.save_system import list_saves
+    campaign_id = request.args.get('campaign_id', '')
+    if not campaign_id:
+        return jsonify({'error': 'campaign_id required'}), 400
+    return jsonify({'saves': list_saves(campaign_id), 'max_slots': 5})
+
+
+# --- 8) /api/saves/meta (单槽位元数据) ---
+@app.route('/api/saves/meta', methods=['GET'])
+def api_saves_meta():
+    from han_sim.save_system import read_save_meta
+    campaign_id = request.args.get('campaign_id', '')
+    slot = int(request.args.get('slot', 0))
+    if not campaign_id or slot < 1 or slot > 5:
+        return jsonify({'error': 'invalid args'}), 400
+    meta = read_save_meta(campaign_id, slot)
+    if not meta:
+        return jsonify({'error': 'no such save'}), 404
+    return jsonify({'meta': meta})
+
+
+# --- 9) /api/saves/cleanup (清理超出槽位) ---
+@app.route('/api/saves/cleanup', methods=['POST'])
+def api_saves_cleanup():
+    from han_sim.save_system import cleanup_old_saves
+    data = request.get_json() or {}
+    campaign_id = data.get('campaign_id', '')
+    keep = int(data.get('keep', 5))
+    if not campaign_id:
+        return jsonify({'error': 'campaign_id required'}), 400
+    n = cleanup_old_saves(campaign_id, keep)
+    return jsonify({'cleaned': n})
+
+
+# --- 10) /api/health/llm (LLM 健康检查) ---
+@app.route('/api/health/llm', methods=['GET'])
+def api_health_llm():
+    from han_sim.llm_cache import get_cache_stats
+    from han_sim.api_key_router import get_server_routes_summary
+    return jsonify({
+        'cache': get_cache_stats(),
+        'server_key': get_server_routes_summary(),
+    })
+
+
+# --- 11) /api/health/full (综合健康, 含 DB) ---
+@app.route('/api/health/full', methods=['GET'])
+def api_health_full():
+    """综合健康检查: DB + 服务端 Key + KV cache + 用量表."""
+    out = {'status': 'ok', 'checks': {}}
+    # 1) DB
+    import sqlite3
+    from pathlib import Path
+    try:
+        db_path = Path('/home/admin/.openclaw/workspace/han-empire/data/han_empire.db')
+        if db_path.exists():
+            with sqlite3.connect(str(db_path)) as conn:
+                cnt = conn.execute('SELECT COUNT(*) FROM game_state').fetchone()[0]
+            out['checks']['db'] = {'ok': True, 'campaigns': cnt}
+        else:
+            out['checks']['db'] = {'ok': False, 'error': 'db not found'}
+    except Exception as e:
+        out['checks']['db'] = {'ok': False, 'error': str(e)}
+        out['status'] = 'degraded'
+
+    # 2) 服务端 Key
+    from han_sim.api_key_router import get_server_routes_summary
+    out['checks']['server_key'] = get_server_routes_summary()
+
+    # 3) KV cache
+    from han_sim.llm_cache import get_cache_stats
+    out['checks']['cache'] = get_cache_stats()
+
+    # 4) 用量
+    from han_sim.usage_tracker import get_stats
+    out['checks']['usage'] = get_stats()
+
+    return jsonify(out)
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5555))
     app.run(host='0.0.0.0', port=port, debug=False)
