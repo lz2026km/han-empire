@@ -16,12 +16,15 @@ block_cipher = None
 # 项目根
 PROJECT_ROOT = Path(SPECPATH).resolve()
 
-# ── 数据文件 (含 .agno_skills/ 18 个 SKILL.md + static/ + templates/) ──
+# ── 数据文件 (含 .agno_skills/ 18 个 SKILL.md + static/ + templates/ + v4-epic/ 47 张图 + maps/ + portraits/) ──
 datas = [
     # 技能库 (LLM 驱动核心 - 18 个 SKILL.md)
     (str(PROJECT_ROOT / '.agno_skills'), '.agno_skills'),
     # 静态资源
     (str(PROJECT_ROOT / 'web' / 'dist'), 'web/dist'),
+    (str(PROJECT_ROOT / 'web' / 'public' / 'v4-epic'), 'web/public/v4-epic'),
+    (str(PROJECT_ROOT / 'web' / 'public' / 'maps'), 'web/public/maps'),
+    (str(PROJECT_ROOT / 'web' / 'public' / 'portraits'), 'web/public/portraits'),
     (str(PROJECT_ROOT / 'han_sim' / 'static'), 'han_sim/static'),
     (str(PROJECT_ROOT / 'han_sim' / 'templates'), 'han_sim/templates'),
     (str(PROJECT_ROOT / 'han_sim' / 'data'), 'han_sim/data'),

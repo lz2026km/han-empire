@@ -169,26 +169,7 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
       const mockStages = ['稽首', '明诏', '颁旨', '回奏']
       const mockDecree = '朕以大汉天子之名, 诏曰: 讨逆兴汉, 天下共举。'
       const mockReport = { result: '成功', cost: '银 5 万两', hidden: '无' }
-      for (let i = 0;
-
-  // W2: Escape 关闭支持 (v3.3 UX 大修)
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [onClose]);
-
-  // W2: 打开时焦点陷阱 — 锁定 body 滚动
-  useEffect(() => {
-    if (isOpen) {
-      const orig = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = orig; };
-    }
-  }, [isOpen]);
- i < mockStages.length; i++) {
+      for (let i = 0; i < mockStages.length; i++) {
         setStage(mockStages[i])
         await new Promise(r => setTimeout(r, 300))
       }

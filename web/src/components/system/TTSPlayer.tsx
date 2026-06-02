@@ -85,7 +85,7 @@ export function TTSPlayer({
           fontSize: 12,
         }}
       >
-        {loading ? '加载中' : '朗读'} 朗读
+        {loading ? '玉音沉鸣…' : '朗读'} 朗读
       </button>
     );
   }

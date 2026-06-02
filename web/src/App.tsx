@@ -123,16 +123,7 @@ export default function App() {
   // v2.2.0: EdictModal 自带 SSE 流式颁诏, 旧的 handleEdictPublish 已被取代 (此处不再保留)
 
   const tabs: { id: Tab;
-
-  // W2: Escape 关闭支持 (v3.3 UX 大修)
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [onClose]);
- label: string; key: string }[] = [
+  label: string; key: string }[] = [
     { id: 'overview', label: '总览 总览', key: '1' },
     { id: 'decree', label: '诏书 诏书', key: '2' },
     { id: 'chat', label: '召对 召对', key: '3' },

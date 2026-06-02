@@ -1,9 +1,8 @@
 import { defineConfig } from 'vite'
 
-// GitHub Pages base: /han-empire/ (仓库名)
-// 静态部署启用 mock 演示数据
+// 本地桌面 EXE: base = './' (相对路径, 让 pywebview/file:// 也能找到), GitHub Pages: '/han-empire/'
 export default defineConfig({
-  base: '/han-empire/',
+  base: './',
   // GitHub Pages 静态部署 = 演示模式 (无后端)
   env: {
     VITE_DEMO_MODE: 'true',

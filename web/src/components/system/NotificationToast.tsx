@@ -22,9 +22,7 @@ export const NotificationToast: React.FC<NotificationToastProps> = ({
 
   return (
     <div className={`notif-toast notif-toast-${type}`} role="status">
-      <span className="notif-toast-icon">
-        {type === 'success' ? '[✓]' : type === 'warning' ? '[警告]' : type === 'error' ? '×' : '提示'}
-      </span>
+      <span className={`notif-icon notif-icon--${type === 'error' ? 'critical' : type}`} aria-hidden="true" />
       <span className="notif-toast-msg">{message}</span>
     </div>
   );

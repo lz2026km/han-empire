@@ -16,10 +16,10 @@ export interface FactionBacklashBadgeProps {
 }
 
 const BACKLASH_CONFIG: Record<BacklashState, { label: string; color: string; icon: string; desc: string }> = {
-  none: { label: '无反弹', color: '#64748b', icon: '[✓]', desc: '执行顺利' },
-  delay: { label: '拖延', color: '#f97316', icon: '加载中', desc: '执行迟缓' },
-  twist: { label: '曲解', color: '#8b5cf6', icon: '∿', desc: '曲解旨意' },
-  revolt: { label: '反扑', color: '#ef4444', icon: '[警告]', desc: '公开抗旨' },
+  none: { label: '无反弹', color: '#64748b', icon: 'OK', desc: '执行顺利' },
+  delay: { label: '拖延', color: '#f97316', icon: '玉音沉鸣', desc: '执行迟缓' },
+  twist: { label: '曲解', color: '#8b5cf6', icon: '异', desc: '曲解旨意' },
+  revolt: { label: '反扑', color: '#ef4444', icon: '警', desc: '公开抗旨' },
 };
 
 export const FactionBacklashBadge: React.FC<FactionBacklashBadgeProps> = ({

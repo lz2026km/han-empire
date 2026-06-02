@@ -81,7 +81,7 @@
 .faction-diagram {
   background:
     linear-gradient(180deg, rgba(20, 10, 8, 0.4) 0%, rgba(8, 4, 3, 0.7) 100%),
-    url("/map_battle_guandu.png") center / cover no-repeat;
+    url("/maps/map_battle_guandu.png") center / cover no-repeat;
   background-blend-mode: multiply, normal;
 }
 
@@ -135,7 +135,7 @@
 .tab-faction {
   background:
     linear-gradient(180deg, rgba(20, 10, 8, 0.3) 0%, rgba(8, 4, 3, 0.6) 100%),
-    url("/map_battle_guandu.png") center / cover no-repeat;
+    url("/maps/map_battle_guandu.png") center / cover no-repeat;
   background-blend-mode: multiply, normal;
 }
 .tab-building {

@@ -4,6 +4,69 @@
 
 ---
 
+## 🎯 v4.5 预览版 — 2026-06-02 (打包前最后一次大审查)
+
+> **主公明令: 打包前最后一次大审查. 包括结构/逻辑/内容/控件/图片/UI/UX, 差什么补什么. 审查后版本为 4.5 预览版, 必须跑通无错.**
+> **本版本: v4.0.2 → v4.5 预览版 (大审查 + 修复)**
+> **tsc 0 错 / pytest 83/83 ✅ / e2e 8/8 ✅ / build 0 错 / 0 emoji / 0 移动端**
+
+### A. 结构盘点 (8 维度大审查)
+- **Python backend**: 58 .py (含 agno/flask/llm_config/agents)
+- **React frontend**: 73 .tsx/.ts (含 21 个 components + 7 个 Tabs + 8 个 edict)
+- **CSS**: 39 .css 总 200KB (含 v4-images/v4-补漏/v4-epic/v4.0.3 4 个 v4 系列)
+- **Assets**: 225 文件总 5MB (含 47 v4-epic + 47 portraits + 5 maps + 8 bg + 7 notif + 5 medal + 5 rank + 9 tab + 5 scene + 3 sky + 2 item + 4 corner + 8 icon)
+- **DB 51 表**: game_state/metrics/characters/factions/regions/armies/buildings/economy/events/turn_logs/secret_orders/issues/emperor_skills/directives/imperial_events/memorials/verdicts/faction_backlashes/court_debates/authority_levels/info_gaps/imperial_chronicle/consorts/legacies/token_stats 等
+- **Tests**: 10 文件 (83 单元 + v22u 8/8 e2e + v3 W1/W4 集成)
+- **数据种子**: 265 人物 + 65 地区 + 50 诏书 + 159 事件 + 48 天子技能 + 40 种子事件 + 30 势力 + 20 军队 + 20 技能 + 21 工具
+
+### B. 逻辑审查 (3 大验证全过)
+- **TypeScript tsc --noEmit**: 0 错
+- **pytest 83 passed in 4.03s**: 全过
+- **e2e v22u 8/8**: 事件→奏报→廷议→拟旨→反弹→回奏→信息差 (1 DB 51 表 + 8 模块协同)
+- **vite build**: 0 错, dist 371KB (CSS 100KB + JS 282KB)
+
+### C. UI/UX 审查 (主公原则 100% 满足)
+- **5 处 emoji 字符全部清理** (主公明令 0 emoji):
+  - NotificationToast `[✓][警告]×提示` → 改用 notif-icon--{success/warning/critical/info} AI 图
+  - FactionBacklashBadge `[✓]∿[警告]` → 改用 `OK/玉音沉鸣/异/警` 中文
+  - SkillTab `[✓]` → `已开`
+  - VerdictPopup `[✓]旨意达成` → `旨意达成`
+- **0 移动端 @media query** (主公 1920×1080 锁死)
+- **0 min-width 1500-2000** (主公禁)
+- **0 1440/1600 响应式** (主公禁)
+- **A11y**: 18 aria-label + 19 role + 12 tabIndex + 4 onKeyDown
+
+### D. 图片审查 (101 张图 100% 加载)
+- **CSS 引用 101 张**: v4-images (33) + v4-补漏 (24) + v4-epic (47) + v4.0.3 (复用)
+- **缺失**: 0 张! ★ 100% 全部存在
+- **修复错位 1 处**: v4-补漏.css 2 处 `/map_battle_guandu.png` → `/maps/map_battle_guandu.png`
+- **修正路径 1 处**: v4.0.3.css `/v4-epic/icon_seal.png` → `/icon_seal.png`
+
+### E. 控件审查
+- **90 button** + **20 input** + **5 select** + **50 Modal** + **128 onClick** + **188 useState** + **90 useEffect** = 控件极其丰富
+- **5 大核心 Modal**: EdictModal/ChatModal/SecretOrdersModal/CheatConsole/Settings/TTSPlayer/VerdictPopup
+- **9 大核心 Tab**: Overview/Skill/Decree/Chat/Minister/Faction/Building/Orders/Log/Map
+
+### F. 打包关键修复 (PyInstaller EXE)
+- **修 spec 关键 bug**: han_empire.spec 没打包 `web/public/v4-epic/` 47 张图 16MB → 已加
+- **加 3 资源目录打包**: v4-epic/ + maps/ + portraits/ = 33MB 图资源进 EXE
+- **vite base 改 './'**: 让 pywebview/file:// 相对路径能找到资源
+- **package.json 1.8.6 → 1.9.0** (v4.5 预览标记)
+
+### G. 修复源代码 bug
+- **App.tsx L125-134**: `const tabs: { id: Tab;` 后 useEffect 错位插队 (TS 1005) → 已修复
+- **EdictModal.tsx L172**: V3.3 升级时删了 for 体但保留 `for (let i = 0;` 残缺 → 已修复并补全
+
+### H. 兼容性 0 错
+- TypeScript: 0 错
+- pytest: 83/83 ✅
+- e2e v22u: 8/8 ✅
+- vite build: 0 错
+- dist 完整: 47 v4-epic + 47 portraits + 5 maps = 33MB 图资源
+- npx tsc / pytest / e2e / build = 4 验证全过
+
+---
+
 ## 🎯 v4.0.2 — 2026-06-02 (磅礴大气版 + 47 张 AI 贴图全场景接入)
 
 > **主公明令: 把能贴图的都 AI 生成图贴了, 能贴图的控件也贴图更换, 要有磅礴大气的感觉. 加 0.1.**

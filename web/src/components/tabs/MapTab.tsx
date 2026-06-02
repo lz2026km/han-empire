@@ -43,7 +43,7 @@ export function MapTab() {
   if (loading) {
     return (
       <div className="fade-in map-loading">
-        <p>加载中 正在加载东汉十三州 51 州郡...</p>
+        <p>玉音沉鸣 正在加载东汉十三州 51 州郡...</p>
       </div>
     )
   }

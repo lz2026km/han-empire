@@ -1,0 +1,430 @@
+/* =============================================
+   v4.0.3 全面补漏: 12 个核心界面接入 AI 图
+   主公明令: 各种操作的界面, 各种游戏界面能贴图必须要贴图
+   ============================================= */
+
+/* === 1. EdictModal 诏书界面 (加载/空白/状态徽章) === */
+.edict-modal {
+  background:
+    linear-gradient(180deg, rgba(26, 14, 10, 0.5) 0%, rgba(8, 4, 3, 0.85) 100%),
+    url("/bg_edict.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 2px solid var(--color-gold-dim, #d4af37);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.edict-modal::before {
+  content: '';
+  position: absolute; top: 8px; left: 8px;
+  width: 48px; height: 48px;
+  background: url("/v4-epic/corner_dragon.jpg") center/contain no-repeat;
+  pointer-events: none; z-index: 1;
+}
+.edict-modal::after {
+  content: '';
+  position: absolute; top: 8px; right: 8px;
+  width: 48px; height: 48px;
+  background: url("/v4-epic/corner_phoenix.jpg") center/contain no-repeat;
+  pointer-events: none; z-index: 1;
+}
+.edict-loading {
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 20px;
+  color: var(--color-gold, #d4af37);
+  font-size: 14px;
+  background: url("/v4-epic/loading_dragon.jpg") center/80px no-repeat;
+  background-position: center 20px;
+  padding-top: 110px;
+}
+.edict-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+  background: url("/v4-epic/loading_dragon.jpg") center/100px no-repeat;
+  background-position: center 10px;
+  padding-top: 130px;
+  border: 1px dashed rgba(212, 175, 55, 0.3);
+  border-radius: 8px;
+}
+.edict-item-kind {
+  display: inline-block;
+  padding: 2px 8px;
+  background: url("/v4-epic/jade_rune_5.jpg") center/cover no-repeat;
+  border: 1px solid var(--color-gold-dim, #d4af37);
+  border-radius: 4px;
+  color: var(--color-gold, #d4af37);
+  font-size: 12px;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+/* === 2. DecreeReviewPanel 朝会判定 (15 处纯色 → AI 图) === */
+.decree-review-panel {
+  background:
+    linear-gradient(180deg, rgba(26, 14, 10, 0.6) 0%, rgba(8, 4, 3, 0.9) 100%),
+    url("/bg_state.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 2px solid var(--color-gold-dim, #d4af37);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.decree-review-item {
+  background:
+    linear-gradient(90deg, rgba(26, 26, 46, 0.85) 0%, rgba(20, 14, 10, 0.95) 100%),
+    url("/bg_edict.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 1px solid rgba(74, 45, 20, 0.5);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+.decree-review-item--approved {
+  background:
+    linear-gradient(90deg, rgba(22, 101, 52, 0.6) 0%, rgba(20, 14, 10, 0.9) 100%),
+    url("/v4-epic/battle_victory_flag.jpg") right center/120px no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 1px solid #22c55e;
+}
+.decree-review-item--rejected {
+  background:
+    linear-gradient(90deg, rgba(127, 29, 29, 0.6) 0%, rgba(20, 14, 10, 0.9) 100%),
+    url("/v4-epic/battle_defeat_flag.jpg") right center/120px no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 1px solid #ef4444;
+}
+.decree-review-item--pending {
+  background:
+    linear-gradient(90deg, rgba(31, 41, 55, 0.6) 0%, rgba(20, 14, 10, 0.9) 100%),
+    url("/v4-epic/battle_warning_flag.jpg") right center/120px no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 1px solid #6b7280;
+}
+.decree-confirm-btn {
+  background:
+    linear-gradient(135deg, #8b0000 0%, #5c0000 100%),
+    url("/icon_seal.png") left center/24px no-repeat !important;
+  background-blend-mode: multiply, normal;
+  padding-left: 32px !important;
+}
+
+/* === 3. ImperialSeal 玉玺 (渐变 → icon_seal) === */
+.imperial-seal {
+  background:
+    radial-gradient(circle, rgba(139, 26, 26, 0.4) 0%, transparent 70%),
+    url("/icon_seal.png") center / cover no-repeat !important;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(0 0 12px rgba(139, 26, 26, 0.8));
+}
+
+/* === 4. AuthoritySlider 权限滑块 (5 档) === */
+.authority-slider-track {
+  background:
+    linear-gradient(90deg, #1a1a2e 0%, rgba(26, 26, 46, 0.5) 100%),
+    url("/v4-epic/jade_disc_5.jpg") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  height: 24px;
+  border: 1px solid var(--color-gold-dim, #d4af37);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.authority-slider-fill {
+  background:
+    linear-gradient(90deg, var(--authority-color, #d4af37) 0%, transparent 100%),
+    url("/v4-epic/jade_sun_5.jpg") center / cover no-repeat;
+  background-blend-mode: screen, normal;
+  height: 100%;
+  border-radius: 12px;
+  position: relative;
+}
+.authority-slider-fill::after {
+  content: '';
+  position: absolute; right: -2px; top: 50%;
+  transform: translateY(-50%);
+  width: 28px; height: 28px;
+  background: url("/icon_seal.png") center/contain no-repeat;
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.8));
+}
+.authority-level-icon {
+  display: inline-block;
+  width: 32px; height: 32px;
+  background: url("/v4-epic/jade_rune_5.jpg") center/cover no-repeat;
+  border: 1px solid var(--color-gold-dim, #d4af37);
+  border-radius: 4px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* === 5. EventTimeline 事件流 === */
+.event-timeline {
+  background:
+    linear-gradient(180deg, rgba(16, 16, 26, 0.85) 0%, rgba(8, 4, 3, 0.95) 100%),
+    url("/bg_chat_dark.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 1px solid rgba(74, 45, 20, 0.5);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.event-timeline-item {
+  background:
+    linear-gradient(90deg, rgba(26, 26, 46, 0.6) 0%, transparent 100%),
+    url("/v4-epic/jade_bead_5.jpg") right center/60px no-repeat;
+  background-blend-mode: multiply, normal;
+  border-left: 2px solid var(--color-gold, #d4af37);
+  padding: 8px 70px 8px 12px;
+  position: relative;
+}
+.event-timeline-spine {
+  position: relative;
+}
+.event-timeline-spine::before {
+  content: '';
+  position: absolute; left: 50%; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, #3b82f6 0%, transparent 100%);
+}
+.event-timeline-spine::after {
+  content: '';
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px; height: 16px;
+  background: url("/v4-epic/jade_sun_5.jpg") center/cover no-repeat;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+}
+
+/* === 6. TechTree 科技树节点 === */
+.tech-tree {
+  background:
+    linear-gradient(180deg, rgba(16, 16, 26, 0.7) 0%, rgba(8, 4, 3, 0.9) 100%),
+    url("/bg_node.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 1px solid rgba(74, 45, 20, 0.5);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.tech-node {
+  background:
+    radial-gradient(circle, rgba(26, 26, 46, 0.9) 30%, transparent 70%),
+    url("/v4-epic/jade_rune_5.jpg") center/cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 2px solid var(--color-gold-dim, #d4af37);
+  border-radius: 50%;
+  width: 64px; height: 64px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+  transition: all 0.3s;
+}
+.tech-node--unlocked {
+  background:
+    radial-gradient(circle, rgba(212, 175, 55, 0.4) 30%, transparent 70%),
+    url("/v4-epic/jade_disc_5.jpg") center/cover no-repeat;
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.8));
+}
+.tech-node--locked { opacity: 0.5; filter: grayscale(0.8); }
+
+/* === 7. BattleMap 战场地图 === */
+.battle-map {
+  background:
+    linear-gradient(180deg, rgba(16, 16, 26, 0.5) 0%, rgba(8, 4, 3, 0.8) 100%),
+    url("/maps/map_battle_guandu.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 2px solid var(--color-gold-dim, #d4af37);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  min-height: 400px;
+}
+
+/* === 8. ConsequenceChain 后果链 === */
+.consequence-chain {
+  background:
+    linear-gradient(90deg, rgba(16, 16, 26, 0.7) 0%, rgba(8, 4, 3, 0.9) 100%),
+    url("/bg_chat_dark.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 1px solid rgba(74, 45, 20, 0.5);
+  border-radius: 8px;
+  position: relative;
+  padding: 12px;
+}
+.consequence-chain-link {
+  background: url("/v4-epic/jade_bead_5.jpg") center/contain no-repeat;
+  width: 24px; height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 4px;
+  filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.4));
+}
+
+/* === 9. Settings 设置面板 === */
+.settings-section {
+  background:
+    linear-gradient(180deg, rgba(16, 16, 26, 0.8) 0%, rgba(8, 4, 3, 0.95) 100%),
+    url("/bg_state.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 1px solid rgba(74, 45, 20, 0.5);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.settings-card {
+  background:
+    linear-gradient(135deg, rgba(21, 21, 31, 0.9) 0%, rgba(16, 16, 26, 0.95) 100%),
+    url("/v4-epic/jade_rune_5.jpg") right center/120px no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 1px solid rgba(42, 42, 58, 0.8);
+  border-radius: 6px;
+  padding: 12px;
+}
+.settings-card--active {
+  background:
+    linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(16, 16, 26, 0.9) 100%),
+    url("/v4-epic/jade_disc_5.jpg") right center/120px no-repeat;
+  background-blend-mode: screen, normal;
+  border: 1px solid #3b82f6;
+}
+
+/* === 10. TTSPlayer 播放器 === */
+.tts-player {
+  background:
+    linear-gradient(180deg, rgba(16, 16, 26, 0.85) 0%, rgba(8, 4, 3, 0.95) 100%),
+    url("/bg_chat.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 1px solid rgba(74, 45, 20, 0.5);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.tts-player-track {
+  background:
+    linear-gradient(90deg, #1a1a2e 0%, rgba(26, 26, 46, 0.5) 100%),
+    url("/v4-epic/jade_sun_5.jpg") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  height: 16px;
+  border: 1px solid var(--color-gold-dim, #d4af37);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.tts-player-play {
+  background: url("/icon_seal.png") center/cover no-repeat;
+  width: 48px; height: 48px;
+  display: inline-block;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+  transition: transform 0.2s;
+}
+.tts-player-play:hover { transform: scale(1.1); }
+
+/* === 11. MapLegend 5 等级 (稳/平/动/乱/危) === */
+.legend-color--stable { background: #228B22 url("/v4-epic/jade_disc_5.jpg") center/cover no-repeat !important; }
+.legend-color--calm { background: #6B8E23 url("/v4-epic/jade_bead_5.jpg") center/cover no-repeat !important; }
+.legend-color--turbulent { background: #DAA520 url("/v4-epic/jade_sun_5.jpg") center/cover no-repeat !important; }
+.legend-color--chaos { background: #CD5C5C url("/v4-epic/battle_warning_flag.jpg") center/cover no-repeat !important; }
+.legend-color--crisis { background: #8B0000 url("/v4-epic/battle_defeat_flag.jpg") center/cover no-repeat !important; }
+
+/* === 12. GrandMap 4 派系 (魏蜀吴+其他) === */
+.legend-color--han-royal { background: #d4af37 url("/v4-epic/faction_han.jpg") center/cover no-repeat !important; }
+.legend-color--warlord { background: #8b4513 url("/v4-epic/faction_qun.jpg") center/cover no-repeat !important; }
+.legend-color--rebel { background: #8b0000 url("/v4-epic/faction_yellow_turban.jpg") center/cover no-repeat !important; }
+.legend-color--vacant { background: #666 url("/v4-epic/jade_rune_5.jpg") center/cover no-repeat !important; }
+
+/* === 13. VerdictPopup 回奏生成 (loading 字符 → loading_dragon) === */
+.verdict-popup-loading {
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px 20px;
+  color: var(--color-gold, #d4af37);
+  font-size: 14px;
+  background: url("/v4-epic/loading_dragon.jpg") center/100px no-repeat;
+  background-position: center 10px;
+  padding-top: 130px;
+}
+
+/* === 14. ImperialSeal 砸印动效 (玉玺图) === */
+.imperial-seal-stamp {
+  background: url("/icon_seal.png") center/cover no-repeat !important;
+  width: 64px; height: 64px;
+  filter: drop-shadow(0 0 16px rgba(220, 50, 50, 0.8));
+  transition: transform 0.3s;
+}
+.imperial-seal-stamp:active { transform: scale(1.2); }
+
+/* === 15. ChatModal 君臣对话 (bg_chat) === */
+.chat-modal {
+  background:
+    linear-gradient(180deg, rgba(26, 14, 10, 0.4) 0%, rgba(8, 4, 3, 0.85) 100%),
+    url("/bg_chat.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 2px solid var(--color-gold-dim, #d4af37);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* === 16. SecretOrdersModal 密诏 (bg_chat_dark) === */
+.secret-orders-modal {
+  background:
+    linear-gradient(180deg, rgba(16, 16, 26, 0.6) 0%, rgba(0, 0, 0, 0.9) 100%),
+    url("/bg_chat_dark.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 2px solid #8b0000;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.secret-orders-modal::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, transparent 0%, #8b0000 50%, transparent 100%);
+}
+
+/* === 17. CheatConsole 控制台 === */
+.cheat-console {
+  background:
+    linear-gradient(180deg, rgba(16, 16, 26, 0.9) 0%, rgba(0, 0, 0, 0.95) 100%),
+    url("/bg_node.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border: 2px solid #10b981;
+  border-radius: 8px;
+  position: relative;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* === 18. Inbox 奏折收件箱 (bg_chat) === */
+.inbox-item {
+  background:
+    linear-gradient(90deg, rgba(26, 14, 10, 0.7) 0%, transparent 100%),
+    url("/v4-epic/jade_rune_5.jpg") right center/40px no-repeat;
+  background-blend-mode: multiply, normal;
+  border-left: 3px solid var(--color-gold, #d4af37);
+  padding: 12px 50px 12px 16px;
+  position: relative;
+}
+.inbox-item--unread {
+  background:
+    linear-gradient(90deg, rgba(139, 26, 26, 0.4) 0%, transparent 100%),
+    url("/v4-epic/jade_rune_5.jpg") right center/40px no-repeat;
+  background-blend-mode: multiply, normal;
+  border-left: 3px solid #dc2626;
+}
+.inbox-item--unread::after {
+  content: '';
+  position: absolute; top: 8px; right: 8px;
+  width: 8px; height: 8px;
+  background: #dc2626;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.8);
+}
+
+/* === 19. MenuDrawer 抽屉菜单 === */
+.menu-drawer-loading {
+  background: url("/v4-epic/loading_dragon.jpg") center/60px no-repeat;
+  padding: 80px 20px;
+  text-align: center;
+  color: var(--color-gold, #d4af37);
+}
