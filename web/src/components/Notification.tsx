@@ -52,7 +52,7 @@ function NotificationToast({ notification, onDismiss, style }: { notification: N
       style={{ borderLeftColor: typeColor, ...style }}
       role="alert"
     >
-      <div className="notification-toast__icon" style={{ color: typeColor }}>{TYPE_ICONS[notification.type]}</div>
+      <div className={`notif-icon notif-icon--${notification.type}`} aria-label={TYPE_ICONS[notification.type]} />
       <div className="notification-toast__content">
         <div className="notification-toast__title" style={{ color: typeColor }}>{notification.title}</div>
         <div className="notification-toast__message">{notification.message}</div>

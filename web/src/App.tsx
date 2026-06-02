@@ -170,6 +170,7 @@ export default function App() {
                 onClick={() => setActiveTab(tab.id)}
                 data-tooltip={`按 <kbd>${tab.key}</kbd> 切换`}
               >
+                <span className={`tab-icon tab-icon--${tab.id}`} aria-label={tab.label} />
                 <span className="sidebar__item-label">{tab.label}</span>
                 <kbd className="sidebar__item-kbd">{tab.key}</kbd>
               </div>
