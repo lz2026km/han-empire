@@ -22,16 +22,16 @@ const SEASON_LABEL: Record<string, string> = {
   winter: '冬',
 }
 const SEASON_ICON: Record<string, string> = {
-  spring: '春',
-  summer: '夏️',
-  autumn: '秋',
-  winter: '冬️',
+  spring: '🌸',
+  summer: '☀️',
+  autumn: '🍂',
+  winter: '❄️',
 }
 
 export function Header({ gameState, onSave, onNewGame, theme, season, onToggleTheme, onCycleSeason }: Props) {
   return (
     <header className="app-header">
-      <h1 className="app-header__title">战斗️ 汉献帝之末路</h1>
+      <h1 className="app-header__title">⚔️ 汉献帝之末路</h1>
 
       {gameState && (
         <>
@@ -76,12 +76,12 @@ export function Header({ gameState, onSave, onNewGame, theme, season, onToggleTh
             data-tooltip={`切换${theme === 'dark' ? '亮色' : '暗色'}主题`}
             style={{ minWidth: '44px' }}
           >
-            {theme === 'dark' ? '夏️' : '夜'}
+            {theme === 'dark' ? '☀️' : '🌙'}
           </button>
         )}
         <button className="btn" onClick={onNewGame}>新朝</button>
         {gameState && (
-          <button className="btn btn--gold" onClick={onSave}>存储 存档</button>
+          <button className="btn btn--gold" onClick={onSave}>💾 存档</button>
         )}
       </div>
     </header>

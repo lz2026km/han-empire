@@ -77,7 +77,7 @@ export function SkillTab({ campaignId }: SkillTabProps) {
                 >
                   <div className="skill-node-name">{skill.name}</div>
                   <div className="skill-node-tier">阶{skill.tier}</div>
-                  {skill.unlocked && <div className="skill-node-check">[✓]</div>}
+                  {skill.unlocked && <div className="skill-node-check">✓</div>}
                 </button>
               ))}
             </div>

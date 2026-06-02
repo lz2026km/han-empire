@@ -43,7 +43,7 @@ export function MapTab() {
   if (loading) {
     return (
       <div className="fade-in map-loading">
-        <p>加载中 正在加载东汉十三州 51 州郡...</p>
+        <p>⏳ 正在加载东汉十三州 51 州郡...</p>
       </div>
     )
   }
@@ -51,7 +51,7 @@ export function MapTab() {
   if (error) {
     return (
       <div className="fade-in map-error">
-        <p>[X] 加载失败: {error}</p>
+        <p>❌ 加载失败: {error}</p>
         <button onClick={() => window.location.reload()}>重试</button>
       </div>
     )

@@ -125,14 +125,14 @@ export function ConsortTab({ campaignId }: Props) {
   }
 
   if (error) {
-    return <div className="empty-state">[警告]️ {error}</div>
+    return <div className="empty-state">⚠️ {error}</div>
   }
 
   return (
     <div className="fade-in consort-tab">
       <div style={{ marginBottom: '16px' }}>
         <h2 style={{ color: 'var(--color-gold)', marginBottom: '8px', fontSize: '20px' }}>
-          后宫 后宫 ({stats.total_consorts || 0} 位妃嫔，{stats.total_candidates || 6} 位候选)
+          🏯 后宫 ({stats.total_consorts || 0} 位妃嫔，{stats.total_candidates || 6} 位候选)
         </h2>
         <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px' }}>
           召幸妃嫔以固皇恩，调教其技能性格以应时势。密谋大事，请入衣带诏线。
@@ -142,7 +142,7 @@ export function ConsortTab({ campaignId }: Props) {
       <div className="consort-grid">
         {/* 左：名册 */}
         <div className="consort-roster">
-          <h3 className="section-title">诏书 后宫名册</h3>
+          <h3 className="section-title">📜 后宫名册</h3>
           {consorts.length === 0 && (
             <p style={{ color: 'var(--color-text-muted)', fontSize: '13px' }}>
               当前朝代尚无入宫妃嫔。可从下列候选人物中选招。
@@ -194,12 +194,12 @@ export function ConsortTab({ campaignId }: Props) {
         <div className="consort-interact">
           {!selectedConsort ? (
             <div className="empty-state" style={{ padding: '40px 20px' }}>
-              <div style={{ fontSize: '32px', marginBottom: '12px' }}>上</div>
+              <div style={{ fontSize: '32px', marginBottom: '12px' }}>👆</div>
               <p>请从左侧选择一位妃嫔，开始召幸或调教</p>
             </div>
           ) : (
             <>
-              <h3 className="section-title">召对 召幸 · {selectedConsort.canonical_name || selectedConsort.name}</h3>
+              <h3 className="section-title">💬 召幸 · {selectedConsort.canonical_name || selectedConsort.name}</h3>
               <div className="consort-chat">
                 {chatHistory.length === 0 && (
                   <p style={{ color: 'var(--color-text-muted)', fontSize: '13px', textAlign: 'center', padding: '20px' }}>
@@ -209,7 +209,7 @@ export function ConsortTab({ campaignId }: Props) {
                 {chatHistory.map((msg, i) => (
                   <div key={i} className={`consort-msg consort-msg--${msg.role}`}>
                     <div className="consort-msg__role">
-                      {msg.role === 'emperor' ? '皇 献帝' : `后宫 ${selectedConsort.canonical_name || selectedConsort.name}`}
+                      {msg.role === 'emperor' ? '👑 献帝' : `🏯 ${selectedConsort.canonical_name || selectedConsort.name}`}
                     </div>
                     <div className="consort-msg__text">{msg.text}</div>
                   </div>
@@ -235,7 +235,7 @@ export function ConsortTab({ campaignId }: Props) {
                 </button>
               </div>
 
-              <h3 className="section-title" style={{ marginTop: '20px' }}>书 调教（学技能 / 改性格）</h3>
+              <h3 className="section-title" style={{ marginTop: '20px' }}>📚 调教（学技能 / 改性格）</h3>
               <div className="consort-cultivate">
                 <div className="consort-form-row">
                   <label>新技能</label>
@@ -269,7 +269,7 @@ export function ConsortTab({ campaignId }: Props) {
                   onClick={handleCultivate}
                   style={{ width: '100%', marginTop: '8px' }}
                 >
-                  写️ 颁下教诲
+                  ✍️ 颁下教诲
                 </button>
                 {cultivateResult && (
                   <div
@@ -281,7 +281,7 @@ export function ConsortTab({ campaignId }: Props) {
                 )}
               </div>
 
-              <h3 className="section-title" style={{ marginTop: '20px' }}>密令 衣带诏线索</h3>
+              <h3 className="section-title" style={{ marginTop: '20px' }}>🔐 衣带诏线索</h3>
               <div className="consort-secret" style={{
                 padding: '12px',
                 background: 'var(--color-bg-secondary)',

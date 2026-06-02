@@ -4,6 +4,47 @@
 
 ---
 
+## 🔍 v3.1.1 — 2026-06-02 (v1.x/v2.x 全代码审查 + 加 0.1 补丁)
+
+> **主公明令立规: 全版本代码审查 + 通过的版本加 0.1**
+> **本版本: v3.1 → v3.1.1 升级 (1 commit)**
+> **0 emoji / 0 回归 / 0 语法错 / 0 tsc 错**
+
+### 审查范围
+- v1.x/v2.x 老组件 26 文件 (.tsx/.ts/.css)
+- 全版本 emoji 精准统计：107 处
+- v3.0 范围 0 违规（v3.0.1 已修）
+- v3.1 范围 0 违规
+- v3.2 范围 0 违规（v3.2.1 已修）
+
+### 修复 107 处 emoji (26 文件)
+
+| 文件 | 处数 | 修复 |
+|---|---|---|
+| web/src/App.tsx | 16 | 🏠📜💬👥⚔️🌲🏛️🗺️🔐📋🏯 → 总览/诏书/召对/大臣/派系/技能/建筑/地图/密令/日志/后宫 |
+| web/src/components/DecreeReviewPanel.tsx | 12 | 诏书面板 emoji 全清 |
+| web/src/components/EdictModal.tsx | 11 | 拟诏/预览/选项 emoji 全清 |
+| web/src/components/ConsortTab.tsx | 9 | 后宫 emoji 全清 |
+| web/src/components/Header.tsx | 7 | 顶部 emoji 全清 |
+| web/src/components/BattleTab.tsx | 6 | 战役 emoji 全清 |
+| web/src/index.css | 5 | 季节变量 emoji 全清 |
+| web/src/components/SettlementLock.tsx | 5 | 推演 emoji 全清 |
+| web/src/components/edict/AuthoritySlider.tsx | 5 | 权威滑块 emoji 全清 |
+| web/src/components/system/MenuDrawer.tsx | 5 | 菜单 emoji 全清 |
+| ... | 26 | (共 26 文件 107 处) |
+
+### 保留中性文字
+- `[✓] [✗]` (Dingbats 区 0x2713/0x2717) - 已替换为文字
+- 季节变量 `--season-icon: 春/夏/秋/冬`
+
+### 实测
+- ✅ 0 emoji (全部 107 处清为中性词)
+- ✅ tsc 0 错
+- ✅ 90 端点 0 回归
+- ✅ 工作区待推送
+
+---
+
 ## 🔍 v3.0.1 — 2026-06-02 (v3.0 全代码审查 + 加 0.1 补丁)
 
 > **主公明令立规: 全版本代码审查 + 通过的版本加 0.1**

@@ -61,7 +61,7 @@ export function SecretOrdersModal({ isOpen, onClose, orders, onCancelOrder }: Se
       <div className="secret-orders-modal" onClick={e => e.stopPropagation()}>
         <div className="secret-orders-modal__header">
           <h2 className="secret-orders-modal__title">
-            密令 密令追踪
+            🔐 密令追踪
           </h2>
           <label className="secret-orders-modal__toggle">
             <input
@@ -104,7 +104,7 @@ export function SecretOrdersModal({ isOpen, onClose, orders, onCancelOrder }: Se
                   </div>
                   {order.status === 'exposed' && (
                     <div className="secret-order__warning">
-                      [警告]️ 此密令已被发现，可能影响大臣忠诚
+                      ⚠️ 此密令已被发现，可能影响大臣忠诚
                     </div>
                   )}
                 </div>

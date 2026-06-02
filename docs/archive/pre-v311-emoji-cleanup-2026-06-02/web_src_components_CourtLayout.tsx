@@ -240,7 +240,7 @@ export function CourtLayout({
   return (
     <div id="court-scene" className="court-scene">
       <div className="emperor-throne">
-        <div className="emperor-throne-icon">皇</div>
+        <div className="emperor-throne-icon">👑</div>
         <span className="emperor-throne-label">天子御座</span>
       </div>
 

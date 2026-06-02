@@ -71,9 +71,9 @@ export const TopBar: React.FC<TopBarProps> = ({ gameState, extra }) => {
       {/* 右侧菜单 (3 按钮) */}
       <div className="topbar-menu">
         {extra}
-        <button className="topbar-btn" aria-label="菜单" title="菜单">三</button>
-        <button className="topbar-btn" aria-label="史官" title="起居注">诏书</button>
-        <button className="topbar-btn" aria-label="设置" title="设置">设置</button>
+        <button className="topbar-btn" aria-label="菜单" title="菜单">☰</button>
+        <button className="topbar-btn" aria-label="史官" title="起居注">📜</button>
+        <button className="topbar-btn" aria-label="设置" title="设置">⚙</button>
       </div>
     </div>
   );

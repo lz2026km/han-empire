@@ -49,7 +49,7 @@ export function EmperorPanel({ gameState }: EmperorPanelProps) {
         <div className="emperor-panel__metric">
           <div className="emperor-panel__metric-header">
             <span className="emperor-panel__metric-label">
-              <span className="emperor-panel__metric-icon">皇</span>
+              <span className="emperor-panel__metric-icon">👑</span>
               威权
             </span>
             <span className="emperor-panel__metric-value">
@@ -85,7 +85,7 @@ export function EmperorPanel({ gameState }: EmperorPanelProps) {
         <div className="emperor-panel__metric">
           <div className="emperor-panel__metric-header">
             <span className="emperor-panel__metric-label">
-              <span className="emperor-panel__metric-icon">战斗️</span>
+              <span className="emperor-panel__metric-icon">⚔️</span>
               藩镇
             </span>
             <span className="emperor-panel__metric-value">
@@ -103,7 +103,7 @@ export function EmperorPanel({ gameState }: EmperorPanelProps) {
         <div className="emperor-panel__metric">
           <div className="emperor-panel__metric-header">
             <span className="emperor-panel__metric-label">
-              <span className="emperor-panel__metric-icon">金币</span>
+              <span className="emperor-panel__metric-icon">💰</span>
               汉室库
             </span>
             <span className="emperor-panel__metric-value">

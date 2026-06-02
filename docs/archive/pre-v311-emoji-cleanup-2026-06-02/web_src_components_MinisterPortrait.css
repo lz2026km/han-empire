@@ -371,7 +371,7 @@
 
 /* Vanishing point indicator */
 .minister-list-court::after {
-  content: '装饰';
+  content: '❧';
   position: absolute;
   top: 10%;
   left: 50%;

@@ -871,7 +871,7 @@ input:focus, select:focus {
 
 .decorative-corner::before,
 .decorative-corner::after {
-  content: '装饰';
+  content: '❧';
   position: absolute;
   font-size: 24px;
   color: var(--color-gold-dim);

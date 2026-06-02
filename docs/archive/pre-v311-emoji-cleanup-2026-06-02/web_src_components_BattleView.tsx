@@ -50,11 +50,11 @@ export function BattleView({ attacker, defender, onBattleEnd, autoPlay = false }
   return (
     <div className="battle-view">
       <div className="battle-header">
-        <h2 className="battle-title">战斗️ 战场态势</h2>
+        <h2 className="battle-title">⚔️ 战场态势</h2>
         <div className="battle-controls">
-          {!ended && !playing && <button className="btn btn--primary" onClick={start}>战斗️ 开始战斗</button>}
-          {playing && <button className="btn" onClick={() => setPlaying(false)}>停️ 暂停</button>}
-          {!playing && round > 0 && !ended && <button className="btn" onClick={() => setPlaying(true)}>播️ 继续</button>}
+          {!ended && !playing && <button className="btn btn--primary" onClick={start}>⚔️ 开始战斗</button>}
+          {playing && <button className="btn" onClick={() => setPlaying(false)}>⏸️ 暂停</button>}
+          {!playing && round > 0 && !ended && <button className="btn" onClick={() => setPlaying(true)}>▶️ 继续</button>}
         </div>
       </div>
       <div className="battle-field">
@@ -87,7 +87,7 @@ export function BattleView({ attacker, defender, onBattleEnd, autoPlay = false }
             {rounds.map((r, i) => (
               <div key={`round-${r.round}-${i}`} className={`log-entry ${i === rounds.length - 1 ? 'log-entry--latest' : ''}`}>
                 <div className="log-round">第{r.round}回合</div>
-                <div className="log-dice"><span className="dice-roll">骰子 {r.attackerRoll}</span><span className="dice-vs">vs</span><span className="dice-roll">骰子 {r.defenderRoll}</span></div>
+                <div className="log-dice"><span className="dice-roll">🎲 {r.attackerRoll}</span><span className="dice-vs">vs</span><span className="dice-roll">🎲 {r.defenderRoll}</span></div>
                 <div className="log-damage">
                   {r.attackerDamage > 0 && <span className="damage-defender">守方伤亡: {r.attackerDamage}</span>}
                   {r.defenderDamage > 0 && <span className="damage-attacker">攻方伤亡: {r.defenderDamage}</span>}

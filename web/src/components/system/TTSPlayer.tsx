@@ -134,7 +134,7 @@ export function TTSPlayer({
             fontWeight: 500,
           }}
         >
-          {loading ? '合成中...' : '▶ 朗读'}
+          {loading ? '合成中...' : '播 朗读'}
         </button>
       </div>
 

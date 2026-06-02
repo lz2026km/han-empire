@@ -21,11 +21,11 @@ const AUTHORITY_LEVELS: Array<{
   desc: string;
   icon: string;
 }> = [
-  { level: 1, name: '口谕', color: '#94a3b8', desc: '当面口述, 轻诺', icon: '召对' },
-  { level: 2, name: '谕旨', color: '#06b6d4', desc: '颁行州郡, 中度', icon: '诏书' },
-  { level: 3, name: '圣旨', color: '#3b82f6', desc: '昭告天下, 高度', icon: '页' },
-  { level: 4, name: '密旨', color: '#8b5cf6', desc: '暗授亲信, 高度隐秘', icon: '安全' },
-  { level: 5, name: '廷议', color: '#f59e0b', desc: '朝会议定, 最高权威', icon: '权' },
+  { level: 1, name: '口谕', color: '#94a3b8', desc: '当面口述, 轻诺', icon: '💬' },
+  { level: 2, name: '谕旨', color: '#06b6d4', desc: '颁行州郡, 中度', icon: '📜' },
+  { level: 3, name: '圣旨', color: '#3b82f6', desc: '昭告天下, 高度', icon: '📃' },
+  { level: 4, name: '密旨', color: '#8b5cf6', desc: '暗授亲信, 高度隐秘', icon: '🔒' },
+  { level: 5, name: '廷议', color: '#f59e0b', desc: '朝会议定, 最高权威', icon: '⚖' },
 ];
 
 export const AuthoritySlider: React.FC<AuthoritySliderProps> = ({

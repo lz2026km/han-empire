@@ -114,17 +114,17 @@ export default function App() {
   // v2.2.0: EdictModal 自带 SSE 流式颁诏, 旧的 handleEdictPublish 已被取代 (此处不再保留)
 
   const tabs: { id: Tab; label: string; key: string }[] = [
-    { id: 'overview', label: '总览 总览', key: '1' },
-    { id: 'decree', label: '诏书 诏书', key: '2' },
-    { id: 'chat', label: '召对 召对', key: '3' },
-    { id: 'ministers', label: '大臣 大臣', key: '4' },
-    { id: 'factions', label: '战斗️ 派系', key: '5' },
-    { id: 'skills', label: '技能 技能', key: '6' },
-    { id: 'buildings', label: '建筑️ 建筑', key: '7' },
-    { id: 'map', label: '地图️ 地图', key: '8' },
-    { id: 'orders', label: '密令 密令', key: '9' },
-    { id: 'log', label: '列表 日志', key: 'L' },
-    { id: 'consort', label: '后宫 后宫', key: 'C' },
+    { id: 'overview', label: '🏠 总览', key: '1' },
+    { id: 'decree', label: '📜 诏书', key: '2' },
+    { id: 'chat', label: '💬 召对', key: '3' },
+    { id: 'ministers', label: '👥 大臣', key: '4' },
+    { id: 'factions', label: '⚔️ 派系', key: '5' },
+    { id: 'skills', label: '🌲 技能', key: '6' },
+    { id: 'buildings', label: '🏛️ 建筑', key: '7' },
+    { id: 'map', label: '🗺️ 地图', key: '8' },
+    { id: 'orders', label: '🔐 密令', key: '9' },
+    { id: 'log', label: '📋 日志', key: 'L' },
+    { id: 'consort', label: '🏯 后宫', key: 'C' },
   ]
 
   return (
@@ -161,7 +161,7 @@ export default function App() {
             <div className="sidebar__section">
               <div className="sidebar__section-title">快速开始</div>
               <div className="sidebar__item" onClick={() => setShowNewGameModal(true)}>
-                + 新建朝代
+                ➕ 新建朝代
               </div>
             </div>
           )}
@@ -239,7 +239,7 @@ export default function App() {
       {showNewGameModal && (
         <div className="modal-overlay" onClick={() => setShowNewGameModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal__title">建筑️ 建立新朝</div>
+            <div className="modal__title">🏛️ 建立新朝</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '6px', color: 'var(--color-text-secondary)', fontSize: '13px' }}>
@@ -266,7 +266,7 @@ export default function App() {
       {error && (
         <div className="modal-overlay" onClick={() => {}}>
           <div className="modal">
-            <div className="modal__title">[警告]️ 错误</div>
+            <div className="modal__title">⚠️ 错误</div>
             <p style={{ color: 'var(--color-accent-red-bright)' }}>{error}</p>
             <button className="btn" onClick={() => window.location.reload()} style={{ marginTop: '16px' }}>刷新</button>
           </div>
@@ -341,14 +341,14 @@ export default function App() {
 function WelcomeScreen({ onNewGame }: { onNewGame: () => void }) {
   return (
     <div className="empty-state" style={{ paddingTop: '80px' }}>
-      <div style={{ fontSize: '48px', marginBottom: '20px' }}>战斗️</div>
+      <div style={{ fontSize: '48px', marginBottom: '20px' }}>⚔️</div>
       <h2 style={{ color: 'var(--color-gold)', marginBottom: '12px', fontSize: '22px' }}>汉献帝之末路</h2>
       <p style={{ marginBottom: '30px', maxWidth: '400px', lineHeight: '1.7' }}>
         你是汉献帝刘协，在董卓、李傕、郭汜的阴影下苟延残喘。
         通过诏书、派系、技能和建筑，一步步夺回皇权。
       </p>
       <button className="btn btn--primary" onClick={onNewGame}>
-        + 建立新朝
+        ➕ 建立新朝
       </button>
     </div>
   )

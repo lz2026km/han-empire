@@ -132,7 +132,7 @@ export const CourtBackdrop: React.FC<CourtBackdropProps> = ({
                 animationDuration: `${5 + Math.random() * 5}s`,
               }}
             >
-              冬
+              ❄
             </div>
           ))}
         </div>

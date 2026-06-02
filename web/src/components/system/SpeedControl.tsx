@@ -11,8 +11,8 @@ export interface SpeedControlProps {
 
 const OPTIONS: Array<{ value: Speed; label: string; icon: string }> = [
   { value: 'month', label: '月', icon: '⏵' },
-  { value: 'season', label: '季', icon: '⏭' },
-  { value: 'year', label: '年', icon: '⏩' },
+  { value: 'season', label: '季', icon: '下' },
+  { value: 'year', label: '年', icon: '快' },
 ];
 
 export const SpeedControl: React.FC<SpeedControlProps> = ({ value, onChange }) => {

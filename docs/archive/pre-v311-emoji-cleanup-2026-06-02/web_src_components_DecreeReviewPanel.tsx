@@ -171,12 +171,12 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
       minHeight: 400,
     }}>
       <h3 style={{ color: '#c9a96e', margin: '0 0 16px', fontSize: 18, borderBottom: '1px solid #2d2d44', paddingBottom: 8 }}>
-        诏书 诏令审议面板
+        📜 诏令审议面板
       </h3>
 
       {error && (
         <div style={{ background: '#2d1f1f', border: '1px solid #ef4444', borderRadius: 6, padding: 8, marginBottom: 12, color: '#ef4444', fontSize: 13 }}>
-          [X] {error}
+          ❌ {error}
         </div>
       )}
 
@@ -201,8 +201,8 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
               }}>
                 <div style={{ fontSize: 14, marginBottom: 4, color: '#e8d5b7' }}>{d.text}</div>
                 <div style={{ display: 'flex', gap: 12, fontSize: 11, color: '#9ca3af', marginBottom: 8 }}>
-                  {d.actor && <span>钉 {d.actor}</span>}
-                  {d.source && <span>列表 {d.source}</span>}
+                  {d.actor && <span>📌 {d.actor}</span>}
+                  {d.source && <span>📋 {d.source}</span>}
                   <span>回合{d.turn}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 6 }}>
@@ -218,7 +218,7 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
                       cursor: 'pointer',
                     }}
                   >
-                    [OK] 批准
+                    ✅ 批准
                   </button>
                   <button
                     onClick={() => handleReject(d.id)}
@@ -232,7 +232,7 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
                       cursor: 'pointer',
                     }}
                   >
-                    [X] 驳回
+                    ❌ 驳回
                   </button>
                   <button
                     onClick={() => handleDelete(d.id)}
@@ -246,7 +246,7 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
                       cursor: 'pointer',
                     }}
                   >
-                    桶️ 删除
+                    🗑️ 删除
                   </button>
                 </div>
               </div>
@@ -272,8 +272,8 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
               }}>
                 <div style={{ fontSize: 14, marginBottom: 4, color: '#e8d5b7' }}>{d.text}</div>
                 <div style={{ display: 'flex', gap: 12, fontSize: 11, color: '#9ca3af' }}>
-                  {d.actor && <span>钉 {d.actor}</span>}
-                  {d.source && <span>列表 {d.source}</span>}
+                  {d.actor && <span>📌 {d.actor}</span>}
+                  {d.source && <span>📋 {d.source}</span>}
                   <span>回合{d.turn}</span>
                 </div>
               </div>
@@ -317,7 +317,7 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
         padding: 12,
         marginBottom: 16,
       }}>
-        <h4 style={{ color: '#c9a96e', margin: '0 0 10px', fontSize: 14 }}>+ 添加新指令</h4>
+        <h4 style={{ color: '#c9a96e', margin: '0 0 10px', fontSize: 14 }}>➕ 添加新指令</h4>
         <textarea
           value={newText}
           onChange={e => setNewText(e.target.value)}
@@ -383,7 +383,7 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
             fontFamily: 'inherit',
           }}
         >
-          + 添加草稿
+          ➕ 添加草稿
         </button>
       </div>
 
@@ -404,7 +404,7 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
           fontWeight: 'bold',
         }}
       >
-        诏书 生成正式诏书（{confirmedDirectives.length}条已批准）
+        📜 生成正式诏书（{confirmedDirectives.length}条已批准）
       </button>
 
       {/* Generated decree display */}

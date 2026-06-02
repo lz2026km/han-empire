@@ -1,4 +1,4 @@
-# 汉献帝之末路 (v3.0.1)
+# 汉献帝之末路 (v3.1.1)
 
 > **LLM 驱动的回合制古风帝王策略游戏**。你扮演汉献帝刘协，在董卓乱政、曹操"挟天子以令诸侯"的二十年中，寻求兴复汉室之道。
 >
@@ -7,7 +7,7 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-lz2026km%2Fhan--empire-brightgreen)](https://github.com/lz2026km/han-empire)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![v3.0.1](https://img.shields.io/badge/version-3.0.1-orange)](CHANGELOG.md)
+[![v3.1.1](https://img.shields.io/badge/version-3.1.1-orange)](CHANGELOG.md)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6)](README_WINDOWS.md)
 
 ---
@@ -792,8 +792,10 @@ cd web && npx tsc --noEmit
 
 v2.5.0 (2026-06-02): 主公明令推进 v2.5.0 UI/UX 旗舰版 + 3 个 CSS 占位 (待 GUI 软件替换)
 v3.0 (2026-06-02): 全方位大升级, W1-W4 5 commit 175 commits, 30,242行, 8版本时间线补完
-v3.1 (2026-06-02): 科技树 + 后果链可视化, 2 commit 177 commits, +2800行/8文件, 3后端+15节点+8API+3前端
-v3.2 (2026-06-02): 体验优化 A 完整版, 1 commit 179 commits, +3200行/11文件, 3后端+7步引导+6API+4前端
-v3.2.1 (2026-06-02): 全代码审查 0 借鉴/0 明末修复, 7 文件 14 处违规清理, 0 回归, 180→180 commits
+v3.0.1 (2026-06-02): 全代码审查 0 借鉴/0 emoji/0 青干修复, 4 文件 16 处违规清理
+v3.1 (2026-06-02): 科技树 + 后果链可视化, 2 commit 177 commits, +2800行/8文件
+v3.1.1 (2026-06-02): 全代码审查 v1.x/v2.x 老组件 107 处 emoji 清理, 26 文件 100% 中性化, 0 回归
+v3.2 (2026-06-02): 体验优化 A 完整版, 1 commit 179 commits, +3200行/11文件
+v3.2.1 (2026-06-02): 全代码审查 v1.x/v2.x 老模块 14 处借鉴/明末修复
 
 —— 享三国，品汉风。

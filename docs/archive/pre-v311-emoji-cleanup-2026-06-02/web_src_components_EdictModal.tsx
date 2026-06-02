@@ -324,7 +324,7 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
       <div className="modal-overlay" onClick={onClose}>
         <div className="edict-modal" onClick={e => e.stopPropagation()}>
           <div className="edict-modal__header">
-            <h2 className="edict-modal__title">诏书 诏书 · 本月指令</h2>
+            <h2 className="edict-modal__title">📜 诏书 · 本月指令</h2>
             <button className="edict-modal__close" onClick={onClose}>
               <X size={20} />
             </button>
@@ -333,7 +333,7 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
           <div className="edict-modal__body">
             {/* 草稿池 */}
             <div className="edict-section">
-              <h3>编辑 草稿池 ({directives.length} 道 · 已批准 {confirmedCount})</h3>
+              <h3>📝 草稿池 ({directives.length} 道 · 已批准 {confirmedCount})</h3>
               {loading ? (
                 <div className="edict-loading">加载中…</div>
               ) : directives.length === 0 ? (
@@ -394,19 +394,19 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
 
             {/* 新增草稿 */}
             <div className="edict-section edict-section--create">
-              <h3>写️ 拟写新指令</h3>
+              <h3>✍️ 拟写新指令</h3>
               <div className="edict-create-row">
                 <select
                   className="edict-create-kind"
                   value={newKind}
                   onChange={e => setNewKind(e.target.value)}
                 >
-                  <option value="颁布新政">诏书 颁布新政</option>
-                  <option value="赈济灾民">稻 赈济灾民</option>
-                  <option value="兴兵讨伐">战斗️ 兴兵讨伐</option>
-                  <option value="安抚百姓">鸽️ 安抚百姓</option>
-                  <option value="整饬吏治">权️ 整饬吏治</option>
-                  <option value="减免赋税">金币 减免赋税</option>
+                  <option value="颁布新政">📜 颁布新政</option>
+                  <option value="赈济灾民">🌾 赈济灾民</option>
+                  <option value="兴兵讨伐">⚔️ 兴兵讨伐</option>
+                  <option value="安抚百姓">🕊️ 安抚百姓</option>
+                  <option value="整饬吏治">⚖️ 整饬吏治</option>
+                  <option value="减免赋税">💰 减免赋税</option>
                 </select>
                 <textarea
                   className="edict-create-text"
@@ -424,7 +424,7 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
             {/* 拟诏预览 */}
             {previewText !== null && (
               <div className="edict-section edict-section--preview">
-                <h3>看 拟诏预览</h3>
+                <h3>👀 拟诏预览</h3>
                 <pre className="edict-preview-box">{previewText}</pre>
               </div>
             )}
@@ -445,7 +445,7 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
               onClick={handleAdvance}
               title="本月退朝, 不下旨, 仅推演月结"
             >
-              门 退朝
+              🚪 退朝
             </button>
             <button
               className="btn btn--primary"

@@ -61,7 +61,7 @@ export function BattleTab() {
 
   return (
     <div className="battle-tab">
-      <h2>战斗️ 历史战役推演</h2>
+      <h2>⚔️ 历史战役推演</h2>
       <p className="battle-tab__desc">主公可推演东汉末年 3 大著名战役, 体验群雄逐鹿。</p>
 
       <div className="battle-list">
@@ -74,11 +74,11 @@ export function BattleTab() {
           >
             <div className="battle-card__year">{b.year}年</div>
             <div className="battle-card__name">{b.battle_name}</div>
-            <div className="battle-card__location">针 {b.location}</div>
+            <div className="battle-card__location">📍 {b.location}</div>
             <div className="battle-card__sides">
               {b.sides.map(s => <span key={s} className="faction-tag">{s}</span>)}
             </div>
-            <div className="battle-card__troops">战斗️ {b.total_troops.toLocaleString()} 兵 · {b.troop_count} 部</div>
+            <div className="battle-card__troops">⚔️ {b.total_troops.toLocaleString()} 兵 · {b.troop_count} 部</div>
             <div className="battle-card__bg">{b.background}</div>
           </div>
         ))}
@@ -88,10 +88,10 @@ export function BattleTab() {
 
       {report && !loading && (
         <div className="battle-report">
-          <h3>诏书 {report.battle_name} · {report.year}年</h3>
+          <h3>📜 {report.battle_name} · {report.year}年</h3>
           <div className="battle-report__summary">{report.summary}</div>
           {report.winner && (
-            <div className="battle-report__winner">成就 胜方: {report.winner}</div>
+            <div className="battle-report__winner">🏆 胜方: {report.winner}</div>
           )}
 
           <h4>战斗经过 (共 {report.rounds.length} 回合)</h4>
@@ -99,7 +99,7 @@ export function BattleTab() {
             <div key={i} className={`battle-round ${i === report.rounds.length - 1 ? 'battle-round--latest' : ''}`}>
               <div className="battle-round__header">
                 <span className="battle-round__num">第 {r.round} 回合</span>
-                <span className="battle-round__weather">云 {r.weather}</span>
+                <span className="battle-round__weather">☁ {r.weather}</span>
               </div>
               <div className="battle-round__narrative">{r.narrative}</div>
               {Object.keys(r.casualties).length > 0 && (

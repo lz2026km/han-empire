@@ -8,11 +8,11 @@ export interface MenuDrawerProps {
 }
 
 const ITEMS = [
-  { icon: '存储', label: '存档' },
-  { icon: '录', label: '读档' },
-  { icon: '诏书', label: '起居注' },
-  { icon: '设置', label: '设置' },
-  { icon: '门', label: '退出' },
+  { icon: '💾', label: '存档' },
+  { icon: '📂', label: '读档' },
+  { icon: '📜', label: '起居注' },
+  { icon: '⚙', label: '设置' },
+  { icon: '🚪', label: '退出' },
 ];
 
 export const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, onClose }) => {

@@ -23,7 +23,7 @@
   /* v2.1.0 Phase 3.1: 季节色 (春夏秋冬 - 默认春) */
   --season-bg: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
   --season-fg: #166534;
-  --season-icon: 春;
+  --season-icon: 🌸;
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
@@ -132,25 +132,25 @@ code {
 body[data-season="spring"] {
   --season-bg: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
   --season-fg: #166534;
-  --season-icon: 春;
+  --season-icon: 🌸;
   background: var(--season-bg);
 }
 body[data-season="summer"] {
   --season-bg: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
   --season-fg: #9a3412;
-  --season-icon: 夏️;
+  --season-icon: ☀️;
   background: var(--season-bg);
 }
 body[data-season="autumn"] {
   --season-bg: linear-gradient(135deg, #fed7aa 0%, #fecaca 100%);
   --season-fg: #7c2d12;
-  --season-icon: 秋;
+  --season-icon: 🍂;
   background: var(--season-bg);
 }
 body[data-season="winter"] {
   --season-bg: linear-gradient(135deg, #e0e7ff 0%, #f1f5f9 100%);
   --season-fg: #1e3a8a;
-  --season-icon: 冬️;
+  --season-icon: ❄️;
   background: var(--season-bg);
 }
 

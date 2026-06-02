@@ -14,8 +14,8 @@ export interface NotificationItem {
 }
 
 const TYPE_ICONS: Record<NotificationType, string> = {
-  info: '列表', success: '[OK]', warning: '[警告]️', critical: '警',
-  decree: '诏书', battle: '战斗️', political: '建筑️',
+  info: '📋', success: '✅', warning: '⚠️', critical: '🚨',
+  decree: '📜', battle: '⚔️', political: '🏛️',
 }
 
 const TYPE_COLORS: Record<NotificationType, string> = {
@@ -57,7 +57,7 @@ function NotificationToast({ notification, onDismiss, style }: { notification: N
         <div className="notification-toast__title" style={{ color: typeColor }}>{notification.title}</div>
         <div className="notification-toast__message">{notification.message}</div>
       </div>
-      <button className="notification-toast__close" onClick={() => { setIsExiting(true); setTimeout(() => onDismiss(notification.id), 300) }}>×</button>
+      <button className="notification-toast__close" onClick={() => { setIsExiting(true); setTimeout(() => onDismiss(notification.id), 300) }}>✕</button>
     </div>
   )
 }

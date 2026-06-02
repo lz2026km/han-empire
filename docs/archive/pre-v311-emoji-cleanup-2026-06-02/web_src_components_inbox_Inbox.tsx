@@ -125,7 +125,7 @@ export const Inbox: React.FC<InboxProps> = ({
       <div className="inbox-list">
         {demoMemorials.length === 0 ? (
           <div className="inbox-empty">
-            <div className="inbox-empty-icon">诏书</div>
+            <div className="inbox-empty-icon">📜</div>
             <div className="inbox-empty-text">奏折匣中空</div>
           </div>
         ) : (

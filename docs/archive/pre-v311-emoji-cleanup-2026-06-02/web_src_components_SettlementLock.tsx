@@ -61,20 +61,20 @@ export function SettlementLock({
           </>
         ) : (
           <>
-            <div className="settlement-done-icon">[OK]</div>
+            <div className="settlement-done-icon">✅</div>
             <h2>推演完成</h2>
           </>
         )}
 
         {error && (
           <div className="settlement-error">
-            <strong>[X] 错误：</strong>{error}
+            <strong>❌ 错误：</strong>{error}
           </div>
         )}
 
         {thinking && (
           <div className="settlement-block">
-            <div className="settlement-block-label">想 推演</div>
+            <div className="settlement-block-label">💭 推演</div>
             <div ref={thinkRef} className="settlement-block-content settlement-thinking">
               {thinking}
             </div>
@@ -83,7 +83,7 @@ export function SettlementLock({
 
         {narrative && (
           <div className="settlement-block">
-            <div className="settlement-block-label">诏书 诏书</div>
+            <div className="settlement-block-label">📜 诏书</div>
             <div ref={narrRef} className="settlement-block-content settlement-narrative">
               {narrative}
             </div>
@@ -99,7 +99,7 @@ export function SettlementLock({
 
         {report && done && (
           <div className="settlement-report">
-            <h3>统计 推演报告</h3>
+            <h3>📊 推演报告</h3>
             <ul>
               {Object.entries(report).map(([k, v]) => (
                 <li key={k}><b>{k}:</b> {String(v)}</li>
