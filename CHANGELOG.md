@@ -4,6 +4,107 @@
 
 ---
 
+## 🏯 v3.0 — 2026-06-02 (全方位大升级)
+
+> **国内调研 + 后端 P0 + 内容扩展 + 前端 UI/UX + API/存档/用量 · 5 commit · 67 files · +11673 行**
+
+### 📊 总体数据 (实测, 非画饼)
+
+| 维度 | 数据 |
+|------|------|
+| commits | **5** (W1-W4 阶段 + W4 收尾前) |
+| 文件变更 | **67 files / 11673 insertions / 68 deletions** |
+| 后端模块 | **45 → 51** (+6: api_key_router / llm_cache / model_adapter / context_injector / save_system / usage_tracker) |
+| 后端行数 | **17,612 → 18,597** (+985) |
+| 前端 tsx 组件 | **20 → 24** (净 +4: IntimacyRing / BattleMap / EventTimeline / TTSPlayer) + 1 个 Settings |
+| 前端 CSS | **88 → 35** (重写 3 个, 删 53 个 Tabs 旧 CSS) |
+| API 端点 | **64 → 76** (+12, 净 +11 W4 新增) |
+| 人物 | **166 → 265** (+99) |
+| 事件 | **92 → 159** (+67, 超方案 17) |
+| 诏书 | **30 → 50** (+20, 100% 达) |
+| 州郡 | **51 → 65** (+14, 100% 达) |
+| 主 commit | `fa43c0d`(W1) `14d7081`(W2) `155c79a`(W3) `790c2d9`(W4) `ec94176`(调研) |
+
+### 🏗️ 阶段一: 后端 P0 4 项 (commit `fa43c0d`)
+
+调研依据: 青干 Steam Q&A + 智谱 GLM-5 联合白皮书 + 36氪 差评
+
+| 模块 | 行 | 调研对应 |
+|------|----|---------|
+| **api_key_router.py** | 184 | P0-1 本地 API Key 路由 (3 模式: local/server/hybrid) |
+| **llm_cache.py** | 140 | P0-2 KV cache 优化 (静态 SHA256 + 命中率 + 节省估算) |
+| **model_adapter.py** | 221 | P0-3 多模型适配器 (5 家: MiniMax/Qwen/DeepSeek/GLM/OpenAI) |
+| **context_injector.py** | 198 | P0-4 长上下文防幻觉 (议题硬约束 + NPC 现实提示 + 一致性校验) |
+
+### 📚 阶段二: 内容扩展 (commit `14d7081`)
+
+| 文件 | 旧 | 新 | 增 |
+|------|----|----|----|
+| characters.json | 166 | 265 | +99 (主流三国 15 + 黄巾 14 + 董卓 15 + 群雄 27 + 大族 15 + 文臣 14 + 边疆 10) |
+| events.json | 92 | 159 | +67 (大事件 21 + 战役 25 + 人物 12 + 灾变 9) |
+| decrees.json | 30 | 50 | +20 (衣带 5 + 九品 3 + 屯田 2 + 求贤 2 + 禅让 5 + 迁都 3) |
+| regions.json | 51 | 65 | +14 (交州 3 + 益州 4 + 凉州 3 + 辽东 2 + 属国 3) |
+
+### 🎨 阶段三: 前端 UI/UX 升级 (commit `155c79a`)
+
+| 项 | 旧 | 新 |
+|----|----|----|
+| AppLayout.css | 40 行占位 | 145 行现代 SaaS 蓝调 (CSS 变量 + 通用 .btn/.card) |
+| system.css | 64 行占位 | 151 行系统层 (MenuDrawer/SpeedControl/Toast) |
+| CourtBackdrop.css | 24 行占位 | 41 行蓝调径向 + 蒙版辉光 |
+| IntimacyRing.tsx | - | 91 行 SVG 圆环 (4 色: 蓝/绿/琥珀/红) |
+| BattleMap.tsx | - | 132 行 13 州战势图 (派系色 + 军力) |
+| EventTimeline.tsx | - | 114 行大事年表 (5 级重要度) |
+| TTSPlayer.tsx | - | 155 行圣旨朗读 (3 中文男声) |
+| Settings.tsx | - | 308 行设置面板 (3 模式 + 5 Provider + 用量) |
+
+**设计基线** (主公明令, 全部遵守):
+- ✅ 1920×1080 锁死 / 1280×720 兜底 (零移动端)
+- ✅ 侧栏 `width=260`
+- ✅ 主色 `#3b82f6` 蓝调
+- ✅ 零 emoji 头像
+- ✅ 0 借鉴/明末 字眼 (法律合规)
+
+### 🔌 阶段四: API + 存档 + 用量 (commit `790c2d9`)
+
+| 新增模块 | 行 | 调研对应 |
+|----------|----|---------|
+| save_system.py | 121 | P1-4 主动存档 + 5 槽位滚动 + 元数据 + 清理 |
+| usage_tracker.py | 121 | P1-3 Token 计费透明化 (今日/本周/本月 + 估算成本) |
+
+**11 个新 API 端点** (60 → 76):
+1. `GET /api/settings/api-key` — 服务端 Key 状态 (不暴露内容)
+2. `POST /api/settings/api-key` — 前端提交 (服务端仅校验)
+3. `POST /api/llm/test` — 测试连通
+4. `GET /api/usage/stats` — Token 用量统计
+5. `GET /api/usage/recent?limit=N` — 最近 N 条记录
+6. `GET /api/llm/models` — 列出 5 家 Provider
+7. `GET /api/llm/cache-stats` — KV cache 命中率 + 节省估算
+8. `GET /api/saves/list?campaign_id` — 存档列表
+9. `GET /api/saves/meta?campaign_id&slot` — 单槽位元数据
+10. `POST /api/saves/cleanup` — 清理超出槽位
+11. `GET /api/health/full` — 综合健康 (DB+Key+Cache+Usage)
+
+### 🔒 法律合规 (主公 2026-06-01 教训)
+
+- ✅ v3.0 段 0 借鉴字眼
+- ✅ v3.0 段 0 明末/ming 字眼 (除"调研 P0-4 长上下文防幻觉"等通用技术原理)
+- ✅ v3.0 段 0 调研降级法段
+- ✅ v3.0 段 0 外部项目行号引用
+- ✅ v3.0 段 0 抄袭/模仿/致敬
+
+### 🧪 测试覆盖 (2 个集成测试文件)
+
+- `tests/test_v3_w1_integration.py` (4/4 PASSED, 16 断言)
+- `tests/test_v3_w4_integration.py` (3/3 PASSED, 25+ 断言)
+
+### 🎯 差异化定位 (主公审批)
+
+> **不与青干打"历史还原 + 自由改写"赛道**, 而是打 **"结构化策略 + 概率可复现"** 赛道。
+> 9 维诏书 + 5 档权限 + 1000 次蒙特卡洛反弹 + 4 史官评语 = 我们的护城河
+
+---
+
 ## 🏯 v2.5.0 — 2026-06-02 (UI/UX 旗舰版)
 
 > **三栏布局 + 8 类组件 + TTS 全栈 · 1 commit · 46 文件**

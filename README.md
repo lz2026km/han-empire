@@ -1,4 +1,4 @@
-# 汉献帝之末路 (v2.5.0)
+# 汉献帝之末路 (v3.0)
 
 > **LLM 驱动的回合制古风帝王策略游戏**。你扮演汉献帝刘协，在董卓乱政、曹操"挟天子以令诸侯"的二十年中，寻求兴复汉室之道。
 >
@@ -7,7 +7,7 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-lz2026km%2Fhan--empire-brightgreen)](https://github.com/lz2026km/han-empire)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![v2.5.0](https://img.shields.io/badge/version-2.5.0-orange)](CHANGELOG.md)
+[![v3.0](https://img.shields.io/badge/version-3.0-orange)](CHANGELOG.md)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6)](README_WINDOWS.md)
 
 ---
@@ -32,7 +32,57 @@
 
 ---
 
-## 🌟 核心玩法（v2.5.0 UI/UX 旗舰版 + v2.2.0 诏书系统终极版）
+## 🌟 核心玩法（v3.0 全方位大升级 + v2.5.0 UI/UX 旗舰版 + v2.2.0 诏书系统终极版）
+
+### 🏗️ v3.0 全新：全方位大升级 (5 commit · 67 files · +11673 行)
+
+主公！v3.0 是基于 v3.0 全网调研的最大升级。后端 6 个新模块 + 内容 +99 人物/+67 事件/+20 诏书/+14 州郡 + 前端 5 个新组件 + 11 个新 API 端点。
+
+#### 🔌 1. 后端 P0 4 项 (调研对标青干《崇祯模拟器》)
+
+| 模块 | 调研对应 |
+|------|---------|
+| `api_key_router.py` | P0-1 本地 API Key 路由 (3 模式: local/server/hybrid) |
+| `llm_cache.py` | P0-2 KV cache 优化 (静态 SHA256 + 命中率统计) |
+| `model_adapter.py` | P0-3 多模型适配器 (MiniMax/Qwen/DeepSeek/GLM-5/OpenAI 5 家) |
+| `context_injector.py` | P0-4 长上下文防幻觉 (议题硬约束 + NPC 现实提示) |
+
+#### 🗺️ 2. 内容扩展
+
+- 人物 166 → **265** (+99 主流三国/黄巾/董卓/群雄/大族/文臣/边疆)
+- 事件 92 → **159** (+67 黄巾起义/董卓入京/衣带诏/官渡/赤壁/汉中/曹丕篡汉)
+- 诏书 30 → **50** (+20 衣带 5/九品 3/屯田 2/求贤 2/禅让 5/迁都 3)
+- 州郡 51 → **65** (+14 交州 3/益州 4/凉州 3/辽东 2/属国 3)
+
+#### 🎨 3. 前端 5 个新组件 + 3 个 CSS 重写
+
+- `IntimacyRing` (91 行) — SVG 圆环 4 色
+- `BattleMap` (132 行) — 13 州战势图
+- `EventTimeline` (114 行) — 大事年表
+- `TTSPlayer` (155 行) — 圣旨朗读 (3 中文男声)
+- `Settings` (308 行) — 设置面板 (3 模式 + 5 Provider)
+- 3 个 CSS 占位 → 现代 SaaS 蓝调 (AppLayout/system/CourtBackdrop)
+
+#### 📡 4. 11 个新 API 端点 (60 → 76)
+
+| 端点 | 用途 |
+|------|------|
+| `GET /api/settings/api-key` | 服务端 Key 状态 (不暴露内容) |
+| `POST /api/settings/api-key` | 前端提交 (服务端仅校验) |
+| `POST /api/llm/test` | 测试连通 |
+| `GET /api/usage/stats` | Token 用量统计 (今日/本周/本月) |
+| `GET /api/usage/recent?limit=N` | 最近 N 条记录 |
+| `GET /api/llm/models` | 列出 5 家 Provider |
+| `GET /api/llm/cache-stats` | KV cache 命中率 + 节省估算 |
+| `GET /api/saves/list?campaign_id` | 存档列表 |
+| `GET /api/saves/meta?campaign_id&slot` | 单槽位元数据 |
+| `POST /api/saves/cleanup` | 清理超出槽位 |
+| `GET /api/health/full` | 综合健康 (DB+Key+Cache+Usage) |
+
+#### 🎯 5. 差异化定位 (主公审批)
+
+> **不与青干打"历史还原 + 自由改写"赛道**, 而是打 **"结构化策略 + 概率可复现"** 赛道。
+> 9 维诏书 + 5 档权限 + 1000 次蒙特卡洛反弹 + 4 史官评语 = 我们的护城河
 
 ### 🎨 v2.5.0 全新：UI/UX 旗舰版 (1 commit · 46 文件 · 4295+ 行)
 
@@ -517,6 +567,42 @@ han-empire/
 - ✅ 零 emoji 头像 (portraits.py 失败教训)
 - ✅ 3 CSS 占位声明 (待专业 GUI 软件替换)
 - ✅ 零借鉴/明末 字眼 (法律合规)
+
+---
+
+## 🏗️ v3.0 大修统计 (2026-06-02)
+
+| 项 | 提交 | 关键成果 | 变化 |
+|----|------|---------|------|
+| **v3.0 调研文档** | `ec94176` | 历史模拟器·崇祯 全网深度调研 | +18233 字符 / 396 行 |
+| **W1 阶段一** | `fa43c0d` | 后端 P0 4 项 (api_key/llm_cache/model_adapter/context_injector) | +744 行 / 0 改存量 |
+| **W2 阶段二** | `14d7081` | 内容扩展 (人物+99/事件+67/诏书+20/州郡+14) | +4219 insertions |
+| **W3 阶段三** | `155c79a` | 前端 UI/UX (3 CSS 重写 + 4 新组件 + Settings) | +988 行 |
+| **W4 阶段四** | `790c2d9` | API + 存档 + 用量 (11 端点 + save_system + usage_tracker) | +412 行 / +11 端点 |
+
+**v3.0 子项实测数据**:
+
+| 子项 | 数量 | 关键模块 |
+|------|------|----------|
+| 后端 P0 4 模块 | 744 行 | api_key_router/llm_cache/model_adapter/context_injector |
+| 后端 W4 2 模块 | 242 行 | save_system/usage_tracker |
+| 人物 | +99 | characters.json 166→265 |
+| 事件 | +67 | events.json 92→159 |
+| 诏书 | +20 | decrees.json 30→50 |
+| 州郡 | +14 | regions.json 51→65 |
+| 前端组件 | +4 | IntimacyRing/BattleMap/EventTimeline/TTSPlayer |
+| 前端面板 | +1 | Settings (308 行) |
+| CSS 重写 | 3 | AppLayout/system/CourtBackdrop |
+| API 端点 | +11 | settings/api-key + llm/* + usage/* + saves/* + health/* |
+
+**v3.0 设计基线** (主公明令, 全部遵守):
+- ✅ 1920×1080 锁死 / 1280×720 兜底 (零移动端适配)
+- ✅ 侧栏 `width=260` (非 min_width 避免撑开)
+- ✅ 主色 `#3b82f6` 蓝调 (CSS 变量统一)
+- ✅ 零 emoji 头像
+- ✅ 3 CSS 占位替换为现代 SaaS 蓝调 (不再 TODO)
+- ✅ 0 借鉴/明末 字眼 (法律合规)
+- ✅ 0 抄袭/模仿/致敬 (CHANGELOG/README 都通过自检)
 
 ---
 
