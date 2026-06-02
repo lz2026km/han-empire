@@ -23,10 +23,10 @@ export const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, onClose }) => {
       <div className="menu-drawer">
         <div className="menu-drawer-header">
           <h3 className="imperial">菜单</h3>
-          <button onClick={onClose} aria-label="关闭">×</button>
+          <button type="button" onClick={onClose} aria-label="关闭">×</button>
         </div>
         {ITEMS.map((it) => (
-          <button key={it.label} className="menu-drawer-item">
+          <button type="button" key={it.label} className="menu-drawer-item">
             <span className="menu-drawer-icon">{it.icon}</span>
             <span>{it.label}</span>
           </button>

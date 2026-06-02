@@ -59,7 +59,7 @@ export function Header({ gameState, onSave, onNewGame, theme, season, onToggleTh
       <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', alignItems: 'center' }}>
         {/* v2.1.0 Phase 3.3: 季节指示器 + 切换按钮 */}
         {season && onCycleSeason && (
-          <button
+          <button type="button"
             className="btn btn--season"
             onClick={onCycleSeason}
             data-tooltip="点击切换季节"
@@ -70,7 +70,7 @@ export function Header({ gameState, onSave, onNewGame, theme, season, onToggleTh
         )}
         {/* v2.1.0 Phase 3.3: 主题切换按钮 */}
         {onToggleTheme && (
-          <button
+          <button type="button"
             className="btn btn--theme"
             onClick={onToggleTheme}
             data-tooltip={`切换${theme === 'dark' ? '亮色' : '暗色'}主题`}
@@ -79,9 +79,9 @@ export function Header({ gameState, onSave, onNewGame, theme, season, onToggleTh
             {theme === 'dark' ? '夏️' : '夜'}
           </button>
         )}
-        <button className="btn" onClick={onNewGame}>新朝</button>
+        <button type="button" className="btn" onClick={onNewGame}>新朝</button>
         {gameState && (
-          <button className="btn btn--gold" onClick={onSave}>存储 存档</button>
+          <button type="button" className="btn btn--gold" onClick={onSave}>存储 存档</button>
         )}
       </div>
     </header>

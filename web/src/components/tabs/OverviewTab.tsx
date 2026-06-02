@@ -25,9 +25,9 @@ export function OverviewTab({ gameState, ministers, factions, onNextTurn, onSave
   return (
     <div className="fade-in">
       <div className="action-row">
-        <button className="btn btn--primary" onClick={onNextTurn}>下️ 下一个月</button>
+        <button type="button" className="btn btn--primary" onClick={onNextTurn}>下️ 下一个月</button>
         {/* v2.0.0 P0-B1: 存档按钮接 saveGame */}
-        <button className="btn btn--gold" onClick={onSave}>存储 存档</button>
+        <button type="button" className="btn btn--gold" onClick={onSave}>存储 存档</button>
       </div>
 
       <div className="grid-3" style={{ marginBottom: '20px' }}>

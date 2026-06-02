@@ -31,7 +31,7 @@ export function FactionTab({ factions }: FactionTabProps) {
   return (
     <div className="fade-in">
       <div className="faction-tab-header">
-        <button
+        <button type="button"
           className={`faction-view-btn ${showDiagram ? 'active' : ''}`}
           onClick={() => setShowDiagram(!showDiagram)}
         >

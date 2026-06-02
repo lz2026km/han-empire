@@ -78,7 +78,7 @@ export const EdictComposer: React.FC<EdictComposerProps> = ({
         <h3 className="edict-composer-title imperial">拟旨</h3>
         <div className="edict-composer-presets">
           {KIND_PRESETS.map((k) => (
-            <button
+            <button type="button"
               key={k}
               className={`edict-composer-preset ${directive.kind === k ? 'edict-composer-preset-active' : ''}`}
               onClick={() => update('kind', k)}
@@ -91,7 +91,7 @@ export const EdictComposer: React.FC<EdictComposerProps> = ({
 
       <div className="edict-composer-tabs">
         {TAB_GROUPS.map((t) => (
-          <button
+          <button type="button"
             key={t.key}
             className={`edict-composer-tab ${activeTab === t.key ? 'edict-composer-tab-active' : ''}`}
             onClick={() => setActiveTab(t.key)}
@@ -204,13 +204,13 @@ export const EdictComposer: React.FC<EdictComposerProps> = ({
       </div>
 
       <div className="edict-composer-footer">
-        <button className="edict-composer-btn edict-composer-btn-cancel" onClick={onCancel}>
+        <button type="button" className="edict-composer-btn edict-composer-btn-cancel" onClick={onCancel}>
           取消
         </button>
-        <button className="edict-composer-btn edict-composer-btn-preview" onClick={() => onPreview?.(directive)}>
+        <button type="button" className="edict-composer-btn edict-composer-btn-preview" onClick={() => onPreview?.(directive)}>
           预览
         </button>
-        <button className="edict-composer-btn edict-composer-btn-submit" onClick={handleSubmit}>
+        <button type="button" className="edict-composer-btn edict-composer-btn-submit" onClick={handleSubmit}>
           颁旨
         </button>
       </div>

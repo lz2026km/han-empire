@@ -57,7 +57,7 @@ function NotificationToast({ notification, onDismiss, style }: { notification: N
         <div className="notification-toast__title" style={{ color: typeColor }}>{notification.title}</div>
         <div className="notification-toast__message">{notification.message}</div>
       </div>
-      <button className="notification-toast__close" onClick={() => { setIsExiting(true); setTimeout(() => onDismiss(notification.id), 300) }}>×</button>
+      <button type="button" className="notification-toast__close" onClick={() => { setIsExiting(true); setTimeout(() => onDismiss(notification.id), 300) }}>×</button>
     </div>
   )
 }

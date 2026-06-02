@@ -56,7 +56,7 @@ export function BuildingTab({ campaignId }: BuildingTabProps) {
             </div>
             <div className="building-card__effect">{b.effect_str}</div>
             {!b.constructed && (
-              <button
+              <button type="button"
                 className="btn btn--primary building-card__build"
                 onClick={() => handleConstruct(b.id)}
                 disabled={constructing || buildingList.filter(x => x.constructed).length >= totalSlots}

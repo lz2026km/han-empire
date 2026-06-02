@@ -131,7 +131,7 @@ export function ChatModal({ isOpen, onClose, campaignId, minister, onSendMessage
               <div className="chat-modal__minister-position">{minister?.position || ''}</div>
             </div>
           </div>
-          <button className="chat-modal__close" onClick={handleClose}>
+          <button type="button" className="chat-modal__close" onClick={handleClose}>
             <X size={20} />
           </button>
         </div>
@@ -179,7 +179,7 @@ export function ChatModal({ isOpen, onClose, campaignId, minister, onSendMessage
             rows={2}
             disabled={!minister || loading}
           />
-          <button
+          <button type="button"
             className="btn btn--primary chat-modal__send"
             onClick={handleSend}
             disabled={!input.trim() || loading || !minister}

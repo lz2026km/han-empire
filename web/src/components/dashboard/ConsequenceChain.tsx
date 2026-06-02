@@ -66,19 +66,19 @@ export const ConsequenceChain: React.FC<Props> = ({ sessionId = 'default', turn 
     <div className="consequence-chain">
       <div className="chain-header">
         <h2>后果链 · 回合 {turn}</h2>
-        {onClose && <button className="close-btn" onClick={onClose}>关闭</button>}
+        {onClose && <button type="button" className="close-btn" onClick={onClose}>关闭</button>}
       </div>
 
       <div className="chain-legend">
         <div className="filter-group">
-          <button
+          <button type="button"
             className={filter === 'all' ? 'active' : ''}
             onClick={() => setFilter('all')}
           >
             全部 ({nodes.length})
           </button>
           {Object.entries(typeLegend).map(([type, label]) => (
-            <button
+            <button type="button"
               key={type}
               className={filter === type ? 'active' : ''}
               onClick={() => setFilter(type)}

@@ -44,7 +44,7 @@ function DecreeCard({
       <div className="decree-card__name">{meta.name}</div>
       <div className="decree-card__effect">{meta.effect}</div>
       <div className="decree-card__cost">威权消耗: {meta.cost}</div>
-      <button
+      <button type="button"
         className="btn btn--primary"
         style={{ marginTop: '10px', width: '100%', fontSize: '12px' }}
         onClick={() => onIssue(decreeType)}

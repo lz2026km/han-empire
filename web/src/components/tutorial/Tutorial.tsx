@@ -141,7 +141,7 @@ export const Tutorial: React.FC<{ sessionId?: string; onComplete?: () => void }>
         <div className="bubble-header">
           <span className="bubble-step">第 {currentStep.order + 1} / {progress.total_steps} 步</span>
           {currentStep.can_skip && (
-            <button className="bubble-skip" onClick={handleSkip}>跳过</button>
+            <button type="button" className="bubble-skip" onClick={handleSkip}>跳过</button>
           )}
         </div>
         <h3 className="bubble-title">{currentStep.title}</h3>
@@ -153,7 +153,7 @@ export const Tutorial: React.FC<{ sessionId?: string; onComplete?: () => void }>
           <div className="bubble-progress">
             <div className="bubble-bar" style={{ width: `${progress.percent}%`, background: currentStep.highlight_color }} />
           </div>
-          <button className="bubble-next" onClick={handleAdvance}
+          <button type="button" className="bubble-next" onClick={handleAdvance}
                   style={{ background: currentStep.highlight_color }}>
             {currentStep.order >= progress.total_steps - 1 ? '完成' : '下一步'}
           </button>

@@ -89,14 +89,14 @@ export const DecisionReplay: React.FC<Props> = ({ sessionId = 'default' }) => {
       </div>
 
       <div className="replay-controls">
-        <button
+        <button type="button"
           className="play-btn"
           onClick={() => setPlaying(!playing)}
           disabled={currentTurn >= stats.last_turn && !playing}
         >
           {playing ? '暂停' : '播放'}
         </button>
-        <button
+        <button type="button"
           className="reset-btn"
           onClick={() => { setPlaying(false); setCurrentTurn(stats.first_turn); }}
         >

@@ -109,7 +109,7 @@ export const Inbox: React.FC<InboxProps> = ({
 
       <div className="inbox-filters">
         {FILTERS.map((f) => (
-          <button
+          <button type="button"
             key={f.key}
             className={`inbox-filter ${filter === f.key ? 'inbox-filter-active' : ''}`}
             onClick={() => setFilter(f.key)}

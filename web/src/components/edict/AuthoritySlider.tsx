@@ -51,7 +51,7 @@ export const AuthoritySlider: React.FC<AuthoritySliderProps> = ({
       />
       <div className="authority-slider-marks">
         {AUTHORITY_LEVELS.map((a) => (
-          <button
+          <button type="button"
             key={a.level}
             className={`authority-slider-mark ${value === a.level ? 'authority-slider-mark-active' : ''}`}
             style={{ color: a.color }}

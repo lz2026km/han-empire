@@ -161,7 +161,7 @@ export function MinisterChat({ campaignId, ministers, onMinisterSelect }: Minist
                 placeholder={`对${selectedMinister}说...`}
                 rows={2}
               />
-              <button
+              <button type="button"
                 className="btn btn--primary chat-send"
                 onClick={handleSend}
                 disabled={!input.trim() || loading}

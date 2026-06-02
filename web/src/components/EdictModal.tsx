@@ -344,7 +344,7 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
         <div className="edict-modal" onClick={e => e.stopPropagation()}>
           <div className="edict-modal__header">
             <h2 className="edict-modal__title">诏书 诏书 · 本月指令</h2>
-            <button className="edict-modal__close" onClick={onClose}>
+            <button type="button" className="edict-modal__close" onClick={onClose}>
               <X size={20} />
             </button>
           </div>
@@ -374,10 +374,10 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
                               onChange={e => setEditingText(e.target.value)}
                               rows={2}
                             />
-                            <button className="btn btn--sm btn--primary" onClick={() => handleSaveEdit(d.id)}>
+                            <button type="button" className="btn btn--sm btn--primary" onClick={() => handleSaveEdit(d.id)}>
                               <Check size={12} /> 保存
                             </button>
-                            <button className="btn btn--sm" onClick={() => setEditingId(null)}>
+                            <button type="button" className="btn btn--sm" onClick={() => setEditingId(null)}>
                               <XCircle size={12} /> 取消
                             </button>
                           </div>
@@ -389,18 +389,18 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
                         <div className="edict-item-actions">
                           {d.status === 'draft' && (
                             <>
-                              <button className="btn btn--sm" onClick={() => handleEdit(d)}>
+                              <button type="button" className="btn btn--sm" onClick={() => handleEdit(d)}>
                                 <Edit3 size={12} /> 改
                               </button>
-                              <button className="btn btn--sm btn--success" onClick={() => handleConfirm(d.id)}>
+                              <button type="button" className="btn btn--sm btn--success" onClick={() => handleConfirm(d.id)}>
                                 <Check size={12} /> 批准
                               </button>
-                              <button className="btn btn--sm btn--danger" onClick={() => handleReject(d.id)}>
+                              <button type="button" className="btn btn--sm btn--danger" onClick={() => handleReject(d.id)}>
                                 <XCircle size={12} /> 驳回
                               </button>
                             </>
                           )}
-                          <button className="btn btn--sm btn--danger" onClick={() => handleDelete(d.id)}>
+                          <button type="button" className="btn btn--sm btn--danger" onClick={() => handleDelete(d.id)}>
                             <Trash2 size={12} /> 删
                           </button>
                         </div>
@@ -434,7 +434,7 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
                   placeholder="指令内容 (如: 黄河决堤, 速开仓赈济)..."
                   rows={2}
                 />
-                <button className="btn btn--primary" onClick={handleCreate} disabled={!newText.trim()}>
+                <button type="button" className="btn btn--primary" onClick={handleCreate} disabled={!newText.trim()}>
                   <FileText size={14} /> 入草稿
                 </button>
               </div>
@@ -450,8 +450,8 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
           </div>
 
           <div className="edict-modal__footer">
-            <button className="btn" onClick={onClose}>取消</button>
-            <button
+            <button type="button" className="btn" onClick={onClose}>取消</button>
+            <button type="button"
               className="btn"
               onClick={handlePreview}
               disabled={previewing || confirmedCount === 0}
@@ -459,14 +459,14 @@ export function EdictModal({ isOpen, onClose, campaignId }: EdictModalProps) {
             >
               <FileText size={14} /> {previewing ? '拟诏中…' : '拟诏预览'}
             </button>
-            <button
+            <button type="button"
               className="btn"
               onClick={handleAdvance}
               title="本月退朝, 不下旨, 仅推演月结"
             >
               门 退朝
             </button>
-            <button
+            <button type="button"
               className="btn btn--primary"
               onClick={handleIssue}
               disabled={confirmedCount === 0}

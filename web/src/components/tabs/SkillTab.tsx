@@ -68,7 +68,7 @@ export function SkillTab({ campaignId }: SkillTabProps) {
             </div>
             <div className="skill-nodes">
               {skills.map(skill => (
-                <button
+                <button type="button"
                   key={skill.id}
                   className={`skill-node ${skill.unlocked ? 'skill-node--unlocked' : 'skill-node--locked'}`}
                   onClick={() => !skill.unlocked && handleActivate(skill.id)}

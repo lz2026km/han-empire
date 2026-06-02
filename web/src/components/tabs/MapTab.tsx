@@ -52,7 +52,7 @@ export function MapTab() {
     return (
       <div className="fade-in map-error">
         <p>[X] 加载失败: {error}</p>
-        <button onClick={() => window.location.reload()}>重试</button>
+        <button type="button" onClick={() => window.location.reload()}>重试</button>
       </div>
     )
   }

@@ -226,7 +226,7 @@ export function ConsortTab({ campaignId }: Props) {
                   disabled={audienceLoading}
                   style={{ flex: 1 }}
                 />
-                <button
+                <button type="button"
                   className="btn btn--primary"
                   onClick={handleAudience}
                   disabled={audienceLoading || !inputMsg.trim()}
@@ -264,7 +264,7 @@ export function ConsortTab({ campaignId }: Props) {
                     rows={2}
                   />
                 </div>
-                <button
+                <button type="button"
                   className="btn btn--gold"
                   onClick={handleCultivate}
                   style={{ width: '100%', marginTop: '8px' }}

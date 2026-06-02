@@ -39,7 +39,7 @@ export const VerdictPopup: React.FC<VerdictPopupProps> = ({
         <h3 className="verdict-popup-title imperial">
           {verdict.isSuccess ? '[✓] 旨意达成' : '[✗] 旨意有变'}
         </h3>
-        <button className="verdict-popup-close" onClick={onClose} aria-label="关闭">×</button>
+        <button type="button" className="verdict-popup-close" onClick={onClose} aria-label="关闭">×</button>
       </div>
       <div className="verdict-popup-body">
         {sections.map((s) => (
@@ -48,7 +48,7 @@ export const VerdictPopup: React.FC<VerdictPopupProps> = ({
             className={`verdict-section ${expanded === s.key ? 'verdict-section-open' : ''}`}
             style={{ borderColor: s.color }}
           >
-            <button
+            <button type="button"
               className="verdict-section-header"
               onClick={() => setExpanded((cur) => (cur === s.key ? null : s.key))}
               style={{ color: s.color }}

@@ -137,7 +137,7 @@ export function Settings() {
             { v: 'server', l: '服务端代理',  d: '用主公兜底 Key' },
             { v: 'hybrid', l: '混合',         d: '关键决策走本地' },
           ].map(o => (
-            <button
+            <button type="button"
               key={o.v}
               onClick={() => setMode(o.v as any)}
               style={{
@@ -195,7 +195,7 @@ export function Settings() {
         />
 
         <div style={{ display: 'flex', gap: 8 }}>
-          <button
+          <button type="button"
             onClick={save}
             style={{
               background: '#3b82f6', border: 'none', color: '#fff',
@@ -204,7 +204,7 @@ export function Settings() {
           >
             [存储] 保存
           </button>
-          <button
+          <button type="button"
             onClick={test}
             disabled={testStatus === 'testing'}
             style={{
@@ -242,7 +242,7 @@ export function Settings() {
         ) : (
           <div style={{ color: '#6b7280', fontSize: 12 }}>暂无数据 (W4 阶段四接入后会显示)</div>
         )}
-        <button
+        <button type="button"
           onClick={fetchUsage}
           style={{
             marginTop: 12, background: 'transparent', border: '1px solid #2a2a3a',

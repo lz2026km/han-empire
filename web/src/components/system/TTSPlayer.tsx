@@ -72,7 +72,7 @@ export function TTSPlayer({
 
   if (compact) {
     return (
-      <button
+      <button type="button"
         onClick={handlePlay}
         disabled={loading}
         style={{
@@ -120,7 +120,7 @@ export function TTSPlayer({
           ))}
         </select>
 
-        <button
+        <button type="button"
           onClick={handlePlay}
           disabled={loading}
           style={{

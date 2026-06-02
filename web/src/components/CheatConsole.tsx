@@ -149,7 +149,7 @@ export function CheatConsole({ isOpen, onClose, onExecuteCommand }: CheatConsole
             <span>控制台</span>
             <span className="cheat-console__hint">输入 help 查看命令</span>
           </div>
-          <button className="cheat-console__close" onClick={onClose}>
+          <button type="button" className="cheat-console__close" onClick={onClose}>
             <X size={16} />
           </button>
         </div>

@@ -142,7 +142,7 @@ export function PortraitGallery({ portraits, selectedId, onSelect }: PortraitGal
   return (
     <div className="portrait-gallery">
       {portraits.map((portrait) => (
-        <button
+        <button type="button"
           key={portrait.id}
           className={`portrait-gallery-item ${selectedId === portrait.id ? 'selected' : ''}`}
           onClick={() => onSelect(portrait.id)}

@@ -52,9 +52,9 @@ export function BattleView({ attacker, defender, onBattleEnd, autoPlay = false }
       <div className="battle-header">
         <h2 className="battle-title">战斗️ 战场态势</h2>
         <div className="battle-controls">
-          {!ended && !playing && <button className="btn btn--primary" onClick={start}>战斗️ 开始战斗</button>}
-          {playing && <button className="btn" onClick={() => setPlaying(false)}>停️ 暂停</button>}
-          {!playing && round > 0 && !ended && <button className="btn" onClick={() => setPlaying(true)}>播️ 继续</button>}
+          {!ended && !playing && <button type="button" className="btn btn--primary" onClick={start}>战斗️ 开始战斗</button>}
+          {playing && <button type="button" className="btn" onClick={() => setPlaying(false)}>停️ 暂停</button>}
+          {!playing && round > 0 && !ended && <button type="button" className="btn" onClick={() => setPlaying(true)}>播️ 继续</button>}
         </div>
       </div>
       <div className="battle-field">

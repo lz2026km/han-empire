@@ -119,7 +119,7 @@ export const TechTree: React.FC<Props> = ({ sessionId = 'default', onUnlock }) =
                   <div className="node-name" style={{ color }}>{node.name}</div>
                   <div className="node-cost">声望 {node.cost}</div>
                   {node.status === 'available' && (
-                    <button
+                    <button type="button"
                       className="unlock-btn"
                       onClick={(e) => { e.stopPropagation(); handleUnlock(node.id); }}
                       disabled={data.reputation < node.cost}
@@ -151,7 +151,7 @@ export const TechTree: React.FC<Props> = ({ sessionId = 'default', onUnlock }) =
               <strong>前置:</strong> {selected.prerequisites.join(', ')}
             </div>
           )}
-          <button className="close-btn" onClick={() => setSelected(null)}>关闭</button>
+          <button type="button" className="close-btn" onClick={() => setSelected(null)}>关闭</button>
         </div>
       )}
     </div>

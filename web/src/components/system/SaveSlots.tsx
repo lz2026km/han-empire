@@ -137,11 +137,11 @@ export const SaveSlots: React.FC<Props> = ({ campaignId = 'default', onLoad, onS
               <div className="slot-name">{slot.name}</div>
               {slot.game_year && <div className="slot-year">{slot.game_year}</div>}
               <div className="slot-actions" onClick={e => e.stopPropagation()} role="button" tabIndex={0}>
-                <button className="btn-save" onClick={() => handleSave(parseInt(slot.slot_id))}>
+                <button type="button" className="btn-save" onClick={() => handleSave(parseInt(slot.slot_id))}>
                   {slot.turn > 0 ? '覆盖' : '存档'}
                 </button>
                 {slot.turn > 0 && (
-                  <button className="btn-delete" onClick={() => handleDelete(slot)}>删除</button>
+                  <button type="button" className="btn-delete" onClick={() => handleDelete(slot)}>删除</button>
                 )}
               </div>
             </div>

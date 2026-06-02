@@ -92,13 +92,13 @@ export function ProvinceMap({ regions, onProvinceClick, selectedProvinceId }: Pr
       <div className="map-header">
         <h3>汉朝疆域图</h3>
         <div className="color-mode-toggle">
-          <button 
+          <button type="button" 
             className={colorMode === 'unrest' ? 'active' : ''}
             onClick={() => setColorMode('unrest')}
           >
             动荡程度
           </button>
-          <button 
+          <button type="button" 
             className={colorMode === 'control' ? 'active' : ''}
             onClick={() => setColorMode('control')}
           >

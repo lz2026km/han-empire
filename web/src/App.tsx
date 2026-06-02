@@ -272,8 +272,8 @@ export default function App() {
                 />
               </div>
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                <button className="btn" onClick={() => setShowNewGameModal(false)}>取消</button>
-                <button className="btn btn--primary" onClick={handleNewGame} disabled={loading}>
+                <button type="button" className="btn" onClick={() => setShowNewGameModal(false)}>取消</button>
+                <button type="button" className="btn btn--primary" onClick={handleNewGame} disabled={loading}>
                   {loading ? '创建中...' : '建立朝代'}
                 </button>
               </div>
@@ -287,7 +287,7 @@ export default function App() {
           <div className="modal">
             <div className="modal__title">[警告]️ 错误</div>
             <p style={{ color: 'var(--color-accent-red-bright)' }}>{error}</p>
-            <button className="btn" onClick={() => window.location.reload()} style={{ marginTop: '16px' }}>刷新</button>
+            <button type="button" className="btn" onClick={() => window.location.reload()} style={{ marginTop: '16px' }}>刷新</button>
           </div>
         </div>
       )}
@@ -366,7 +366,7 @@ function WelcomeScreen({ onNewGame }: { onNewGame: () => void }) {
         你是汉献帝刘协，在董卓、李傕、郭汜的阴影下苟延残喘。
         通过诏书、派系、技能和建筑，一步步夺回皇权。
       </p>
-      <button className="btn btn--primary" onClick={onNewGame}>
+      <button type="button" className="btn btn--primary" onClick={onNewGame}>
         + 建立新朝
       </button>
     </div>

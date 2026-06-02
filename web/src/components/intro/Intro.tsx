@@ -139,7 +139,7 @@ export const Intro: React.FC<IntroProps> = ({
           style={{ width: `${(progress / duration) * 100}%` }}
         />
       </div>
-      <button
+      <button type="button"
         className="intro-skip"
         onClick={onComplete}
         aria-label="跳过启动动画"

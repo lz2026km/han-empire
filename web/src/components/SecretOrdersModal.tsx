@@ -89,7 +89,7 @@ export function SecretOrdersModal({ isOpen, onClose, orders, onCancelOrder }: Se
             />
             <span>显示已完成</span>
           </label>
-          <button className="secret-orders-modal__close" onClick={onClose} aria-label="关闭密令">
+          <button type="button" className="secret-orders-modal__close" onClick={onClose} aria-label="关闭密令">
             <X size={20} />
           </button>
         </div>
@@ -154,7 +154,7 @@ export function SecretOrdersModal({ isOpen, onClose, orders, onCancelOrder }: Se
                 </div>
               )}
               {(selectedOrder.status === 'pending' || selectedOrder.status === 'executing') && onCancelOrder && (
-                <button
+                <button type="button"
                   className="btn secret-order__cancel"
                   onClick={() => {
                     onCancelOrder(selectedOrder.id)

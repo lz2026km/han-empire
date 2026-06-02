@@ -33,13 +33,13 @@ export function MinisterTab({ ministers }: MinisterTabProps) {
     <div className="fade-in">
       <div className="minister-tab-header">
         <div className="minister-tab-tabs">
-          <button
+          <button type="button"
             className={`minister-tab-btn ${courtMode === 'grid' ? 'active' : ''}`}
             onClick={() => setCourtMode('grid')}
           >
             网格视图
           </button>
-          <button
+          <button type="button"
             className={`minister-tab-btn ${courtMode === 'court' ? 'active' : ''}`}
             onClick={() => setCourtMode('court')}
           >

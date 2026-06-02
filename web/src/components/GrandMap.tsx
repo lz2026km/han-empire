@@ -76,14 +76,14 @@ export function GrandMap({ isOpen, onClose, provinces, onProvinceClick }: GrandM
             汉室疆域
           </h2>
           <div className="grand-map__controls">
-            <button
+            <button type="button"
               className="btn grand-map__zoom"
               onClick={() => setZoom(z => Math.min(z + 0.2, 2))}
               disabled={zoom >= 2}
             >
               <ZoomIn size={16} />
             </button>
-            <button
+            <button type="button"
               className="btn grand-map__zoom"
               onClick={() => setZoom(z => Math.max(z - 0.2, 0.5))}
               disabled={zoom <= 0.5}
@@ -101,7 +101,7 @@ export function GrandMap({ isOpen, onClose, provinces, onProvinceClick }: GrandM
               <option value="rebel">叛军</option>
             </select>
           </div>
-          <button className="grand-map__close" onClick={onClose}>
+          <button type="button" className="grand-map__close" onClick={onClose}>
             <X size={20} />
           </button>
         </div>

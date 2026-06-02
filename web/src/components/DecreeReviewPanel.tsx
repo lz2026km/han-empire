@@ -206,7 +206,7 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
                   <span>回合{d.turn}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <button
+                  <button type="button"
                     onClick={() => handleConfirm(d.id)}
                     style={{
                       background: '#166534',
@@ -220,7 +220,7 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
                   >
                     [OK] 批准
                   </button>
-                  <button
+                  <button type="button"
                     onClick={() => handleReject(d.id)}
                     style={{
                       background: '#7f1d1d',
@@ -234,7 +234,7 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
                   >
                     [X] 驳回
                   </button>
-                  <button
+                  <button type="button"
                     onClick={() => handleDelete(d.id)}
                     style={{
                       background: '#1f2937',
@@ -369,7 +369,7 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
             }}
           />
         </div>
-        <button
+        <button type="button"
           onClick={handleAddDirective}
           disabled={!newText.trim()}
           style={{
@@ -388,7 +388,7 @@ export default function DecreeReviewPanel({ campaignId, apiBase = 'http://localh
       </div>
 
       {/* Write Decree button */}
-      <button
+      <button type="button"
         onClick={handleWriteDecree}
         disabled={confirmedDirectives.length === 0}
         style={{

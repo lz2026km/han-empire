@@ -19,7 +19,7 @@ export const SpeedControl: React.FC<SpeedControlProps> = ({ value, onChange }) =
   return (
     <div className="speed-control" role="group" aria-label="推进速度">
       {OPTIONS.map((o) => (
-        <button
+        <button type="button"
           key={o.value}
           className={`speed-btn ${value === o.value ? 'speed-btn-active' : ''}`}
           onClick={() => onChange(o.value)}

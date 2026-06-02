@@ -179,7 +179,7 @@ export function CourtLayout({
             : undefined;
 
           return (
-            <button
+            <button type="button"
               key={minister.name}
               className={`minister-card ${selectedMinister === minister.name ? 'selected' : ''} ${
                 ousted ? 'ousted' : ''
@@ -194,7 +194,7 @@ export function CourtLayout({
                   size="medium"
                 />
                 {onUploadPortrait && (
-                  <button
+                  <button type="button"
                     className="portrait-upload-btn"
                     title="上传立绘"
                     onClick={(e) => {
@@ -255,7 +255,7 @@ export function CourtLayout({
         const poolFallback = minister.portrait_id ? `/portraits/${minister.portrait_id}.png` : undefined;
 
         return (
-          <button
+          <button type="button"
             key={minister.name}
             className={`court-minister-card ${selectedMinister === minister.name ? 'selected' : ''} ${
               ousted ? 'ousted' : ''

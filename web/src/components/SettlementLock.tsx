@@ -110,7 +110,7 @@ export function SettlementLock({
 
         {done && (
           <div className="settlement-actions">
-            <button className="btn btn--primary" onClick={handleClose}>
+            <button type="button" className="btn btn--primary" onClick={handleClose}>
               {report?.no_decree ? '已退朝' : '已颁布'}
             </button>
           </div>
