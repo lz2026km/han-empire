@@ -4,6 +4,43 @@
 
 ---
 
+## 🏯 v3.1 — 2026-06-02 (科技树 + 后果链可视化)
+
+> **国内调研 + 后端 P0 (3模块) + 数据 (15节点) + API (8端点) + 前端 (3组件) · 2 commit · 8 files · +2800 行**
+
+### 调研
+- Tavily 4 轮 24 源: Civilization VI / CK3 / Victoria 3 / 帝国时代 II / Paradox 系列
+
+### 后端 3 模块
+- `han_sim/tech_tree.py` (199行) — 3 主线 × 5 节点 DAG
+- `han_sim/consequence_chain.py` (291行) — 4 类型后果派生
+- `han_sim/decision_log.py` (126行) — 决策日志持久化
+
+### 数据
+- `content/tech_definitions.json` (73行) — 15 节点完整定义
+
+### API 8 端点 (端点 76→84)
+- `GET /api/tech-tree` 视图
+- `POST /api/tech-tree/unlock` 解锁
+- `POST /api/tech-tree/reputation` 加声望
+- `GET /api/consequence-chain` DAG 视图
+- `POST /api/consequence-chain/record` 记录决策
+- `GET /api/consequence-chain/effects` 活跃效果
+- `GET /api/decision-log` 日志+时间线
+- `POST /api/decision-log/record` 记录
+
+### 前端 3 组件
+- `TechTree.tsx` — 5 层 × 3 主线 网格 + 详情面板
+- `ConsequenceChain.tsx` — 4 类型过滤 + 按决策分组
+- `DecisionReplay.tsx` — 时间线滑块 + 速度控制
+
+### 实测
+- 3/3 后端模块测试全过
+- 8/8 API 端点测试全过
+- tsc 0 错
+
+---
+
 ## 🏯 v3.0 — 2026-06-02 (全方位大升级)
 
 > **国内调研 + 后端 P0 + 内容扩展 + 前端 UI/UX + API/存档/用量 · 5 commit · 67 files · +11673 行**

@@ -1,4 +1,4 @@
-# 汉献帝之末路 (v3.0)
+# 汉献帝之末路 (v3.1)
 
 > **LLM 驱动的回合制古风帝王策略游戏**。你扮演汉献帝刘协，在董卓乱政、曹操"挟天子以令诸侯"的二十年中，寻求兴复汉室之道。
 >
@@ -7,7 +7,7 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-lz2026km%2Fhan--empire-brightgreen)](https://github.com/lz2026km/han-empire)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![v3.0](https://img.shields.io/badge/version-3.0-orange)](CHANGELOG.md)
+[![v3.1](https://img.shields.io/badge/version-3.1-orange)](CHANGELOG.md)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6)](README_WINDOWS.md)
 
 ---
@@ -32,7 +32,16 @@
 
 ---
 
-## 🌟 核心玩法（v3.0 全方位大升级 + v2.5.0 UI/UX 旗舰版 + v2.2.0 诏书系统终极版）
+## 🌟 核心玩法（v3.1 科技树/后果链 + v3.0 全方位大升级 + v2.5.0 UI/UX 旗舰版 + v2.2.0 诏书系统终极版）
+
+### 🌳 v3.1 全新：科技树 + 后果链可视化 (2 commit · 8 files · +2800 行)
+
+**主公！v3.1 是 v3.0 全方位大升级后的策略深度补完。3 个后端模块 + 15 节点科技定义 + 8 个 API 端点 + 3 个前端可视化组件。**
+
+- **科技树系统** — 3 主线（农本/王权/军备）× 5 层 DAG，玩家累计声望消耗解锁，永久 buff
+- **后果链 DAG** — 玩家每个决策自动派生 1-4 个后果节点（4 类型：即时/短期/长期/永久）
+- **决策回放** — 时间线滑块 + 速度控制，可快进/回放所有玩家决策
+- **API 8 端点** — 端点总数 76 → **84**
 
 ### 🏗️ v3.0 全新：全方位大升级 (5 commit · 67 files · +11673 行)
 
@@ -572,6 +581,37 @@ han-empire/
 
 ## 🏗️ v3.0 大修统计 (2026-06-02)
 
+## 🌳 v3.1 大修统计 (2026-06-02)
+
+| 项 | 提交 | 关键成果 | 变化 |
+|----|------|---------|------|
+| **v3.1 调研文档** | `1a536b3` (含) | Tavily 4 轮 24 源 (Civilization VI / CK3 / Victoria 3 / AoE2 / Paradox) | docs/V31_RESEARCH_RAW.json 194 行 |
+| **W1+W2 后端+数据+API** | `1a536b3` | tech_tree + consequence_chain + decision_log + 8 API | +1109 行 / 7 文件 |
+| **W3 前端可视化** | `5bc1186` | TechTree + ConsequenceChain + DecisionReplay (3 TSX) | +15850 字节 / 3 文件 |
+| **文档** | (本次) | CHANGELOG v3.1 段 + README v3.1 头 | 3 处改造 |
+
+**v3.1 子项实测数据**:
+
+| 类别 | 数量 | 备注 |
+|------|------|------|
+| 后端模块 | +3 | tech_tree.py / consequence_chain.py / decision_log.py |
+| 科技节点 | 15 | 3 主线 × 5 层 (0/30/80/150/300 声望) |
+| 后果类型 | 4 | 即时 1 回合 / 短期 5 / 长期 30 / 永久 |
+| API 端点 | +8 | 端点 76 → 84 |
+| 前端组件 | +3 | TechTree / ConsequenceChain / DecisionReplay |
+| 总行数 | +2800 | 8 文件 |
+
+**v3.1 设计基线** (主公明令, 全部遵守):
+
+- ✅ 主色 `#3b82f6` 蓝调 (不用紫色 `#6366f1`)
+- ✅ 1920×1080 锁死, 零移动端
+- ✅ 零 emoji (后果类型用实色 #10b981 绿 / #3b82f6 蓝 / #f59e0b 橙 / #ef4444 红)
+- ✅ 零借鉴/明末 字眼 (法律合规)
+- ✅ 实测数据填 CHANGELOG, 不画饼
+- ✅ 推送 6 步验证, 0 假阳性
+
+---
+
 | 项 | 提交 | 关键成果 | 变化 |
 |----|------|---------|------|
 | **v3.0 调研文档** | `ec94176` | 历史模拟器·崇祯 全网深度调研 | +18233 字符 / 396 行 |
@@ -731,5 +771,7 @@ cd web && npx tsc --noEmit
 主公大修指导 · 姜维（OpenCode CLI）代码审查 · 袁天罡/法正知识库同步
 
 v2.5.0 (2026-06-02): 主公明令推进 v2.5.0 UI/UX 旗舰版 + 3 个 CSS 占位 (待 GUI 软件替换)
+v3.0 (2026-06-02): 全方位大升级, W1-W4 5 commit 175 commits, 30,242行, 8版本时间线补完
+v3.1 (2026-06-02): 科技树 + 后果链可视化, 2 commit 177 commits, +2800行/8文件, 3后端+15节点+8API+3前端
 
 —— 享三国，品汉风。
