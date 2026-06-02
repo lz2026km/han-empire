@@ -25,7 +25,7 @@ export function EmperorPanel({ gameState }: EmperorPanelProps) {
         <div className="emperor-panel__portrait-frame">
           <div className="emperor-panel__portrait-ring" />
           <div className="emperor-panel__portrait-inner">
-            {gameState.emperor_name?.charAt(0) || '献'}
+            {gameState.emperor_name?.charAt(0) || '汉'}
           </div>
         </div>
         <div className="emperor-panel__name">{gameState.emperor_name || '汉献帝'}</div>

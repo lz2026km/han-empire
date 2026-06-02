@@ -3,6 +3,7 @@
    Theme: Ancient Chinese Dark Palace Style
    ============================================= */
 @import url('./animations.css');
+@import url('./v4-images.css');
 
 :root {
   /* 玄黑 - 主背景 */
@@ -156,7 +157,10 @@ h1, h2, h3, h4, h5, h6 {
 /* ---- Header ---- */
 .app-header {
   height: var(--header-height);
-  background: linear-gradient(180deg, #15151a 0%, #0d0d12 100%);
+  background:
+    linear-gradient(180deg, rgba(20, 12, 8, 0.4) 0%, rgba(8, 4, 3, 0.7) 100%),
+    url("/sky_sunny.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
   border-bottom: 1px solid var(--color-border-gold);
   display: flex;
   align-items: center;
@@ -1094,8 +1098,9 @@ input:focus, select:focus {
   min-width: 0;
   overflow: hidden;
   background:
-    radial-gradient(circle at 56% 40%, rgba(213, 187, 115, 0.18), transparent 30%),
-    linear-gradient(145deg, #1a1a22 0%, #0d0d12 100%);
+    linear-gradient(180deg, rgba(20, 10, 8, 0.2) 0%, rgba(8, 4, 3, 0.5) 100%),
+    url("/bg_court.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
 }
 
 .game-shell::after {
@@ -1584,9 +1589,9 @@ input:focus, select:focus {
   background-repeat: no-repeat;
 }
 
-.modal-bg-state { background-image: url("/bg_state.svg"); }
-.modal-bg-chat { background: rgba(244, 237, 221, 0.86) !important; }
-.modal-bg-edict { background: rgba(255, 255, 255, 0.8) !important; }
+.modal-bg-state { background-image: linear-gradient(180deg, rgba(26, 10, 10, 0.5) 0%, rgba(10, 5, 6, 0.7) 100%), url("/bg_state.png") !important; background-blend-mode: multiply, normal !important; background-size: cover !important; background-position: center !important; }
+.modal-bg-chat { background: linear-gradient(180deg, rgba(26, 14, 10, 0.4) 0%, rgba(10, 5, 5, 0.6) 100%), url("/bg_chat.png") center / cover no-repeat !important; background-blend-mode: multiply, normal !important; }
+.modal-bg-edict { background: linear-gradient(180deg, rgba(58, 26, 10, 0.3) 0%, rgba(26, 10, 5, 0.6) 100%), url("/bg_edict.png") center / cover no-repeat !important; background-blend-mode: multiply, normal !important; }
 
 .modal-bg-state *,
 .modal-bg-chat *,
@@ -2253,7 +2258,10 @@ input:focus, select:focus {
    v2.2.0 借鉴明末: EdictModal 升级 (草稿池/拟诏/颁布)
    ============================================ */
 .edict-modal {
-  background: linear-gradient(180deg, #1a1f3a 0%, #0e1322 100%);
+  background:
+    linear-gradient(180deg, rgba(58, 26, 10, 0.5) 0%, rgba(26, 10, 5, 0.8) 100%),
+    url("/bg_edict.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
   border: 1px solid #2a325a;
   border-radius: 12px;
   max-width: 920px;

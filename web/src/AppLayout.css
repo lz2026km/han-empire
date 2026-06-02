@@ -48,7 +48,11 @@ html, body, #root {
   flex-direction: column;
   width: 100vw;
   height: 100vh;
-  background: var(--color-bg);
+  background:
+    linear-gradient(180deg, rgba(20, 10, 8, 0.3) 0%, rgba(8, 4, 3, 0.6) 100%),
+    url("/bg_loading.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  background-attachment: fixed;
 }
 
 .app-layout__topbar {

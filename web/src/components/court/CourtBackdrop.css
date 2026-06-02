@@ -1,15 +1,15 @@
 /* ============================================
- * 汉献帝之末路 v3.0 — 议政厅背景层
- * 蓝调径向 + 极简网格, 现代 SaaS 风
+ * 汉献帝之末路 v4.0 — 议政厅背景层
+ * AI 朝堂大殿图 (1920x1080 工笔重彩)
  * ============================================ */
 
 .court-backdrop {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at top, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom, rgba(16, 185, 129, 0.04) 0%, transparent 60%),
-    linear-gradient(180deg, #0f0f18 0%, #0a0a0f 100%);
+    linear-gradient(180deg, rgba(20, 10, 8, 0.3) 0%, rgba(8, 4, 3, 0.5) 100%),
+    url("/bg_court.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
   pointer-events: none;
   z-index: 0;
 }
