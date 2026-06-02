@@ -1,0 +1,259 @@
+/* =============================================
+   v4.0.2 磅礴大气版: 47 张 AI 贴图全场景接入
+   主公明令: 把能贴图的都 AI 生成图贴了, 控件也贴图更换
+   资源 5 + 派系 11 + 时代 8 + 结局 6 + 工具 4 + 战旗 3 + 角花 4 + 加载 1 + 装饰玉 5 = 47 张
+   ============================================= */
+
+/* === 资源 5 种 (顶栏资源图标) === */
+.resource-icon-food {
+  background: url("/v4-epic/resource_food.jpg") center/contain no-repeat;
+  width: 32px; height: 32px; display: inline-block;
+  filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.4));
+}
+.resource-icon-gold {
+  background: url("/v4-epic/resource_gold.jpg") center/contain no-repeat;
+  width: 32px; height: 32px; display: inline-block;
+  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.4));
+}
+.resource-icon-troops {
+  background: url("/v4-epic/resource_troops.jpg") center/contain no-repeat;
+  width: 32px; height: 32px; display: inline-block;
+  filter: drop-shadow(0 0 4px rgba(220, 50, 50, 0.4));
+}
+.resource-icon-people {
+  background: url("/v4-epic/resource_people.jpg") center/contain no-repeat;
+  width: 32px; height: 32px; display: inline-block;
+  filter: drop-shadow(0 0 4px rgba(100, 180, 255, 0.4));
+}
+.resource-icon-heart {
+  background: url("/v4-epic/resource_heart.jpg") center/contain no-repeat;
+  width: 32px; height: 32px; display: inline-block;
+  filter: drop-shadow(0 0 4px rgba(255, 100, 150, 0.4));
+}
+
+/* === 派系图腾 11 (派系徽章/对话框) === */
+.faction-totem-wei, .faction-wei { background: url("/v4-epic/faction_wei.jpg") center/cover no-repeat; }
+.faction-totem-shu, .faction-shu { background: url("/v4-epic/faction_shu.jpg") center/cover no-repeat; }
+.faction-totem-wu, .faction-wu { background: url("/v4-epic/faction_wu.jpg") center/cover no-repeat; }
+.faction-totem-qun, .faction-qun { background: url("/v4-epic/faction_qun.jpg") center/cover no-repeat; }
+.faction-totem-han, .faction-han { background: url("/v4-epic/faction_han.jpg") center/cover no-repeat; }
+.faction-totem-yellow_turban { background: url("/v4-epic/faction_yellow_turban.jpg") center/cover no-repeat; }
+.faction-totem-liang { background: url("/v4-epic/faction_liang.jpg") center/cover no-repeat; }
+.faction-totem-jingzhou { background: url("/v4-epic/faction_jingzhou.jpg") center/cover no-repeat; }
+.faction-totem-xiliang { background: url("/v4-epic/faction_xiliang.jpg") center/cover no-repeat; }
+.faction-totem-youzhou { background: url("/v4-epic/faction_youzhou.jpg") center/cover no-repeat; }
+.faction-totem-jiangdong { background: url("/v4-epic/faction_jiangdong.jpg") center/cover no-repeat; }
+
+.faction-emblem {
+  width: 64px; height: 64px;
+  border: 2px solid var(--gold, #d4af37);
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+
+/* === 时代背景 8 (历史纪元) === */
+.epoch-dawn { background: url("/v4-epic/epoch_dawn.jpg") center/cover no-repeat; }
+.epoch-warring { background: url("/v4-epic/epoch_warring.jpg") center/cover no-repeat; }
+.epoch-three-kingdoms { background: url("/v4-epic/epoch_three_kingdoms.jpg") center/cover no-repeat; }
+.epoch-jin { background: url("/v4-epic/epoch_jin.jpg") center/cover no-repeat; }
+.epoch-south-north { background: url("/v4-epic/epoch_south_north.jpg") center/cover no-repeat; }
+.epoch-sui { background: url("/v4-epic/epoch_sui.jpg") center/cover no-repeat; }
+.epoch-tang { background: url("/v4-epic/epoch_tang.jpg") center/cover no-repeat; }
+.epoch-song { background: url("/v4-epic/epoch_song.jpg") center/cover no-repeat; }
+
+.epoch-card {
+  min-height: 180px;
+  border: 2px solid var(--gold, #d4af37);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.epoch-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.7) 100%);
+  pointer-events: none;
+}
+
+/* === 结局 6 (大结局插画) === */
+.ending-emperor-ascendant { background: url("/v4-epic/ending_emperor_ascendant.jpg") center/cover no-repeat; }
+.ending-exile { background: url("/v4-epic/ending_exile.jpg") center/cover no-repeat; }
+.ending-puppet { background: url("/v4-epic/ending_puppet.jpg") center/cover no-repeat; }
+.ending-marshal { background: url("/v4-epic/ending_marshal.jpg") center/cover no-repeat; }
+.ending-death { background: url("/v4-epic/ending_death.jpg") center/cover no-repeat; }
+.ending-reincarnation { background: url("/v4-epic/ending_reincarnation.jpg") center/cover no-repeat; }
+
+.ending-poster {
+  width: 100%; height: 360px;
+  border: 3px solid var(--gold, #d4af37);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* === 工具 4 (操作控件) === */
+.tool-sword { background: url("/v4-epic/tool_sword.jpg") center/contain no-repeat; }
+.tool-compass { background: url("/v4-epic/tool_compass.jpg") center/contain no-repeat; }
+.tool-chisel { background: url("/v4-epic/tool_chisel.jpg") center/contain no-repeat; }
+.tool-brush { background: url("/v4-epic/tool_brush.jpg") center/contain no-repeat; }
+
+.tool-icon {
+  width: 48px; height: 48px;
+  display: inline-block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  transition: transform 0.2s;
+}
+.tool-icon:hover { transform: scale(1.1); }
+
+/* === 战旗 3 (战役结果) === */
+.battle-victory-flag {
+  background: url("/v4-epic/battle_victory_flag.jpg") center/contain no-repeat;
+  width: 64px; height: 64px;
+  display: inline-block;
+  filter: drop-shadow(0 0 8px rgba(220, 50, 50, 0.6));
+}
+.battle-defeat-flag {
+  background: url("/v4-epic/battle_defeat_flag.jpg") center/contain no-repeat;
+  width: 64px; height: 64px;
+  display: inline-block;
+  filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.6));
+}
+.battle-warning-flag {
+  background: url("/v4-epic/battle_warning_flag.jpg") center/contain no-repeat;
+  width: 64px; height: 64px;
+  display: inline-block;
+  filter: drop-shadow(0 0 8px rgba(255, 165, 0, 0.6));
+}
+
+/* === 4 角花 (容器装饰角) === */
+.corner-deco-tl { background: url("/v4-epic/corner_dragon.jpg") top left/64px no-repeat; }
+.corner-deco-tr { background: url("/v4-epic/corner_phoenix.jpg") top right/64px no-repeat; }
+.corner-deco-bl { background: url("/v4-epic/corner_lotus.jpg") bottom left/64px no-repeat; }
+.corner-deco-br { background: url("/v4-epic/corner_cloud.jpg") bottom right/64px no-repeat; }
+
+.corner-deco-all {
+  position: relative;
+  background: rgba(20, 15, 10, 0.4);
+  backdrop-filter: blur(2px);
+}
+.corner-deco-all::before,
+.corner-deco-all::after {
+  content: '';
+  position: absolute;
+  width: 64px; height: 64px;
+  pointer-events: none;
+  z-index: 1;
+}
+.corner-deco-all::before {
+  top: 0; left: 0;
+  background: url("/v4-epic/corner_dragon.jpg") center/contain no-repeat;
+}
+.corner-deco-all::after {
+  bottom: 0; right: 0;
+  background: url("/v4-epic/corner_cloud.jpg") center/contain no-repeat;
+}
+
+/* === 加载 1 (loading 龙) === */
+.loading-epic {
+  background: url("/v4-epic/loading_dragon.jpg") center/contain no-repeat;
+  width: 200px; height: 200px;
+  display: inline-block;
+  animation: spin-slow 4s linear infinite;
+  filter: drop-shadow(0 0 16px rgba(212, 175, 55, 0.5));
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* === 装饰玉 5 (统计条/勋章) === */
+.jade-strip-discs { background: url("/v4-epic/jade_disc_5.jpg") center/cover no-repeat; }
+.jade-strip-swords { background: url("/v4-epic/jade_sword_5.jpg") center/cover no-repeat; }
+.jade-strip-beads { background: url("/v4-epic/jade_bead_5.jpg") center/cover no-repeat; }
+.jade-strip-runes { background: url("/v4-epic/jade_rune_5.jpg") center/cover no-repeat; }
+.jade-strip-suns { background: url("/v4-epic/jade_sun_5.jpg") center/cover no-repeat; }
+
+.jade-strip {
+  height: 40px; width: 200px;
+  display: inline-block;
+  border: 1px solid var(--gold, #d4af37);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+/* === 复合场景: 进度条填充用装饰玉 === */
+.stat-bar-5 {
+  height: 24px;
+  background: var(--bg-dark, #1a1208);
+  border: 1px solid var(--gold, #d4af37);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-bar-5 > .fill {
+  height: 100%;
+  background: var(--accent-red, #c8313b);
+  background-size: 20px 20px;
+  position: relative;
+  transition: width 0.5s ease;
+}
+.stat-bar-5 > .fill::after {
+  content: '';
+  position: absolute; right: 0; top: 0; bottom: 0;
+  width: 20px;
+  background: var(--gold, #d4af37);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+}
+
+/* === 场景化: Modal 标题用玉玺底 === */
+.modal-header-epic {
+  position: relative;
+  padding: 20px 60px;
+  background: linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.15) 50%, transparent 100%);
+  border-bottom: 2px solid var(--gold, #d4af37);
+}
+.modal-header-epic::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 48px; height: 48px;
+  background: url("/v4-epic/corner_dragon.jpg") center/contain no-repeat;
+}
+.modal-header-epic::after {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 48px; height: 48px;
+  background: url("/v4-epic/corner_phoenix.jpg") center/contain no-repeat;
+}
+
+/* === 场景化: 朝会判定用战旗 === */
+.decree-verdict-pending { background: url("/v4-epic/battle_warning_flag.jpg") right center/48px no-repeat; padding-right: 60px; }
+.decree-verdict-passed { background: url("/v4-epic/battle_victory_flag.jpg") right center/48px no-repeat; padding-right: 60px; }
+.decree-verdict-rejected { background: url("/v4-epic/battle_defeat_flag.jpg") right center/48px no-repeat; padding-right: 60px; }
+
+/* === 场景化: 状态指示器 === */
+.indicator-epic {
+  width: 40px; height: 40px;
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: 50%;
+  border: 2px solid var(--gold, #d4af37);
+  background: var(--bg-dark, #1a1208);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+  position: relative;
+}
+.indicator-epic.active::after {
+  content: '';
+  position: absolute; inset: 4px;
+  background: var(--gold, #d4af37);
+  border-radius: 50%;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}

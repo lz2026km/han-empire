@@ -49,7 +49,9 @@ export function EmperorPanel({ gameState }: EmperorPanelProps) {
         <div className="emperor-panel__metric">
           <div className="emperor-panel__metric-header">
             <span className="emperor-panel__metric-label">
-              <span className="emperor-panel__metric-icon">皇</span>
+              <span className="emperor-panel__metric-icon">
+                <span className="resource-icon-people" style={{ width: 24, height: 24, verticalAlign: 'middle' }} />
+              </span>
               威权
             </span>
             <span className="emperor-panel__metric-value">
@@ -67,7 +69,9 @@ export function EmperorPanel({ gameState }: EmperorPanelProps) {
         <div className="emperor-panel__metric">
           <div className="emperor-panel__metric-header">
             <span className="emperor-panel__metric-label">
-              <span className="emperor-panel__metric-icon">⭐</span>
+              <span className="emperor-panel__metric-icon">
+                <span className="resource-icon-heart" style={{ width: 24, height: 24, verticalAlign: 'middle' }} />
+              </span>
               声望
             </span>
             <span className="emperor-panel__metric-value">
@@ -85,7 +89,9 @@ export function EmperorPanel({ gameState }: EmperorPanelProps) {
         <div className="emperor-panel__metric">
           <div className="emperor-panel__metric-header">
             <span className="emperor-panel__metric-label">
-              <span className="emperor-panel__metric-icon">战斗️</span>
+              <span className="emperor-panel__metric-icon">
+                <span className="resource-icon-troops" style={{ width: 24, height: 24, verticalAlign: 'middle' }} />
+              </span>
               藩镇
             </span>
             <span className="emperor-panel__metric-value">
@@ -103,7 +109,9 @@ export function EmperorPanel({ gameState }: EmperorPanelProps) {
         <div className="emperor-panel__metric">
           <div className="emperor-panel__metric-header">
             <span className="emperor-panel__metric-label">
-              <span className="emperor-panel__metric-icon">金币</span>
+              <span className="emperor-panel__metric-icon">
+                <span className="resource-icon-gold" style={{ width: 24, height: 24, verticalAlign: 'middle' }} />
+              </span>
               汉室库
             </span>
             <span className="emperor-panel__metric-value">

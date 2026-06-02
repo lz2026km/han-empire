@@ -25,7 +25,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   topbarExtra,
 }) => {
   return (
-    <div className="app-layout">
+    <div className="app-layout corner-deco-all">
       {/* === 顶部状态栏 64px === */}
       <header className="app-topbar">
         <TopBar gameState={gameState} extra={topbarExtra} />
