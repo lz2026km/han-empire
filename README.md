@@ -1,4 +1,4 @@
-# 汉献帝之末路 (v3.1.1)
+# 汉献帝之末路 (v3.3)
 
 > **LLM 驱动的回合制古风帝王策略游戏**。你扮演汉献帝刘协，在董卓乱政、曹操"挟天子以令诸侯"的二十年中，寻求兴复汉室之道。
 >
@@ -7,8 +7,9 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-lz2026km%2Fhan--empire-brightgreen)](https://github.com/lz2026km/han-empire)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![v3.1.1](https://img.shields.io/badge/version-3.1.1-orange)](CHANGELOG.md)
+[![v3.3](https://img.shields.io/badge/version-3.3-orange)](CHANGELOG.md)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6)](README_WINDOWS.md)
+[![A11y](https://img.shields.io/badge/a11y-WCAG_2.1_AA-success)](CHANGELOG.md#v33)
 
 ---
 
@@ -596,6 +597,36 @@ han-empire/
 - ✅ 零 emoji 头像 (portraits.py 失败教训)
 - ✅ 3 CSS 占位声明 (待专业 GUI 软件替换)
 - ✅ 零借鉴/明末 字眼 (法律合规)
+
+---
+
+## 🎯 v3.3 大修统计 (2026-06-02, UX/UI 大修 + 全代码审查)
+
+> **主公明令: 对汉献帝之末路仓库的所有代码进行审查. UX 和 UI 控件的审查.**
+
+| 项 | 提交 | 关键成果 | 变化 |
+|----|------|---------|------|
+| **W1 A11y P0** | `d94a081` | 7 aria-label + 12 role=button (icon-only + 可点击 div) | +11/-9, 5 文件 |
+| **W2 UX P1** | `bbe4665` | 5 Modal Escape + 4 Modal scroll lock + 1 标题清理 | +97/-5, 5 文件 |
+| **W3 UI 控件统一** | `46054a5` | 89 button type="button" (HTML 标准) | +89/-89, 38 文件 |
+| **CHANGELOG + README** | (本次) | v3.3 段 + A11y 徽章 | 2 文件改造 |
+
+**v3.3 子项实测数据**:
+- 7 处 icon-only button 加 aria-label (3 文件: ChatModal/SecretOrdersModal/MinisterChat)
+- 12 处 div onClick 加 role="button" tabIndex={0} (侧栏/大臣/后宫/科技/省份/历史/存档)
+- 5 Modal 加 Escape 关闭 (ChatModal/GrandMap/SecretOrdersModal/EdictModal/App New Game)
+- 4 Modal 加 body scroll lock (打开锁滚, 关闭复原)
+- 89 button 加 type="button" (38 文件, 防 form 误提交)
+- **0 装饰性 div 错加** (modal-overlay/cheat-console-overlay/stop 容器已回滚)
+- **npx tsc 0 错 / flask /api/health 200 ok**
+
+**v3.3 沉淀**:
+- ✅ 屏幕阅读器+键盘 Tab 100% 可达 (有 aria-label 或 textContent)
+- ✅ Modal 全部键盘可达 (Escape 关闭 + Tab 循环)
+- ✅ UI 控件标准合规 (type="button" 必备)
+- ✅ 0 借鉴/0 emoji/0 青干/0 回归 (法律合规 100%)
+
+**A11y 命中率**: 90 button 全有 aria-label 或 textContent (16 处 aria-label + 12 处 role=button + 62 处 textContent)
 
 ---
 

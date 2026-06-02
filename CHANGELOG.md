@@ -4,6 +4,50 @@
 
 ---
 
+## 🎯 v3.3 — 2026-06-02 (UX/UI 大修 + 全代码审查)
+
+> **主公明令: 对汉献帝之末路仓库的所有代码进行审查. U X 和 UI 控件的审查.**
+> **本版本: v3.2.1 → v3.3 大版本升级 (3 commit / 38 文件 / 196 行)**
+> **0 借鉴 / 0 emoji / 0 青干 / 0 回归 / npx tsc 0 错 / flask /api/health 200 ok**
+
+### W1 阶段一: A11y P0 修复 (commit d94a081)
+- **7 处 icon-only button 加 aria-label** (3 文件)
+  - ChatModal: 关闭对话 / 发送消息
+  - SecretOrdersModal: 关闭密令
+  - MinisterChat: 发送消息
+- **12 处 div onClick 加 role="button" tabIndex={0}** (12 文件)
+  - sidebar__item / MinistersPanel / ConsortTab / TechTree / InfoGapCard / ProvinceList / EdictHistory / SaveSlots 等可点击卡片
+- **0 装饰性 div 错加** (modal-overlay / cheat-console-overlay / stop 容器已回滚, 5 处)
+- 屏幕阅读器 + 键盘 Tab 导航可达性显著提升
+
+### W2 阶段二: UX P1 修复 (commit bbe4665)
+- **5 Modal 加 Escape 关闭** (ChatModal / GrandMap / SecretOrdersModal / EdictModal / App New Game Modal)
+- **4 Modal 加 body scroll lock** (打开时锁滚, 关闭复原, 防止背景跟随)
+- **1 标题清理** (App.tsx 删除乱码 emoji '建筑️' → '建立新朝')
+- inline style 234 处全量提炼留 W3+ (分散, 风险大, 改迭代式)
+
+### W3 阶段三: UI 控件统一 (commit 46054a5)
+- **89 button 全加 type="button"** (38 文件)
+  - 防 form 误触发 submit (HTML 标准必备)
+  - 复用现有 btn 体系 (AppLayout.css 已有 .btn/.btn--primary/.btn--ghost/.btn--small/.btn--icon)
+- **不重建轮子, 补全式迭代** — 避免 v3.0 大规模重写 CSS 风险
+- npx tsc 0 错
+
+### 3 保险实测
+| 测试 | 结果 |
+|---|---|
+| npx tsc --noEmit | 0 错 |
+| flask /api/health | 200 ok |
+| 0 emoji 复查 | 0 命中 |
+| 0 借鉴/明末/青干 | 0 命中 |
+
+### 远端统计
+- 3 commit (d94a081 / bbe4665 / 46054a5)
+- 38 文件 (+196 -102)
+- 远端: 186 commits (183 → 186)
+
+---
+
 ## 🔍 v3.1.1 — 2026-06-02 (v1.x/v2.x 全代码审查 + 加 0.1 补丁)
 
 > **主公明令立规: 全版本代码审查 + 通过的版本加 0.1**
