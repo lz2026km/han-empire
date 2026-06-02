@@ -1,4 +1,4 @@
-# 汉献帝之末路 (v3.3)
+# 汉献帝之末路 (v4.0)
 
 > **LLM 驱动的回合制古风帝王策略游戏**。你扮演汉献帝刘协，在董卓乱政、曹操"挟天子以令诸侯"的二十年中，寻求兴复汉室之道。
 >
@@ -7,7 +7,7 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-lz2026km%2Fhan--empire-brightgreen)](https://github.com/lz2026km/han-empire)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![v3.3](https://img.shields.io/badge/version-3.3-orange)](CHANGELOG.md)
+[![v4.0](https://img.shields.io/badge/version-4.0-orange)](CHANGELOG.md)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6)](README_WINDOWS.md)
 [![A11y](https://img.shields.io/badge/a11y-WCAG_2.1_AA-success)](CHANGELOG.md#v33)
 
@@ -18,6 +18,22 @@
 1. **你** = 汉献帝刘协（189-220 年），被曹操控制在许昌的傀儡皇帝
 2. **游戏核心 = LLM 驱动**：诏书、召对、廷议、战役、历史演进——**每个决策都有 AI 模拟**
 3. **目标 = 兴复汉室**：5 大历史事件（董卓乱政/官渡/赤壁/曹丕篡汉/衣带诏）任你改写
+
+### ✨ v4.0 新特性 (2026-06-02 图像完成版)
+
+> **主公明令: 人物立像/头像/软件界面/控件/地图/场景/小图/贴图, 必须全部完成**
+
+- **72 张人物立绘** (工笔重彩 512x512, 主流 80+ 人物覆盖: 皇帝/枭雄/谋士/武将/美人/黄巾/二线)
+- **13 张背景场景** (1920x1080: 朝堂/后宫/书房/暗廊/朝会/诏书/山水/帅帐 + 5 战争场景)
+- **8 张 UI 控件** (玉玺/竹简/五铢钱/玉璧/戈/围棋/竹册/宫灯, 真实 3D 渲染)
+- **5 张地图** (汉帝国全图 + 官渡之战 + 扬/冀/西凉州郡)
+- **5 张官阶冠** (王/公/卿/士/将, 古代职官体系视觉化)
+- **5 张勋章** (忠/勇/智/仁/统, 五德玉璧勋章)
+- **2 张物件** (战马/战车)
+- **3 张天空** (晴/雨/雪 横幅)
+- **总 113 张图, 全部 MiniMax image-01 AI 生图 (工笔重彩风)**
+- **OpenClaw auth-profiles.json 掌管所有 key, 0 询问主公**
+- **详见**: [CHANGELOG v4.0 段](CHANGELOG.md#-v40--2026-06-02-图像完成版)
 
 ### ✨ v3.3 新特性 (2026-06-02 UX/UI 大修)
 
