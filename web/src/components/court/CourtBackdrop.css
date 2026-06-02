@@ -1,13 +1,14 @@
 /* ============================================
- * 汉献帝之末路 v2.5.0 — 议政厅背景层
- * TODO 待专业 GUI 软件到位后替换为正式样式
+ * 汉献帝之末路 v3.0 — 议政厅背景层
+ * 蓝调径向 + 极简网格, 现代 SaaS 风
  * ============================================ */
 
 .court-backdrop {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at top, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at top, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(16, 185, 129, 0.04) 0%, transparent 60%),
     linear-gradient(180deg, #0f0f18 0%, #0a0a0f 100%);
   pointer-events: none;
   z-index: 0;
@@ -18,7 +19,34 @@
   position: absolute;
   inset: 0;
   background-image:
-    repeating-linear-gradient(0deg, transparent 0, transparent 39px, rgba(255, 255, 255, 0.02) 40px),
-    repeating-linear-gradient(90deg, transparent 0, transparent 39px, rgba(255, 255, 255, 0.02) 40px);
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
   opacity: 0.6;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+.court-backdrop::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 720px;
+  height: 720px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.court-backdrop__title {
+  position: absolute;
+  top: 16px;
+  left: 24px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  z-index: 1;
+  font-weight: 500;
 }
