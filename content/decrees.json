@@ -9,7 +9,10 @@
       "unrest": 3,
       "note": "董卓极可能抗旨，威权受损"
     },
-    "requirement": { "authority": ">=30", "turn": ">=2" },
+    "requirement": {
+      "authority": ">=30",
+      "turn": ">=2"
+    },
     "target": "dongzhuo",
     "category": "天子诏令"
   },
@@ -23,7 +26,9 @@
       "unrest": -1,
       "note": "提升军队士气"
     },
-    "requirement": { "authority": ">=20" },
+    "requirement": {
+      "authority": ">=20"
+    },
     "target": "any_general",
     "category": "天子诏令"
   },
@@ -38,7 +43,9 @@
       "unrest": 5,
       "note": "藩镇势力普遍抵制"
     },
-    "requirement": { "authority": ">=60" },
+    "requirement": {
+      "authority": ">=60"
+    },
     "target": "all_warlords",
     "category": "政令"
   },
@@ -53,7 +60,9 @@
       "unrest": -3,
       "note": "民间忠汉志士响应"
     },
-    "requirement": { "authority": ">=15" },
+    "requirement": {
+      "authority": ">=15"
+    },
     "target": "public",
     "category": "天子诏令"
   },
@@ -67,7 +76,9 @@
       "court_faction": -3,
       "note": "宦官势力反扑"
     },
-    "requirement": { "authority": ">=25" },
+    "requirement": {
+      "authority": ">=25"
+    },
     "target": "eunuchs",
     "category": "政令"
   },
@@ -82,7 +93,9 @@
       "unrest": -5,
       "note": "民心大悦，财政压力增加"
     },
-    "requirement": { "authority": ">=20" },
+    "requirement": {
+      "authority": ">=20"
+    },
     "target": "all_regions",
     "category": "恩旨"
   },
@@ -97,7 +110,9 @@
       "authority": 1,
       "note": "激励忠义之士"
     },
-    "requirement": { "authority": ">=10" },
+    "requirement": {
+      "authority": ">=10"
+    },
     "target": "heroes",
     "category": "恩旨"
   },
@@ -111,7 +126,10 @@
       "factions": -5,
       "note": "警告其他藩镇"
     },
-    "requirement": { "authority": ">=50", "military": ">=30" },
+    "requirement": {
+      "authority": ">=50",
+      "military": ">=30"
+    },
     "target": "traitor",
     "category": "天子诏令"
   },
@@ -125,7 +143,9 @@
       "military": 5,
       "note": "盟主地位由实力最强诸侯代理"
     },
-    "requirement": { "authority": ">=10" },
+    "requirement": {
+      "authority": ">=10"
+    },
     "target": "all_warlords",
     "category": "天子诏令"
   },
@@ -140,7 +160,9 @@
       "authority": 1,
       "note": "部分罪犯混入义军"
     },
-    "requirement": { "authority": ">=15" },
+    "requirement": {
+      "authority": ">=15"
+    },
     "target": "public",
     "category": "恩旨"
   },
@@ -155,7 +177,9 @@
       "military_faction": -2,
       "note": "文官体系得以强化"
     },
-    "requirement": { "authority": ">=30" },
+    "requirement": {
+      "authority": ">=30"
+    },
     "target": "civil_officials",
     "category": "政令"
   },
@@ -170,7 +194,9 @@
       "gentry_resistance": 8,
       "note": "士族地主激烈反对"
     },
-    "requirement": { "authority": ">=45" },
+    "requirement": {
+      "authority": ">=45"
+    },
     "target": "peasants",
     "category": "恩旨"
   },
@@ -185,7 +211,9 @@
       "factions": -4,
       "note": "藩镇阳奉阴违"
     },
-    "requirement": { "authority": ">=55" },
+    "requirement": {
+      "authority": ">=55"
+    },
     "target": "all_warlords",
     "category": "政令"
   },
@@ -200,7 +228,9 @@
       "treasury": -2,
       "note": "短期提升朝廷凝聚力"
     },
-    "requirement": { "authority": ">=10" },
+    "requirement": {
+      "authority": ">=10"
+    },
     "target": "court",
     "category": "恩旨"
   },
@@ -215,7 +245,9 @@
       "unrest": -1,
       "note": "吸引隐居贤士出山"
     },
-    "requirement": { "authority": ">=15" },
+    "requirement": {
+      "authority": ">=15"
+    },
     "target": "scholars",
     "category": "天子诏令"
   },
@@ -230,7 +262,9 @@
       "treasury": -3,
       "note": "促进各地物资流通"
     },
-    "requirement": { "treasury": ">=10" },
+    "requirement": {
+      "treasury": ">=10"
+    },
     "target": "all_regions",
     "category": "工程"
   },
@@ -245,7 +279,10 @@
       "unrest": -1,
       "note": "增强京师防御能力"
     },
-    "requirement": { "treasury": ">=15", "authority": ">=20" },
+    "requirement": {
+      "treasury": ">=15",
+      "authority": ">=20"
+    },
     "target": "capital_region",
     "category": "工程"
   },
@@ -260,7 +297,9 @@
       "grain_security": 5,
       "note": "长期有利于国库充盈"
     },
-    "requirement": { "authority": ">=15" },
+    "requirement": {
+      "authority": ">=15"
+    },
     "target": "all_regions",
     "category": "政令"
   },
@@ -275,7 +314,9 @@
       "authority": 3,
       "note": "民间私下抗令者众"
     },
-    "requirement": { "authority": ">=40" },
+    "requirement": {
+      "authority": ">=40"
+    },
     "target": "public",
     "category": "政令"
   },
@@ -290,7 +331,9 @@
       "treasury": 3,
       "note": "藩镇首脑普遍不满"
     },
-    "requirement": { "authority": ">=35" },
+    "requirement": {
+      "authority": ">=35"
+    },
     "target": "all_warlords",
     "category": "政令"
   },
@@ -304,7 +347,9 @@
       "unrest": -3,
       "note": "朝野人心稍安"
     },
-    "requirement": { "authority": ">=25" },
+    "requirement": {
+      "authority": ">=25"
+    },
     "target": "court",
     "category": "天子诏令"
   },
@@ -319,7 +364,10 @@
       "military": 2,
       "note": "必须有足够武力护驾"
     },
-    "requirement": { "authority": ">=30", "military": ">=25" },
+    "requirement": {
+      "authority": ">=30",
+      "military": ">=25"
+    },
     "target": "regions",
     "category": "天子诏令"
   },
@@ -333,7 +381,9 @@
       "civil_faction": 3,
       "note": "传统的选官方式"
     },
-    "requirement": { "authority": ">=20" },
+    "requirement": {
+      "authority": ">=20"
+    },
     "target": "scholars",
     "category": "政令"
   },
@@ -348,7 +398,9 @@
       "unrest": 2,
       "note": "为正式迁都做准备"
     },
-    "requirement": { "authority": ">=15" },
+    "requirement": {
+      "authority": ">=15"
+    },
     "target": "court",
     "category": "天子诏令"
   },
@@ -363,7 +415,9 @@
       "unrest": -2,
       "note": "增强正统性"
     },
-    "requirement": { "authority": ">=10" },
+    "requirement": {
+      "authority": ">=10"
+    },
     "target": "court",
     "category": "恩旨"
   },
@@ -378,7 +432,10 @@
       "treasury": -3,
       "note": "长期培养忠于汉室的人才"
     },
-    "requirement": { "authority": ">=30", "treasury": ">=10" },
+    "requirement": {
+      "authority": ">=30",
+      "treasury": ">=10"
+    },
     "target": "scholars",
     "category": "政令"
   },
@@ -393,7 +450,9 @@
       "authority": 2,
       "note": "短期提升民心士气"
     },
-    "requirement": { "authority": ">=10" },
+    "requirement": {
+      "authority": ">=10"
+    },
     "target": "public",
     "category": "恩旨"
   },
@@ -408,7 +467,9 @@
       "public_support": 2,
       "note": "思想控制和文化统一"
     },
-    "requirement": { "authority": ">=25" },
+    "requirement": {
+      "authority": ">=25"
+    },
     "target": "scholars",
     "category": "恩旨"
   },
@@ -423,7 +484,9 @@
       "unrest": -2,
       "note": "提升农民生产积极性"
     },
-    "requirement": { "authority": ">=15" },
+    "requirement": {
+      "authority": ">=15"
+    },
     "target": "peasants",
     "category": "恩旨"
   },
@@ -438,8 +501,211 @@
       "factions": -5,
       "note": "将战争责任归于逆贼"
     },
-    "requirement": { "authority": ">=20", "military": ">=30" },
+    "requirement": {
+      "authority": ">=20",
+      "military": ">=30"
+    },
     "target": "rebel",
     "category": "天子诏令"
+  },
+  {
+    "id": "d_yidai_zhugen",
+    "name": "衣带诏根除",
+    "type": "secret",
+    "description": "密诏心腹, 联络忠臣, 密谋诛曹.",
+    "effect": "汉室忠诚+30, 曹魏怀疑+20",
+    "requirement": "亲信大臣>=3",
+    "target": "self",
+    "category": "衣带密诏"
+  },
+  {
+    "id": "d_yidai_jiebang",
+    "name": "衣带诏结党",
+    "type": "secret",
+    "description": "密诏以国戚为纽带, 拉拢董承等.",
+    "effect": "汉室派系+20",
+    "requirement": "国戚>=2",
+    "target": "self",
+    "category": "衣带密诏"
+  },
+  {
+    "id": "d_yidai_qinzheng",
+    "name": "衣带诏亲征",
+    "type": "secret",
+    "description": "密诏令外戚统兵, 亲征许都.",
+    "effect": "外戚忠诚+30, 曹魏警惕+30",
+    "requirement": "外戚兵力>=5000",
+    "target": "self",
+    "category": "衣带密诏"
+  },
+  {
+    "id": "d_yidai_jiehuo",
+    "name": "衣带诏解火",
+    "type": "secret",
+    "description": "密诏救汉火, 重振汉室.",
+    "effect": "汉室声威+20",
+    "requirement": "汉室库>=100",
+    "target": "self",
+    "category": "衣带密诏"
+  },
+  {
+    "id": "d_yidai_zhenzhu",
+    "name": "衣带诏真主",
+    "type": "secret",
+    "description": "密诏自称真主, 号召天下.",
+    "effect": "民心+30, 曹魏震怒+50",
+    "requirement": "民心>=60",
+    "target": "self",
+    "category": "衣带密诏"
+  },
+  {
+    "id": "d_jiupin_zhongzheng",
+    "name": "九品中正制",
+    "type": "reform",
+    "description": "陈群所创, 选官按品级.",
+    "effect": "士族拥戴+30, 人才流动+20",
+    "requirement": "士族>=3派",
+    "target": "central",
+    "category": "制度改革"
+  },
+  {
+    "id": "d_jiupin_da",
+    "name": "九品大法",
+    "type": "reform",
+    "description": "扩九品为十二品, 区分上中下.",
+    "effect": "官制精细+30",
+    "requirement": "尚书令>=2",
+    "target": "central",
+    "category": "制度改革"
+  },
+  {
+    "id": "d_jiupin_xi",
+    "name": "九品细法",
+    "type": "reform",
+    "description": "每品再分三等, 共九品十八等.",
+    "effect": "官制细密+30",
+    "requirement": "改革家>=3",
+    "target": "central",
+    "category": "制度改革"
+  },
+  {
+    "id": "d_tuntian_renmin",
+    "name": "屯田人民",
+    "type": "economic",
+    "description": "募流民屯田, 军屯民屯并行.",
+    "effect": "粮食+200, 民心+10",
+    "requirement": "流民>=5000",
+    "target": "province",
+    "category": "经济"
+  },
+  {
+    "id": "d_tuntian_zhenzhuan",
+    "name": "屯田镇戍",
+    "type": "economic",
+    "description": "军屯为主, 镇戍自给.",
+    "effect": "军事+10, 军粮+300",
+    "requirement": "驻军>=10000",
+    "target": "province",
+    "category": "经济"
+  },
+  {
+    "id": "d_qiuxian_ling",
+    "name": "求贤令",
+    "type": "reform",
+    "description": "曹操所颁, 不拘品行, 唯才是举.",
+    "effect": "人才+5, 改革+20",
+    "requirement": "尚书令>=1",
+    "target": "central",
+    "category": "制度改革"
+  },
+  {
+    "id": "d_qiuxian_miaoxu",
+    "name": "求贤妙术",
+    "type": "reform",
+    "description": "举秀才, 不问出身.",
+    "effect": "人才+10, 寒门拥戴+20",
+    "requirement": "尚书令>=2",
+    "target": "central",
+    "category": "制度改革"
+  },
+  {
+    "id": "d_chanrang_suowei",
+    "name": "禅让索为",
+    "type": "political",
+    "description": "禅让于曹丕, 保命.",
+    "effect": "汉亡, 封山阳公",
+    "requirement": "曹丕称帝",
+    "target": "self",
+    "category": "政治"
+  },
+  {
+    "id": "d_chanrang_buwei",
+    "name": "禅让不为",
+    "type": "political",
+    "description": "宁死不禅, 战至最后.",
+    "effect": "汉室声威+50, 死亡率高",
+    "requirement": "民心>=30",
+    "target": "self",
+    "category": "政治"
+  },
+  {
+    "id": "d_fengshan",
+    "name": "封禅泰山",
+    "type": "ceremony",
+    "description": "登泰山封禅, 宣示天命.",
+    "effect": "威权+20, 民心+10",
+    "requirement": "威权>=80",
+    "target": "self",
+    "category": "祭祀"
+  },
+  {
+    "id": "d_fengshan_pindi",
+    "name": "封禅于地",
+    "type": "ceremony",
+    "description": "封禅于方泽, 祭地.",
+    "effect": "威权+15, 民心+10",
+    "requirement": "威权>=70",
+    "target": "self",
+    "category": "祭祀"
+  },
+  {
+    "id": "d_zunwang",
+    "name": "尊王攘夷",
+    "type": "political",
+    "description": "以尊周天子之名, 号召天下.",
+    "effect": "汉室声威+30, 夷狄畏服+10",
+    "requirement": "威权>=60",
+    "target": "central",
+    "category": "政治"
+  },
+  {
+    "id": "d_qiandu_xuchang",
+    "name": "迁都许昌",
+    "type": "political",
+    "description": "都许, 挟天子以令诸侯.",
+    "effect": "都城变许, 曹魏+30",
+    "requirement": "曹操迎",
+    "target": "self",
+    "category": "政治"
+  },
+  {
+    "id": "d_qiandu_changan",
+    "name": "迁都长安",
+    "type": "political",
+    "description": "都长安, 西汉旧都.",
+    "effect": "都城变长安, 西凉+20",
+    "requirement": "关中稳",
+    "target": "self",
+    "category": "政治"
+  },
+  {
+    "id": "d_qiandu_luoyang",
+    "name": "迁都洛阳",
+    "type": "political",
+    "description": "都洛阳, 东都.",
+    "effect": "都城变洛阳, 司隶+20",
+    "requirement": "洛阳收复",
+    "target": "self",
+    "category": "政治"
   }
 ]
