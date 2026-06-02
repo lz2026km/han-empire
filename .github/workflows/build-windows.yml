@@ -1,0 +1,102 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on Windows
+    runs-on: windows-2019
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.9'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller==5.13.2
+          pip install pywebview==4.4.1
+          pip install pillow
+
+      - name: Build frontend
+        shell: bash
+        run: |
+          cd web
+          npm install
+          npm run build
+
+      - name: PyInstaller build
+        shell: bash
+        run: |
+          pyinstaller han_empire.spec --noconfirm --clean
+
+      - name: Verify EXE
+        shell: bash
+        run: |
+          if [ -f "dist/汉献帝之末路.exe" ]; then
+            ls -lh dist/
+            echo "EXE 构建成功!"
+          else
+            echo "EXE 构建失败!"
+            ls -la dist/ || true
+            exit 1
+          fi
+
+      - name: Zip EXE with assets
+        shell: bash
+        run: |
+          cd dist
+          # 检查 EXE 文件名 (PyInstaller 可能用 spec 里的 name)
+          if [ -f "汉献帝之末路.exe" ]; then
+            EXE_NAME="汉献帝之末路"
+          elif [ -f "汉献帝.exe" ]; then
+            EXE_NAME="汉献帝"
+          elif [ -f "han_empire.exe" ]; then
+            EXE_NAME="han_empire"
+          else
+            echo "找不到 EXE 文件!"
+            ls -la
+            exit 1
+          fi
+          cd ..
+          7z a "dist/${EXE_NAME}.exe.zip" "dist/${EXE_NAME}.exe" "dist/_internal" 2>/dev/null || \
+            powershell Compress-Archive -Path "dist/${EXE_NAME}.exe","dist/_internal" -DestinationPath "dist/${EXE_NAME}.exe.zip" -Force
+          ls -lh dist/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: han-empire-windows-exe
+          path: dist/*.exe.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload to release (tag push)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.exe.zip
+          draft: false
+          prerelease: true
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
