@@ -172,10 +172,10 @@ export function CourtLayout({
         {ministers.map((minister) => {
           const ousted = minister.status !== 'active';
           const dedicated = minister.portrait_id
-            ? `/portraits/minister_${minister.id ?? minister.name}.png`
+            ? `/portraits/main/${minister.id ?? minister.name}.jpg`
             : undefined;
           const poolFallback = minister.portrait_id
-            ? `/portraits/${minister.portrait_id}.png`
+            ? `/portraits/main/${minister.portrait_id}.jpg`
             : undefined;
 
           return (
@@ -250,9 +250,9 @@ export function CourtLayout({
         const perspScale = 0.4 + 0.6 * pct.py;
 
         const dedicated = minister.portrait_id
-          ? `/portraits/minister_${minister.id ?? minister.name}.png`
+          ? `/portraits/main/${minister.id ?? minister.name}.jpg`
           : undefined;
-        const poolFallback = minister.portrait_id ? `/portraits/${minister.portrait_id}.png` : undefined;
+        const poolFallback = minister.portrait_id ? `/portraits/main/${minister.portrait_id}.jpg` : undefined;
 
         return (
           <button type="button"

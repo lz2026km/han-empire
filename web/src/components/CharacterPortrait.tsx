@@ -63,7 +63,7 @@ export function CharacterPortrait({
         <div className="cp__inner-frame"></div>
         {portraitId && !imgError ? (
           <img 
-            src={`/portraits/${portraitId}.png`} 
+            src={`/portraits/${portraitId}.jpg`}
             alt={name} 
             className="cp__image" 
             onError={() => setImgError(true)} 
