@@ -36,14 +36,61 @@
   --faction-yuan: #2c4a4a;
   --faction-han: #4a2c2c;
 
-  /* 字体 */
-  --font-main: "Noto Serif SC", "Source Han Serif CN", "SimSun", serif;
-  --font-mono: "Courier New", monospace;
+  /* 字体 - v3.4 升华: 3 套字体 + 文字渲染优化 */
+  --font-display: "Noto Serif SC", "Source Han Serif CN", "Songti SC", "STSong", "SimSun", "FangSong", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", "Fira Code", "Cascadia Code", "Source Code Pro", "Consolas", "Courier New", monospace;
+  --font-numeric: "SF Mono", "JetBrains Mono", "Consolas", monospace;
 
-  /* 尺寸 */
+  /* 尺寸 - v3.4 升华: 4-8 阶梯设计 token */
   --header-height: 70px;
   --sidebar-width: 220px;
-  --border-radius: 4px;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+
+  /* 间距阶梯 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* 字号阶梯 */
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 32px;
+
+  /* 行高 */
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* 阴影 - 4 等级 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --shadow-gold: 0 4px 16px rgba(201, 168, 76, 0.25);
+  --shadow-red: 0 4px 16px rgba(196, 43, 43, 0.25);
+
+  /* 动效时长 - 4 阶梯 */
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ---- Portrait Frame Variables ---- */
@@ -66,9 +113,32 @@
 body {
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
-  font-family: var(--font-main);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
   min-height: 100vh;
   overflow-x: hidden;
+  /* v3.4 升华: 商业软件级文字渲染 */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  font-variant-ligatures: common-ligatures;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  letter-spacing: 0.02em;
+}
+
+/* v3.4 升华: 数字等宽 (商业软件感) */
+.numeric, .stat-value, [data-numeric] {
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
 }
 
 #root {
