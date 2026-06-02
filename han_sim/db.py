@@ -2414,7 +2414,7 @@ class GameDB:
         import shutil
         shutil.copy2(source_path, self.path)
 
-    # ── 预算明细（参考明末系统）──────────────────────────────────────────
+    # ── 预算明细 ──────────────────────────────────────────
 
     def compute_budget_lines(self, state: "GameState") -> Dict[str, Any]:
         """计算月度预算明细：收入/支出/流动。"""

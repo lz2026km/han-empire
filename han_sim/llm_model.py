@@ -1,5 +1,5 @@
 # v2.0.0 Phase 4.1: LLM 模型工厂与 agent 输出提取
-# 借鉴 ming_sim/llm_model.py 的设计，统一 han-empire 的 LLM 入口
+# 统一 han-empire 的 LLM 入口
 # 解决 3 个痛点：
 # 1. 5 个 agent 0 个 tool_calls (Phase 4.3 解决)
 # 2. 3 处 LLM 静默失败 (本文件 + llm_contract 解决)
@@ -27,7 +27,7 @@ from han_sim.models import LLMConfig
 
 logger = logging.getLogger(__name__)
 
-# v2.0.0 Phase 4.1: token 统计（借鉴 ming_sim/token_stats.py）
+# v2.0.0 Phase 4.1: token 统计
 _TOKEN_STATS: Dict[str, int] = {
     "prompt_tokens": 0,
     "completion_tokens": 0,
@@ -78,7 +78,7 @@ def create_chat_model(
     top_p: Optional[float] = None,
     force_json_output: bool = False,
 ) -> OpenAIChat:
-    """统一 LLM 模型工厂 - 借鉴 ming_sim/llm_model.py。
+    """统一 LLM 模型工厂。
 
     用途：所有 5 个 agent（minister/season_simulator/score_extractor/memory/chat/
     consort/sanitizer）应统一调用此函数，避免每处重复 base_url/temperature
@@ -118,7 +118,7 @@ def create_chat_model(
 
 
 def extract_agent_text(run_output: Any) -> str:
-    """统一提取 agno agent 输出文本 - 借鉴 ming_sim。
+    """统一提取 agno agent 输出文本。
 
     关键改进（修复 P1-3 处 LLM 静默失败）：提取后立即调用
     fail_if_llm_error()，确保 ERROR/Traceback/PANIC 等错误标记不会被
@@ -149,7 +149,7 @@ def safe_extract_agent_text(run_output: Any, default: str = "") -> str:
 
 
 def verify_llm_available(llm_config: LLMConfig) -> bool:
-    """启动时健康检查 - 借鉴 ming_sim/llm_model.py:127。
+    """启动时健康检查。
 
     返回 True=可用, False=不可用（不抛异常，让上层决定是否继续）。
     """

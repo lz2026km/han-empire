@@ -1,4 +1,4 @@
-"""v2.2.0 终极版 P0-2: 事件 4 维+6 类模型 (借鉴明末 events.md)
+"""v2.2.0 终极版 P0-2: 事件 4 维+6 类模型
 
 设计: 每月 2-5 条关键事件, 每事件 4 维评分 (紧急/严重/可信/牵涉)
 6 类: 朝政/财政/军事/地方/人物/科技
@@ -137,7 +137,7 @@ def generate_monthly_events(
     state: Optional[Dict] = None,
     rng: Optional[random.Random] = None,
 ) -> List[ImperialEvent]:
-    """每月生成 2-5 条关键事件 (借鉴明末 events.md)"""
+    """每月生成 2-5 条关键事件"""
     rng = rng or random.Random()
     n = rng.randint(2, 5)
     events = []

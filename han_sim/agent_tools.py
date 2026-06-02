@@ -1,5 +1,5 @@
 # v2.0.0 Phase 4.3: 大臣对话可调用的 tool_call 工具集
-# 借鉴 ming_sim/.agno_skills/decree-drafting 等 skill 设计
+# 兼容 agno_skills/decree-drafting 协议
 # 主公原则: 召对 = LLM 自由对话 + 可调用 tool 行动
 from __future__ import annotations
 

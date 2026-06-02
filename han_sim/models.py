@@ -201,7 +201,7 @@ class Building:
     effect_bonus: Dict[str, float]  # 效果加成dict（百分比）
     unlock_level: int  # 解锁威权要求
     location: str       # 建造地点
-    condition: int = 100  # 建筑状态 0-100（借鉴大明condition）
+    condition: int = 100  # 建筑状态 0-100
     risk: int = 0         # 损毁风险 0-100
     output_metric: str = ""   # 产出指标
     output_amount: int = 0   # 产出量

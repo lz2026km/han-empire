@@ -7,7 +7,7 @@
 - 结论: 多数派意见
 - 主公裁断: 采纳/否决/修正
 
-借鉴明末 design-tips: 议政廷推 + 臣工辩论
+议政廷推 + 臣工辩论 (宫廷议事体系)
 """
 import json
 import random
