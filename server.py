@@ -19,12 +19,15 @@ from han_sim.decree import issue_secret_edict
 from han_sim.portraits import save_custom_portrait, delete_custom_portrait, list_custom_portraits
 from han_sim.content import load_game_content
 from han_sim import agents as _agents
+from han_sim.tech_tree import get_tech_engine, TechState
+from han_sim.consequence_chain import get_consequence_chain, ConsequenceType
+from han_sim.decision_log import DecisionLog
 
 # ── v1.13.0 乾坤大挪移 Phase B：注入 GameContent 到 agents 模块 ──
 # 让 create_chat_memory_agent / create_minister_agent 等能拿到 prompt 字段
 _agents.bind_content(load_game_content())
 import json
-from typing import List, Dict
+from typing import List, Dict, Any
 
 # v2.0.0 Phase 5.5: 简单 LRU 缓存 + 全局 gzip 响应
 _CACHE: Dict = {}  # key -> (timestamp, data), key 可以是 tuple
@@ -1609,3 +1612,168 @@ def api_health_full():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5555))
     app.run(host='0.0.0.0', port=port, debug=False)
+
+
+# ═══════════════════════════════════════════════════════════════
+# v3.1 新增 8 端点: 科技树 + 后果链 + 决策回放
+# ═══════════════════════════════════════════════════════════════
+
+# 全局状态 (per-process, 简化版)
+_tech_states: Dict[str, Any] = {}  # session_id -> TechState
+_consequence_chains: Dict[str, Any] = {}  # session_id -> ConsequenceChain
+_decision_logs: Dict[str, Any] = {}  # session_id -> DecisionLog
+
+
+def _get_tech_state(session_id: str):
+    if session_id not in _tech_states:
+        _tech_states[session_id] = get_tech_engine().init_state()
+    return _tech_states[session_id]
+
+
+def _get_consequence_chain(session_id: str):
+    if session_id not in _consequence_chains:
+        _consequence_chains[session_id] = get_consequence_chain()
+    return _consequence_chains[session_id]
+
+
+def _get_decision_log(session_id: str):
+    if session_id not in _decision_logs:
+        _decision_logs[session_id] = DecisionLog()
+    return _decision_logs[session_id]
+
+
+@app.route('/api/tech-tree', methods=['GET'])
+def api_tech_tree():
+    """获取科技树视图 (DAG)"""
+    session_id = request.args.get('session_id', 'default')
+    eng = get_tech_engine()
+    state = _get_tech_state(session_id)
+    return jsonify({
+        'ok': True,
+        'tree': eng.get_tree_view(state),
+        'total_effects': eng.get_total_effects(state),
+    })
+
+
+@app.route('/api/tech-tree/unlock', methods=['POST'])
+def api_tech_unlock():
+    """解锁科技节点"""
+    data = request.get_json() or {}
+    session_id = data.get('session_id', 'default')
+    node_id = data.get('node_id')
+    if not node_id:
+        return jsonify({'ok': False, 'error': 'node_id 必填'}), 400
+    eng = get_tech_engine()
+    state = _get_tech_state(session_id)
+    ok, reason, node = eng.unlock(node_id, state)
+    return jsonify({
+        'ok': ok, 'reason': reason,
+        'node': {'id': node.id, 'name': node.name, 'effects': node.effects} if node else None,
+        'reputation': state.reputation,
+    })
+
+
+@app.route('/api/tech-tree/reputation', methods=['POST'])
+def api_tech_add_reputation():
+    """增加声望 (回合结算/事件奖励)"""
+    data = request.get_json() or {}
+    session_id = data.get('session_id', 'default')
+    amount = int(data.get('amount', 0))
+    eng = get_tech_engine()
+    state = _get_tech_state(session_id)
+    eng.add_reputation(amount, state)
+    return jsonify({'ok': True, 'reputation': state.reputation})
+
+
+@app.route('/api/consequence-chain', methods=['GET'])
+def api_consequence_chain():
+    """获取后果链 DAG 视图"""
+    session_id = request.args.get('session_id', 'default')
+    turn = int(request.args.get('turn', 0))
+    chain = _get_consequence_chain(session_id)
+    return jsonify({
+        'ok': True,
+        'chain': chain.get_chain_view(turn),
+        'active_effects': chain.get_active_effects(turn),
+    })
+
+
+@app.route('/api/consequence-chain/record', methods=['POST'])
+def api_consequence_record():
+    """记录玩家决策, 派生后果"""
+    data = request.get_json() or {}
+    session_id = data.get('session_id', 'default')
+    decision_id = data.get('decision_id', f'dec_{len(_get_consequence_chain(session_id).nodes)}')
+    decision_type = data.get('decision_type', '诏书')
+    description = data.get('description', '')
+    effects = data.get('effects', {})
+    target = data.get('target', '全国')
+    turn = int(data.get('turn', 0))
+    ctype = ConsequenceType(data.get('consequence_type', 'short'))
+    chain = _get_consequence_chain(session_id)
+    created = chain.record_decision(
+        decision_id=decision_id,
+        decision_type=decision_type,
+        description=description,
+        effects=effects,
+        target=target,
+        consequence_type=ctype,
+        current_turn=turn,
+    )
+    return jsonify({
+        'ok': True,
+        'consequence_count': len(created),
+        'consequence_ids': [n.id for n in created],
+    })
+
+
+@app.route('/api/consequence-chain/effects', methods=['GET'])
+def api_consequence_effects():
+    """获取当前活跃后果总效果"""
+    session_id = request.args.get('session_id', 'default')
+    turn = int(request.args.get('turn', 0))
+    chain = _get_consequence_chain(session_id)
+    return jsonify({
+        'ok': True,
+        'turn': turn,
+        'active_effects': chain.get_active_effects(turn),
+        'active_count': len(chain.get_active_consequences(turn)),
+    })
+
+
+@app.route('/api/decision-log', methods=['GET'])
+def api_decision_log():
+    """获取决策日志 (回放时间线)"""
+    session_id = request.args.get('session_id', 'default')
+    turn = request.args.get('turn')
+    turn = int(turn) if turn else None
+    log = _get_decision_log(session_id)
+    entries = log.get_entries(turn=turn)
+    return jsonify({
+        'ok': True,
+        'entries': [e.__dict__ for e in entries],
+        'timeline': log.get_timeline(),
+        'stats': log.get_stats(),
+    })
+
+
+@app.route('/api/decision-log/record', methods=['POST'])
+def api_decision_record():
+    """记录玩家决策"""
+    data = request.get_json() or {}
+    session_id = data.get('session_id', 'default')
+    log = _get_decision_log(session_id)
+    entry = log.record(
+        turn=int(data.get('turn', 0)),
+        decision_type=data.get('decision_type', ''),
+        action=data.get('action', ''),
+        description=data.get('description', ''),
+        effects=data.get('effects', {}),
+        game_year=data.get('game_year', ''),
+        consequence_ids=data.get('consequence_ids', []),
+    )
+    return jsonify({
+        'ok': True,
+        'entry_id': entry.id,
+        'entry': entry.__dict__,
+    })

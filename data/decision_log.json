@@ -1,0 +1,56 @@
+{
+  "entries": [
+    {
+      "id": "dec_1780361013380_1",
+      "turn": 1,
+      "decision_type": "诏书",
+      "action": "推恩令",
+      "description": "削藩",
+      "effects": {
+        "法统": 0.3
+      },
+      "timestamp": 1780361013,
+      "game_year": "建安元年",
+      "consequence_ids": []
+    },
+    {
+      "id": "dec_1780361013380_2",
+      "turn": 2,
+      "decision_type": "任免",
+      "action": "任曹操为兖州牧",
+      "description": "",
+      "effects": {
+        "军力": 0.2
+      },
+      "timestamp": 1780361013,
+      "game_year": "建安元年",
+      "consequence_ids": []
+    },
+    {
+      "id": "dec_1780361013380_3",
+      "turn": 3,
+      "decision_type": "调兵",
+      "action": "调三万精兵援徐",
+      "description": "",
+      "effects": {
+        "军力": 0.1
+      },
+      "timestamp": 1780361013,
+      "game_year": "建安二年",
+      "consequence_ids": []
+    },
+    {
+      "id": "dec_1780361178100_1",
+      "turn": 1,
+      "decision_type": "诏书",
+      "action": "推恩令",
+      "description": "削藩",
+      "effects": {
+        "法统": 0.3
+      },
+      "timestamp": 1780361178,
+      "game_year": "建安元年",
+      "consequence_ids": []
+    }
+  ]
+}
