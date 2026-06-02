@@ -96,7 +96,28 @@ jobs:
         with:
           files: dist/*.exe.zip
           draft: false
-          prerelease: true
+          prerelease: false
           generate_release_notes: true
+          fail_on_unmatched_files: true
+          body: |
+            ## 🎉 汉献帝之末路 v4.5 预览版 EXE
+
+            **打包前大审查 8 维度全过** (结构/逻辑/内容/控件/图片/UI/UX/打包)
+
+            ### 4 大验证
+            - ✅ tsc 0 错
+            - ✅ pytest 83/83
+            - ✅ e2e 8/8
+            - ✅ vite build 0 错
+
+            ### 玩前准备
+            - Windows 10 / 11 (自带 WebView2)
+            - 双击 `汉献帝之末路.exe` 即可
+
+            ### 玩中如果报错
+            - 缺 WebView2 Runtime → https://developer.microsoft.com/microsoft-edge/webview2/
+            - 端口被占 → 重启 EXE 自动换 7860-7999
+
+            完整文档见 BUILD.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
