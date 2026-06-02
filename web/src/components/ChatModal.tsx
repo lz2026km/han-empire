@@ -165,6 +165,7 @@ export function ChatModal({ isOpen, onClose, campaignId, minister, onSendMessage
             className="btn btn--primary chat-modal__send"
             onClick={handleSend}
             disabled={!input.trim() || loading || !minister}
+            aria-label="发送消息"
           >
             <Send size={18} />
           </button>

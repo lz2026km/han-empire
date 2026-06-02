@@ -129,14 +129,14 @@ export const SaveSlots: React.FC<Props> = ({ campaignId = 'default', onLoad, onS
           {manualSlots.map(slot => (
             <div key={slot.slot_id}
                  className={`slot ${slot.turn === 0 ? 'empty' : 'filled'}`}
-                 onClick={() => handleLoad(slot)}>
+                 onClick={() => handleLoad(slot)} role="button" tabIndex={0}>
               <div className="slot-header">
                 <span className="slot-id">#{slot.slot_id}</span>
                 <span className="slot-turn">{slot.turn > 0 ? `回合 ${slot.turn}` : '空'}</span>
               </div>
               <div className="slot-name">{slot.name}</div>
               {slot.game_year && <div className="slot-year">{slot.game_year}</div>}
-              <div className="slot-actions" onClick={e => e.stopPropagation()}>
+              <div className="slot-actions" onClick={e => e.stopPropagation()} role="button" tabIndex={0}>
                 <button className="btn-save" onClick={() => handleSave(parseInt(slot.slot_id))}>
                   {slot.turn > 0 ? '覆盖' : '存档'}
                 </button>
@@ -156,7 +156,7 @@ export const SaveSlots: React.FC<Props> = ({ campaignId = 'default', onLoad, onS
         ) : (
           <div className="auto-list">
             {autoSlots.map(s => (
-              <div key={s.slot_id} className="auto-slot" onClick={() => handleLoad(s)}>
+              <div key={s.slot_id} className="auto-slot" onClick={() => handleLoad(s)} role="button" tabIndex={0}>
                 <span className="auto-name">{s.name}</span>
                 <span className="auto-year">{s.game_year}</span>
                 <span className="auto-time">{new Date(s.created_at * 1000).toLocaleString('zh-CN')}</span>

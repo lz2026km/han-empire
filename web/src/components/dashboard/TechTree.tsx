@@ -114,7 +114,7 @@ export const TechTree: React.FC<Props> = ({ sessionId = 'default', onUnlock }) =
                   key={node.id}
                   className={`tech-node ${node.status}`}
                   style={{ borderColor: statusColor }}
-                  onClick={() => setSelected(node)}
+                  onClick={() => setSelected(node)} role="button" tabIndex={0}
                 >
                   <div className="node-name" style={{ color }}>{node.name}</div>
                   <div className="node-cost">声望 {node.cost}</div>

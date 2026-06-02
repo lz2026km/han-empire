@@ -160,7 +160,7 @@ export default function App() {
           {!campaignId && (
             <div className="sidebar__section">
               <div className="sidebar__section-title">快速开始</div>
-              <div className="sidebar__item" onClick={() => setShowNewGameModal(true)}>
+              <div className="sidebar__item" onClick={() => setShowNewGameModal(true)} role="button" tabIndex={0}>
                 + 新建朝代
               </div>
             </div>

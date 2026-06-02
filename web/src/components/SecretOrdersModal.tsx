@@ -71,7 +71,7 @@ export function SecretOrdersModal({ isOpen, onClose, orders, onCancelOrder }: Se
             />
             <span>显示已完成</span>
           </label>
-          <button className="secret-orders-modal__close" onClick={onClose}>
+          <button className="secret-orders-modal__close" onClick={onClose} aria-label="关闭密令">
             <X size={20} />
           </button>
         </div>
@@ -89,7 +89,7 @@ export function SecretOrdersModal({ isOpen, onClose, orders, onCancelOrder }: Se
                 <div
                   key={order.id}
                   className={`secret-order ${selectedOrder?.id === order.id ? 'secret-order--selected' : ''}`}
-                  onClick={() => setSelectedOrder(order)}
+                  onClick={() => setSelectedOrder(order)} role="button" tabIndex={0}
                 >
                   <div className="secret-order__header">
                     <span className="secret-order__title">{order.title}</span>

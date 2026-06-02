@@ -96,7 +96,7 @@ export function MinisterChat({ campaignId, ministers, onMinisterSelect }: Minist
             <div
               key={m.id}
               className={`chat-ministers-item ${selectedMinister === m.name ? 'chat-ministers-item--selected' : ''}`}
-              onClick={() => handleSelectMinister(m.name)}
+              onClick={() => handleSelectMinister(m.name)} role="button" tabIndex={0}
             >
               <div className="chat-ministers-avatar">
                 {m.name.charAt(0)}
@@ -165,6 +165,7 @@ export function MinisterChat({ campaignId, ministers, onMinisterSelect }: Minist
                 className="btn btn--primary chat-send"
                 onClick={handleSend}
                 disabled={!input.trim() || loading}
+                aria-label="发送消息"
               >
                 <Send size={16} />
               </button>

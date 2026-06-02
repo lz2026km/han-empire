@@ -152,7 +152,7 @@ export function ConsortTab({ campaignId }: Props) {
             <div
               key={c.id}
               className={`consort-card ${selectedConsort?.id === c.id ? 'consort-card--selected' : ''}`}
-              onClick={() => handleSelectConsort(c)}
+              onClick={() => handleSelectConsort(c)} role="button" tabIndex={0}
             >
               <div className="consort-card__header">
                 <span className="consort-card__name">{c.canonical_name || c.name}</span>
