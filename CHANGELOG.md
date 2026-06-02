@@ -4,6 +4,43 @@
 
 ---
 
+## 🎨 v3.2 — 2026-06-02 (体验优化 A 完整版)
+
+> **国内调研 + 后端 P0 (3模块) + 数据 (7步引导) + API (6端点) + 前端 (4组件) · 1 commit · 11 files · +3200 行**
+
+### 调研
+- Tavily 4 轮 24 源: CK3 叙事引导 / Victoria3 嵌入式 / DAG 性能 (Canvas vs SVG) / 存档最佳实践
+
+### 后端 3 模块
+- `han_sim/tutorial.py` (5932B) — 7 步引导状态机
+- `han_sim/dag_query.py` (2697B) — 剪枝 + LOD + 视口过滤
+- `han_sim/auto_save.py` (4128B) — 每 5 回合自动存档
+
+### 数据
+- `content/tutorial_steps.json` (2744B) — 7 步引导完整定义
+
+### API 6 端点 (端点 84→90)
+- `GET /api/tutorial` 状态
+- `POST /api/tutorial/advance` 前进一步
+- `POST /api/tutorial/skip` 跳过
+- `POST /api/dag/optimize` 剪枝 + LOD + 视口
+- `POST /api/auto-save` 自动存档
+- `GET /api/auto-save/list` 列表
+
+### 前端 4 组件
+- `Tutorial.tsx` — 7 步浮层引导 (高亮 + 提示 + 强制等待)
+- `ImmersiveMode.tsx` — PC 大屏沉浸 (F11 / Esc + 鼠标空闲)
+- `CanvasDAG.tsx` — Canvas DAG 渲染 + FPS 监控
+- `SaveSlots.tsx` — 10 槽 + 自动存档列表
+
+### 实测
+- 3/3 后端模块测试全过
+- 6/6 API 端点测试全过
+- DAG 优化: 15 → 6 节点 (剪枝 + LOD 生效)
+- tsc 0 错
+
+---
+
 ## 🏯 v3.1 — 2026-06-02 (科技树 + 后果链可视化)
 
 > **国内调研 + 后端 P0 (3模块) + 数据 (15节点) + API (8端点) + 前端 (3组件) · 2 commit · 8 files · +2800 行**

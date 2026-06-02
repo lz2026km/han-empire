@@ -1,4 +1,4 @@
-# 汉献帝之末路 (v3.1)
+# 汉献帝之末路 (v3.2)
 
 > **LLM 驱动的回合制古风帝王策略游戏**。你扮演汉献帝刘协，在董卓乱政、曹操"挟天子以令诸侯"的二十年中，寻求兴复汉室之道。
 >
@@ -7,7 +7,7 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-lz2026km%2Fhan--empire-brightgreen)](https://github.com/lz2026km/han-empire)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![v3.1](https://img.shields.io/badge/version-3.1-orange)](CHANGELOG.md)
+[![v3.2](https://img.shields.io/badge/version-3.2-orange)](CHANGELOG.md)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6)](README_WINDOWS.md)
 
 ---
@@ -32,7 +32,17 @@
 
 ---
 
-## 🌟 核心玩法（v3.1 科技树/后果链 + v3.0 全方位大升级 + v2.5.0 UI/UX 旗舰版 + v2.2.0 诏书系统终极版）
+## 🌟 核心玩法（v3.2 体验优化 + v3.1 科技树/后果链 + v3.0 全方位大升级 + v2.5.0 UI/UX 旗舰版 + v2.2.0 诏书系统终极版）
+
+### 🎨 v3.2 全新：体验优化 A 完整版 (1 commit · 11 files · +3200 行)
+
+**主公！v3.2 是 v3.1 策略深度后的体验打磨。3 个后端模块 + 7 步引导数据 + 6 个 API 端点 + 4 个前端组件。**
+
+- **新手引导系统** — 7 步浮层引导（欢迎/诏书/战役/科技/后果/存档/回放），高亮目标元素 + 强制等待
+- **PC 大屏沉浸** — F11/Esc 切换 + 鼠标空闲 5 秒隐藏 + 状态栏自动折叠
+- **DAG 性能优化** — Canvas 渲染 + 视口过滤 + LOD 简笔 (15 → 6 节点)
+- **存档系统升级** — 10 槽位 + 每 5 回合自动存档 + 命名/删除
+- **API 6 端点** — 端点总数 84 → **90**
 
 ### 🌳 v3.1 全新：科技树 + 后果链可视化 (2 commit · 8 files · +2800 行)
 
@@ -773,5 +783,6 @@ cd web && npx tsc --noEmit
 v2.5.0 (2026-06-02): 主公明令推进 v2.5.0 UI/UX 旗舰版 + 3 个 CSS 占位 (待 GUI 软件替换)
 v3.0 (2026-06-02): 全方位大升级, W1-W4 5 commit 175 commits, 30,242行, 8版本时间线补完
 v3.1 (2026-06-02): 科技树 + 后果链可视化, 2 commit 177 commits, +2800行/8文件, 3后端+15节点+8API+3前端
+v3.2 (2026-06-02): 体验优化 A 完整版, 1 commit 179 commits, +3200行/11文件, 3后端+7步引导+6API+4前端
 
 —— 享三国，品汉风。
