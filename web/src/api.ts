@@ -126,20 +126,98 @@ export const api = {
   createCampaign: (emperorName = '刘协', ministerNames: string[] = []) =>
     request<Campaign>('/campaigns', { method: 'POST', body: JSON.stringify({ emperor_name: emperorName, minister_names: ministerNames }) }),
   getCampaignState: (id: string) => request<CampaignStateResponse>(`/campaigns/${id}`),
+  getCampaign: (id: string) => request<CampaignStateResponse>(`/campaigns/${id}`),
   getEvents: (id: string) => request<EventResponse[]>(`/campaigns/${id}/events`),
   getFactions: (id: string) => request<FactionInfoResponse[]>(`/campaigns/${id}/factions`),
   getSkills: (id: string) => request<SkillTreeResponse>(`/campaigns/${id}/skills`),
+  getSkillTree: (id: string) => request<SkillTreeResponse>(`/campaigns/${id}/skill_tree`),
   getBuildings: (id: string) => request<BuildingsResponse>(`/campaigns/${id}/buildings`),
+  getRegions: () => request<{ regions: any[] }>('/regions'),
   listDecrees: (id: string) => request<DecreeResponse[]>(`/campaigns/${id}/decrees`),
+  issueDecree: (id: string, payload: any) =>
+    request<{ success: boolean; message: string }>(`/campaigns/${id}/decree/issue`, { method: 'POST', body: JSON.stringify(payload) }),
   createDecree: (id: string, payload: Partial<DecreeResponse>) =>
     request<DecreeResponse>(`/campaigns/${id}/decrees`, { method: 'POST', body: JSON.stringify(payload) }),
   confirmDecree: (id: string, decreeId: string) =>
     request<DecreeResult>(`/campaigns/${id}/decrees/${decreeId}/confirm`, { method: 'POST' }),
   rejectDecree: (id: string, decreeId: string) =>
     request<DecreeResult>(`/campaigns/${id}/decrees/${decreeId}/reject`, { method: 'POST' }),
+  nextTurn: (id: string) =>
+    request<{ turn: number; year: number; period: number }>(`/campaigns/${id}/next_turn`, { method: 'POST', body: '{}' }),
   saveGame: (save: GameSave) =>
     request<{ ok: boolean }>('/save', { method: 'POST', body: JSON.stringify(save) }),
+  saveCampaign: (id: string) =>
+    request<{ message: string }>(`/campaigns/${id}/save`, { method: 'POST', body: '{}' }),
+  chatWithMinister: (id: string, name: string, message: string) =>
+    request<{ result: string }>(`/campaigns/${id}/chat/${encodeURIComponent(name)}`, {
+      method: 'POST', body: JSON.stringify({ message }),
+    }),
+  getSecretOrders: (id: string) =>
+    request<{ orders: any[] }>(`/campaigns/${id}/secret_orders`),
+  cancelSecretOrder: (id: string, orderId: string) =>
+    request<{ message: string }>(`/campaigns/${id}/secret_orders/${orderId}`, { method: 'POST' }),
+  getMinisters: (id: string) =>
+    request<{ ministers: any[] }>(`/campaigns/${id}/ministers`),
+  construct: (id: string, buildingId: string) =>
+    request<{ success: boolean }>(`/campaigns/${id}/construct`, {
+      method: 'POST', body: JSON.stringify({ building_id: buildingId }),
+    }),
+  unlockSkill: (id: string, skillId: string) =>
+    request<{ success: boolean }>(`/campaigns/${id}/unlock_skill`, {
+      method: 'POST', body: JSON.stringify({ skill_id: skillId }),
+    }),
+  listBattles: () => request<{ battles: any[] }>('/battles'),
+  simulateBattle: (battleKey: string, playerSide?: string) =>
+    request<any>('/battles/simulate', {
+      method: 'POST', body: JSON.stringify({ battle_key: battleKey, player_side: playerSide }),
+    }),
+  streamSettlement: (id: string, onChunk: (text: string) => void) => {
+    return new Promise<void>((resolve, reject) => {
+      fetch(`${'http://localhost:5555/api'}/campaigns/${id}/stream_settlement`, { method: 'POST' })
+        .then(r => {
+          const reader = r.body?.getReader()
+          const dec = new TextDecoder('utf-8')
+          function pump(): Promise<void> {
+            return reader!.read().then(res => {
+              if (res.done) { resolve(); return }
+              onChunk(dec.decode(res.value))
+              return pump()
+            })
+          }
+          return pump()
+        }).catch(reject)
+    })
+  },
   listConsorts: (id: string) => request<{ consorts: Consort[] }>(`/campaigns/${id}/consorts`),
+  getConsortTab: (id: string) => request<any>(`/campaigns/${id}/consort_tab`),
+  audienceConsort: (id: string, consortId: string, message: string) =>
+    request<{ result: string }>(`/campaigns/${id}/consorts/${consortId}/audience`, {
+      method: 'POST', body: JSON.stringify({ message }),
+    }),
+  cultivateConsort: (id: string, consortId: string, payload: any) =>
+    request<{ success: boolean }>(`/campaigns/${id}/consorts/${consortId}/cultivate`, {
+      method: 'POST', body: JSON.stringify(payload),
+    }),
+
+  // v4.6 工程师调试接口
+  executeCheat: (id: string, command: string) =>
+    request<{ success: boolean; output: string; command?: string }>(
+      `/campaigns/${id}/cheat`, { method: 'POST', body: JSON.stringify({ command }) },
+    ),
+  getDebugState: (id: string) =>
+    request<{
+      campaign_id: string; turn: number; year: number; period: number;
+      metrics: Record<string, number>; factions: any[]; issues: any[];
+      ministers_count: number; ministers_sample: any[];
+    }>(`/campaigns/${id}/debug/state`),
+  getDebugCommands: (id: string) =>
+    request<{ commands: Array<{ cmd: string; cat: string; desc: string }>; presets: string[] }>(
+      `/campaigns/${id}/debug/commands`,
+    ),
+  debugInspectTable: (id: string, table: string) =>
+    request<{ table: string; count: number; rows: any[] }>(
+      `/campaigns/${id}/debug/inspect/${table}`,
+    ),
 }
 
 export { IS_DEMO }

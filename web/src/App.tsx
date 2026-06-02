@@ -328,11 +328,12 @@ export default function App() {
         }}
       />
 
-      {/* Cheat Console */}
+      {/* Cheat Console (v4.6 工程师控制台) */}
       <CheatConsole
         isOpen={showCheatConsole}
         onClose={() => setShowCheatConsole(false)}
         onExecuteCommand={handleExecuteCheat}
+        campaignId={campaignId}
       />
 
       {/* Grand Map */}

@@ -428,3 +428,444 @@
   text-align: center;
   color: var(--color-gold, #d4af37);
 }
+
+
+/* === v4.6 工程师控制台 === */
+.cheat-console--engineer {
+  width: min(960px, 94vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  color: #b6ffce;
+  overflow: hidden;
+  position: relative;
+}
+.cheat-console--engineer .cheat-console__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: linear-gradient(180deg, #0d1a0d 0%, #061206 100%);
+  border-bottom: 1px solid #1f3a1f;
+}
+.cheat-console__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #6fdf8f;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.cheat-console__cid {
+  font-size: 11px;
+  color: #4a7a55;
+  font-weight: normal;
+  padding: 2px 6px;
+  background: #0a0e0a;
+  border-radius: 3px;
+  margin-left: 4px;
+}
+.cheat-console__close {
+  background: transparent;
+  border: 1px solid #2f6a3f;
+  color: #6fdf8f;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cheat-console__close:hover {
+  background: #143a1e;
+  color: #b6ffce;
+}
+.cheat-console__tabs {
+  display: flex;
+  gap: 0;
+  background: #061206;
+  border-bottom: 1px solid #1f3a1f;
+  padding: 0 8px;
+}
+.cheat-console__tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #6fdf8f;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.cheat-console__tab:hover {
+  color: #b6ffce;
+  background: rgba(20, 58, 30, 0.4);
+}
+.cheat-console__tab--active {
+  color: #3cff6a;
+  border-bottom-color: #10b981;
+  background: rgba(20, 58, 30, 0.5);
+}
+.cheat-console__body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.cheat-console__body--panel {
+  padding: 16px;
+  display: block;
+}
+.cheat-console__quickbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 16px;
+  background: #0a140a;
+  border-bottom: 1px solid #1f3a1f;
+}
+.cheat-console__quick {
+  padding: 4px 10px;
+  background: #143a1e;
+  border: 1px solid #2f6a3f;
+  color: #b6ffce;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.cheat-console__quick:hover {
+  background: #1c5028;
+  border-color: #10b981;
+}
+.cheat-console__quick:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.cheat-console__output {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  font-size: 12px;
+  line-height: 1.6;
+  min-height: 200px;
+  max-height: 50vh;
+}
+.cheat-console__welcome {
+  text-align: center;
+  padding: 30px 0;
+  color: #4a7a55;
+}
+.cheat-console__welcome p { margin: 6px 0; }
+.cheat-console__welcome-hint { font-size: 11px; }
+.cheat-console__entry {
+  margin-bottom: 12px;
+  border-bottom: 1px dashed #1f3a1f;
+  padding-bottom: 10px;
+}
+.cheat-console__entry:last-child { border-bottom: none; }
+.cheat-console__entry-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #6fdf8f;
+  margin-bottom: 4px;
+}
+.cheat-console__prompt { color: #3cff6a; font-weight: bold; }
+.cheat-console__command { flex: 1; color: #b6ffce; }
+.cheat-console__time { color: #4a7a55; font-size: 10px; }
+.cheat-console__result {
+  padding: 8px 12px;
+  background: #0a140a;
+  border-left: 3px solid #2f6a3f;
+  border-radius: 0 4px 4px 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 11px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.cheat-console__result pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+}
+.cheat-console__result--success { border-left-color: #10b981; color: #b6ffce; }
+.cheat-console__result--error { border-left-color: #ef4444; color: #fca5a5; }
+.cheat-console__result--executing { border-left-color: #f59e0b; color: #fcd34d; font-style: italic; }
+.cheat-console__input-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid #1f3a1f;
+  background: #0a140a;
+}
+.cheat-console__input {
+  flex: 1;
+  background: #061206;
+  border: 1px solid #1f3a1f;
+  border-radius: 4px;
+  color: #b6ffce;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px 10px;
+  outline: none;
+}
+.cheat-console__input:focus {
+  border-color: #10b981;
+}
+.cheat-console__input::placeholder { color: #3a5a42; }
+.cheat-console__state-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #1f3a1f;
+}
+.cheat-console__state-title {
+  font-size: 18px;
+  color: #3cff6a;
+  font-weight: 600;
+}
+.cheat-console__state-sub {
+  font-size: 11px;
+  color: #4a7a55;
+  margin-top: 2px;
+}
+.cheat-console__metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.cheat-console__metric {
+  background: #0a140a;
+  border: 1px solid #1f3a1f;
+  border-radius: 6px;
+  padding: 10px 12px;
+  transition: all 0.15s;
+}
+.cheat-console__metric:hover {
+  border-color: #2f6a3f;
+  background: #0d1a0d;
+}
+.cheat-console__metric-label {
+  font-size: 11px;
+  color: #6fdf8f;
+  margin-bottom: 4px;
+}
+.cheat-console__metric-value {
+  font-size: 22px;
+  color: #3cff6a;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.cheat-console__metric-actions {
+  display: flex;
+  gap: 4px;
+}
+.cheat-console__metric-actions button {
+  flex: 1;
+  background: #143a1e;
+  border: 1px solid #2f6a3f;
+  color: #b6ffce;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 11px;
+  padding: 3px 6px;
+  cursor: pointer;
+}
+.cheat-console__metric-actions button:hover {
+  background: #1c5028;
+}
+.cheat-console__state-section {
+  margin-bottom: 20px;
+}
+.cheat-console__state-section h4 {
+  font-size: 13px;
+  color: #6fdf8f;
+  margin: 0 0 8px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #1f3a1f;
+}
+.cheat-console__muted { color: #4a7a55; font-size: 11px; font-style: italic; padding: 8px 0; }
+.cheat-console__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.cheat-console__table th {
+  background: #0a140a;
+  color: #6fdf8f;
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid #1f3a1f;
+  font-weight: 600;
+}
+.cheat-console__table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid #0d1a0d;
+  color: #b6ffce;
+}
+.cheat-console__table tr:hover td { background: #0a140a; }
+.cheat-console__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cheat-console__list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: #0a140a;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #b6ffce;
+}
+.cheat-console__tag {
+  display: inline-block;
+  padding: 1px 6px;
+  background: #143a1e;
+  color: #6fdf8f;
+  border-radius: 3px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.cheat-console__tag--open { background: #1c5028; color: #b6ffce; }
+.cheat-console__tag--closed { background: #2a2a2a; color: #888; }
+.cheat-console__tag--muted { background: #1a1a1a; color: #666; }
+.cheat-console__tag--kind { background: #1e3a5f; color: #93c5fd; }
+.cheat-console__hint {
+  font-size: 11px;
+  color: #6fdf8f;
+  padding: 8px 10px;
+  background: #0a140a;
+  border-left: 3px solid #2f6a3f;
+  border-radius: 0 4px 4px 0;
+  margin-bottom: 12px;
+}
+.cheat-console__scenarios {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.cheat-console__scenario {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  background: #0a140a;
+  border: 1px solid #1f3a1f;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+.cheat-console__scenario:hover {
+  background: #0d1a0d;
+  border-color: #10b981;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+.cheat-console__scenario-name {
+  font-size: 13px;
+  color: #3cff6a;
+  font-weight: 600;
+}
+.cheat-console__scenario-desc {
+  font-size: 11px;
+  color: #6fdf8f;
+  line-height: 1.4;
+}
+.cheat-console__scenario-arrow {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  color: #4a7a55;
+}
+.cheat-console__scenario:hover .cheat-console__scenario-arrow {
+  color: #10b981;
+}
+.cheat-console__commands {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cheat-console__cmdgroup h4 {
+  font-size: 12px;
+  color: #6fdf8f;
+  margin: 0 0 6px 0;
+  padding: 4px 8px;
+  background: #0a140a;
+  border-left: 2px solid #10b981;
+}
+.cheat-console__cmdgroup ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.cheat-console__cmd {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 4px 8px;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  color: #b6ffce;
+  font-size: 11px;
+}
+.cheat-console__cmd:hover {
+  background: #0a140a;
+  border-color: #1f3a1f;
+}
+.cheat-console__cmd code {
+  color: #3cff6a;
+  font-family: inherit;
+  font-weight: 600;
+  min-width: 200px;
+  display: inline-block;
+}
+.cheat-console__cmd-desc {
+  color: #4a7a55;
+  font-size: 11px;
+}
+.cheat-console__error {
+  background: #2a0d0d;
+  color: #fca5a5;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border-left: 3px solid #ef4444;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.cheat-console__loading {
+  text-align: center;
+  padding: 30px 0;
+  color: #6fdf8f;
+  font-size: 12px;
+}

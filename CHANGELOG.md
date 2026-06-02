@@ -4,6 +4,62 @@
 
 ---
 
+## 🎯 v4.6 — 2026-06-02 (工程师控制台 + API 补全 + 调试可玩)
+
+> **主公明令: 全面审查游戏逻辑/控件/UI/UX, 补充所有缺失数据/图片, 增加工程师调控接口和窗口 (不依赖 LLM 即可调试运行), 本次版本加 0.1, 然后推送.**
+> **本版本: v4.5 预览版 → v4.6 (0.1 加成)**
+> **tsc 0 错 / vite build 0 错 / v3 集成 3/3 ✅ / 新增 17 项 e2e 调试 API 全过**
+
+### A. 后端工程师调试 (server.py: 845+)
+- **增强 `/api/campaigns/<id>/cheat`**: 11 → **19 命令** (新增 inspect/snapshot/list-scenarios/scenario/ add-metric/set-metric/set-turn/skip-year/inject-event)
+- **新增 `DEBUG_COMMANDS` 元数据**: 每条命令带 cat/desc, 前端可按分类展示
+- **新增 `DEBUG_PRESETS` 5 场景**: caotang_ruin(189) / yidai_200(200) / guandu_202(202) / chibi_208(208) / caopi_220(220) — 一键跳转汉末关键时刻, 自动改 turn/year/period/metrics
+- **新增 `/api/campaigns/<id>/debug/commands`**: 列出全部命令元数据
+- **新增 `/api/campaigns/<id>/debug/state`**: 返回全状态 JSON (metrics + factions + issues + ministers_sample), 给前端 Inspector 用
+- **新增 `/api/campaigns/<id>/debug/inspect/<table>`**: 受限 18 表白名单 (characters/factions/powers/regions/armies/buildings/events/issues/directives/secret_orders/consorts/emperor_diary/minister_affection/imperial_events/memorials/verdicts/faction_backlashes/court_debates), 防 SQL 注入
+- **修 v4.5 真实 bug**:
+  - `factions` 表用 `name/satisfaction/leverage` 而非 `id/influence` (与 v2.2.0 实际 schema 一致)
+  - `issues.created_turn` 改用 `origin_turn` (v3.0+ 字段名)
+  - `inject-event` INSERT 字段修正, 移除不存在的 `campaign_id` (issues 表无此列)
+  - `inspect` metrics 排序跳过 dict/list 值 (v2.0+ 复合字段)
+  - `scenario` 设置 turn/year/period 走 `setattr` 不污染 metrics
+- **测试**: 17/17 e2e 全过 (CREATE/commands/list-scenarios/scenario/state/inspect-5表/inspect文本/skip-month/snapshot/add-metric/set-turn/inject-event/reveal-map/help/save/ministers)
+
+### B. 前端 CheatConsole 工程师控制台 (web/src/components/CheatConsole.tsx: 211 → 384 行)
+- **4 Tab 多面板**:
+  - **控制台**: 原 11 命令终端, 加 6 个快捷按钮 (状态/+10威权/+20声望/+50财政/推进一月/推进一年), 执行后自动刷新状态检视
+  - **状态检视**: 实时显示 metrics (按值降序排序, +5/+10/-5 按钮直接调), 派系表, 近期事项 (按 status/kind 标签分类), 大臣示例表
+  - **场景加载**: 5 张预设场景卡片, 点击 → 一键跳转 + 自动回控制台显示结果
+  - **命令参考**: 19 命令按 meta/inspect/scenario/metric/time/event 6 类分组, 点击填入输入框
+- **可访问性**: 4 Tab `role="tab"` + `aria-selected`, 关闭按钮 `aria-label`, 场景卡片 `role="button"` + `Enter` 键
+- **CSS**: v4.0.3.css 追加 400+ 行 `.cheat-console--engineer` 体系 (暗色绿字终端 + 状态卡片网格 + 场景卡 + 命令清单)
+- **0 emoji** (主公明令)
+
+### C. 修复 v4.5 前端 API 缺失 (web/src/api.ts: 14 → 36 方法)
+- **补全 12 个缺失方法** (实测调用必然 `TypeError: api.xxx is not a function`):
+  - `getCampaign` / `nextTurn` / `saveCampaign` / `chatWithMinister` / `getSecretOrders` / `cancelSecretOrder` / `getMinisters` / `construct` / `unlockSkill` / `getSkillTree` / `issueDecree` / `getRegions` / `listBattles` / `simulateBattle` / `streamSettlement` / `getConsortTab` / `audienceConsort` / `cultivateConsort`
+- **新增 4 个 v4.6 调试方法**: `executeCheat` / `getDebugState` / `getDebugCommands` / `debugInspectTable`
+- **`useChatModal.handleExecuteCheat` 修 bug**: 旧版把命令按空格切首词为 `cmd`, 余下塞 `args` — 导致 v4.6 多词命令 (`add-metric 汉室库 50`) 全部失效. 改为整串传入, 兼容所有 19 命令
+
+### D. 兼容性
+- **TypeScript**: `npx tsc --noEmit` **0 错** (实测 2026-06-02)
+- **Vite build**: 1615 modules transformed, dist CSS 107KB / JS 241KB, 0 错 (1 老 CSS 中文注释警告与本版本无关)
+- **v3 集成测试**: 3/3 PASSED (save_system/usage_tracker/11 API 端点)
+- **17/17 新调试 API e2e**: 详见 A 段
+
+### E. 版本号
+- `version_info.txt`: 1.8.5 → **4.6.0**
+- `pyproject.toml`: 2.0.0 → **4.6.0** + 加副标 "工程师控制台"
+- `web/package.json`: 1.9.0 → **4.6.0**
+- `han_empire.spec` 头注释: v2.0.0 → v4.6.0
+
+### F. 已知遗留 (v4.6 之外)
+- 缺 pytest 安装, e2e 用 `python -c` 直接跑 unittest
+- v4.6 聚焦在工程师控制台, 其他 v4.5 API bug 仍可能存在
+- 50+ 端口/200+ 状态联动未做 UX 优化 (留 v4.7)
+
+---
+
 ## 🎯 v4.5 预览版 — 2026-06-02 (打包前最后一次大审查)
 
 > **主公明令: 打包前最后一次大审查. 包括结构/逻辑/内容/控件/图片/UI/UX, 差什么补什么. 审查后版本为 4.5 预览版, 必须跑通无错.**

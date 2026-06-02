@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-# v2.0.0 Phase 4.5: PyInstaller 打包配置
+# v4.6.0 PyInstaller 打包配置
 # 主公: Win 10/11 点 EXE 即可
 # 用法: pyinstaller han_empire.spec
 #
@@ -16,21 +16,22 @@ block_cipher = None
 # 项目根
 PROJECT_ROOT = Path(SPECPATH).resolve()
 
-# ── 数据文件 (含 .agno_skills/ 18 个 SKILL.md + static/ + templates/ + v4-epic/ 47 张图 + maps/ + portraits/) ──
-datas = [
-    # 技能库 (LLM 驱动核心 - 18 个 SKILL.md)
-    (str(PROJECT_ROOT / '.agno_skills'), '.agno_skills'),
-    # 静态资源
-    (str(PROJECT_ROOT / 'web' / 'dist'), 'web/dist'),
-    (str(PROJECT_ROOT / 'web' / 'public' / 'v4-epic'), 'web/public/v4-epic'),
-    (str(PROJECT_ROOT / 'web' / 'public' / 'maps'), 'web/public/maps'),
-    (str(PROJECT_ROOT / 'web' / 'public' / 'portraits'), 'web/public/portraits'),
-    (str(PROJECT_ROOT / 'han_sim' / 'static'), 'han_sim/static'),
-    (str(PROJECT_ROOT / 'han_sim' / 'templates'), 'han_sim/templates'),
-    (str(PROJECT_ROOT / 'han_sim' / 'data'), 'han_sim/data'),
-    # 角色/事件 JSON
-    (str(PROJECT_ROOT / 'data'), 'data'),
+# ── 数据文件 (含 .agno_skills/ 18 个 SKILL.md + v4-epic/ 47 张图 + maps/ + portraits/) ──
+# 注: 只打包实际存在的目录, 防 PyInstaller 因目录缺失中断
+_candidates = [
+    (PROJECT_ROOT / '.agno_skills', '.agno_skills'),
+    (PROJECT_ROOT / 'web' / 'dist', 'web/dist'),
+    (PROJECT_ROOT / 'web' / 'public' / 'v4-epic', 'web/public/v4-epic'),
+    (PROJECT_ROOT / 'web' / 'public' / 'maps', 'web/public/maps'),
+    (PROJECT_ROOT / 'web' / 'public' / 'portraits', 'web/public/portraits'),
+    (PROJECT_ROOT / 'han_sim' / 'static', 'han_sim/static'),
+    (PROJECT_ROOT / 'han_sim' / 'templates', 'han_sim/templates'),
+    (PROJECT_ROOT / 'han_sim' / 'data', 'han_sim/data'),
+    (PROJECT_ROOT / 'han_sim' / 'assets', 'han_sim/assets'),
+    (PROJECT_ROOT / 'data', 'data'),
+    (PROJECT_ROOT / 'content', 'content'),
 ]
+datas = [(str(src), dst) for src, dst in _candidates if src.exists()]
 
 # ── 隐藏导入 (PyInstaller 自动分析不到的) ──
 hiddenimports = [

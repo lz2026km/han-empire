@@ -845,55 +845,292 @@ def cancel_secret_order(campaign_id, order_id):
     return jsonify({'message': '密令已取消'})
 
 
+DEBUG_PRESETS = {
+    'caotang_ruin': {'威权': 15, '声望': 10, '藩镇': 80, '汉室库': 5, 'turn': 12, 'year': 196, 'period': 6,
+                     'desc': '董卓焚洛阳 (中平六年 189 年 6 月, 威权 15, 藩镇 80)'},
+    'yidai_200':    {'威权': 45, '声望': 35, '藩镇': 70, '汉室库': 12, 'turn': 132, 'year': 200, 'period': 4,
+                     'desc': '衣带诏事发前夕 (建安五年 200 年 4 月)'},
+    'guandu_202':   {'威权': 55, '声望': 50, '藩镇': 60, '汉室库': 18, 'turn': 156, 'year': 202, 'period': 9,
+                     'desc': '官渡之战前夕 (建安七年 202 年 9 月)'},
+    'chibi_208':    {'威权': 60, '声望': 60, '藩镇': 55, '汉室库': 30, 'turn': 228, 'year': 208, 'period': 11,
+                     'desc': '赤壁之战前夕 (建安十三年 208 年 11 月)'},
+    'caopi_220':    {'威权': 25, '声望': 15, '藩镇': 90, '汉室库': 8, 'turn': 372, 'year': 220, 'period': 10,
+                     'desc': '曹丕篡汉 (延康元年 220 年 10 月, 汉室存亡)'},
+}
+
+DEBUG_COMMANDS = [
+    {'cmd': 'help', 'cat': 'meta', 'desc': '显示所有可用命令'},
+    {'cmd': 'status', 'cat': 'inspect', 'desc': '当前状态概要'},
+    {'cmd': 'inspect', 'cat': 'inspect', 'desc': '完整状态 (metrics/factions/issues/directives)'},
+    {'cmd': 'snapshot', 'cat': 'inspect', 'desc': '导出当前状态到 JSON'},
+    {'cmd': 'list-scenarios', 'cat': 'scenario', 'desc': '列出预设场景'},
+    {'cmd': 'scenario <name>', 'cat': 'scenario', 'desc': '加载预设 (caotang_ruin/yidai_200/guandu_202/chibi_208/caopi_220)'},
+    {'cmd': 'add-authority <n>', 'cat': 'metric', 'desc': '增加威权值'},
+    {'cmd': 'add-loyalty <n>', 'cat': 'metric', 'desc': '增加声望'},
+    {'cmd': 'set-authority <n>', 'cat': 'metric', 'desc': '设置威权值'},
+    {'cmd': 'add-metric <key> <n>', 'cat': 'metric', 'desc': '累加任意 metric'},
+    {'cmd': 'set-metric <key> <n>', 'cat': 'metric', 'desc': '设置任意 metric'},
+    {'cmd': 'set-turn <n>', 'cat': 'time', 'desc': '跳到指定回合 (仅修改 turn/year/period)'},
+    {'cmd': 'unlock-skills', 'cat': 'meta', 'desc': '解锁所有技能 (模拟)'},
+    {'cmd': 'skip-month', 'cat': 'time', 'desc': '推进一月'},
+    {'cmd': 'skip-year', 'cat': 'time', 'desc': '推进一年 (12 月)'},
+    {'cmd': 'inject-event <event_id>', 'cat': 'event', 'desc': '强制触发事件 (写入 issues)'},
+    {'cmd': 'reveal-map', 'cat': 'meta', 'desc': '显示所有省份 (需后端联动)'},
+    {'cmd': 'clear', 'cat': 'meta', 'desc': '清除控制台'},
+    {'cmd': 'exit', 'cat': 'meta', 'desc': '关闭控制台'},
+]
+
+
+def _cmd_help() -> str:
+    cats = {}
+    for c in DEBUG_COMMANDS:
+        cats.setdefault(c['cat'], []).append(c)
+    lines = ['工程师调试命令 (按类别):', '']
+    cat_name = {'meta': '元命令', 'inspect': '状态检视', 'scenario': '场景加载',
+                'metric': '指标调控', 'time': '时间调控', 'event': '事件注入'}
+    for cat, items in cats.items():
+        lines.append(f'[{cat_name.get(cat, cat)}]')
+        for it in items:
+            lines.append(f"  {it['cmd'].ljust(28)} - {it['desc']}")
+        lines.append('')
+    return '\n'.join(lines).rstrip()
+
+
+def _cmd_inspect(session) -> str:
+    state = session.state
+    scalar_metrics = [(k, v) for k, v in state.metrics.items() if isinstance(v, (int, float))]
+    metrics = sorted(scalar_metrics, key=lambda kv: -kv[1])
+    issues_count = session.db.conn.execute('SELECT COUNT(*) AS c FROM issues').fetchone()['c']
+    directives = session.db.conn.execute(
+        "SELECT id, kind, status FROM directives WHERE campaign_id=? ORDER BY id DESC LIMIT 5",
+        (session.campaign_id,),
+    ).fetchall()
+    factions = session.db.conn.execute(
+        'SELECT name, satisfaction, leverage FROM factions ORDER BY satisfaction DESC'
+    ).fetchall()
+    ministers_count = session.db.conn.execute(
+        "SELECT COUNT(*) AS c FROM characters WHERE power_id='han' AND status='active'"
+    ).fetchone()['c']
+    faction_str = ', '.join(f"{f['name']}={f['satisfaction']}" for f in factions[:5])
+    directive_str = ', '.join(f"#{d['id']}{d['kind'][:2]}/{d['status']}" for d in directives) or '无'
+    lines = [
+        '═' * 50,
+        f'状态检视  {state.year}年{state.period}月  回合 {state.turn}  (campaign={session.campaign_id})',
+        '─' * 50,
+        '核心指标 (按值降序):',
+    ]
+    for k, v in metrics[:8]:
+        lines.append(f'  {k:<10} = {v}')
+    complex_count = sum(1 for v in state.metrics.values() if not isinstance(v, (int, float)))
+    lines += [
+        '─' * 50,
+        f'派系 (top 5): {faction_str}',
+        f'汉廷在任大臣: {ministers_count}',
+        f'事项追踪: {issues_count} 条',
+        f'近期诏令 (top 5): {directive_str}',
+        f'(metrics 中另有 {complex_count} 个 dict/list 字段, 已跳过排序)',
+        '═' * 50,
+    ]
+    return '\n'.join(lines)
+
+
+def _cmd_scenario(session, name: str) -> tuple[str, bool]:
+    if name == 'list':
+        lines = ['预设场景:']
+        for k, v in DEBUG_PRESETS.items():
+            lines.append(f"  {k.ljust(14)} - {v['desc']}")
+        return '\n'.join(lines), True
+    if name not in DEBUG_PRESETS:
+        return f'未知场景: {name}. 输入 list-scenarios 查看', False
+    p = DEBUG_PRESETS[name]
+    for k, v in p.items():
+        if k == 'desc':
+            continue
+        if k in ('turn', 'year', 'period'):
+            setattr(session.state, k, v)
+        else:
+            session.state.metrics[k] = v
+    return f"已加载场景 [{name}]: {p['desc']}\n" + _cmd_inspect(session), True
+
+
+def _cmd_snapshot(session) -> str:
+    import json as _json
+    snap = {
+        'campaign_id': session.campaign_id,
+        'turn': session.state.turn,
+        'year': session.state.year,
+        'period': session.state.period,
+        'metrics': dict(session.state.metrics),
+    }
+    return _json.dumps(snap, ensure_ascii=False, indent=2)
+
+
 @app.route('/api/campaigns/<campaign_id>/cheat', methods=['POST'])
 def execute_cheat(campaign_id):
-    """执行作弊命令"""
     data = request.get_json() or {}
-    command = data.get('command', '')
-    args = data.get('args', {})
+    command = (data.get('command', '') or '').strip()
+    args = data.get('args', {}) or {}
 
     if campaign_id not in GAMES:
         GAMES[campaign_id] = GameSession.load(campaign_id)
-
     session = GAMES[campaign_id]
     state = session.state
 
     output = ''
     success = True
 
-    if command == 'status':
-        output = f"""当前状态：
-年份：{state.year}年 {state.period}月
-威权：{state.metrics.get('威权', 0)}
-声望：{state.metrics.get('声望', 0)}
-藩镇：{state.metrics.get('藩镇', 0)}
-汉室库：{state.metrics.get('汉室库', 0)}万两
-回合：{state.turn}"""
+    if command in ('', 'help'):
+        output = _cmd_help()
+    elif command == 'status':
+        m = state.metrics
+        output = (
+            f"年份 {state.year}年{state.period}月  回合 {state.turn}\n"
+            f"威权 {m.get('威权', 0)}  声望 {m.get('声望', 0)}  藩镇 {m.get('藩镇', 0)}  "
+            f"汉室库 {m.get('汉室库', 0)}万两"
+        )
+    elif command == 'inspect':
+        output = _cmd_inspect(session)
+    elif command == 'snapshot':
+        output = _cmd_snapshot(session)
+    elif command == 'list-scenarios':
+        output = _cmd_scenario(session, 'list')[0]
+    elif command.startswith('scenario '):
+        name = command.split(' ', 1)[1].strip()
+        output, success = _cmd_scenario(session, name)
     elif command == 'add-authority':
         n = int(args.get('n', 10))
         state.metrics['威权'] = state.metrics.get('威权', 0) + n
-        output = f'威权 +{n}，当前：{state.metrics.get("威权", 0)}'
+        output = f'威权 +{n}，当前: {state.metrics["威权"]}'
     elif command == 'set-authority':
         n = int(args.get('n', 50))
         state.metrics['威权'] = n
-        output = f'威权已设置为：{n}'
+        output = f'威权已设置为: {n}'
     elif command == 'add-loyalty':
         n = int(args.get('n', 10))
         state.metrics['声望'] = state.metrics.get('声望', 0) + n
-        output = f'声望 +{n}，当前：{state.metrics.get("声望", 0)}'
+        output = f'声望 +{n}，当前: {state.metrics["声望"]}'
+    elif command.startswith('add-metric '):
+        parts = command.split()
+        if len(parts) >= 3:
+            key, delta = parts[1], int(parts[2])
+            state.metrics[key] = state.metrics.get(key, 0) + delta
+            output = f'{key} {delta:+d}，当前: {state.metrics[key]}'
+        else:
+            output = '用法: add-metric <key> <delta>'
+            success = False
+    elif command.startswith('set-metric '):
+        parts = command.split()
+        if len(parts) >= 3:
+            key, val = parts[1], int(parts[2])
+            state.metrics[key] = val
+            output = f'{key} 已设置为: {val}'
+        else:
+            output = '用法: set-metric <key> <value>'
+            success = False
+    elif command.startswith('set-turn '):
+        n = int(command.split()[1])
+        delta_months = max(0, n - state.turn) * 1
+        state.turn = n
+        output = f'回合已设置为: {n}  (注: year/period 需按需调整, 当前 {state.year}/{state.period})'
     elif command == 'unlock-skills':
-        output = '技能已解锁（模拟）'
+        output = '技能已解锁 (模拟)'
     elif command == 'skip-month':
-        state.next_period()
-        output = f'进入{state.year}年{state.period}月'
+        if hasattr(state, 'next_period'):
+            state.next_period()
+        else:
+            state.period = (state.period % 12) + 1
+            if state.period == 1:
+                state.year += 1
+            state.turn += 1
+        output = f'进入 {state.year}年{state.period}月  回合 {state.turn}'
+    elif command == 'skip-year':
+        for _ in range(12):
+            if hasattr(state, 'next_period'):
+                state.next_period()
+            else:
+                state.period = (state.period % 12) + 1
+                if state.period == 1:
+                    state.year += 1
+                state.turn += 1
+        output = f'推进一年, 现在 {state.year}年{state.period}月  回合 {state.turn}'
+    elif command.startswith('inject-event '):
+        eid = command.split(' ', 1)[1].strip()
+        try:
+            session.db.conn.execute(
+                "INSERT INTO issues (kind, status, title, origin_turn) VALUES (?, ?, ?, ?)",
+                ('manual', 'open', f'工程师注入: {eid}', state.turn),
+            )
+            session.db.conn.commit()
+            output = f'已注入事件占位: {eid} (写入了 issues 表)'
+        except Exception as e:
+            output = f'注入失败: {e}'
+            success = False
+    elif command == 'reveal-map':
+        regions = session.db.conn.execute('SELECT COUNT(*) AS c FROM regions').fetchone()['c']
+        output = f'全图已揭示 (regions 表共 {regions} 条, UI 联动待前端配合)'
     else:
-        output = f'未知命令: {command}'
+        output = f'未知命令: {command}. 输入 help 查看'
         success = False
 
     session.save()
     GAMES[campaign_id] = session
+    return jsonify({'success': success, 'output': output, 'command': command})
 
-    return jsonify({'success': success, 'output': output})
+
+@app.route('/api/campaigns/<campaign_id>/debug/commands', methods=['GET'])
+def debug_commands(campaign_id):
+    return jsonify({'commands': DEBUG_COMMANDS, 'presets': list(DEBUG_PRESETS.keys())})
+
+
+@app.route('/api/campaigns/<campaign_id>/debug/state', methods=['GET'])
+def debug_state(campaign_id):
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+    session = GAMES[campaign_id]
+    state = session.state
+    factions = [dict(r) for r in session.db.conn.execute(
+        'SELECT name, satisfaction, leverage, agenda FROM factions ORDER BY satisfaction DESC'
+    ).fetchall()]
+    issues = [dict(r) for r in session.db.conn.execute(
+        'SELECT id, kind, status, title, origin_turn FROM issues ORDER BY id DESC LIMIT 20'
+    ).fetchall()]
+    ministers = [dict(r) for r in session.db.conn.execute(
+        "SELECT name, office, faction, loyalty, ability FROM characters WHERE power_id='han' AND status='active' ORDER BY name LIMIT 50"
+    ).fetchall()]
+    return jsonify({
+        'campaign_id': session.campaign_id,
+        'turn': state.turn,
+        'year': state.year,
+        'period': state.period,
+        'metrics': dict(state.metrics),
+        'factions': factions,
+        'issues': issues,
+        'ministers_count': len(ministers),
+        'ministers_sample': ministers[:20],
+    })
+
+
+@app.route('/api/campaigns/<campaign_id>/debug/inspect/<table>', methods=['GET'])
+def debug_inspect_table(campaign_id, table):
+    if campaign_id not in GAMES:
+        GAMES[campaign_id] = GameSession.load(campaign_id)
+    session = GAMES[campaign_id]
+    allowed = {
+        'characters', 'factions', 'powers', 'regions', 'armies', 'buildings',
+        'events', 'issues', 'directives', 'secret_orders', 'consorts',
+        'emperor_diary', 'minister_affection', 'imperial_events', 'memorials',
+        'verdicts', 'faction_backlashes', 'court_debates',
+    }
+    if table not in allowed:
+        return jsonify({'error': f'不允许的表: {table}. 允许: {sorted(allowed)}'}), 400
+    try:
+        rows = [dict(r) for r in session.db.conn.execute(
+            f'SELECT * FROM {table} LIMIT 100'
+        ).fetchall()]
+        count = session.db.conn.execute(f'SELECT COUNT(*) AS c FROM {table}').fetchone()['c']
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    return jsonify({'table': table, 'count': count, 'rows': rows})
 
 
 # ---- Armies & Battle ----

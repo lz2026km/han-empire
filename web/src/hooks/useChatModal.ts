@@ -43,8 +43,7 @@ export function useCheatConsole(campaignId: string | null) {
   const handleExecuteCheat = useCallback(async (command: string): Promise<{ success: boolean; output: string }> => {
     if (!campaignId) return { success: false, output: '无活动战役' }
     try {
-      const [cmd, ...args] = command.split(' ')
-      const res = await api.executeCheat(campaignId, cmd, args.length > 0 ? { args } : undefined)
+      const res = await api.executeCheat(campaignId, command)
       return res
     } catch (e: any) {
       return { success: false, output: `执行失败: ${e.message}` }

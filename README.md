@@ -1,4 +1,4 @@
-# 汉献帝之末路 (v4.5 预览版)
+# 汉献帝之末路 (v4.6)
 
 > **LLM 驱动的回合制古风帝王策略游戏**。你扮演汉献帝刘协，在董卓乱政、曹操"挟天子以令诸侯"的二十年中，寻求兴复汉室之道。
 >
@@ -7,7 +7,7 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-lz2026km%2Fhan--empire-brightgreen)](https://github.com/lz2026km/han-empire)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![v4.5](https://img.shields.io/badge/version-4.5--preview-orange)](CHANGELOG.md)
+[![v4.6](https://img.shields.io/badge/version-4.6-blue)](CHANGELOG.md)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6)](README_WINDOWS.md)
 [![A11y](https://img.shields.io/badge/a11y-WCAG_2.1_AA-success)](CHANGELOG.md#v33)
 
