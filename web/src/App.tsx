@@ -44,6 +44,15 @@ type Tab = 'overview' | 'decree' | 'ministers' | 'factions' | 'skills' | 'buildi
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [showNewGameModal, setShowNewGameModal] = useState(false)
+
+  // W2: Escape 关闭 New Game Modal (v3.3 UX 大修)
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowNewGameModal(false);
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, []);
   const [emperorName, setEmperorName] = useState('刘协')
 
   // Modal states (showSettlement/settlementStages/currentSettlementStage 抽到 useSettlement)
@@ -113,7 +122,17 @@ export default function App() {
 
   // v2.2.0: EdictModal 自带 SSE 流式颁诏, 旧的 handleEdictPublish 已被取代 (此处不再保留)
 
-  const tabs: { id: Tab; label: string; key: string }[] = [
+  const tabs: { id: Tab;
+
+  // W2: Escape 关闭支持 (v3.3 UX 大修)
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [onClose]);
+ label: string; key: string }[] = [
     { id: 'overview', label: '总览 总览', key: '1' },
     { id: 'decree', label: '诏书 诏书', key: '2' },
     { id: 'chat', label: '召对 召对', key: '3' },
@@ -239,7 +258,7 @@ export default function App() {
       {showNewGameModal && (
         <div className="modal-overlay" onClick={() => setShowNewGameModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal__title">建筑️ 建立新朝</div>
+            <div className="modal__title">建立新朝</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '6px', color: 'var(--color-text-secondary)', fontSize: '13px' }}>

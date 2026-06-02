@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Eye, EyeOff, Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react'
 
 interface SecretOrder {
@@ -21,6 +21,24 @@ interface SecretOrdersModalProps {
 export function SecretOrdersModal({ isOpen, onClose, orders, onCancelOrder }: SecretOrdersModalProps) {
   const [selectedOrder, setSelectedOrder] = useState<SecretOrder | null>(null)
   const [showCompleted, setShowCompleted] = useState(false)
+
+  // W2: Escape 关闭支持 (v3.3 UX 大修)
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [onClose]);
+
+  // W2: 打开时焦点陷阱 — 锁定 body 滚动
+  useEffect(() => {
+    if (isOpen) {
+      const orig = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = orig; };
+    }
+  }, [isOpen]);
 
   const filteredOrders = showCompleted
     ? orders

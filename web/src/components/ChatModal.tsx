@@ -32,6 +32,24 @@ export function ChatModal({ isOpen, onClose, campaignId, minister, onSendMessage
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
+  // W2: Escape 关闭支持 (v3.3 UX 大修)
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [onClose]);
+
+  // W2: 打开时焦点陷阱 — 锁定 body 滚动
+  useEffect(() => {
+    if (isOpen) {
+      const orig = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = orig; };
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus()
