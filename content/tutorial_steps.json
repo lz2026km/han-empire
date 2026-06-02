@@ -1,0 +1,62 @@
+{
+  "version": "1.0",
+  "description": "汉献帝之末路 v3.2 新手引导 (7步)",
+  "steps": [
+    {
+      "id": "welcome", "order": 0,
+      "title": "欢迎来到汉献帝之末路",
+      "description": "陛下, 您的王朝由您主宰。本教程将引导您掌握核心玩法, 约需 2 分钟。",
+      "target": ".app-header", "position": "bottom",
+      "required_action": null, "highlight_color": "#3b82f6",
+      "can_skip": true, "icon": "info"
+    },
+    {
+      "id": "issue_decree", "order": 1,
+      "title": "颁布诏书",
+      "description": "点击「诏书」按钮, 颁布第一道圣旨。诏书是您影响天下最直接的方式。",
+      "target": "[data-tutorial='decree']", "position": "right",
+      "required_action": "issue_decree", "highlight_color": "#3b82f6",
+      "can_skip": true, "icon": "decree"
+    },
+    {
+      "id": "view_battle", "order": 2,
+      "title": "指挥战役",
+      "description": "查看「战役」面板, 调兵遣将, 与诸侯决胜疆场。",
+      "target": "[data-tutorial='battle']", "position": "right",
+      "required_action": "view_battle", "highlight_color": "#ef4444",
+      "can_skip": true, "icon": "battle"
+    },
+    {
+      "id": "unlock_tech", "order": 3,
+      "title": "解锁科技",
+      "description": "打开「科技树」, 累计声望后解锁节点。每条主线代表不同的发展方向。",
+      "target": "[data-tutorial='tech-tree']", "position": "left",
+      "required_action": "unlock_tech", "highlight_color": "#10b981",
+      "can_skip": true, "icon": "tech"
+    },
+    {
+      "id": "view_consequence", "order": 4,
+      "title": "后果链",
+      "description": "查看「后果链」, 您的每个决策都会派生长期影响。可即时/短期/长期/永久 4 类型。",
+      "target": "[data-tutorial='consequence']", "position": "left",
+      "required_action": "view_consequence", "highlight_color": "#f59e0b",
+      "can_skip": true, "icon": "consequence"
+    },
+    {
+      "id": "save_game", "order": 5,
+      "title": "存档",
+      "description": "点击「存档」, 保存您的进度。系统每 5 回合自动存档一次, 也可手动命名存档。",
+      "target": "[data-tutorial='save']", "position": "right",
+      "required_action": "save_game", "highlight_color": "#3b82f6",
+      "can_skip": true, "icon": "save"
+    },
+    {
+      "id": "view_stats", "order": 6,
+      "title": "决策回放",
+      "description": "查看「决策回放」, 复盘您的治理, 学习策略。回放支持快进/慢放/单步。",
+      "target": "[data-tutorial='replay']", "position": "left",
+      "required_action": "view_stats", "highlight_color": "#3b82f6",
+      "can_skip": true, "icon": "replay"
+    }
+  ]
+}

@@ -22,6 +22,9 @@ from han_sim import agents as _agents
 from han_sim.tech_tree import get_tech_engine, TechState
 from han_sim.consequence_chain import get_consequence_chain, ConsequenceType
 from han_sim.decision_log import DecisionLog
+from han_sim.tutorial import get_tutorial_engine
+from han_sim.dag_query import get_dag_query
+from han_sim.auto_save import get_auto_save_manager
 
 # ── v1.13.0 乾坤大挪移 Phase B：注入 GameContent 到 agents 模块 ──
 # 让 create_chat_memory_agent / create_minister_agent 等能拿到 prompt 字段
@@ -1776,4 +1779,125 @@ def api_decision_record():
         'ok': True,
         'entry_id': entry.id,
         'entry': entry.__dict__,
+    })
+
+
+# ═══════════════════════════════════════════════════════════════
+# v3.2 新增 6 端点: 教程 + DAG 性能 + 自动存档
+# ═══════════════════════════════════════════════════════════════
+
+# 全局状态
+_tutorial_states: Dict[str, Any] = {}  # session_id -> TutorialState
+
+
+def _get_tutorial_state(session_id: str):
+    if session_id not in _tutorial_states:
+        _tutorial_states[session_id] = get_tutorial_engine().init_state()
+    return _tutorial_states[session_id]
+
+
+@app.route('/api/tutorial', methods=['GET'])
+def api_tutorial_state():
+    """获取当前引导状态"""
+    session_id = request.args.get('session_id', 'default')
+    eng = get_tutorial_engine()
+    state = _get_tutorial_state(session_id)
+    return jsonify({
+        'ok': True,
+        'progress': eng.get_progress(state),
+        'current_step': eng.get_step(state.current_step).__dict__ if eng.get_step(state.current_step) else None,
+        'all_steps': [s.__dict__ for s in eng.get_all_steps()],
+    })
+
+
+@app.route('/api/tutorial/advance', methods=['POST'])
+def api_tutorial_advance():
+    """引导前进一步"""
+    data = request.get_json() or {}
+    session_id = data.get('session_id', 'default')
+    eng = get_tutorial_engine()
+    state = _get_tutorial_state(session_id)
+    has_next = eng.advance(state)
+    return jsonify({
+        'ok': True,
+        'has_next': has_next,
+        'progress': eng.get_progress(state),
+    })
+
+
+@app.route('/api/tutorial/skip', methods=['POST'])
+def api_tutorial_skip():
+    """跳过引导"""
+    data = request.get_json() or {}
+    session_id = data.get('session_id', 'default')
+    eng = get_tutorial_engine()
+    state = _get_tutorial_state(session_id)
+    eng.skip(state)
+    return jsonify({'ok': True, 'progress': eng.get_progress(state)})
+
+
+@app.route('/api/dag/optimize', methods=['POST'])
+def api_dag_optimize():
+    """DAG 性能优化 (剪枝 + LOD + 视口)"""
+    data = request.get_json() or {}
+    session_id = data.get('session_id', 'default')
+    eng = get_tech_engine()
+    state = _get_tech_state(session_id)
+    full_tree = eng.get_tree_view(state)
+    nodes = full_tree['nodes']
+    q = get_dag_query()
+    # 应用剪枝
+    visible_only = data.get('visible_only', False)
+    nodes = q.prune_by_status(nodes, visible_only=visible_only)
+    # LOD 简化
+    simplified = q.lod_simplify(nodes, threshold=int(data.get('lod_threshold', 100)))
+    # 统计
+    stats = q.get_stats(nodes)
+    # 视口过滤
+    viewport = data.get('viewport')
+    if viewport:
+        nodes = q.get_viewport_nodes(nodes, viewport)
+    return jsonify({
+        'ok': True,
+        'nodes': simplified if data.get('use_lod', False) else nodes,
+        'stats': stats,
+        'optimization': {
+            'visible_only': visible_only,
+            'lod_applied': data.get('use_lod', False),
+            'viewport_filtered': viewport is not None,
+            'original_count': len(full_tree['nodes']),
+            'returned_count': len(simplified if data.get('use_lod', False) else nodes),
+        }
+    })
+
+
+@app.route('/api/auto-save', methods=['POST'])
+def api_auto_save():
+    """自动存档 (每 5 回合触发)"""
+    data = request.get_json() or {}
+    campaign_id = data.get('campaign_id', 'default')
+    turn = int(data.get('turn', 0))
+    state = data.get('state', {})
+    game_year = data.get('game_year', '')
+    mgr = get_auto_save_manager()
+    slot = mgr.auto_save(campaign_id, turn, state, game_year)
+    if slot:
+        return jsonify({
+            'ok': True,
+            'saved': True,
+            'slot': slot.__dict__,
+        })
+    return jsonify({'ok': True, 'saved': False, 'reason': '间隔未到 (每5回合)'})
+
+
+@app.route('/api/auto-save/list', methods=['GET'])
+def api_auto_save_list():
+    """列出自动存档"""
+    campaign_id = request.args.get('campaign_id', 'default')
+    mgr = get_auto_save_manager()
+    saves = mgr.list_auto_saves(campaign_id)
+    return jsonify({
+        'ok': True,
+        'saves': [s.__dict__ for s in saves],
+        'count': len(saves),
     })
