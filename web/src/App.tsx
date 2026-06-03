@@ -33,6 +33,8 @@ import { ConfirmDialog } from './components/ConfirmDialog'
 import { LoadingScreen } from './components/LoadingScreen'
 // v5.2.0 P6-7: 设置弹窗 (SettingsModal)
 import { SettingsModal } from './components/SettingsModal'
+// v5.2.0 P6-8: 多周目统计弹窗 (StatsModal)
+import { StatsModal } from './components/StatsModal'
 import { SecretOrdersModal } from './components/SecretOrdersModal'
 import { CheatConsole } from './components/CheatConsole'
 import { GrandMap } from './components/GrandMap'
@@ -92,6 +94,8 @@ export default function App() {
   const [showHelpModal, setShowHelpModal] = useState(false)
   // v5.2.0 P6-5: 返回主菜单 二次确认
   const [showReturnConfirm, setShowReturnConfirm] = useState(false)
+  // v5.2.0 P6-8: 多周目统计 (从 SettingsModal 嵌套打开)
+  const [showStatsModal, setShowStatsModal] = useState(false)
 
   // v5.1.1 P1-3: 检测 gameState.turn 变化 → 拉 /api/gazette → 弹 ReportModal
   useEffect(() => {
@@ -518,6 +522,13 @@ export default function App() {
       <SettingsModal
         open={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
+        onOpenStats={() => setShowStatsModal(true)}
+      />
+
+      {/* v5.2.0 P6-8: 多周目统计 (从 SettingsModal 打开) */}
+      <StatsModal
+        open={showStatsModal}
+        onClose={() => setShowStatsModal(false)}
       />
 
       {/* v5.2.0 P6-4: 帮助 Modal (6.9 实现) */}

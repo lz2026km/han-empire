@@ -11,6 +11,8 @@ interface SettingsModalProps {
   open: boolean
   onClose: () => void
   onClearSaves?: () => void
+  // v5.2.0 P6-8: 嵌套 StatsModal
+  onOpenStats?: () => void
 }
 
 const SHORTCUTS: { keys: string; desc: string }[] = [
@@ -24,7 +26,7 @@ const SHORTCUTS: { keys: string; desc: string }[] = [
   { keys: 'Ctrl+`', desc: '弹 工程师控制台 (cheat)' },
 ]
 
-export function SettingsModal({ open, onClose, onClearSaves }: SettingsModalProps) {
+export function SettingsModal({ open, onClose, onClearSaves, onOpenStats }: SettingsModalProps) {
   const { theme, setTheme, season, cycleSeason } = useTheme()
   const [stats, setStats] = useState<any>(null)
 
@@ -119,6 +121,16 @@ export function SettingsModal({ open, onClose, onClearSaves }: SettingsModalProp
             <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
               (暂无统计数据, 完成首局后可见)
             </p>
+          )}
+          {onOpenStats && (
+            <button
+              type="button"
+              className="btn"
+              onClick={() => { onOpenStats(); onClose() }}
+              style={{ marginTop: '8px' }}
+            >
+              查看完整战绩 →
+            </button>
           )}
         </section>
 
