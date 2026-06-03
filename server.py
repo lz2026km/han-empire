@@ -1830,6 +1830,273 @@ def api_intro_hints():
     })
 
 
+# --- 6f) /api/legacies (v5.1.0 P0-4: Opening Legacies 开幕负担) ---
+@app.route('/api/legacies', methods=['GET'])
+def api_legacies():
+    """v5.1.0 P0-4: 列当前战役的所有 active legacy (开幕负担)
+
+    Query params:
+        campaign_id: 战役 ID (必需)
+        include_cleared: 是否含 cleared (默认 false)
+    """
+    from han_sim.paths import user_data_path
+    from han_sim.legacies import get_active_legacy_summary
+
+    campaign_id = (request.args.get("campaign_id") or "").strip()
+    if not campaign_id:
+        return jsonify({"error": "campaign_id required"}), 400
+
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+
+    include_cleared = (request.args.get("include_cleared", "false").lower() == "true")
+    try:
+        rows = db.list_active_legacies(turn=0) if not include_cleared else (
+            db.conn.execute(
+                "SELECT * FROM legacies WHERE status IN ('active', 'cleared') ORDER BY id"
+            ).fetchall()
+        )
+        rows = [dict(r) for r in rows]
+        from han_sim.legacies import format_legacy_for_display
+        items = [format_legacy_for_display(r) for r in rows]
+        return jsonify({
+            "legacies": items,
+            "total": len(items),
+            "active_count": sum(1 for x in items if x["status"] == "active"),
+            "cleared_count": sum(1 for x in items if x["status"] == "cleared"),
+        })
+    except Exception as e:
+        return jsonify({"error": f"legacies query failed: {e}"}), 500
+
+
+@app.route('/api/legacies/<legacy_key>/clear', methods=['POST'])
+def api_clear_legacy(legacy_key):
+    """v5.1.0 P0-4: 手动清除 legacy (作弊端点)"""
+    from han_sim.paths import user_data_path
+    from han_sim.legacies import get_active_legacy_summary
+
+    campaign_id = (request.args.get("campaign_id") or "").strip()
+    if not campaign_id:
+        return jsonify({"error": "campaign_id required"}), 400
+
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+    try:
+        ok = db.clear_legacy_by_key(legacy_key)
+        if ok:
+            return jsonify({"cleared": True, "key": legacy_key})
+        return jsonify({"cleared": False, "error": "legacy not found or not active"}), 404
+    except Exception as e:
+        return jsonify({"error": f"clear legacy failed: {e}"}), 500
+
+
+# --- 6e) /api/budget (v5.1.0 P0-2: 国库/内库 分账户预算视图) ---
+@app.route('/api/budget', methods=['GET'])
+def api_budget():
+    """v5.1.0 P0-2: 财政预算视图 (仿 ming_sim /api/budget)
+
+    Query params:
+        campaign_id: 战役 ID (必需)
+        include_provinces: 是否返 13 州分账 (默认 true)
+    """
+    from han_sim.budget import (
+        ACCOUNT_HANSHIKU, ACCOUNT_INNER, compute_budget_lines,
+    )
+    from han_sim.paths import user_data_path
+
+    campaign_id = (request.args.get("campaign_id") or "").strip()
+    if not campaign_id:
+        return jsonify({"error": "campaign_id required"}), 400
+
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    include_provinces = (request.args.get("include_provinces", "true").lower() == "true")
+
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+
+    # 加载 state
+    state = db.load_state()
+    if state is None:
+        return jsonify({"error": "no state"}), 404
+
+    try:
+        budgets = compute_budget_lines(state, db)
+        hanshiku = budgets[ACCOUNT_HANSHIKU].to_dict()
+        neiku = budgets[ACCOUNT_INNER].to_dict()
+        provinces = budgets.get("_provinces", [])
+
+        result = {
+            ACCOUNT_HANSHIKU: hanshiku,
+            ACCOUNT_INNER: neiku,
+            "turn": {"year": state.year, "period": state.period, "turn": state.turn},
+            "intercept_applies": int(state.metrics.get("威权", 0)) < 30,
+        }
+        if include_provinces:
+            result["provinces"] = provinces
+            result["province_count"] = len(provinces)
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        return jsonify({"error": f"budget compute failed: {e}", "trace": traceback.format_exc()}), 500
+
+
+# --- 6d) /api/event_memories (v5.1.0 P0-1: 事件记忆) ---
+@app.route('/api/event_memories', methods=['GET'])
+def api_event_memories():
+    """v5.1.0 P0-1: 事件记忆召回 (仿 ming_sim/memories.py:729)
+
+    支持 3 种召回模式:
+        1) subject 召回: ?campaign_id=&subject=曹操&subject_type=character&limit=10
+        2) keyword 召回: ?campaign_id=&keywords=董卓,衣带诏&turn=50&limit=10
+        3) time 召回: ?campaign_id=&year=200&period=3&keywords=曹操
+
+    Query params:
+        campaign_id: 战役 ID (必需)
+        subject: 主体名 (可选, 与 subject_type 配套)
+        subject_type: character/region/army/court/faction (可选)
+        keywords: 逗号分隔关键词 (可选)
+        year: 年份 (可选, time 召回用)
+        period: 月份 (可选, time 召回用)
+        turn: 当前回合 (用于 TTL 过滤)
+        limit: 上限 (默认 10)
+        ignore_expiry: True 时忽略 TTL (默认 False)
+    """
+    from han_sim.paths import user_data_path
+
+    campaign_id = (request.args.get("campaign_id") or "").strip()
+    if not campaign_id:
+        return jsonify({"error": "campaign_id required"}), 400
+
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+
+    try:
+        limit = int(request.args.get("limit", 10))
+    except (ValueError, TypeError):
+        limit = 10
+    try:
+        turn = int(request.args.get("turn", 0))
+    except (ValueError, TypeError):
+        turn = 0
+    ignore_expiry = (request.args.get("ignore_expiry", "false").lower() == "true")
+
+    # 模式 1: subject 召回
+    subject = (request.args.get("subject") or "").strip()
+    subject_type = (request.args.get("subject_type") or "").strip()
+    if subject and subject_type:
+        try:
+            rows = db.conn.execute(
+                """SELECT * FROM event_memories
+                   WHERE subject_type = ? AND subject_id = ?
+                   AND (expires_turn IS NULL OR expires_turn = -1 OR expires_turn >= ?)
+                   ORDER BY importance DESC, turn DESC LIMIT ?""",
+                (subject_type, subject, turn, limit),
+            ).fetchall()
+            memories = [dict(r) for r in rows]
+            for m in memories:
+                m["id"] = int(m["id"])
+                m["turn"] = int(m["turn"])
+                m["year"] = int(m["year"])
+                m["period"] = int(m["period"])
+                m["importance"] = int(m["importance"])
+                if m.get("expires_turn") is not None:
+                    m["expires_turn"] = int(m["expires_turn"])
+                try:
+                    m["tags"] = json.loads(m.get("tags") or "[]")
+                except Exception:
+                    m["tags"] = []
+            return jsonify({
+                "memories": memories,
+                "total": len(memories),
+                "mode": "subject",
+                "subject": subject,
+                "subject_type": subject_type,
+                "ignore_expiry": ignore_expiry,
+            })
+        except Exception as e:
+            return jsonify({"error": f"subject query failed: {e}"}), 500
+
+    # 模式 2 & 3: keyword / time 召回
+    keywords_raw = (request.args.get("keywords") or "").strip()
+    keywords = [k.strip() for k in keywords_raw.split(",") if k.strip()]
+    if not keywords:
+        return jsonify({"error": "subject/subject_type OR keywords required"}), 400
+
+    try:
+        # 模式 3: time 召回 (ignore_expiry=True, 查该月历史)
+        year = int(request.args.get("year", 0))
+        period = int(request.args.get("period", 0))
+        if year and period:
+            memories = db.conn.execute(
+                """SELECT * FROM event_memories
+                   WHERE year = ? AND period = ?
+                   AND (subject_id IN ({placeholders}) OR tags LIKE ? OR tags LIKE ? OR tags LIKE ?)
+                   ORDER BY importance DESC, id DESC LIMIT ?""".format(
+                    placeholders=",".join("?" for _ in keywords)
+                ),
+                (year, period, *keywords, f"%{keywords[0]}%",
+                 f"%{keywords[0] if len(keywords) < 2 else keywords[1]}%",
+                 f"%{keywords[-1]}%", limit),
+            ).fetchall()
+            memories = [dict(r) for r in memories]
+            for m in memories:
+                m["id"] = int(m["id"])
+                m["turn"] = int(m["turn"])
+                m["year"] = int(m["year"])
+                m["period"] = int(m["period"])
+                m["importance"] = int(m["importance"])
+                if m.get("expires_turn") is not None:
+                    m["expires_turn"] = int(m["expires_turn"])
+                try:
+                    m["tags"] = json.loads(m.get("tags") or "[]")
+                except Exception:
+                    m["tags"] = []
+            return jsonify({
+                "memories": memories,
+                "total": len(memories),
+                "mode": "time",
+                "year": year,
+                "period": period,
+                "keywords": keywords,
+            })
+    except (ValueError, TypeError):
+        pass
+
+    # 模式 2: keyword 召回 (走 get_memories_by_keywords)
+    try:
+        memories = db.get_memories_by_keywords(
+            keywords=keywords,
+            turn=turn or 999,
+            limit=limit,
+            ignore_expiry=ignore_expiry,
+        )
+        return jsonify({
+            "memories": memories,
+            "total": len(memories),
+            "mode": "keyword",
+            "keywords": keywords,
+            "turn": turn,
+            "ignore_expiry": ignore_expiry,
+        })
+    except Exception as e:
+        return jsonify({"error": f"keyword query failed: {e}"}), 500
+
+
 # --- 7) /api/saves/list (存档列表含元数据) ---
 @app.route('/api/saves/list', methods=['GET'])
 def api_saves_list():

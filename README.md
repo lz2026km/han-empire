@@ -1,4 +1,4 @@
-# 汉献帝之末路 (v5.0.1)
+# 汉献帝之末路 (v4.9.0)
 
 > **LLM 驱动的回合制古风帝王策略游戏**。你扮演汉献帝刘协，在董卓乱政、曹操"挟天子以令诸侯"的二十年中，寻求兴复汉室之道。
 >
@@ -7,7 +7,7 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-lz2026km%2Fhan--empire-brightgreen)](https://github.com/lz2026km/han-empire)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![v5.0.1](https://img.shields.io/badge/version-5.0.1-blue)](CHANGELOG.md)
+[![v4.9.0](https://img.shields.io/badge/version-4.9.0-blue)](CHANGELOG.md)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6)](README_WINDOWS.md)
 [![A11y](https://img.shields.io/badge/a11y-WCAG_2.1_AA-success)](CHANGELOG.md#v33)
 
@@ -34,28 +34,6 @@
 - **总 main/ 头像** 73 → 289 张 jpg, portrait_id 265/265 全部指向独立 jpg, 0 缺失
 - **版本号 4.5.0 → 4.9.0** (pyproject / package.json / version_info.txt)
 - **详见**: [CHANGELOG v4.9 段](CHANGELOG.md#-v49--2026-06-03-v45-全审查--216-张独立-ai-头像--2-真-bug-修复--全跑通)
-
----
-
-## v5.0.1 新特性 (2026-06-03 P1 三大件加 0.1)
-
-> **本版本: v5.0.0 (577f83b) → v5.0.1 (P1 三大件)** 累计 55 单测 / 4 新 API / 0 后端新 bug
-
-- **P1-1 prompts 工程升级**: 10 prompt 加"默会知识"段 + 2 agent 加"工具调用铁律" (minister_agent 强化 + consort_agent §8 新增)
-- **P1-2 event_selector 强化**: 40 条 seed_events 全部含 precondition 字段 (12 关键精写 + 28 默认), event_selector.md 新增 §6 改写口子规则 (5 小节)
-- **P1-3 引导剧本**: content/intro_hints.json (6 个月 189.3-189.8 董卓进京前), han_sim/intro_hints.py (~180 行), 新增 `GET /api/intro_hints?turn=N`, 17 单测全过
-- **详见**: [CHANGELOG v5.0.1 段](CHANGELOG.md#-v501--2026-06-03-p1-三件全完工-01-加成)
-
----
-
-## v5.0 新特性 (2026-06-03 score 分档 + 模型分级 + token 仪表盘)
-
-> **本版本: v4.9.0 (4be37a1) → v5.0.0** 38 单测 / 3 新 API / E2E 全过
-
-- **P0-1 score 5 档房拆分**: 5 新 prompt (shared/internal/issues/military_external/personnel_secret = 1149 行), 主控 146 行, v4 backup 保留, han_sim/score_extractor_pipeline.py (~390 行 4 档房串行/并行 + 失败回退 + 20 字段合并), 22 单测全过
-- **P0-2 模型分级路由 (4 tier)**: llm_router.py 270 行 (SIMULATE/ROLEPLAY/BRIEFING/SANITIZE), 9 agent 改造, 16 单测 100%
-- **P0-3 token 实时仪表盘**: usage_tracker.py 增强 (按 model/purpose 分组), 2 新 endpoint `/api/token_stats` + `/api/score_extractor/tiers`, TokenStatsWidget.tsx (199 行) + CSS (97 行)
-- **详见**: [CHANGELOG v5.0 段](CHANGELOG.md#-v50--2026-06-03-score-分档--模型分级--token-仪表盘)
 
 ---
 
@@ -98,7 +76,7 @@
 - **WCAG 2.1 AA 可达性**: 90 button 100% 可达 (16 aria-label + 12 role=button + 62 textContent)
 - **全键盘操作**: 5 Modal 支持 Escape 关闭 + 背景滚动锁定
 - **UI 控件标准**: 89 button 全 type="button" (防 form 误提交)
-- **法律合规 100%**: 0 违规 / 0 emoji / 0 回归, 38 文件实测通过
+- **法律合规 100%**: 0 借鉴 / 0 emoji / 0 青干 / 0 回归, 38 文件实测通过
 - **详见**: [CHANGELOG v3.3 段](CHANGELOG.md#-v33--2026-06-02-uxui-大修--全代码审查)
 
 ---
@@ -224,7 +202,7 @@ han-empire/
 | v4.6.0 | 2026-06-02 | 工程师调控接口 + 不依赖 LLM 调试 | 19 调试命令 + 5 场景预设 |
 | v4.5.0 | 2026-06-02 | 打包前大审查 (8 维度) | 51 表 / 13 外键 / 31 索引 |
 | v4.0.0 | 2026-06-02 | 人物立像/头像/界面/控件/地图/场景/小图 必全 | 113 张图 AI 批量 |
-| v3.3.0 | 2026-06-02 | 对仓库的所有代码进行审查 | 0 emoji / 0 违规 / 0 回归 |
+| v3.3.0 | 2026-06-02 | 对仓库的所有代码进行审查 | 0 emoji / 0 借鉴 / 0 回归 |
 | v3.2.0 | 2026-06-02 | — | 体验打磨 |
 | v3.1.0 | 2026-06-02 | 策略深度补完 | 科技树 + 后果链 |
 | v3.0.0 | 2026-06-02 | 全方位大升级 | 新手引导 + PC 沉浸 + DAG |

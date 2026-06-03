@@ -1,7 +1,7 @@
 [project]
 name = "han-empire"
-version = "5.0.0"
-description = "汉献帝之末路 v4.9.0 - 265 张独立 AI 头像全覆盖 + 2 v4.5 真 bug 修复 + 全审查跑通"
+version = "5.1.0"
+description = "汉献帝之末路 v5.1.0 - 借鉴崇祯模拟器 5 项后端基建 (事件记忆+TTL/13州分税源/国库内库分账/Opening Legacies/推演记忆注入)"
 requires-python = ">=3.11"
 dependencies = [
     "agno>=2.6.9",

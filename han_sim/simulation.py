@@ -255,14 +255,98 @@ class SimulationResult:
     log_entries: List[str]       # 日志条目
 
 
+def _extract_entities_from_decree_draft(state: "GameState") -> List[str]:
+    """v5.1.0 P0-5 step 1.7: 从 directive_draft 提实体词 (人名/州郡/军队/势力).
+    仿 ming_sim/decree.py step 1.8 memory_retrieval.
+    """
+    entities: List[str] = []
+    text = ""
+    # 1) decree_draft 文本
+    draft = getattr(state, "decree_draft", None)
+    if draft:
+        text = str(draft)
+    # 2) 已办结密令 result
+    try:
+        from han_sim.db import GameDB  # 局部 import 避免环
+        # 尝试从 state 拿 db (通过 ctx 模式)
+        # 若不可得, 跳过
+        db_obj = getattr(state, "_db_ref", None)
+        if isinstance(db_obj, GameDB):
+            for o in db_obj.list_secret_orders(status="done")[:3]:
+                if o.get("result"):
+                    text += " " + str(o["result"])
+    except Exception:
+        pass
+
+    if not text:
+        return entities
+    # 3) 扫文本, 命中 characters/regions/armies/powers 中的 key
+    try:
+        from han_sim.content import GameContent
+        gc = GameContent()
+        for ch in gc.load_characters():
+            # name + aliases 都参与匹配
+            candidates = list(ch.get("aliases") or []) + [ch.get("name", "")]
+            for alias in candidates:
+                if alias and alias in text and alias not in entities:
+                    entities.append(alias)
+                    break
+        for reg in gc.load_regions():
+            for n in (reg.get("name", ""), reg.get("id", "")):
+                if n and n in text and n not in entities:
+                    entities.append(n)
+                    break
+        for p in gc.load_powers():
+            for n in (p.get("name", ""), p.get("id", "")):
+                if n and n in text and n not in entities:
+                    entities.append(n)
+                    break
+    except Exception:
+        pass
+    return entities
+
+
+def _build_memory_injection_block(state: "GameState", db: "GameDB") -> str:
+    """v5.1.0 P0-5 step 1.8: 注入推演记忆到 prompt.
+    仿 ming_sim/decree.py step 1.8.
+    """
+    try:
+        entities = _extract_entities_from_decree_draft(state)
+        if not entities:
+            return ""
+        memories = db.get_memories_by_keywords(
+            keywords=entities,
+            turn=state.turn,
+            limit=10,
+            ignore_expiry=False,
+        )
+        if not memories:
+            return ""
+        lines = ["【推演记忆】(供叙事连贯, ≤10 条)"]
+        for m in memories:
+            try:
+                tags = ", ".join(m.get("tags") or [])
+            except Exception:
+                tags = ""
+            lines.append(
+                f"- [{m.get('year', '?')}.{m.get('period', '?')}] "
+                f"{m.get('title', '')} ({m.get('event_type', '')}, "
+                f"imp={m.get('importance', 0)}, {tags})"
+            )
+        return "\n".join(lines)
+    except Exception:
+        return ""
+
+
 def _build_narration_prompt(
     state: GameState,
     fiscal: Dict,
     historical: List[Dict],
     threshold_crisis: List[Dict],
     random_events: List[Dict],
+    db: "GameDB" = None,
 ) -> str:
-    """构造 LLM 叙事生成 prompt。"""
+    """构造 LLM 叙事生成 prompt."""
     events_list = []
     for e in historical:
         events_list.append(f"【历史事件】{e['title']}：{e['summary']}")
@@ -272,6 +356,11 @@ def _build_narration_prompt(
         events_list.append(f"【突发】{e['title']}：{e['summary']}")
 
     events_block = "\n".join(events_list) if events_list else "本月无重大事件。"
+
+    # v5.1.0 P0-5 step 1.8: 推演记忆注入
+    memory_block = ""
+    if db is not None:
+        memory_block = _build_memory_injection_block(state, db)
 
     return (
         f"你是一位精通东汉末年历史的历史学家，为一款历史策略游戏撰写月度叙事。\n"
@@ -289,6 +378,8 @@ def _build_narration_prompt(
         f"【财政】税收{fiscal.get('tax',0)}万两，支出{fiscal.get('expense',0)}万两，"
         f"{'盈余' if fiscal.get('net',0) >= 0 else '亏损'}{abs(fiscal.get('net',0))}万两\n"
         f"\n"
+        f"{memory_block}\n"
+        f"\n"
         f"请以 200-400 字的文言风格撰写本月叙事，叙述汉室在本月发生的变化，"
         f"语气庄重，有据可查，符合历史感。不要提及LLM或AI等字样。"
     )
@@ -297,9 +388,11 @@ def _build_narration_prompt(
 def _generate_narration(state: GameState, fiscal: Dict,
                          historical: List[Dict],
                          threshold_crisis: List[Dict],
-                         random_events: List[Dict]) -> str:
+                         random_events: List[Dict],
+                         db: "GameDB" = None) -> str:
     """调用 LLM 生成月度叙事。失败时返回 fallback 文本。"""
-    prompt = _build_narration_prompt(state, fiscal, historical, threshold_crisis, random_events)
+    # v5.1.0 P0-5: 透传 db 给 prompt builder 以注入推演记忆
+    prompt = _build_narration_prompt(state, fiscal, historical, threshold_crisis, random_events, db=db)
     try:
         import os as _os
         _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
@@ -523,6 +616,29 @@ def run_monthly_simulation(
     except Exception:
         pass
 
+    # ── 3e2. v5.1.0 P0-4: 开幕负担 (Legacies) 应用与结案 ──────────
+    try:
+        from han_sim.legacies import apply_legacy_modifiers as _apply_leg_mods
+        legacy_mods = _apply_leg_mods(state, db)
+        if legacy_mods:
+            state.log.append(f"【开幕负担】{len(legacy_mods)} 项 modifier 注入")
+    except Exception as e:
+        legacy_mods = {}
+    # 检查 clear_gate, 满足条件的 legacy 结案
+    try:
+        cleared_legacies = db.check_clear_gates(state)
+        for cl in cleared_legacies:
+            state.log.append(f"【legacy 清除】{cl.get('name', cl.get('legacy_key', ''))}")
+    except Exception:
+        cleared_legacies = []
+    # 到期 legacy 标记为 expired
+    try:
+        expired_leg = db.expire_legacies(state.turn)
+        for el in expired_leg:
+            state.log.append(f"【legacy 到期】{el.get('name', el.get('legacy_key', ''))}")
+    except Exception:
+        pass
+
     # ── 3e. 派系主导事件 ──────────────────────────────────────
     from han_sim.flows import apply_faction_events as _apply_faction_events
     faction_events = _apply_faction_events(state, db)
@@ -546,8 +662,9 @@ def run_monthly_simulation(
         )
 
     # ── 6. LLM 叙事生成 ────────────────────────────────────────
+    # v5.1.0 P0-5: 透传 db 以注入推演记忆
     narrative = _generate_narration(
-        state, fiscal, historical, threshold_crisis, random_events
+        state, fiscal, historical, threshold_crisis, random_events, db=db
     )
 
     # ── 6b. 天子日记生成 + 写入 ───────────────────────────────

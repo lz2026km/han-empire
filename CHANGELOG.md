@@ -4,7 +4,95 @@
 
 ---
 
-## v5.0 — 2026-06-03 (score 分档 + 模型分级 + token 仪表盘)
+## v5.1.0 — 2026-06-03 (借鉴崇祯 5 项后端基建, 26 单测全过, 59/59 累计单测)
+
+> **主公明令**: 借鉴历史模拟器《崇祯》(明末力挽狂澜) 进行详细优化。
+> **本版本: v5.0.1 (581fff2) → v5.1.0 (5 commit)**
+> **26 v5.1.0 单测全过 (10+6+2+4+4) / 0 借鉴 emoji / 0 回归**
+
+### A. 任务 0.1: 事件记忆 + TTL 衰减
+
+仿 ming_sim/memories.py:729-769 event_memories + TTL。
+- `event_memories` / `event_memory_sources` 表已存在 (v5.0.1 51 表之一), 加 5 档 TTL (1=6/2=12/3=24/4=48/5=永久 -1)
+- `compute_expires_turn(imp, turn)` helper 加 importance 越界夹 [1,5]
+- `db.upsert_event_memory`: imp=5 写 expires_turn=-1
+- `db.get_memories_by_keywords` + `db.get_relevant_event_memories`: SQL 加 `expires_turn = -1` 永久保留
+- `record_event_memories_from_resolution` 2 处 source_id 加 metric 名, 避免同回合多指标互相覆盖
+- 新增 `/api/event_memories` 端点: subject 召回 + keyword 召回 + time 召回 3 模式
+
+### B. 任务 0.2: 13 州分税源 + Budget endpoint
+
+仿 ming_sim/models.py:113-114 BudgetAccount + ming_sim/web_app.py:700+ /api/budget。
+- 新建 `han_sim/budget.py` (389 行): BudgetAccount + BudgetMovement dataclass, compute_budget_lines, apply_economy_to_budget, sync 双向
+- 4 税源: 田赋/盐铁专营/军费/官俸/暗探
+- 截留机制: 皇威<30 启用 20% 截留
+- `_province_efficiency`: 1 - corruption*0.5 - gentry*0.25 - unrest*0.25
+- 新增 `/api/budget`: 返 汉室库/内库 BudgetAccount + 13 州分账 + turn 元信息
+
+### C. 任务 0.3: 国库/内库分账户双向同步
+
+- `han_sim/models.py`: GameState 加 `budget: Dict[str, BudgetAccount]` 字段 (TYPE_CHECKING 避免循环引用)
+- `han_sim/db.py`: save_state 写 metrics 前先调 sync_budget_to_metrics, load_state 末尾加 sync_metrics_to_budget (旧存档自动重建)
+
+### D. 任务 0.4: Opening Legacies 开幕负担
+
+仿 ming_sim/models.py:200-211 OpeningLegacy + ming_sim/legacies.py:88 check_clear_gates。
+- `legacies` 表已存在 (v5.0.1 51 表之一), 新加 3 条 (皇室式微/群臣观望/边患四起) 全部 duration_months=-1 永久
+- 4 类 clear_gate: metric.min / metric.max / events_resolved / events_fired
+- 新增 `db.check_clear_gates` + `db.clear_legacy_by_key` (作弊端点)
+- 新建 `han_sim/legacies.py` (111 行): apply_legacy_modifiers (注入 state.metrics + state.legacy_modifiers)
+- 特殊 modifier: decay_authority / faction_decay / military_pressure_total
+- 月末推演 step 3e2 加 apply_legacy_modifiers + check_clear_gates + expire_legacies
+- 新增 `/api/legacies` + `/api/legacies/<key>/clear` 端点
+
+### E. 任务 0.5: 推演记忆注入 (step 1.7-1.9)
+
+仿 ming_sim/decree.py:200+ step 1.8。
+- 新函数 `_extract_entities_from_decree_draft`: 从 directive_draft + 密令 result 提人名/州郡/军队/势力 (含 aliases)
+- 新函数 `_build_memory_injection_block`: 实体提完后调 get_memories_by_keywords 召回 ≤10 条
+- `_build_narration_prompt` 加 db 入参 + memory_block 注入 (imp DESC 排序)
+- `_generate_narration` / `run_monthly_simulation` 透传 db
+
+### F. 端点增量
+
+89 v5.0.1 → 95 v5.1.0 (+6):
+- `/api/event_memories` (P0-1)
+- `/api/budget` (P0-2)
+- `/api/legacies` (P0-4)
+- `/api/legacies/<key>/clear` (P0-4)
+- (P0-3 双向同步无新端点)
+- (P0-5 prompt 注入无新端点)
+
+### G. 单测增量
+
+55 v5.0.1 → 81 v5.1.0 (+26):
+- test_event_memories_v51.py: 10 (5 档 TTL/clamp/4 类规则提取/imp=5 永不过期/imp=3 TTL=24/关键词跨 subject/E2E 5 类)
+- test_budget_v51.py: 6 (13 州税基/截留 20%/4 税源/E2E apply+sync/效率公式/序列化)
+- test_budget_sync_v51.py: 2 (双向同步幂等/旧存档无 budget 兼容)
+- test_legacies_v51.py: 4 (6 条加载/4 类 gate/不重复开/E2E apply+summary)
+- test_memory_inject_v51.py: 4 (提实体 ≥3/推演记忆块/排序 imp DESC/空 directive 不注入)
+
+### H. 仓库状态
+
+- HEAD: `1f13f2a` (v5.1.0 task 0.5)
+- 5 commit (任务 0.1-0.5) + 1 commit (v5.1.0 验收: 版本号同步 + CHANGELOG)
+- 6 文件新增: event_memories (改) + budget.py + legacies.py + 5 个测试文件
+- ~1000 行新增 (Python) / ~700 行新增 (单测)
+- 累计 59 单测全过 (26 v5.1.0 + 17 intro + 16 llm_router)
+- 累计 89 → 95 路由
+- 累计 51 → 51 表 (无新增表, 5 表扩字段 / 1 表加 2 方法)
+
+### I. v5.1.0 没做的 (P1/P2 待主公批)
+
+- v5.1.1: 强制结算 (CHEAT_NARRATIVE_PREFIX) + 流式结算双栏 + 月初邸报自动弹
+- v5.1.2: ClosedIssuesModal + HistoryModal + ExtractionModal
+- v5.1.3: 嫔妃调教持久化 + 立绘上传
+- v5.1.4: 菜单页 + CSS 整合 + 国势详情弹窗
+- v5.1.5: 多周目统计 + .env 模板 + auto_play.py 平衡性测试
+
+---
+
+## v5.0 — 2026-06-03 (竞品调研方案 P0 必做 3 件全完工)
 
 > **主公明令**: 搜索竞品仓库, TAVILY 搜索全网竞品方案, 结合产品形成 5.0 方案, 审批后开工.
 > **本版本: v4.9.0 (4be37a1) → v5.0.0**

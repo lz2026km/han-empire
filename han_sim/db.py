@@ -1112,6 +1112,12 @@ class GameDB:
                    turn=excluded.turn, turn_phase=excluded.turn_phase""",
             (state.year, state.period, state.turn, getattr(state, "turn_phase", "summoning")),
         )
+        # v5.1.0 P0-3: 写 metrics 前先同步 budget 余额 (避免 budget 滞后 metrics)
+        try:
+            from han_sim.budget import sync_budget_to_metrics
+            sync_budget_to_metrics(state)
+        except Exception:
+            pass
         for key, value in state.metrics.items():
             if isinstance(value, (list, dict)):
                 # 复合值: 序列化为 JSON 字符串 (SQLite bind 不支持 list/dict)
@@ -1171,6 +1177,12 @@ class GameDB:
         for account in account_rows:
             state.metrics[str(account["account"])] = int(account["balance"])
         self.sync_economy_accounts(state)
+        # v5.1.0 P0-3: load_state 后从 metrics 重建 state.budget (双口径同步)
+        try:
+            from han_sim.budget import sync_metrics_to_budget
+            sync_metrics_to_budget(state)
+        except Exception:
+            pass
         self.conn.commit()
         return state
 
@@ -1268,6 +1280,8 @@ class GameDB:
         """新档开局时根据 preset legacies 写入 legacies 表（开局负面修正）。"""
         if self.table_has_rows("legacies"):
             return
+        # v5.1.0 P0-4: 6 条开幕负担 (汉末乱世)
+        # duration_months=-1 = 永久, 仅靠 clear_gate 清除
         opening_legacies = [
             {
                 "name": "董卓余威",
@@ -1292,6 +1306,31 @@ class GameDB:
                 "narrative_hint": "连年战乱，百姓流离失所，民心已不再向汉。",
                 "duration_months": 24,
                 "clear_gate": {"metric": "声望", "min": 50},
+            },
+            # v5.1.0 P0-4 新增 3 条 (皇室式微 / 群臣观望 / 边患四起)
+            {
+                "name": "皇室式微",
+                "legacy_key": "imperial_weak",
+                "modifiers": {"威权": -20, "decay_authority": 0.3},
+                "narrative_hint": "献帝年幼, 四百年炎汉气数已尽, 纵有天命, 亦需铁腕。",
+                "duration_months": -1,  # 永久, 仅靠 clear_gate
+                "clear_gate": {"metric": "威权", "min": 60},
+            },
+            {
+                "name": "群臣观望",
+                "legacy_key": "courtiers_watchful",
+                "modifiers": {"faction_decay": 0.2},
+                "narrative_hint": "百官观望朝局, 投闲置散, 大事不决, 小事不理。",
+                "duration_months": -1,  # 永久
+                "clear_gate": {"metric": "威权", "min": 70},
+            },
+            {
+                "name": "边患四起",
+                "legacy_key": "border_raids",
+                "modifiers": {"military_pressure_total": 30},
+                "narrative_hint": "北匈奴/鲜卑/南匈奴时扰幽并, 西羌乱凉州, 边疆告急文书日不暇接。",
+                "duration_months": -1,  # 永久
+                "clear_gate": {"metric": "威权", "min": 80},
             },
         ]
         for leg in opening_legacies:
@@ -1580,8 +1619,13 @@ class GameDB:
             return 0
         importance = max(1, min(5, int(importance or 3)))
         if expires_turn is None:
-            _ttl = {1: 6, 2: 12, 3: 24, 4: 48}
-            expires_turn = int(state.turn) + _ttl.get(importance, 12)
+            # v5.1.0 P0-1: importance=5 → 永久 (expires_turn = -1, 永不过期)
+            _ttl = {1: 6, 2: 12, 3: 24, 4: 48, 5: -1}
+            ttl_turns = _ttl.get(importance, 12)
+            if ttl_turns == -1:
+                expires_turn = -1
+            else:
+                expires_turn = int(state.turn) + ttl_turns
         clean_tags = [str(t).strip()[:40] for t in (tags or []) if str(t).strip()]
         self.conn.execute(
             """INSERT INTO event_memories
@@ -1674,7 +1718,8 @@ class GameDB:
             if issue.get("title"):
                 active_issue_tags.append(str(issue["title"])[:20])
         tag_needles = [character_name, faction, office_type] + active_issue_tags
-        expiry_clause = "" if ignore_expiry else "AND (expires_turn IS NULL OR expires_turn >= ?)"
+        # v5.1.0 P0-1: expires_turn = -1 表示永久 (importance=5), 不过滤
+        expiry_clause = "" if ignore_expiry else "AND (expires_turn IS NULL OR expires_turn = -1 OR expires_turn >= ?)"
         params: List = [int(turn)]
         if not ignore_expiry:
             params.append(int(turn))
@@ -1757,9 +1802,10 @@ class GameDB:
             )
         else:
             all_params["exp_turn"] = int(turn)
+            # v5.1.0 P0-1: expires_turn = -1 表示永久 (importance=5), 不过滤
             sql = (
                 "SELECT * FROM event_memories "
-                "WHERE (expires_turn IS NULL OR expires_turn >= :exp_turn) "
+                "WHERE (expires_turn IS NULL OR expires_turn = -1 OR expires_turn >= :exp_turn) "
                 "AND turn <= :turn "
                 "AND (" + tag_conditions + ") "
                 "ORDER BY importance DESC, turn DESC LIMIT :limit"
@@ -2361,6 +2407,101 @@ class GameDB:
         if expired:
             self.conn.commit()
         return expired
+
+    def check_clear_gates(self, state: "GameState") -> List[Dict]:
+        """v5.1.0 P0-4: 检查每条 active legacy 的 clear_gate 条件, 满足则结案 (改为 cleared 状态).
+
+        Clear gate 格式 (JSON):
+          {"metric": "威权", "min": 50}     - 当前值 >= min
+          {"metric": "藩镇", "max": 30}     - 当前值 <= max
+          {"events_resolved": ["event_id"]}  - 已结案 issue 包含
+          {"events_fired": ["event_id"]}     - 已触发 issue 包含
+
+        Returns: 刚刚结案的 legacy 列表 (含 legacy_key/name/modifiers/narrative_hint)
+        """
+        cleared: List[Dict] = []
+        rows = self.conn.execute(
+            "SELECT * FROM legacies WHERE status='active'"
+        ).fetchall()
+        for row in rows:
+            row_dict = dict(row)
+            gate = row_dict.get("clear_gate") or "{}"
+            if isinstance(gate, str):
+                try:
+                    gate = json.loads(gate)
+                except Exception:
+                    continue
+            if not isinstance(gate, dict) or not gate:
+                continue
+
+            # 1) metric.min / metric.max
+            metric = gate.get("metric")
+            if metric:
+                value = int(state.metrics.get(metric, 0))
+                if "min" in gate and value < int(gate["min"]):
+                    continue
+                if "max" in gate and value > int(gate["max"]):
+                    continue
+            # 2) events_resolved (已结案 issues, 用 origin_ref/title 匹配)
+            events_resolved = gate.get("events_resolved") or []
+            if events_resolved:
+                try:
+                    found_refs = {
+                        str(r["origin_ref"] or "") for r in self.conn.execute(
+                            "SELECT origin_ref FROM issues WHERE status='resolved'"
+                        ).fetchall()
+                    }
+                    found_titles = {
+                        str(r["title"] or "") for r in self.conn.execute(
+                            "SELECT title FROM issues WHERE status='resolved'"
+                        ).fetchall()
+                    }
+                    # 任一 events_resolved 在 origin_ref 或 title 中找到即满足
+                    if not any(
+                        ev in found_refs or ev in found_titles
+                        for ev in events_resolved
+                    ):
+                        continue
+                except Exception:
+                    pass
+            # 3) events_fired (已触发 events, 查 event_triggers.event_id)
+            events_fired = gate.get("events_fired") or []
+            if events_fired:
+                try:
+                    found = {
+                        str(r["event_id"]) for r in self.conn.execute(
+                            "SELECT DISTINCT event_id FROM event_triggers"
+                        ).fetchall()
+                    }
+                    if not all(ev in found for ev in events_fired):
+                        continue
+                except Exception:
+                    pass
+
+            # 全部条件满足, 结案
+            self.conn.execute(
+                "UPDATE legacies SET status='cleared' WHERE id=?",
+                (row_dict["id"],),
+            )
+            cleared.append(row_dict)
+        if cleared:
+            self.conn.commit()
+        return cleared
+
+    def clear_legacy_by_key(self, legacy_key: str, reason: str = "") -> bool:
+        """v5.1.0 P0-4: 手动清除 legacy (作弊端点用). 返 True=成功"""
+        row = self.conn.execute(
+            "SELECT id FROM legacies WHERE legacy_key=? AND status='active'",
+            (legacy_key,),
+        ).fetchone()
+        if not row:
+            return False
+        self.conn.execute(
+            "UPDATE legacies SET status='cleared' WHERE id=?",
+            (row["id"],),
+        )
+        self.conn.commit()
+        return True
 
     # ── 建筑日志 ─────────────────────────────────────────────────────────
 

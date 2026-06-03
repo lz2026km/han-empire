@@ -17,6 +17,34 @@ from han_sim.db import GameDB
 from han_sim.models import GameState
 
 
+# v5.1.0 P0-1: TTL 映射 (importance → 回合数). 5 = 永久 (-1)
+TTL_BY_IMPORTANCE: Dict[int, int] = {
+    1: 6,
+    2: 12,
+    3: 24,
+    4: 48,
+    5: -1,  # 永久
+}
+
+
+def compute_expires_turn(importance: int, current_turn: int) -> int:
+    """根据 importance 档位 + 当前回合, 计算 expires_turn。
+
+    importance 5 → -1 (永久, 永不过期)
+    其他档位 → current_turn + TTL_BY_IMPORTANCE[imp]
+    importance 越界 (0 / 负数 / >5) 自动夹到 [1, 5]
+    """
+    try:
+        importance = int(importance)
+    except (TypeError, ValueError):
+        importance = 3
+    importance = max(1, min(5, importance))
+    ttl = TTL_BY_IMPORTANCE.get(importance, 12)
+    if ttl == -1:
+        return -1
+    return int(current_turn) + ttl
+
+
 def _short(text: Any, limit: int = 80) -> str:
     s = re.sub(r"\s+", " ", str(text or "")).strip()
     if len(s) <= limit:
@@ -226,7 +254,7 @@ def record_event_memories_from_resolution(
                 importance=importance,
                 tags=_tags("指标", metric, "财政", "月末推演"),
                 source_kind="simulation",
-                source_id=str(state.turn),
+                source_id=f"{state.turn}:{metric}",
             )
 
     # 3) 触发事件
@@ -576,7 +604,7 @@ def record_event_memories_from_resolution(
                 importance=importance,
                 tags=_tags("指标", metric, "财政", "月末推演"),
                 source_kind="simulation",
-                source_id=str(state.turn),
+                source_id=f"{state.turn}:{metric}",
             )
 
     # 3) 触发事件
