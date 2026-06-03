@@ -1960,6 +1960,58 @@ def api_menu_status():
     })
 
 
+# --- 6m) /api/stats/global + /api/stats/runs (v5.1.5 P5-1: 多周目统计) ---
+@app.route('/api/stats/global', methods=['GET'])
+def api_stats_global():
+    """v5.1.5 P5-1: 全局统计 (仿 ming_sim README TODO '多周目统计')
+
+    返:
+      total_runs, wins, losses, total_turns, max_authority,
+      max_legacy, endings_unlocked
+    """
+    try:
+        from han_sim.legacy_stats import get_global_stats
+        from han_sim.db import GameDB
+        from han_sim.paths import user_data_path
+    except Exception as exc:
+        return jsonify({"error": "import_failed", "detail": str(exc)}), 500
+
+    try:
+        db_path = user_data_path("stats.db")
+        db = GameDB(db_path)
+        stats = get_global_stats(db)
+        db.close()
+        return jsonify(stats)
+    except Exception as exc:
+        return jsonify({"error": "internal", "detail": str(exc)}), 500
+
+
+@app.route('/api/stats/runs', methods=['GET'])
+def api_stats_runs():
+    """v5.1.5 P5-1: 历史周目列表 (倒序, 上限 20)."""
+    try:
+        from han_sim.legacy_stats import get_run_history
+        from han_sim.db import GameDB
+        from han_sim.paths import user_data_path
+    except Exception as exc:
+        return jsonify({"error": "import_failed", "detail": str(exc)}), 500
+
+    limit_str = (request.args.get("limit") or "20").strip()
+    try:
+        limit = max(1, min(100, int(limit_str)))
+    except Exception:
+        limit = 20
+
+    try:
+        db_path = user_data_path("stats.db")
+        db = GameDB(db_path)
+        runs = get_run_history(db, limit=limit)
+        db.close()
+        return jsonify({"runs": runs, "total": len(runs), "limit": limit})
+    except Exception as exc:
+        return jsonify({"error": "internal", "detail": str(exc)}), 500
+
+
 # --- 6j) /api/extraction (v5.1.2 P2-3: ExtractionModal 提取透明) ---
 @app.route('/api/extraction', methods=['GET'])
 def api_extraction():

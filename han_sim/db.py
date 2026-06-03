@@ -767,6 +767,20 @@ class GameDB:
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (campaign_id, event_id)
             );
+
+            CREATE TABLE IF NOT EXISTS run_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                campaign_id TEXT NOT NULL,
+                started_at TEXT NOT NULL,
+                ended_at TEXT NOT NULL,
+                ending TEXT NOT NULL,
+                final_turn INTEGER NOT NULL DEFAULT 0,
+                final_year INTEGER NOT NULL DEFAULT 189,
+                final_period INTEGER NOT NULL DEFAULT 1,
+                final_score INTEGER NOT NULL DEFAULT 0,
+                decisions_count INTEGER NOT NULL DEFAULT 0
+            );
+            CREATE INDEX IF NOT EXISTS idx_run_history_ending ON run_history(ending);
         """)
         self.conn.commit()
 
