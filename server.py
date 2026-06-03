@@ -1830,6 +1830,59 @@ def api_intro_hints():
     })
 
 
+# --- 6e) /api/budget (v5.1.0 P0-2: 国库/内库 分账户预算视图) ---
+@app.route('/api/budget', methods=['GET'])
+def api_budget():
+    """v5.1.0 P0-2: 财政预算视图 (仿 ming_sim /api/budget)
+
+    Query params:
+        campaign_id: 战役 ID (必需)
+        include_provinces: 是否返 13 州分账 (默认 true)
+    """
+    from han_sim.budget import (
+        ACCOUNT_HANSHIKU, ACCOUNT_INNER, compute_budget_lines,
+    )
+    from han_sim.paths import user_data_path
+
+    campaign_id = (request.args.get("campaign_id") or "").strip()
+    if not campaign_id:
+        return jsonify({"error": "campaign_id required"}), 400
+
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    include_provinces = (request.args.get("include_provinces", "true").lower() == "true")
+
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+
+    # 加载 state
+    state = db.load_state()
+    if state is None:
+        return jsonify({"error": "no state"}), 404
+
+    try:
+        budgets = compute_budget_lines(state, db)
+        hanshiku = budgets[ACCOUNT_HANSHIKU].to_dict()
+        neiku = budgets[ACCOUNT_INNER].to_dict()
+        provinces = budgets.get("_provinces", [])
+
+        result = {
+            ACCOUNT_HANSHIKU: hanshiku,
+            ACCOUNT_INNER: neiku,
+            "turn": {"year": state.year, "period": state.period, "turn": state.turn},
+            "intercept_applies": int(state.metrics.get("威权", 0)) < 30,
+        }
+        if include_provinces:
+            result["provinces"] = provinces
+            result["province_count"] = len(provinces)
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        return jsonify({"error": f"budget compute failed: {e}", "trace": traceback.format_exc()}), 500
+
+
 # --- 6d) /api/event_memories (v5.1.0 P0-1: 事件记忆) ---
 @app.route('/api/event_memories', methods=['GET'])
 def api_event_memories():
