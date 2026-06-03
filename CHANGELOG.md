@@ -4,6 +4,74 @@
 
 ---
 
+## v5.1.4 — 2026-06-03 (借鉴崇祯 体验收口, 54/54 累计单测)
+
+> **本版本: v5.1.3 (8c3f9f6) → v5.1.4 (4 commit)**
+> **0 新单测 (前端收口, 视觉回归靠主公 Vite build) / 0 借鉴 emoji / 0 回归**
+
+### A. 任务 4.1: 菜单页 MenuPage
+
+仿 ming_sim MenuPage 入口页。
+- `server.py`: 新端点 `GET /api/menu/status`
+  - `saves[]` (campaign_*.db 倒序, size/mtime/campaign_id)
+  - `total_saves` / `has_api_key` / `has_running_game` / `llm` / `version`
+- `web/src/api.ts`: 新方法 `getMenuStatus()`
+- `web/src/components/MenuPage.tsx` (231 行): 新组件
+  - 标题 + 副标题 (Crown 图标 + 楷体大字 + v5.1.3)
+  - LLM 配置状态栏 (绿/红 状态色 + 模型/URL)
+  - 2 大卡片: 建立新朝 (含天子姓名 input) / 存档列表 (10 条上限)
+  - 存档项: 继续/读档 2 按钮, 显 cid + 大小 + 时间
+  - 底部退出/刷新 ghost 按钮
+  - 错误条 (红底) + 加载状态 + 720px 响应式单列
+
+### B. 任务 4.2: CSS 整合
+
+- 移动 5 个 dead CSS 文件 (v4-epic / v4-images / v4-补漏 / v4.0.3 / animations, 共 75KB) 到
+  `docs/archive/v4-css-deadcode/` (这些 v4-*.css 在 main.tsx / App.tsx 都未被 import)
+- 整合后 `web/src/styles/` 仅 `app.css` (75KB, 唯一源)
+- 后续按需 `@layer` 分段 (reset / tokens / typography / layout / components / theme / animations)
+  此次仅清理 dead code, 不拆 @layer (避免引入不必要变化)
+
+### C. 任务 4.3: 国势详情弹窗 StateModal
+
+仿 ming_sim StateModal 综合视图。
+- `web/src/components/StateModal.tsx` (239 行): 新组件
+  - 6 Tab: 国势 (metrics grid) / 财政 (BudgetAccount 详细) / 派系 / 地区 / 军队 / 外部
+  - 国势: auto-fit grid, 每个指标一卡 (label + 大数字)
+  - 财政: 嵌入 v5.1.0 BudgetView (汉室库 + 内库, 余额/月净/收入/支出 detail)
+  - 派系/地区/军队/外部: 列表式卡片 (head + meta)
+  - 暗色背景 + 绿色调 (国势色) + 金色调 (财政高亮)
+  - Esc 关闭
+- 注: App.tsx 未自动挂载, 留作后续整合 (或主公手动加按钮触发)
+
+### D. 端点增量
+
+100 v5.1.3 → 101 v5.1.4 (+1):
+- `/api/menu/status` (P4-1)
+
+### E. 单测增量
+
+54 v5.1.3 → 54 v5.1.4 (+0):
+- 任务 4.1/4.2/4.3 全前端收口, 视觉回归靠主公 Vite build
+
+### F. 仓库状态
+
+- HEAD: `9551068` (v5.1.4 task 4.3)
+- 3 commit (任务 4.1-4.3) + 1 acceptance
+- 2 文件新增: MenuPage.tsx / StateModal.tsx
+- 5 文件移动 (rename): v4-*.css → docs/archive/v4-css-deadcode/
+- 累计 54 单测全过 (26 v5.1.0 + 4 v5.1.1 + 7 v5.1.3 + 17 intro)
+- 累计 89 → 101 路由
+- 累计 51 → 51 表 (无新增)
+
+### G. v5.1.4 没做的 (v5.1.5 收尾)
+
+- v5.1.5 任务 5.1: 多周目统计 (run_history 表 + /api/stats/global)
+- v5.1.5 任务 5.2: .env 模板 (OPENAI_API_KEY 等)
+- v5.1.5 任务 5.3: auto_play.py 平衡性测试 (跑 N 局检查崩盘率)
+
+---
+
 ## v5.1.3 — 2026-06-03 (借鉴崇祯 后宫嫔妃, 54/54 累计单测)
 
 > **本版本: v5.1.2 (7d25d4c) → v5.1.3 (2 commit)**

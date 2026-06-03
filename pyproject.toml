@@ -1,7 +1,7 @@
 [project]
 name = "han-empire"
-version = "5.1.3"
-description = "汉献帝之末路 v5.1.3 - 借鉴崇祯模拟器 后宫嫔妃 (调教持久化 + 立绘池/上传)"
+version = "5.1.4"
+description = "汉献帝之末路 v5.1.4 - 借鉴崇祯模拟器 体验收口 (菜单页 + CSS 整合 + 国势详情弹窗)"
 requires-python = ">=3.11"
 dependencies = [
     "agno>=2.6.9",
