@@ -2,11 +2,13 @@
    MenuPage - 主菜单页 (v5.1.4 P4-1)
    仿 ming_sim MenuPage, 选项: 继续/新朝/读档/退出
    v5.2.0 P6-3: 改用 NewGameModal 组件
+   v5.2.0 P6-12: 美化 (主公头像 + 朝代 banner + 4 季节背景)
    ============================================= */
 import { useEffect, useState } from 'react'
 import { Crown, Save, Plus, Power, Key, Folder, Trash2 } from 'lucide-react'
 import { api } from '../api'
 import { NewGameModal } from './NewGameModal'
+import { useTheme } from '../hooks/useTheme'
 
 interface Save {
   campaign_id: string
@@ -38,6 +40,8 @@ export function MenuPage({ onNewGame, onLoadSave, onContinue, onShutdown }: Menu
   const [busy, setBusy] = useState(false)
   // v5.2.0 P6-3: 建新朝用 NewGameModal 弹窗 (替代原内联 input + button)
   const [showNewGameModal, setShowNewGameModal] = useState(false)
+  // v5.2.0 P6-12: 季节背景 (随 useTheme 切换)
+  const { season } = useTheme()
 
   useEffect(() => {
     refresh()
@@ -116,11 +120,16 @@ export function MenuPage({ onNewGame, onLoadSave, onContinue, onShutdown }: Menu
   }
 
   return (
-    <div className="menu-page">
+    <div className="menu-page" data-season={season}>
+      {/* v5.2.0 P6-12: 朝代 banner 背景 (4 季节, AI 生图) */}
+      <div className="menu-page__banner" aria-hidden="true" />
       <div className="menu-page__header">
-        <Crown size={48} />
+        {/* v5.2.0 P6-12: 主公头像 (圆形 mask, 金边) */}
+        <div className="menu-page__avatar" aria-label="汉献帝刘协">
+          <Crown size={48} className="menu-page__avatar-fallback" />
+        </div>
         <h1>汉献帝之末路</h1>
-        <p className="menu-page__subtitle">献帝 v{status?.version || '5.1.3'} · 借鉴明末崇祯模拟器</p>
+        <p className="menu-page__subtitle">献帝 v{status?.version || '5.2.0'} · 借鉴明末崇祯模拟器</p>
       </div>
 
       {error && <div className="menu-page__error">[X] {error}</div>}
