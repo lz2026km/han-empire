@@ -1495,6 +1495,78 @@ def list_consort_records_api(campaign_id, consort_id):
     return jsonify({'records': events, 'consort_id': consort_id})
 
 
+@app.route('/api/campaigns/<campaign_id>/consorts/<consort_id>/memories', methods=['GET'])
+def api_consort_memories(campaign_id, consort_id):
+    """v5.1.3 P3-1: 妃嫔永久记忆 (调教 + 召见 + 画像).
+
+    仿 ming_sim HaremDrawer 调教历史.
+    综合: consort_traits (永久技能/性情) + consort_events (调教流水) + 画像.
+    """
+    from han_sim.paths import user_data_path
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not db_path.is_file():
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+
+    try:
+        limit = int(request.args.get("limit", 50))
+    except (ValueError, TypeError):
+        limit = 50
+
+    # 永久调教 (consort_traits)
+    traits = {}
+    if hasattr(db, 'get_consort_traits'):
+        try:
+            traits = db.get_consort_traits(consort_id.replace('consort_', '')) or {}
+        except Exception:
+            traits = {}
+    # 画像 (consorts.json)
+    portrait_info = {}
+    try:
+        from han_sim.content import GameContent
+        gc = GameContent()
+        for c in gc.load_consorts():
+            if c.get("id") == consort_id or c.get("name") == consort_id:
+                portrait_info = {
+                    "id": c.get("id"),
+                    "name": c.get("name"),
+                    "rank": c.get("rank", ""),
+                    "personality": c.get("personality", ""),
+                    "talents": c.get("talents", []),
+                    "family": c.get("family", ""),
+                    "portrait_id": c.get("portrait_id", ""),
+                    "summary": c.get("summary", ""),
+                }
+                break
+    except Exception:
+        pass
+
+    # 流水事件
+    events = db.list_consort_events(campaign_id, consort_id.replace('consort_', ''))[:limit]
+
+    # 解析 traits JSON
+    import json as _json
+    try:
+        learned = _json.loads(traits.get('extra_skills', '[]') or '[]')
+    except Exception:
+        learned = []
+    try:
+        personality = _json.loads(traits.get('extra_traits', '[]') or '[]')
+    except Exception:
+        personality = []
+
+    return jsonify({
+        "consort_id": consort_id,
+        "portrait": portrait_info,
+        "permanent_traits": traits,
+        "learned_skills": learned,
+        "personality_changes": personality,
+        "events": events,
+        "total_events": len(events),
+    })
+
+
 @app.route('/api/campaigns/<campaign_id>/consorts/<consort_id>/cultivate', methods=['POST'])
 def cultivate_consort_api(campaign_id, consort_id):
     """调教妃嫔：学技能/改性格（后端接口，前端可单独调）。"""
