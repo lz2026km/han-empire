@@ -27,6 +27,8 @@ import { HistoryModal } from './components/HistoryModal'
 import { ExtractionModal } from './components/ExtractionModal'
 // v5.2.0 P6-2: 国势详情弹窗 (StateModal)
 import { StateModal } from './components/StateModal'
+// v5.2.0 P6-5: 通用确认弹窗 (ConfirmDialog)
+import { ConfirmDialog } from './components/ConfirmDialog'
 import { SecretOrdersModal } from './components/SecretOrdersModal'
 import { CheatConsole } from './components/CheatConsole'
 import { GrandMap } from './components/GrandMap'
@@ -84,6 +86,8 @@ export default function App() {
   // v5.2.0 P6-4: Header 4 入口对应 Modal state (Settings/Help 在 6.7/6.9 实现)
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [showHelpModal, setShowHelpModal] = useState(false)
+  // v5.2.0 P6-5: 返回主菜单 二次确认
+  const [showReturnConfirm, setShowReturnConfirm] = useState(false)
 
   // v5.1.1 P1-3: 检测 gameState.turn 变化 → 拉 /api/gazette → 弹 ReportModal
   useEffect(() => {
@@ -165,7 +169,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [campaignId])
 
-  // v5.2.0 P6-4: ? 键弹 HelpModal / Esc 游戏中返回主菜单
+  // v5.2.0 P6-4: ? 键弹 HelpModal / Esc 游戏中弹返回主菜单确认 (P6-5)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const tgt = e.target as HTMLElement
@@ -178,16 +182,16 @@ export default function App() {
           && !showExtractionModal && !showReportModal && !showClosedModal
           && !showEdictModal && !showChatModal && !showCheatConsole
           && !showSecretOrders && !showGrandMap && !showSettingsModal
-          && !showHelpModal && !inInput) {
-        // Esc 在游戏中 → 返回主菜单
-        returnToMenu()
+          && !showHelpModal && !showReturnConfirm && !inInput) {
+        // Esc 在游戏中 → 弹返回主菜单确认 (v5.2.0 P6-5 ConfirmDialog)
+        setShowReturnConfirm(true)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [campaignId, returnToMenu, showStateModal, showHistoryModal, showExtractionModal,
+  }, [campaignId, showStateModal, showHistoryModal, showExtractionModal,
       showReportModal, showClosedModal, showEdictModal, showChatModal, showCheatConsole,
-      showSecretOrders, showGrandMap, showSettingsModal, showHelpModal])
+      showSecretOrders, showGrandMap, showSettingsModal, showHelpModal, showReturnConfirm])
 
   const {
     campaignId, gameState, ministers, factions, loading, error, log,
@@ -278,7 +282,7 @@ export default function App() {
       <Header
         gameState={gameState}
         onSave={saveGame}
-        onReturnToMenu={returnToMenu}
+        onReturnToMenu={campaignId ? () => setShowReturnConfirm(true) : returnToMenu}
         onOpenStateModal={() => setShowStateModal(true)}
         onOpenSettingsModal={() => setShowSettingsModal(true)}
         onOpenHelpModal={() => setShowHelpModal(true)}
@@ -489,6 +493,21 @@ export default function App() {
         ministers={ministers}
         factions={factions}
         onClose={() => setShowStateModal(false)}
+      />
+
+      {/* v5.2.0 P6-5: 返回主菜单 二次确认 */}
+      <ConfirmDialog
+        open={showReturnConfirm}
+        title="返回主菜单?"
+        body="当前对局将保留在存档中, 你可以稍后从主菜单继续。如想彻底重新开始, 请在主菜单选'建立新朝'。"
+        confirmText="返回主菜单"
+        cancelText="继续游戏"
+        variant="warning"
+        onConfirm={() => {
+          setShowReturnConfirm(false)
+          returnToMenu()
+        }}
+        onCancel={() => setShowReturnConfirm(false)}
       />
 
       {/* v5.2.0 P6-4: 设置 Modal (6.7 实现) */}

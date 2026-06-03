@@ -320,6 +320,22 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-bg-primary);
 }
 
+/* v5.2.0 P6-5: ConfirmDialog 危险按钮 (红色实心) */
+.btn--danger {
+  background: var(--color-accent-red);
+  color: #fff;
+  border: 1px solid var(--color-accent-red-bright);
+}
+.btn--danger:hover {
+  background: var(--color-accent-red-bright);
+}
+
+/* v5.2.0 P6-5: ConfirmDialog 紧凑型 modal */
+.modal--confirm {
+  padding: 20px 22px;
+  min-width: 360px;
+}
+
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
