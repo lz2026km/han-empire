@@ -35,6 +35,8 @@ import { LoadingScreen } from './components/LoadingScreen'
 import { SettingsModal } from './components/SettingsModal'
 // v5.2.0 P6-8: 多周目统计弹窗 (StatsModal)
 import { StatsModal } from './components/StatsModal'
+// v5.2.0 P6-9: 帮助弹窗 (HelpModal)
+import { HelpModal } from './components/HelpModal'
 import { SecretOrdersModal } from './components/SecretOrdersModal'
 import { CheatConsole } from './components/CheatConsole'
 import { GrandMap } from './components/GrandMap'
@@ -532,17 +534,10 @@ export default function App() {
       />
 
       {/* v5.2.0 P6-4: 帮助 Modal (6.9 实现) */}
-      {showHelpModal && (
-        <div className="modal-overlay" onClick={() => setShowHelpModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal__title">帮助</div>
-            <p style={{ color: 'var(--color-text-secondary)' }}>v5.2.0 P6-9 任务实现 (玩法/快捷键/致谢)</p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '14px' }}>
-              <button type="button" className="btn" onClick={() => setShowHelpModal(false)}>关闭</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <HelpModal
+        open={showHelpModal}
+        onClose={() => setShowHelpModal(false)}
+      />
 
       {/* Grand Map */}
       {/* v2.0.0 P0-B2: provinces 为空数组时 onProvinceClick 应可空调用 */}

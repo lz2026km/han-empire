@@ -2560,6 +2560,137 @@ input:focus, select:focus {
   font-style: italic;
 }
 
+/* v5.2.0 P6-9: HelpModal 3 Tab (玩法/快捷键/致谢) */
+.help-tabs {
+  display: flex;
+  gap: 0;
+  margin: 8px 0 0;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px 6px 0 0;
+  border: 1px solid var(--color-border);
+  border-bottom: none;
+}
+.help-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  padding: 10px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  transition: all 200ms;
+}
+.help-tab:last-child { border-right: none; }
+.help-tab:hover { background: rgba(255,255,255,0.04); color: var(--color-text-primary); }
+.help-tab--active {
+  background: rgba(201,168,76,0.10);
+  color: var(--color-gold-bright);
+  border-bottom: 2px solid var(--color-gold);
+}
+.help-body {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--color-border);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  padding: 14px 16px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.help-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.help-section__item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  background: var(--color-bg-card);
+  border-radius: 4px;
+  border-left: 2px solid var(--color-gold-dim);
+}
+.help-section__icon {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.12);
+  color: var(--color-gold-bright);
+  display: flex; align-items: center; justify-content: center;
+}
+.help-section__item h4 {
+  margin: 0 0 2px;
+  color: var(--color-gold);
+  font-size: 13px;
+  font-family: var(--font-display);
+}
+.help-section__item p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+.help-shortcut-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.help-shortcut-table td {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.help-kbd {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-gold);
+  border-radius: 3px;
+  padding: 2px 8px;
+  min-width: 50px;
+  text-align: center;
+  color: var(--color-gold-bright);
+}
+.help-credit-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--color-border);
+  font-size: 12px;
+}
+.help-credit-role {
+  color: var(--color-gold);
+  min-width: 80px;
+  font-family: var(--font-display);
+  letter-spacing: 1px;
+}
+.help-credit-who {
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+.help-thanks {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(201,168,76,0.06);
+  border: 1px dashed var(--color-gold-dim);
+  border-radius: 4px;
+  text-align: center;
+}
+.help-thanks p {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--color-gold-bright);
+  font-family: var(--font-display);
+}
+
 /* v5.2.0 P6-8: StatsModal 5 卡 + 历史表 */
 .stats-grid {
   display: grid;
