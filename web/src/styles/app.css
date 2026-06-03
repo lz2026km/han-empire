@@ -2370,6 +2370,181 @@ input:focus, select:focus {
   min-height: 320px;
 }
 
+/* v5.1.4 P4-1: MenuPage 主菜单 (仿 ming_sim MenuPage) */
+.menu-page {
+  width: 100%; max-width: 920px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  display: flex; flex-direction: column;
+  gap: 24px;
+  min-height: 80vh;
+  color: #d8e0d0;
+}
+.menu-page__header {
+  text-align: center;
+  padding: 24px 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  border: 1px solid #3a4a3a;
+  border-radius: 12px;
+}
+.menu-page__header h1 {
+  margin: 12px 0 6px;
+  font-family: 'KaiTi', 'STKaiti', serif;
+  font-size: 32px;
+  color: #c8a87a;
+  letter-spacing: 4px;
+}
+.menu-page__header svg { color: #c8a87a; }
+.menu-page__subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #6a8a8a;
+  font-family: 'SF Mono', 'Consolas', monospace;
+}
+.menu-page__loading {
+  text-align: center;
+  padding: 100px 20px;
+  color: #6a8a8a;
+  font-size: 14px;
+}
+.menu-page__error {
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  color: #fca5a5;
+  font-size: 13px;
+}
+.menu-page__llm {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #2a3a2a;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #8aa88a;
+  font-family: 'SF Mono', 'Consolas', monospace;
+}
+.menu-page__llm-ok { color: #4ade80; font-weight: 600; }
+.menu-page__llm-no { color: #f87171; font-weight: 600; }
+.menu-page__llm-meta {
+  margin-left: auto;
+  font-size: 11px;
+  color: #6a8a8a;
+}
+.menu-page__actions {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 16px;
+}
+.menu-page__action-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #3a4a3a;
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+.menu-page__action-card h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: #c8a87a;
+  font-family: 'KaiTi', 'STKaiti', serif;
+}
+.menu-page__action-card p {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: #8aa88a;
+  line-height: 1.6;
+}
+.menu-page__input {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid #3a4a3a;
+  border-radius: 4px;
+  color: #d8e0d0;
+  font-size: 13px;
+  font-family: inherit;
+  margin-bottom: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.menu-page__input:focus { border-color: #a8e6a0; }
+.menu-page__btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #2a3a2a;
+  border: 1px solid #3a5a3a;
+  color: #c8e0c8;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  transition: background 0.15s, opacity 0.15s;
+}
+.menu-page__btn:hover { background: #3a5a3a; }
+.menu-page__btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.menu-page__btn--primary {
+  background: linear-gradient(90deg, #4a6a2a, #6a8a3a);
+  border-color: #8aaa5a;
+  color: #fef3c7;
+  font-weight: 600;
+}
+.menu-page__btn--primary:hover { background: linear-gradient(90deg, #5a7a3a, #7a9a4a); }
+.menu-page__btn--small { padding: 4px 10px; font-size: 11px; }
+.menu-page__btn--ghost {
+  background: transparent;
+  border-color: #2a3a2a;
+  color: #8aa88a;
+}
+.menu-page__btn--ghost:hover { background: rgba(255, 255, 255, 0.04); }
+.menu-page__saves {
+  max-height: 360px;
+  overflow-y: auto;
+}
+.menu-page__save-list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column;
+  gap: 8px;
+}
+.menu-page__save-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid #2a3a2a;
+  border-radius: 4px;
+}
+.menu-page__save-info { flex: 1; min-width: 0; }
+.menu-page__save-id {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-size: 12px;
+  color: #c8e0c8;
+  font-weight: 600;
+}
+.menu-page__save-meta {
+  font-size: 10px;
+  color: #6a8a8a;
+  font-family: 'SF Mono', 'Consolas', monospace;
+  margin-top: 2px;
+}
+.menu-page__save-actions {
+  display: flex; gap: 6px;
+}
+.menu-page__no-saves {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6a8a8a;
+  font-size: 12px;
+}
+.menu-page__footer {
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #2a3a2a;
+}
+@media (max-width: 720px) {
+  .menu-page__actions { grid-template-columns: 1fr; }
+}
+
 /* v5.1.2 P2-3: ExtractionModal 提取透明 (仿 ming_sim ExtractionModal) */
 .extract-modal-overlay {
   position: fixed;

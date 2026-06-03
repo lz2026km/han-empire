@@ -1907,6 +1907,59 @@ def api_intro_hints():
     })
 
 
+# --- 6k) /api/menu/status (v5.1.4 P4-1: 菜单页 MenuPage) ---
+@app.route('/api/menu/status', methods=['GET'])
+def api_menu_status():
+    """v5.1.4 P4-1: 菜单页总状态 (仿 ming_sim /api/menu/status)
+
+    返回: 存档列表 + LLM 配置 + 是否有主存档 + 是否有 API Key
+    """
+    from han_sim.paths import user_data_path
+    import glob as _glob
+
+    data_dir = user_data_path("")
+    saves = []
+    if os.path.isdir(data_dir):
+        for f in _glob.glob(os.path.join(data_dir, "campaign_*.db")):
+            try:
+                stat = os.stat(f)
+                cid = os.path.basename(f).replace("campaign_", "").replace(".db", "")
+                saves.append({
+                    "campaign_id": cid,
+                    "filename": os.path.basename(f),
+                    "size": stat.st_size,
+                    "mtime": int(stat.st_mtime),
+                })
+            except Exception:
+                pass
+    saves.sort(key=lambda x: x["mtime"], reverse=True)
+
+    # LLM 配置状态
+    llm_status = {
+        "has_api_key": False,
+        "model": "deepseek-v4-flash",
+        "base_url": "https://api.deepseek.com",
+    }
+    try:
+        import os as _os
+        if _os.environ.get("OPENAI_API_KEY") or _os.environ.get("MINIMAX_API_KEY"):
+            llm_status["has_api_key"] = True
+    except Exception:
+        pass
+
+    # 主存档
+    has_running = bool(saves)
+
+    return jsonify({
+        "saves": saves,
+        "total_saves": len(saves),
+        "has_api_key": llm_status["has_api_key"],
+        "has_running_game": has_running,
+        "llm": llm_status,
+        "version": "5.1.3",
+    })
+
+
 # --- 6j) /api/extraction (v5.1.2 P2-3: ExtractionModal 提取透明) ---
 @app.route('/api/extraction', methods=['GET'])
 def api_extraction():

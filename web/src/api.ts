@@ -175,6 +175,10 @@ export const api = {
       `/extraction?${params.toString()}`
     )
   },
+  getMenuStatus: () => request<{
+    saves: any[]; total_saves: number; has_api_key: boolean;
+    has_running_game: boolean; llm: any; version: string;
+  }>('/menu/status'),
   saveGame: (save: GameSave) =>
     request<{ ok: boolean }>('/save', { method: 'POST', body: JSON.stringify(save) }),
   saveCampaign: (id: string) =>
