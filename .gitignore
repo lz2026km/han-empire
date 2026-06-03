@@ -9,6 +9,10 @@ build/
 dist/
 *.egg-info/
 
+# v4.9 backup files (intermediate state, not for git)
+*.v49-backup
+*.v49-portrait
+
 # Virtual environments
 venv/
 .venv/

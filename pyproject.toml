@@ -1,7 +1,7 @@
 [project]
 name = "han-empire"
-version = "4.6.0"
-description = "汉献帝之末路 v4.6.0 - LLM 驱动的回合制古风帝王游戏 + 工程师控制台"
+version = "4.9.0"
+description = "汉献帝之末路 v4.9.0 - 265 张独立 AI 头像全覆盖 + 2 v4.5 真 bug 修复 + 全审查跑通"
 requires-python = ">=3.11"
 dependencies = [
     "agno>=2.6.9",

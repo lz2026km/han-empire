@@ -1113,11 +1113,17 @@ class GameDB:
             (state.year, state.period, state.turn, getattr(state, "turn_phase", "summoning")),
         )
         for key, value in state.metrics.items():
+            if isinstance(value, (list, dict)):
+                # 复合值: 序列化为 JSON 字符串 (SQLite bind 不支持 list/dict)
+                import json as _json
+                bind_value = _json.dumps(value, ensure_ascii=False)
+            else:
+                bind_value = value
             self.conn.execute(
                 """INSERT INTO metrics (key, value)
                    VALUES (?, ?)
                    ON CONFLICT(key) DO UPDATE SET value=excluded.value""",
-                (key, value),
+                (key, bind_value),
             )
         self.sync_economy_accounts(state)
         self.conn.commit()

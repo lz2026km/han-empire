@@ -29,7 +29,7 @@
     "debut_month": 1,
     "status": "active",
     "summary": "汉末枭雄，官渡破袁绍，赤壁败于孙刘联军，一生未篡汉，死后其子曹丕代汉建魏。",
-    "portrait_id": "warlord_pool_1"
+    "portrait_id": "caocao"
   },
   {
     "id": "liubei",
@@ -61,7 +61,7 @@
     "debut_month": 1,
     "status": "active",
     "summary": "汉室中山靖王之后，以仁德著称，赤壁联吴抗曹后建立蜀汉，意图兴复汉室。",
-    "portrait_id": "warlord_pool_2"
+    "portrait_id": "liubei"
   },
   {
     "id": "sunquan",
@@ -93,7 +93,7 @@
     "debut_month": 1,
     "status": "active",
     "summary": "孙坚之子，继领江东，赤壁大破曹操于此奠定三分天下格局。",
-    "portrait_id": "warlord_pool_3"
+    "portrait_id": "sunquan"
   },
   {
     "id": "dongzhuo",
@@ -123,7 +123,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "凉州军阀，189年率兵进京，废少帝立献帝，专权乱政，后被吕布刺杀。",
-    "portrait_id": "warlord_pool_4"
+    "portrait_id": "dongzhuo"
   },
   {
     "id": "xundi",
@@ -154,7 +154,7 @@
     "debut_month": 9,
     "status": "active",
     "summary": "汉朝末帝，先被董卓立为天子，后被曹操迁都许昌「挟天子以令诸侯」，终在220年禅让于曹丕。",
-    "portrait_id": "emperor_han"
+    "portrait_id": "xundi"
   },
   {
     "id": "xunyu",
@@ -184,7 +184,7 @@
     "debut_month": 1,
     "status": "active",
     "summary": "汉室忠臣，辅佐曹操统一北方，内心始终以兴复汉室为志，后因反对曹操进爵魏公而被迫服毒自尽。",
-    "portrait_id": "minister_pool_1"
+    "portrait_id": "xunyu"
   },
   {
     "id": "zhugeliang",
@@ -217,7 +217,7 @@
     "debut_month": 1,
     "status": "active",
     "summary": "蜀汉丞相，才兼将相，辅佐刘备建立蜀汉，后受托孤之任，五伐中原，鞠躬尽瘁。",
-    "portrait_id": "minister_pool_2"
+    "portrait_id": "zhugeliang"
   },
   {
     "id": "zhouyu",
@@ -248,7 +248,7 @@
     "debut_month": 1,
     "status": "active",
     "summary": "东吴大都督，协助孙权破曹操于赤壁，奠定了三国鼎立的基础。",
-    "portrait_id": "general_pool_1"
+    "portrait_id": "zhouyu"
   },
   {
     "id": "luxun",
@@ -277,7 +277,7 @@
     "debut_month": 1,
     "status": "active",
     "summary": "东吴名将，守荆州，败刘备于夷陵，陆抗之父。",
-    "portrait_id": "general_pool_2"
+    "portrait_id": "luxun"
   },
   {
     "id": "yuanshao",
@@ -306,7 +306,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东汉末年最强的诸侯，官渡之战被曹操以少胜多击败，从此一蹶不振。",
-    "portrait_id": "warlord_pool_5"
+    "portrait_id": "yuanshao"
   },
   {
     "id": "lvbu",
@@ -337,7 +337,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "三国第一猛将，先从董卓后杀董卓，先附刘备后夺徐州，终被曹操擒杀。",
-    "portrait_id": "general_pool_3"
+    "portrait_id": "lvbu"
   },
   {
     "id": "lijue",
@@ -366,7 +366,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "董卓部将，董卓死后与郭汜合攻长安，劫持献帝，纵兵杀掠，后被曹操击败。",
-    "portrait_id": "warlord_pool_6"
+    "portrait_id": "lijue"
   },
   {
     "id": "guosi",
@@ -395,7 +395,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "董卓部将，与李傕合攻长安，劫持天子，后与李傕反目相攻，为曹操所灭。",
-    "portrait_id": "warlord_pool_7"
+    "portrait_id": "guosi"
   },
   {
     "id": "luxin",
@@ -423,10 +423,10 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "北地太守，忠于汉室，在李傕郭汜乱政期间试图匡扶汉室。",
-    "portrait_id": "minister_pool_3"
+    "portrait_id": "luxin"
   },
   {
-    "id": "yuan Shu",
+    "id": "yuan_shu",
     "name": "袁术",
     "office": "扬州刺史/仲家皇帝",
     "office_type": "warlord",
@@ -453,10 +453,10 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "袁绍从弟，197年在寿春称帝，国号仲氏，后被曹操、刘备击败，忧惧吐血而死。",
-    "portrait_id": "warlord_pool_8"
+    "portrait_id": "yuan_shu"
   },
   {
-    "id": "tun Qian",
+    "id": "tun_qian",
     "name": "陶谦",
     "office": "徐州刺史",
     "office_type": "warlord",
@@ -483,7 +483,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "徐州刺史，以温和著称，礼遇名士，后将徐州让给刘备，病死于下邳。",
-    "portrait_id": "warlord_pool_9"
+    "portrait_id": "tun_qian"
   },
   {
     "id": "gongsunzan",
@@ -513,7 +513,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "幽州军阀，以白马义从闻名，与袁绍相争多年，后被袁绍围困自焚而死。",
-    "portrait_id": "warlord_pool_10"
+    "portrait_id": "gongsunzan"
   },
   {
     "id": "zhangxiu",
@@ -542,7 +542,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "张济之侄，197年夜袭曹操，典韦、曹昂战死，后降曹操，随征袁绍有功。",
-    "portrait_id": "general_pool_4"
+    "portrait_id": "zhangxiu"
   },
   {
     "id": "zhangji",
@@ -570,7 +570,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "董卓部将，李傕郭汜乱政后出关攻曹操，攻打穰城时中流矢而死。",
-    "portrait_id": "warlord_pool_11"
+    "portrait_id": "zhangji"
   },
   {
     "id": "wangyun",
@@ -600,7 +600,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "汉司徒，与吕布合谋，利用貂蝉施连环计，192年诛杀董卓，后因骄傲被杀。",
-    "portrait_id": "minister_pool_4"
+    "portrait_id": "wangyun"
   },
   {
     "id": "jiaxu",
@@ -631,7 +631,7 @@
     "debut_month": 1,
     "status": "active",
     "summary": "三国第一谋士，为李傕郭汜献策攻长安，后归曹操，奇计百出，著《孙子兵法注》。",
-    "portrait_id": "minister_pool_5"
+    "portrait_id": "jiaxu"
   },
   {
     "id": "xunyou",
@@ -661,7 +661,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操谋士，荀彧之侄，为曹操献十二奇策，官至尚书仆射，忠勤谨慎。",
-    "portrait_id": "minister_pool_6"
+    "portrait_id": "xunyou"
   },
   {
     "id": "fanchou",
@@ -689,7 +689,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "董卓部将，李傕郭汜围攻长安时为先锋，后被李傕所杀。",
-    "portrait_id": "general_pool_5"
+    "portrait_id": "fanchou"
   },
   {
     "id": "liubei_old",
@@ -719,7 +719,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "汉室宗亲，大司马幽州牧，以仁德安抚外族，后与公孙瓒不合，被其所杀。",
-    "portrait_id": "warlord_pool_12"
+    "portrait_id": "liubei_old"
   },
   {
     "id": "guanyu",
@@ -752,7 +752,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "刘备义弟，万军之中斩颜良文丑，千里走单骑，威震华夏，后被孙权擒杀。",
-    "portrait_id": "general_pool_6"
+    "portrait_id": "guanyu"
   },
   {
     "id": "zhangfei",
@@ -782,7 +782,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "刘备义弟，勇猛粗豪，当阳桥喝退曹操百万兵，后因暴打士卒被部下所杀。",
-    "portrait_id": "general_pool_7"
+    "portrait_id": "zhangfei"
   },
   {
     "id": "zhaoyun",
@@ -812,7 +812,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "刘备亲卫将军，长坂坡七进七出救刘禅，汉水之战以少胜多大破曹军。",
-    "portrait_id": "general_pool_8"
+    "portrait_id": "zhaoyun"
   },
   {
     "id": "machao",
@@ -842,7 +842,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "马腾之子，西凉军阀，渭水大破曹操，后归刘备，封骠骑将军。",
-    "portrait_id": "general_pool_9"
+    "portrait_id": "machao"
   },
   {
     "id": "huangzhong",
@@ -872,7 +872,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "蜀汉五虎将之一，定军山之战斩夏侯渊，一战成名，老当益壮。",
-    "portrait_id": "general_pool_10"
+    "portrait_id": "huangzhong"
   },
   {
     "id": "pangdegui",
@@ -902,7 +902,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "庞羲之弟，随马超归曹操，抬棺战关羽，宁死不降，被关羽斩杀。",
-    "portrait_id": "general_pool_11"
+    "portrait_id": "pangdegui"
   },
   {
     "id": "madsun",
@@ -932,10 +932,10 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "西凉军阀，马超之父，与韩遂合兵，后应曹操之召入朝，被以谋反罪处死。",
-    "portrait_id": "warlord_pool_13"
+    "portrait_id": "madsun"
   },
   {
-    "id": "han su",
+    "id": "han_su",
     "name": "韩遂",
     "office": "候选亭侯/金城太守",
     "office_type": "warlord",
@@ -962,7 +962,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "西凉军阀，与马腾为结义兄弟，后反目，被曹操招抚，为其将所杀。",
-    "portrait_id": "warlord_pool_14"
+    "portrait_id": "han_su"
   },
   {
     "id": "caoren",
@@ -992,7 +992,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操族弟，守樊城抗关羽，以铁壁著称，为曹操建立曹魏立下汗马功劳。",
-    "portrait_id": "general_pool_12"
+    "portrait_id": "caoren"
   },
   {
     "id": "xiahouchun",
@@ -1022,7 +1022,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "夏侯渊族兄，曹操最信任的将领，拔箭啖睛传为佳话，为大将军。",
-    "portrait_id": "general_pool_13"
+    "portrait_id": "xiahouchun"
   },
   {
     "id": "xiahouyuan",
@@ -1052,7 +1052,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操族弟，虎步关右，定军山被黄忠斩杀，曹操为之痛哭。",
-    "portrait_id": "general_pool_14"
+    "portrait_id": "xiahouyuan"
   },
   {
     "id": "zhangliao",
@@ -1082,7 +1082,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹魏名将，威震逍遥津，以八百人大破孙权十万大军，孙权为之胆寒。",
-    "portrait_id": "general_pool_15"
+    "portrait_id": "zhangliao"
   },
   {
     "id": "xuqu",
@@ -1112,7 +1112,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹魏五子良将之一，治军严整，樊城之战击败关羽救出曹仁。",
-    "portrait_id": "general_pool_16"
+    "portrait_id": "xuqu"
   },
   {
     "id": "yuejin",
@@ -1142,7 +1142,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹魏五子良将之一，每战必先登，曹操称赞其「每先登陷阵」。",
-    "portrait_id": "general_pool_17"
+    "portrait_id": "yuejin"
   },
   {
     "id": "yidian",
@@ -1172,7 +1172,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹魏外姓将领第一，樊城被关羽水淹七军而投降，晚节不保。",
-    "portrait_id": "general_pool_18"
+    "portrait_id": "yidian"
   },
   {
     "id": "dianwei",
@@ -1201,7 +1201,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操护卫，宛城之战为救曹操独挡张绣军，死战到底，曹操为之流泪。",
-    "portrait_id": "general_pool_19"
+    "portrait_id": "dianwei"
   },
   {
     "id": "caochong",
@@ -1230,7 +1230,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操长子，宛城之战将马让给父亲逃生，自己战死，曹操平生最痛。",
-    "portrait_id": "general_pool_20"
+    "portrait_id": "caochong"
   },
   {
     "id": "liudian",
@@ -1259,7 +1259,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操部属，为人多智，劝刘表归顺，后为治书侍御史。",
-    "portrait_id": "minister_pool_7"
+    "portrait_id": "liudian"
   },
   {
     "id": "luspeak",
@@ -1289,7 +1289,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "陆逊之父，幼年怀橘遗亲，以博学著称，后为郁林太守。",
-    "portrait_id": "minister_pool_8"
+    "portrait_id": "luspeak"
   },
   {
     "id": "taizici",
@@ -1319,7 +1319,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴猛将，神亭与孙策酣战，后归孙权，早逝，孙权甚惜之。",
-    "portrait_id": "general_pool_21"
+    "portrait_id": "taizici"
   },
   {
     "id": "ganning",
@@ -1349,7 +1349,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴猛将，少年为锦帆贼，后归孙权，百骑劫营，智勇双全。",
-    "portrait_id": "general_pool_22"
+    "portrait_id": "ganning"
   },
   {
     "id": "zhugejin",
@@ -1379,7 +1379,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "诸葛亮之兄，东吴重臣，宽和持重，为孙权所信任，外交之才。",
-    "portrait_id": "minister_pool_9"
+    "portrait_id": "zhugejin"
   },
   {
     "id": "buzhang",
@@ -1408,7 +1408,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴重臣，先后抚治长沙、赣州，绥抚边郡有功，封临湘侯。",
-    "portrait_id": "minister_pool_10"
+    "portrait_id": "buzhang"
   },
   {
     "id": "luxun_id",
@@ -1438,7 +1438,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴大都督，夷陵大破刘备，石亭大破曹休，后辅佐太子。",
-    "portrait_id": "general_pool_23"
+    "portrait_id": "luxun_id"
   },
   {
     "id": "zoushi",
@@ -1466,7 +1466,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "张济遗孀，曹操纳之为妾，引发宛城之战，典韦、曹昂皆死于此。",
-    "portrait_id": "minister_pool_11"
+    "portrait_id": "zoushi"
   },
   {
     "id": "diaochan",
@@ -1494,7 +1494,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "王允连环计之关键，挑拨董卓与吕布关系，终致董卓被诛（文学形象）。",
-    "portrait_id": "minister_pool_12"
+    "portrait_id": "diaochan"
   },
   {
     "id": "yuatzwu",
@@ -1523,7 +1523,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "袁绍袁术之叔，汉太傅，董卓进京后因袁氏之故被董卓所杀。",
-    "portrait_id": "minister_pool_13"
+    "portrait_id": "yuatzwu"
   },
   {
     "id": "hejin",
@@ -1552,7 +1552,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "汉灵帝何后之兄，大将军，召董卓进京诛宦官，反被宦官所杀。",
-    "portrait_id": "warlord_pool_15"
+    "portrait_id": "hejin"
   },
   {
     "id": "hewang",
@@ -1580,7 +1580,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "汉灵帝皇后，何进之妹，少帝刘辩生母，董卓进京后被逼饮鸩而死。",
-    "portrait_id": "minister_pool_14"
+    "portrait_id": "hewang"
   },
   {
     "id": "tianjian",
@@ -1607,7 +1607,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "公孙瓒部下，青州刺史，后为袁绍所破。"
+    "summary": "公孙瓒部下，青州刺史，后为袁绍所破。",
+    "portrait_id": "tianjian"
   },
   {
     "id": "weizhao",
@@ -1636,7 +1637,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "汉末名士，曹操曾视为心腹，后因张邈叛变而受牵连。",
-    "portrait_id": "minister_pool_15"
+    "portrait_id": "weizhao"
   },
   {
     "id": "geng",
@@ -1665,7 +1666,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "汉室忠臣，218年在许昌起兵欲杀曹操，兵败被族诛。",
-    "portrait_id": "minister_pool_16"
+    "portrait_id": "geng"
   },
   {
     "id": "fuqian",
@@ -1694,7 +1695,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "汉室忠臣，伏皇后之父，因密谋诛曹操事泄被曹操所杀。",
-    "portrait_id": "minister_pool_17"
+    "portrait_id": "fuqian"
   },
   {
     "id": "gongsund",
@@ -1723,7 +1724,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "辽东太守，趁中原大乱割据辽东，东伐高句丽，西击乌丸，割据一方。",
-    "portrait_id": "warlord_pool_17"
+    "portrait_id": "gongsund"
   },
   {
     "id": "gongsunkang",
@@ -1750,7 +1751,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "公孙度之子，斩袁绍之子袁尚、袁熙首级献曹操，受封辽东太守。",
-    "portrait_id": "warlord_pool_18"
+    "portrait_id": "gongsunkang"
   },
   {
     "id": "zhangyan",
@@ -1779,7 +1780,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "黑山军首领，黄巾起义后割据太行山，后降曹操，封安国亭侯。",
-    "portrait_id": "warlord_pool_19"
+    "portrait_id": "zhangyan"
   },
   {
     "id": "wan",
@@ -1806,7 +1807,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "扬州刺史，割据寿春，后被袁术所逐。",
-    "portrait_id": "warlord_pool_20"
+    "portrait_id": "wan"
   },
   {
     "id": "caozhi",
@@ -1835,7 +1836,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操之子，220年受禅代汉建立曹魏，追谥文皇帝。",
-    "portrait_id": "warlord_pool_21"
+    "portrait_id": "caozhi"
   },
   {
     "id": "caozhi_poet",
@@ -1864,7 +1865,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操之子，才华横溢，七步成诗，洛神赋名满天下，但终不得父兄信任。",
-    "portrait_id": "minister_pool_18"
+    "portrait_id": "caozhi_poet"
   },
   {
     "id": "xiahou",
@@ -1892,7 +1893,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "夏侯惇之子，尚清河公主，历任长安守将，后被诸葛亮击败。",
-    "portrait_id": "general_pool_24"
+    "portrait_id": "xiahou"
   },
   {
     "id": "wangping",
@@ -1921,7 +1922,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "蜀汉后期名将，领无当飞军，街亭之战马谡失街亭，王平力战保全部队。",
-    "portrait_id": "general_pool_25"
+    "portrait_id": "wangping"
   },
   {
     "id": "frat",
@@ -1949,7 +1950,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "蜀汉将领，夷陵之战为救刘备力战至死，高喊「吴狗！何有为降将军！」",
-    "portrait_id": "general_pool_26"
+    "portrait_id": "frat"
   },
   {
     "id": "zhug",
@@ -1977,7 +1978,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴名将，濡须口大破曹仁，斩夏 Purpose曹军大班。",
-    "portrait_id": "general_pool_27"
+    "portrait_id": "zhug"
   },
   {
     "id": "luyou",
@@ -2005,7 +2006,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴忠臣，孙策去世时欲以死殉主，被孙权所止。",
-    "portrait_id": "general_pool_28"
+    "portrait_id": "luyou"
   },
   {
     "id": "handang",
@@ -2033,7 +2034,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴三世老臣，从孙坚征黄巾、讨董卓，屡立战功。",
-    "portrait_id": "general_pool_29"
+    "portrait_id": "handang"
   },
   {
     "id": "xusheng",
@@ -2061,7 +2062,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴名将，濡须口之战以疑兵计成功退曹丕大军。",
-    "portrait_id": "general_pool_30"
+    "portrait_id": "xusheng"
   },
   {
     "id": "dingfeng",
@@ -2090,7 +2091,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴名将，东兴之战雪中奋短兵大破魏军，斩杀韩综，晚年为东吴柱石。",
-    "portrait_id": "general_pool_31"
+    "portrait_id": "dingfeng"
   },
   {
     "id": "wuxian",
@@ -2118,7 +2119,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操继配，曹丕、曹植之母，卞夫人，以贤德著称。",
-    "portrait_id": "minister_pool_19"
+    "portrait_id": "wuxian"
   },
   {
     "id": "sunshangxiang",
@@ -2147,7 +2148,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "孙权之妹，刘备东吴夫人，性好武，后回吴后再未入蜀。",
-    "portrait_id": "minister_pool_20"
+    "portrait_id": "sunshangxiang"
   },
   {
     "id": "sunce",
@@ -2176,7 +2177,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "孙坚长子，小霸王，数年平定江东六郡，被刺客毒箭射中，死时年仅26岁。",
-    "portrait_id": "warlord_pool_22"
+    "portrait_id": "sunce"
   },
   {
     "id": "sunyi",
@@ -2204,7 +2205,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "孙坚之侄，江东元从将，孙策去世后领吴郡太守。",
-    "portrait_id": "warlord_pool_23"
+    "portrait_id": "sunyi"
   },
   {
     "id": "sunfu",
@@ -2232,7 +2233,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "孙辅为孙策之弟，因结交曹操被告发，被孙权幽禁。",
-    "portrait_id": "warlord_pool_24"
+    "portrait_id": "sunfu"
   },
   {
     "id": "sunchange",
@@ -2260,7 +2261,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "孙权之弟，因有罪被禁锢终身，江南豪族代表人物。",
-    "portrait_id": "warlord_pool_25"
+    "portrait_id": "sunchange"
   },
   {
     "id": "liang",
@@ -2287,7 +2288,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "马超部将，后降曹操，为夏 Purpose渊所破。",
-    "portrait_id": "general_pool_32"
+    "portrait_id": "liang"
   },
   {
     "id": "yangxiu",
@@ -2316,7 +2317,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "杨彪之子，才华横溢，解字传为佳话，后因卷入夺嫡之争被曹操所杀。",
-    "portrait_id": "minister_pool_21"
+    "portrait_id": "yangxiu"
   },
   {
     "id": "konghuang",
@@ -2345,7 +2346,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "孔子后裔，建安七子之首，因刚直得罪曹操，被以「招合徒众」「欲图不轨」罪名族诛。",
-    "portrait_id": "minister_pool_22"
+    "portrait_id": "konghuang"
   },
   {
     "id": "bian",
@@ -2373,7 +2374,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "九江太守，轻薄曹操，被曹操所杀，留下「覆巢之下，岂有完卵」之语。",
-    "portrait_id": "minister_pool_23"
+    "portrait_id": "bian"
   },
   {
     "id": "chen",
@@ -2402,7 +2403,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操故交，背曹迎吕，吕布失败后拒绝投降，曹操欲活之而不可得。",
-    "portrait_id": "minister_pool_24"
+    "portrait_id": "chen"
   },
   {
     "id": "gaolan",
@@ -2428,7 +2429,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "袁绍部将，官渡之战与张郃共降曹操。"
+    "summary": "袁绍部将，官渡之战与张郃共降曹操。",
+    "portrait_id": "gaolan"
   },
   {
     "id": "chuchen",
@@ -2455,7 +2457,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "袁绍部将，随淳于琼守乌巢，曹操破淳于琼时战死。",
-    "portrait_id": "general_pool_34"
+    "portrait_id": "chuchen"
   },
   {
     "id": "zhanghe",
@@ -2484,7 +2486,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "袁绍部将，官渡降曹操，后为曹魏名将，街亭大破马谡迫使诸葛亮第一次北伐失败。",
-    "portrait_id": "general_pool_35"
+    "portrait_id": "zhanghe"
   },
   {
     "id": "sikong",
@@ -2512,7 +2514,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "司马懿之兄，曹操征辟为官，后为治书侍御史。",
-    "portrait_id": "minister_pool_25"
+    "portrait_id": "sikong"
   },
   {
     "id": "siyu",
@@ -2541,7 +2543,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "司马懿，鹰视狼顾，隐忍三代，高平陵之变夺权，为晋朝奠基。",
-    "portrait_id": "minister_pool_26"
+    "portrait_id": "siyu"
   },
   {
     "id": "simawang",
@@ -2569,7 +2571,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "司马朗为人心直，曾劝曹操不要远征塞外，曹操不听，果然无功。",
-    "portrait_id": "minister_pool_27"
+    "portrait_id": "simawang"
   },
   {
     "id": "pangxi",
@@ -2597,7 +2599,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "刘璋姻亲，蜀郡太守，随刘焉入蜀，后为刘备所用。",
-    "portrait_id": "minister_pool_28"
+    "portrait_id": "pangxi"
   },
   {
     "id": "yong",
@@ -2624,7 +2626,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "雍齿为刘邦仇人，后丰县起义反刘邦，此人以与刘邦有旧怨著称。",
-    "portrait_id": "warlord_pool_26"
+    "portrait_id": "yong"
   },
   {
     "id": "zhanglu",
@@ -2653,7 +2655,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "张天师，五斗米道教主，割据汉中，后降曹操，封阆中侯。",
-    "portrait_id": "warlord_pool_27"
+    "portrait_id": "zhanglu"
   },
   {
     "id": "zhangxian",
@@ -2680,7 +2682,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "南阳太守，起兵讨董卓，后为袁术所杀。",
-    "portrait_id": "warlord_pool_28"
+    "portrait_id": "zhangxian"
   },
   {
     "id": "zhaozhi",
@@ -2707,7 +2709,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "汉末易学家，为何进、曹操等所重，著《易传》。",
-    "portrait_id": "minister_pool_29"
+    "portrait_id": "zhaozhi"
   },
   {
     "id": "yueyin",
@@ -2734,7 +2736,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "汉灵帝时太尉，董卓进京后与王允等同日被害。",
-    "portrait_id": "minister_pool_30"
+    "portrait_id": "yueyin"
   },
   {
     "id": "xush",
@@ -2762,7 +2764,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "徐宣先从陶谦，后归曹操，曹操称为「我怒而不息者也」。",
-    "portrait_id": "minister_pool_31"
+    "portrait_id": "xush"
   },
   {
     "id": "mihu",
@@ -2791,7 +2793,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "徐州富商，倾家资助刘备，妹为刘备糜夫人，随刘备入蜀。",
-    "portrait_id": "minister_pool_32"
+    "portrait_id": "mihu"
   },
   {
     "id": "sunqian",
@@ -2819,7 +2821,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "刘备外交使臣，随刘备奔波，为刘备取得荆州、蜀中多赖其外交。",
-    "portrait_id": "minister_pool_33"
+    "portrait_id": "sunqian"
   },
   {
     "id": "yiyang",
@@ -2847,7 +2849,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "刘备、诸葛亮外交依赖，伊籍机敏，蜀科制定多有其功。",
-    "portrait_id": "minister_pool_34"
+    "portrait_id": "yiyang"
   },
   {
     "id": "mihu1",
@@ -2875,7 +2877,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "糜竺之弟，南郡太守，吕蒙攻关羽时降吴，导致关羽败走麦城。",
-    "portrait_id": "general_pool_36"
+    "portrait_id": "mihu1"
   },
   {
     "id": "fuxian",
@@ -2903,7 +2905,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "傅玄之父，弹劾不避权贵，为时所重。",
-    "portrait_id": "minister_pool_35"
+    "portrait_id": "fuxian"
   },
   {
     "id": "limin",
@@ -2931,7 +2933,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "蜀汉太子舍人，后祖母去世，陈情表名满天下，后为晋官。",
-    "portrait_id": "minister_pool_36"
+    "portrait_id": "limin"
   },
   {
     "id": "zhush",
@@ -2958,7 +2960,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "蜀汉太子舍人，忠勤谨慎。",
-    "portrait_id": "minister_pool_37"
+    "portrait_id": "zhush"
   },
   {
     "id": "xunx",
@@ -2986,7 +2988,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "荀彧之弟，为袁绍谋士，说韩馥让冀州于袁绍，后不知所终。",
-    "portrait_id": "minister_pool_38"
+    "portrait_id": "xunx"
   },
   {
     "id": "ming",
@@ -3013,7 +3015,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "扬州刺史，割据一方，后被袁术所灭。",
-    "portrait_id": "warlord_pool_29"
+    "portrait_id": "ming"
   },
   {
     "id": "leng",
@@ -3041,7 +3043,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "刘焉部将，随刘焉入蜀，后与刘表交战。",
-    "portrait_id": "general_pool_37"
+    "portrait_id": "leng"
   },
   {
     "id": "lengab",
@@ -3068,7 +3070,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "刘焉少子，益州刺史，蜀乱后降吴。",
-    "portrait_id": "warlord_pool_30"
+    "portrait_id": "lengab"
   },
   {
     "id": "yangdu",
@@ -3095,7 +3097,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "刘焉长史，随刘焉入蜀。",
-    "portrait_id": "minister_pool_39"
+    "portrait_id": "yangdu"
   },
   {
     "id": "yangs",
@@ -3122,7 +3124,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "冀城守将，马超攻冀城时，与韦康父城破被杀。",
-    "portrait_id": "minister_pool_40"
+    "portrait_id": "yangs"
   },
   {
     "id": "gengda",
@@ -3150,10 +3152,10 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "汉室忠臣，218年在许昌起兵欲杀曹操，兵败被族诛。",
-    "portrait_id": "minister_pool_41"
+    "portrait_id": "gengda"
   },
   {
-    "id": "zhangji",
+    "id": "zhangji_2",
     "name": "张济",
     "office": "骠骑将军",
     "office_type": "warlord",
@@ -3178,7 +3180,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "董卓部将，董卓死后率凉州军占据南阳，与刘表对峙，攻南阳时中流矢死。",
-    "portrait_id": "warlord_pool_5"
+    "portrait_id": "zhangji_2"
   },
   {
     "id": "huaxiong",
@@ -3205,10 +3207,10 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "董卓麾下猛将，率兵镇守汜水关，十八路诸侯讨董时连胜数将，后被关羽所斩。",
-    "portrait_id": "general_pool_10"
+    "portrait_id": "huaxiong"
   },
   {
-    "id": "luxun",
+    "id": "luxun_2",
     "name": "陆逊",
     "office": "大都督",
     "office_type": "warlord",
@@ -3234,7 +3236,7 @@
     "debut_month": 1,
     "status": "active",
     "summary": "东吴名将，字伯言，善于谋略，吕蒙死后接掌荆州，火烧连营大破刘备，又在石亭破曹休。",
-    "portrait_id": "warlord_pool_6"
+    "portrait_id": "luxun_2"
   },
   {
     "id": "sunxiu",
@@ -3263,7 +3265,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴末代皇帝之一，在位期间整饬朝政，兴办学校，与蜀汉联盟抗魏。",
-    "portrait_id": "emperor_pool_2"
+    "portrait_id": "sunxiu"
   },
   {
     "id": "zhouzhang",
@@ -3290,7 +3292,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东汉司徒，190年与袁绍等人共谋诛杀董卓，事泄被族诛。",
-    "portrait_id": "minister_pool_42"
+    "portrait_id": "zhouzhang"
   },
   {
     "id": "dingfei",
@@ -3319,7 +3321,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操麾下典农中郎将，因私换官牛被免官，后又被启用，以清廉著称。",
-    "portrait_id": "minister_pool_43"
+    "portrait_id": "dingfei"
   },
   {
     "id": "wangcan",
@@ -3349,10 +3351,10 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "建安七子之冠，字仲宣，博学多才，善属文，先依刘表，后归曹操，官至侍中。",
-    "portrait_id": "scholar_pool_5"
+    "portrait_id": "wangcan"
   },
   {
-    "id": "gongsunzan",
+    "id": "gongsunzan_2",
     "name": "公孙瓒",
     "office": "将军",
     "office_type": "warlord",
@@ -3378,10 +3380,10 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "幽州军阀，字伯珪，组建白马义从，大破乌桓，后与袁绍争雄，兵败自焚。",
-    "portrait_id": "warlord_pool_7"
+    "portrait_id": "gongsunzan_2"
   },
   {
-    "id": "zhangxiu",
+    "id": "zhangxiu_2",
     "name": "张绣",
     "office": "宛侯",
     "office_type": "warlord",
@@ -3407,7 +3409,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "张济之侄，继承凉州军，在贾诩建议下两度击败曹操，后降曹，封宛侯。",
-    "portrait_id": "warlord_pool_8"
+    "portrait_id": "zhangxiu_2"
   },
   {
     "id": "yinshang",
@@ -3435,7 +3437,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "西汉末年执金吾，以捕盗安民著称，后参与王莽篡汉相关事件。",
-    "portrait_id": "minister_pool_44"
+    "portrait_id": "yinshang"
   },
   {
     "id": "yuantang",
@@ -3463,7 +3465,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "袁绍、袁术的高祖，以儒学传家，四世三公之家，袁氏政权的奠基者之一。",
-    "portrait_id": "minister_pool_45"
+    "portrait_id": "yuantang"
   },
   {
     "id": "fuwan",
@@ -3491,7 +3493,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "汉室忠臣，伏皇后之父，因密谋诛曹操事泄被曹操所杀。",
-    "portrait_id": "minister_pool_17"
+    "portrait_id": "fuwan"
   },
   {
     "id": "gengji",
@@ -3519,7 +3521,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "汉室忠臣，218年在许昌起兵欲杀曹操，兵败被族诛。",
-    "portrait_id": "minister_pool_41"
+    "portrait_id": "gengji"
   },
   {
     "id": "weikang",
@@ -3546,7 +3548,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "冀城守将，马超攻冀城时城破被杀的刺史。",
-    "portrait_id": "minister_pool_46"
+    "portrait_id": "weikang"
   },
   {
     "id": "zhaowen",
@@ -3573,7 +3575,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东汉司徒，192年与王允同死于李傕郭汜之乱。",
-    "portrait_id": "minister_pool_47"
+    "portrait_id": "zhaowen"
   },
   {
     "id": "liru",
@@ -3600,7 +3602,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "董卓首席谋士，劝董卓废少帝立献帝，董卓被杀时一同遇难。",
-    "portrait_id": "minister_pool_48"
+    "portrait_id": "liru"
   },
   {
     "id": "humouban",
@@ -3627,7 +3629,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "名士，被袁术所杀。",
-    "portrait_id": "minister_pool_49"
+    "portrait_id": "humouban"
   },
   {
     "id": "baoxin",
@@ -3654,7 +3656,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "济北相，讨董卓义兵领袖，汴水之战中为掩护曹操战死。",
-    "portrait_id": "minister_pool_50"
+    "portrait_id": "baoxin"
   },
   {
     "id": "zhangzi",
@@ -3681,7 +3683,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "南阳太守，被袁术所杀。",
-    "portrait_id": "warlord_pool_31"
+    "portrait_id": "zhangzi"
   },
   {
     "id": "shirui",
@@ -3710,7 +3712,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "交趾太守，割据交州，家族兄弟各任郡守，俨然一方诸侯，后降东吴。",
-    "portrait_id": "minister_pool_51"
+    "portrait_id": "shirui"
   },
   {
     "id": "yanzhong",
@@ -3737,7 +3739,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "平原相，忠心事汉。",
-    "portrait_id": "minister_pool_52"
+    "portrait_id": "yanzhong"
   },
   {
     "id": "liubiao",
@@ -3766,7 +3768,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "荆州牧，单骑入荆州，坐保江汉，名士归心，然无逐鹿之志。",
-    "portrait_id": "warlord_pool_32"
+    "portrait_id": "liubiao"
   },
   {
     "id": "yuanyi",
@@ -3793,7 +3795,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "扬州刺史，曹操表为扬州，与袁绍合兵，后为吕布所破。",
-    "portrait_id": "warlord_pool_33"
+    "portrait_id": "yuanyi"
   },
   {
     "id": "yingshao",
@@ -3820,7 +3822,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "泰山太守，博学多才，著《汉官仪》，后投奔袁绍。",
-    "portrait_id": "minister_pool_53"
+    "portrait_id": "yingshao"
   },
   {
     "id": "zhangmiao",
@@ -3848,7 +3850,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "陈留太守，曹操好友，因反对曹操而叛迎吕布，后为操所杀。",
-    "portrait_id": "warlord_pool_34"
+    "portrait_id": "zhangmiao"
   },
   {
     "id": "chenwen",
@@ -3875,7 +3877,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "扬州刺史，割据寿春，后被袁术所逐。",
-    "portrait_id": "warlord_pool_35"
+    "portrait_id": "chenwen"
   },
   {
     "id": "caobao",
@@ -3902,7 +3904,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "吕布部将，守下邳，与张飞有隙，后为范勇所杀。",
-    "portrait_id": "general_pool_38"
+    "portrait_id": "caobao"
   },
   {
     "id": "chenlin",
@@ -3931,7 +3933,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "建安七子之一，先依袁绍，后归曹操，曾为袁绍作檄文讨曹操。",
-    "portrait_id": "minister_pool_54"
+    "portrait_id": "chenlin"
   },
   {
     "id": "ruanyu",
@@ -3960,7 +3962,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "建安七子之一，音乐才能出众，为曹操记室，参预军国书檄。",
-    "portrait_id": "scholar_pool_6"
+    "portrait_id": "ruanyu"
   },
   {
     "id": "xugan",
@@ -3988,7 +3990,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "建安七子之一，为曹操五官将文学，以清玄著称。",
-    "portrait_id": "scholar_pool_7"
+    "portrait_id": "xugan"
   },
   {
     "id": "dengai",
@@ -4017,7 +4019,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹魏名将，263年偷渡阴平，直捣成都，灭蜀汉，居功至伟，后被钟会陷害而死。",
-    "portrait_id": "general_pool_39"
+    "portrait_id": "dengai"
   },
   {
     "id": "zhonghui",
@@ -4046,7 +4048,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "钟繇之子，曹魏重臣，与邓艾灭蜀后谋反，欲割据蜀地，被乱兵所杀。",
-    "portrait_id": "general_pool_40"
+    "portrait_id": "zhonghui"
   },
   {
     "id": "lusu",
@@ -4075,7 +4077,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴重臣，榻上策建议孙权鼎足江东，联刘抗曹，赤壁之战前主张抵抗曹操，为东吴柱石。",
-    "portrait_id": "minister_pool_55"
+    "portrait_id": "lusu"
   },
   {
     "id": "zhangzhao",
@@ -4104,7 +4106,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴重臣，孙策临终以弟孙权相托，张昭忠勤尽职，直言敢谏，为东吴文臣之首。",
-    "portrait_id": "minister_pool_56"
+    "portrait_id": "zhangzhao"
   },
   {
     "id": "lumeng",
@@ -4133,10 +4135,10 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "东吴名将，初为猛将，后发奋读书，鲁肃卒后接掌荆州，白衣渡江袭取荆州，擒杀关羽。",
-    "portrait_id": "general_pool_41"
+    "portrait_id": "lumeng"
   },
   {
-    "id": "lu Kang",
+    "id": "lu_kang",
     "name": "陆抗",
     "office": "大司马/荆州牧",
     "office_type": "general",
@@ -4162,7 +4164,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "陆逊之子，东吴末年名将，西陵大破晋军，父子为东吴柱石。",
-    "portrait_id": "general_pool_42"
+    "portrait_id": "lu_kang"
   },
   {
     "id": "liushan",
@@ -4190,10 +4192,10 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "刘备之子，蜀汉后主，在位四十余年，宠信黄皓，263年降魏，封安乐公。",
-    "portrait_id": "emperor_pool_3"
+    "portrait_id": "liushan"
   },
   {
-    "id": "wei yan",
+    "id": "wei_yan",
     "name": "魏延",
     "office": "镇北将军/南郑侯",
     "office_type": "general",
@@ -4219,7 +4221,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "蜀汉名将，镇守汉中，屡建战功，提出子午谷奇谋不被诸葛亮采纳，后因谋反被诛。",
-    "portrait_id": "general_pool_43"
+    "portrait_id": "wei_yan"
   },
   {
     "id": "jiangwan",
@@ -4248,7 +4250,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "诸葛亮身后继承人，与费祎共录尚书事，镇北将军，足食足兵以供北伐。",
-    "portrait_id": "minister_pool_57"
+    "portrait_id": "jiangwan"
   },
   {
     "id": "feizhi",
@@ -4277,7 +4279,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "蜀汉重臣，与蒋琬并录尚书事，主张联吴抗魏，后被魏降将郭循刺杀。",
-    "portrait_id": "minister_pool_58"
+    "portrait_id": "feizhi"
   },
   {
     "id": "guojia",
@@ -4306,7 +4308,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操谋士，提出十胜十败说，遗计定辽东，助曹操统一北方，死时年仅三十八岁。",
-    "portrait_id": "minister_pool_59"
+    "portrait_id": "guojia"
   },
   {
     "id": "xunxun",
@@ -4333,7 +4335,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "荀彧从父弟，魏晋之际重臣，司马氏亲信。",
-    "portrait_id": "minister_pool_60"
+    "portrait_id": "xunxun"
   },
   {
     "id": "zhangiao",
@@ -4360,7 +4362,7 @@
     "debut_month": 1,
     "status": "dead",
     "summary": "曹操部将，镇守关右，屡次抵御蜀军。",
-    "portrait_id": "general_pool_44"
+    "portrait_id": "zhangiao"
   },
   {
     "name": "董承",
@@ -4388,7 +4390,9 @@
       "外戚",
       "衣带诏",
       "忠汉"
-    ]
+    ],
+    "id": "dongcheng",
+    "portrait_id": "dongcheng"
   },
   {
     "name": "种辑",
@@ -4415,7 +4419,9 @@
       "衣带诏",
       "忠汉",
       "密谋"
-    ]
+    ],
+    "id": "zhongji",
+    "portrait_id": "zhongji"
   },
   {
     "name": "王子服",
@@ -4440,7 +4446,9 @@
     "tags": [
       "衣带诏",
       "忠汉"
-    ]
+    ],
+    "id": "wangzifu",
+    "portrait_id": "wangzifu"
   },
   {
     "name": "吴硕",
@@ -4466,7 +4474,9 @@
       "衣带诏",
       "忠汉",
       "近侍"
-    ]
+    ],
+    "id": "wushuo",
+    "portrait_id": "wushuo"
   },
   {
     "name": "伏寿",
@@ -4493,7 +4503,9 @@
       "后妃",
       "忠汉",
       "刚烈"
-    ]
+    ],
+    "id": "fushou",
+    "portrait_id": "fushou"
   },
   {
     "name": "程昱",
@@ -4520,7 +4532,9 @@
       "谋主",
       "刚直",
       "战略"
-    ]
+    ],
+    "id": "chengyu",
+    "portrait_id": "chengyu"
   },
   {
     "id": "c_caiyong",
@@ -4551,10 +4565,10 @@
     "debut_month": 1,
     "status": "historical",
     "summary": "东汉末年文学家、书法家, 蔡文姬之父。董卓被诛后为王允所捕, 死于狱中。",
-    "portrait_id": "minister_pool_1"
+    "portrait_id": "c_caiyong"
   },
   {
-    "id": "c_caiw enji",
+    "id": "caiwenji",
     "name": "蔡文姬",
     "office": "待诏",
     "office_type": "文官",
@@ -4582,7 +4596,7 @@
     "debut_month": 1,
     "status": "historical",
     "summary": "蔡邕之女, 博学多才, 通经史音律。兴平年间被匈奴掳走, 曹操遣使赎归。",
-    "portrait_id": "consort_pool_2"
+    "portrait_id": "caiwenji"
   },
   {
     "id": "c_lu_zhi",
@@ -4612,7 +4626,7 @@
     "debut_month": 6,
     "status": "historical",
     "summary": "大儒, 灵帝时讨黄巾军统帅。后因谏董卓忤旨, 险些被杀。",
-    "portrait_id": "minister_pool_4"
+    "portrait_id": "c_lu_zhi"
   },
   {
     "id": "c_zhang_jiao",
@@ -4642,7 +4656,7 @@
     "debut_month": 2,
     "status": "historical",
     "summary": "太平道教主张角, 以苍天已死黄天当立为号, 率黄巾起义, 动摇汉室根基。",
-    "portrait_id": "minister_pool_6"
+    "portrait_id": "c_zhang_jiao"
   },
   {
     "id": "c_hua_tuo",
@@ -4673,7 +4687,7 @@
     "debut_month": 1,
     "status": "historical",
     "summary": "东汉末年神医, 精通内外科、针灸、药疗。欲为曹操开颅治病, 被疑杀之。",
-    "portrait_id": "minister_pool_7"
+    "portrait_id": "c_hua_tuo"
   },
   {
     "id": "c_zhang_zhongjing",
@@ -4702,7 +4716,7 @@
     "debut_month": 1,
     "status": "historical",
     "summary": "东汉末年医学家, 医圣, 著《伤寒杂病论》, 开创辨证论治先河。",
-    "portrait_id": "minister_pool_8"
+    "portrait_id": "c_zhang_zhongjing"
   },
   {
     "id": "c_man_chong",
@@ -4732,7 +4746,7 @@
     "debut_month": 1,
     "status": "historical",
     "summary": "曹魏名臣, 历任汝南太守、征东将军, 三国时期著名的刚正执法之臣。",
-    "portrait_id": "minister_pool_11"
+    "portrait_id": "c_man_chong"
   },
   {
     "id": "c_tian_feng",
@@ -4762,7 +4776,7 @@
     "debut_month": 1,
     "status": "historical",
     "summary": "袁绍谋主, 多奇谋。屡谏袁绍不用, 官渡战前被囚, 后被袁绍赐死。",
-    "portrait_id": "minister_pool_12"
+    "portrait_id": "c_tian_feng"
   },
   {
     "id": "liuzhang",
@@ -4789,7 +4803,8 @@
     "debut_year": 194,
     "debut_month": 1,
     "status": "dead",
-    "summary": "益州牧, 刘焉子, 暗弱无能, 张松法正劝刘备取成都而降."
+    "summary": "益州牧, 刘焉子, 暗弱无能, 张松法正劝刘备取成都而降.",
+    "portrait_id": "liuzhang"
   },
   {
     "id": "zhangbao",
@@ -4813,7 +4828,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "张角二弟, 黄巾渠帅, 地公将军, 184年与皇甫嵩战于长社, 兵败被杀."
+    "summary": "张角二弟, 黄巾渠帅, 地公将军, 184年与皇甫嵩战于长社, 兵败被杀.",
+    "portrait_id": "zhangbao"
   },
   {
     "id": "zhangliang",
@@ -4837,7 +4853,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "张角三弟, 黄巾渠帅, 人公将军, 184年与皇甫嵩战于广宗, 兵败身死."
+    "summary": "张角三弟, 黄巾渠帅, 人公将军, 184年与皇甫嵩战于广宗, 兵败身死.",
+    "portrait_id": "zhangliang"
   },
   {
     "id": "caohong",
@@ -4864,7 +4881,8 @@
     "debut_year": 190,
     "debut_month": 1,
     "status": "dead",
-    "summary": "曹操族弟, 舍命献马救主于荥阳, 累功拜骠骑将军, 封野王侯."
+    "summary": "曹操族弟, 舍命献马救主于荥阳, 累功拜骠骑将军, 封野王侯.",
+    "portrait_id": "caohong"
   },
   {
     "id": "xuchu",
@@ -4892,7 +4910,8 @@
     "debut_year": 196,
     "debut_month": 1,
     "status": "dead",
-    "summary": "曹操贴身护卫, 虎痴, 裸衣斗马超名垂青史. 谥曰壮侯."
+    "summary": "曹操贴身护卫, 虎痴, 裸衣斗马超名垂青史. 谥曰壮侯.",
+    "portrait_id": "xuchu"
   },
   {
     "id": "xushu",
@@ -4920,7 +4939,8 @@
     "debut_year": 200,
     "debut_month": 1,
     "status": "dead",
-    "summary": "刘备军师, 荐诸葛亮. 曹操以其母为质, 不得不入曹营, 终身不为曹设一计."
+    "summary": "刘备军师, 荐诸葛亮. 曹操以其母为质, 不得不入曹营, 终身不为曹设一计.",
+    "portrait_id": "xushu"
   },
   {
     "id": "pangtong",
@@ -4948,7 +4968,8 @@
     "debut_year": 211,
     "debut_month": 1,
     "status": "dead",
-    "summary": "凤雏, 与诸葛亮齐名, 入蜀辅刘备, 攻雒城时中流矢身亡."
+    "summary": "凤雏, 与诸葛亮齐名, 入蜀辅刘备, 攻雒城时中流矢身亡.",
+    "portrait_id": "pangtong"
   },
   {
     "id": "fazheng",
@@ -4975,7 +4996,8 @@
     "debut_year": 211,
     "debut_month": 1,
     "status": "dead",
-    "summary": "原刘璋谋士, 献益州于刘备, 汉中攻夏侯渊取其首级, 蜀汉谋主."
+    "summary": "原刘璋谋士, 献益州于刘备, 汉中攻夏侯渊取其首级, 蜀汉谋主.",
+    "portrait_id": "fazheng"
   },
   {
     "id": "liuba",
@@ -5002,7 +5024,8 @@
     "debut_year": 211,
     "debut_month": 1,
     "status": "dead",
-    "summary": "原刘璋官员, 拒刘备后归曹, 复归蜀. 助刘备解决财政危机, 铸直百钱."
+    "summary": "原刘璋官员, 拒刘备后归曹, 复归蜀. 助刘备解决财政危机, 铸直百钱.",
+    "portrait_id": "liuba"
   },
   {
     "id": "maliang",
@@ -5029,7 +5052,8 @@
     "debut_year": 211,
     "debut_month": 1,
     "status": "dead",
-    "summary": "白眉马良, 五常中马良最贤. 随刘备东征, 夷陵兵败后被俘杀."
+    "summary": "白眉马良, 五常中马良最贤. 随刘备东征, 夷陵兵败后被俘杀.",
+    "portrait_id": "maliang"
   },
   {
     "id": "jiangwei",
@@ -5056,7 +5080,8 @@
     "debut_year": 228,
     "debut_month": 1,
     "status": "dead",
-    "summary": "天水麒麟儿, 诸葛亮北伐传人, 九伐中原, 蜀亡后假降钟会谋复国, 事败被杀."
+    "summary": "天水麒麟儿, 诸葛亮北伐传人, 九伐中原, 蜀亡后假降钟会谋复国, 事败被杀.",
+    "portrait_id": "jiangwei"
   },
   {
     "id": "huanggai",
@@ -5083,7 +5108,8 @@
     "debut_year": 190,
     "debut_month": 1,
     "status": "dead",
-    "summary": "东吴三代老臣, 诈降曹操, 火攻破曹军, 赤壁首功."
+    "summary": "东吴三代老臣, 诈降曹操, 火攻破曹军, 赤壁首功.",
+    "portrait_id": "huanggai"
   },
   {
     "id": "chengpu",
@@ -5110,7 +5136,8 @@
     "debut_year": 190,
     "debut_month": 1,
     "status": "dead",
-    "summary": "东吴元勋, 辅孙坚孙策孙权三代, 与周瑜不和而敬服之, 历任三县令."
+    "summary": "东吴元勋, 辅孙坚孙策孙权三代, 与周瑜不和而敬服之, 历任三县令.",
+    "portrait_id": "chengpu"
   },
   {
     "id": "sunjian",
@@ -5138,7 +5165,8 @@
     "debut_year": 184,
     "debut_month": 1,
     "status": "dead",
-    "summary": "江东猛虎, 破黄巾, 讨董卓, 斩华雄, 得传国玉玺. 191 年攻刘表时中伏身亡."
+    "summary": "江东猛虎, 破黄巾, 讨董卓, 斩华雄, 得传国玉玺. 191 年攻刘表时中伏身亡.",
+    "portrait_id": "sunjian"
   },
   {
     "id": "qiaoguolao",
@@ -5164,7 +5192,8 @@
     "debut_year": 195,
     "debut_month": 1,
     "status": "dead",
-    "summary": "二乔之父, 孙策孙权联姻, 助孙刘联盟."
+    "summary": "二乔之父, 孙策孙权联姻, 助孙刘联盟.",
+    "portrait_id": "qiaoguolao"
   },
   {
     "id": "bozhang",
@@ -5188,7 +5217,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "黄巾渠帅, 围皇甫嵩于长社, 火攻败亡."
+    "summary": "黄巾渠帅, 围皇甫嵩于长社, 火攻败亡.",
+    "portrait_id": "bozhang"
   },
   {
     "id": "pengtong",
@@ -5210,7 +5240,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "黄巾渠帅, 汝南陈国一带."
+    "summary": "黄巾渠帅, 汝南陈国一带.",
+    "portrait_id": "pengtong"
   },
   {
     "id": "zhangmancheng",
@@ -5232,7 +5263,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "南阳黄巾, 自称神上使, 杀郡守褚贡."
+    "summary": "南阳黄巾, 自称神上使, 杀郡守褚贡.",
+    "portrait_id": "zhangmancheng"
   },
   {
     "id": "zhangjiao_disciple_1",
@@ -5254,7 +5286,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "张角弟子, 184 年告密使起义提前暴露, 张角被迫提前举事."
+    "summary": "张角弟子, 184 年告密使起义提前暴露, 张角被迫提前举事.",
+    "portrait_id": "zhangjiao_disciple_1"
   },
   {
     "id": "yuyang",
@@ -5276,7 +5309,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "黑山军首领, 193 年攻内黄, 为曹操所破."
+    "summary": "黑山军首领, 193 年攻内黄, 为曹操所破.",
+    "portrait_id": "yuyang"
   },
   {
     "id": "gongdu",
@@ -5298,7 +5332,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "黑山军, 于毒同伴."
+    "summary": "黑山军, 于毒同伴.",
+    "portrait_id": "gongdu"
   },
   {
     "id": "tangzhou",
@@ -5320,7 +5355,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "张角弟子, 告密使起义提前."
+    "summary": "张角弟子, 告密使起义提前.",
+    "portrait_id": "tangzhou"
   },
   {
     "id": "yuyang_2",
@@ -5342,7 +5378,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "黑山军首领, 193 年被曹操破."
+    "summary": "黑山军首领, 193 年被曹操破.",
+    "portrait_id": "yuyang_2"
   },
   {
     "id": "gongdu_2",
@@ -5364,7 +5401,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "黑山军."
+    "summary": "黑山军.",
+    "portrait_id": "gongdu_2"
   },
   {
     "id": "bocai",
@@ -5386,7 +5424,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "东郡黄巾, 被曹操破."
+    "summary": "东郡黄巾, 被曹操破.",
+    "portrait_id": "bocai"
   },
   {
     "id": "zhangjiao_yy",
@@ -5413,7 +5452,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "黑山军领袖, 后降曹操, 封安国亭侯."
+    "summary": "黑山军领袖, 后降曹操, 封安国亭侯.",
+    "portrait_id": "zhangjiao_yy"
   },
   {
     "id": "bocai_2",
@@ -5435,7 +5475,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "颍川黄巾, 围皇甫嵩于长社."
+    "summary": "颍川黄巾, 围皇甫嵩于长社.",
+    "portrait_id": "bocai_2"
   },
   {
     "id": "pengtuo",
@@ -5457,7 +5498,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "汝南陈国黄巾."
+    "summary": "汝南陈国黄巾.",
+    "portrait_id": "pengtuo"
   },
   {
     "id": "qiujue",
@@ -5479,7 +5521,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "黄巾残余, 散落各州."
+    "summary": "黄巾残余, 散落各州.",
+    "portrait_id": "qiujue"
   },
   {
     "id": "maqiucheng",
@@ -5501,7 +5544,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "并州黄巾, 攻太原."
+    "summary": "并州黄巾, 攻太原.",
+    "portrait_id": "maqiucheng"
   },
   {
     "id": "cuijue",
@@ -5523,7 +5567,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "青州黄巾."
+    "summary": "青州黄巾.",
+    "portrait_id": "cuijue"
   },
   {
     "id": "zhangchun",
@@ -5547,7 +5592,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "辽西黄巾, 与乌丸丘力居攻公孙瓒."
+    "summary": "辽西黄巾, 与乌丸丘力居攻公孙瓒.",
+    "portrait_id": "zhangchun"
   },
   {
     "id": "qiuliju",
@@ -5571,7 +5617,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "乌丸王, 从张纯攻公孙瓒."
+    "summary": "乌丸王, 从张纯攻公孙瓒.",
+    "portrait_id": "qiuliju"
   },
   {
     "id": "zhangchun_2",
@@ -5593,7 +5640,8 @@
     "debut_year": 184,
     "debut_month": 2,
     "status": "dead",
-    "summary": "张纯同党, 自称天子."
+    "summary": "张纯同党, 自称天子.",
+    "portrait_id": "zhangchun_2"
   },
   {
     "id": "fanrong",
@@ -5617,7 +5665,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "董卓部将, 与李傕攻长安, 后为李傕所杀."
+    "summary": "董卓部将, 与李傕攻长安, 后为李傕所杀.",
+    "portrait_id": "fanrong"
   },
   {
     "id": "chenliu",
@@ -5639,7 +5688,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "董卓部将."
+    "summary": "董卓部将.",
+    "portrait_id": "chenliu"
   },
   {
     "id": "lishi",
@@ -5663,7 +5713,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "董卓部将, 持赤兔马说吕布, 后为吕布所杀."
+    "summary": "董卓部将, 持赤兔马说吕布, 后为吕布所杀.",
+    "portrait_id": "lishi"
   },
   {
     "id": "baigong",
@@ -5685,7 +5736,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "董卓部将."
+    "summary": "董卓部将.",
+    "portrait_id": "baigong"
   },
   {
     "id": "yangzhao",
@@ -5707,7 +5759,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "董卓部将."
+    "summary": "董卓部将.",
+    "portrait_id": "yangzhao"
   },
   {
     "id": "duanqiu",
@@ -5731,7 +5784,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "董卓部将, 屯华阴, 与马腾相安."
+    "summary": "董卓部将, 屯华阴, 与马腾相安.",
+    "portrait_id": "duanqiu"
   },
   {
     "id": "liugan",
@@ -5753,7 +5807,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "董卓部将."
+    "summary": "董卓部将.",
+    "portrait_id": "liugan"
   },
   {
     "id": "lvgui",
@@ -5775,7 +5830,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "董卓部将."
+    "summary": "董卓部将.",
+    "portrait_id": "lvgui"
   },
   {
     "id": "yuanshu",
@@ -5802,7 +5858,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "袁绍弟, 据淮南, 197 年僭号称帝, 后众叛亲离, 呕血而死."
+    "summary": "袁绍弟, 据淮南, 197 年僭号称帝, 后众叛亲离, 呕血而死.",
+    "portrait_id": "yuanshu"
   },
   {
     "id": "liuyu",
@@ -5828,7 +5885,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "幽州牧, 仁政爱民, 与公孙瓒不和, 为其所杀."
+    "summary": "幽州牧, 仁政爱民, 与公孙瓒不和, 为其所杀.",
+    "portrait_id": "liuyu"
   },
   {
     "id": "kongzhou",
@@ -5852,7 +5910,8 @@
     "debut_year": 163,
     "debut_month": 1,
     "status": "dead",
-    "summary": "孔子十九世孙, 孔融父."
+    "summary": "孔子十九世孙, 孔融父.",
+    "portrait_id": "kongzhou"
   },
   {
     "id": "taoqian",
@@ -5879,7 +5938,8 @@
     "debut_year": 188,
     "debut_month": 1,
     "status": "dead",
-    "summary": "徐州牧, 三让徐州于刘备, 病故."
+    "summary": "徐州牧, 三让徐州于刘备, 病故.",
+    "portrait_id": "taoqian"
   },
   {
     "id": "lukang",
@@ -5906,7 +5966,8 @@
     "debut_year": 184,
     "debut_month": 1,
     "status": "dead",
-    "summary": "经学大师, 卢植, 卢钦子, 范阳卢氏始祖, 镇压黄巾, 师从马融."
+    "summary": "经学大师, 卢植, 卢钦子, 范阳卢氏始祖, 镇压黄巾, 师从马融.",
+    "portrait_id": "lukang"
   },
   {
     "id": "zhaoyan",
@@ -5928,7 +5989,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "益州官员."
+    "summary": "益州官员.",
+    "portrait_id": "zhaoyan"
   },
   {
     "id": "mating",
@@ -5955,7 +6017,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "马援后, 马超父, 与韩遂共雄西凉, 后为曹操所杀."
+    "summary": "马援后, 马超父, 与韩遂共雄西凉, 后为曹操所杀.",
+    "portrait_id": "mating"
   },
   {
     "id": "hansui",
@@ -5982,7 +6045,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "西凉豪杰, 与马腾共雄, 后降曹, 叛曹, 被曹所杀."
+    "summary": "西凉豪杰, 与马腾共雄, 后降曹, 叛曹, 被曹所杀.",
+    "portrait_id": "hansui"
   },
   {
     "id": "liwenhou",
@@ -6004,7 +6068,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "西凉首领."
+    "summary": "西凉首领.",
+    "portrait_id": "liwenhou"
   },
   {
     "id": "beigongyu",
@@ -6026,7 +6091,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "西凉首领."
+    "summary": "西凉首领.",
+    "portrait_id": "beigongyu"
   },
   {
     "id": "wangguo",
@@ -6048,7 +6114,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "西凉首领."
+    "summary": "西凉首领.",
+    "portrait_id": "wangguo"
   },
   {
     "id": "liangkuang",
@@ -6070,7 +6137,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "西凉部将."
+    "summary": "西凉部将.",
+    "portrait_id": "liangkuang"
   },
   {
     "id": "zhaofan",
@@ -6092,7 +6160,8 @@
     "debut_year": 200,
     "debut_month": 1,
     "status": "dead",
-    "summary": "桂阳太守, 赵云招降, 樊氏夫人事."
+    "summary": "桂阳太守, 赵云招降, 樊氏夫人事.",
+    "portrait_id": "zhaofan"
   },
   {
     "id": "hanxuan",
@@ -6116,7 +6185,8 @@
     "debut_year": 200,
     "debut_month": 1,
     "status": "dead",
-    "summary": "长沙太守, 黄忠主公."
+    "summary": "长沙太守, 黄忠主公.",
+    "portrait_id": "hanxuan"
   },
   {
     "id": "liyan",
@@ -6138,7 +6208,8 @@
     "debut_year": 190,
     "debut_month": 1,
     "status": "dead",
-    "summary": "袁绍部将."
+    "summary": "袁绍部将.",
+    "portrait_id": "liyan"
   },
   {
     "id": "yanxiang",
@@ -6160,7 +6231,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "扬州刺史, 为孙策所破."
+    "summary": "扬州刺史, 为孙策所破.",
+    "portrait_id": "yanxiang"
   },
   {
     "id": "zhaocun",
@@ -6182,7 +6254,8 @@
     "debut_year": 195,
     "debut_month": 1,
     "status": "dead",
-    "summary": "袁术部."
+    "summary": "袁术部.",
+    "portrait_id": "zhaocun"
   },
   {
     "id": "liudai",
@@ -6206,7 +6279,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "兖州刺史, 攻黄巾波才, 战死."
+    "summary": "兖州刺史, 攻黄巾波才, 战死.",
+    "portrait_id": "liudai"
   },
   {
     "id": "qiaomao",
@@ -6228,7 +6302,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "矫诏三将军起兵讨董卓."
+    "summary": "矫诏三将军起兵讨董卓.",
+    "portrait_id": "qiaomao"
   },
   {
     "id": "yuanwei",
@@ -6252,7 +6327,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "袁绍堂兄, 讨董卓."
+    "summary": "袁绍堂兄, 讨董卓.",
+    "portrait_id": "yuanwei"
   },
   {
     "id": "zangba",
@@ -6278,7 +6354,8 @@
     "debut_year": 195,
     "debut_month": 1,
     "status": "dead",
-    "summary": "泰山贼帅, 降曹操, 镇守青徐."
+    "summary": "泰山贼帅, 降曹操, 镇守青徐.",
+    "portrait_id": "zangba"
   },
   {
     "id": "sunzhan",
@@ -6302,7 +6379,8 @@
     "debut_year": 190,
     "debut_month": 1,
     "status": "dead",
-    "summary": "孙坚侄, 孙策堂兄, 镇守豫章."
+    "summary": "孙坚侄, 孙策堂兄, 镇守豫章.",
+    "portrait_id": "sunzhan"
   },
   {
     "id": "yuanshi",
@@ -6329,7 +6407,8 @@
     "debut_year": 100,
     "debut_month": 1,
     "status": "dead",
-    "summary": "陈郡袁氏, 四世三公, 袁绍袁术基业."
+    "summary": "陈郡袁氏, 四世三公, 袁绍袁术基业.",
+    "portrait_id": "yuanshi"
   },
   {
     "id": "yangbiao",
@@ -6356,7 +6435,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "弘农杨氏, 四世太尉, 与袁绍谋诛董卓."
+    "summary": "弘农杨氏, 四世太尉, 与袁绍谋诛董卓.",
+    "portrait_id": "yangbiao"
   },
   {
     "id": "yangqiu",
@@ -6378,7 +6458,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "杨彪子."
+    "summary": "杨彪子.",
+    "portrait_id": "yangqiu"
   },
   {
     "id": "xunshu",
@@ -6404,7 +6485,8 @@
     "debut_year": 149,
     "debut_month": 1,
     "status": "dead",
-    "summary": "荀彧祖, 荀氏八龙."
+    "summary": "荀彧祖, 荀氏八龙.",
+    "portrait_id": "xunshu"
   },
   {
     "id": "xungao",
@@ -6431,7 +6513,8 @@
     "debut_year": 196,
     "debut_month": 1,
     "status": "dead",
-    "summary": "曹操首席谋士, 尚书令, 王佐之才, 反对曹操称魏公, 饮药自尽."
+    "summary": "曹操首席谋士, 尚书令, 王佐之才, 反对曹操称魏公, 饮药自尽.",
+    "portrait_id": "xungao"
   },
   {
     "id": "chenqun",
@@ -6457,7 +6540,8 @@
     "debut_year": 195,
     "debut_month": 1,
     "status": "dead",
-    "summary": "颍川陈氏, 曹魏尚书令, 创九品中正制."
+    "summary": "颍川陈氏, 曹魏尚书令, 创九品中正制.",
+    "portrait_id": "chenqun"
   },
   {
     "id": "chendiao",
@@ -6483,7 +6567,8 @@
     "debut_year": 195,
     "debut_month": 1,
     "status": "dead",
-    "summary": "徐州陈登, 三次击败吕布, 助曹操."
+    "summary": "徐州陈登, 三次击败吕布, 助曹操.",
+    "portrait_id": "chendiao"
   },
   {
     "id": "simayi",
@@ -6511,7 +6596,8 @@
     "debut_year": 208,
     "debut_month": 1,
     "status": "dead",
-    "summary": "河内司马氏, 曹操主簿, 曹魏权臣, 西晋奠基者."
+    "summary": "河内司马氏, 曹操主簿, 曹魏权臣, 西晋奠基者.",
+    "portrait_id": "simayi"
   },
   {
     "id": "simashu",
@@ -6537,7 +6623,8 @@
     "debut_year": 195,
     "debut_month": 1,
     "status": "dead",
-    "summary": "水镜先生, 荐诸葛亮庞统."
+    "summary": "水镜先生, 荐诸葛亮庞统.",
+    "portrait_id": "simashu"
   },
   {
     "id": "zhongduo",
@@ -6564,10 +6651,11 @@
     "debut_year": 196,
     "debut_month": 1,
     "status": "dead",
-    "summary": "曹魏重臣, 书法家, 楷书鼻祖."
+    "summary": "曹魏重臣, 书法家, 楷书鼻祖.",
+    "portrait_id": "zhongduo"
   },
   {
-    "id": "huo Guang",
+    "id": "huo_guang",
     "name": "霍光",
     "office": "博陵大族",
     "office_type": "noble",
@@ -6588,7 +6676,8 @@
     "debut_year": 130,
     "debut_month": 1,
     "status": "dead",
-    "summary": "河东大族, 历史类比."
+    "summary": "河东大族, 历史类比.",
+    "portrait_id": "huo_guang"
   },
   {
     "id": "wuhou",
@@ -6610,7 +6699,8 @@
     "debut_year": 100,
     "debut_month": 1,
     "status": "dead",
-    "summary": "江东大族."
+    "summary": "江东大族.",
+    "portrait_id": "wuhou"
   },
   {
     "id": "huaxin",
@@ -6636,7 +6726,8 @@
     "debut_year": 196,
     "debut_month": 1,
     "status": "dead",
-    "summary": "高唐人, 曹魏司徒."
+    "summary": "高唐人, 曹魏司徒.",
+    "portrait_id": "huaxin"
   },
   {
     "id": "kongrong",
@@ -6664,7 +6755,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "孔子后, 让梨美谈, 不屈于曹操, 被族灭."
+    "summary": "孔子后, 让梨美谈, 不屈于曹操, 被族灭.",
+    "portrait_id": "kongrong"
   },
   {
     "id": "miji",
@@ -6690,7 +6782,8 @@
     "debut_year": 196,
     "debut_month": 1,
     "status": "dead",
-    "summary": "狂士, 击鼓骂曹, 被黄祖所杀."
+    "summary": "狂士, 击鼓骂曹, 被黄祖所杀.",
+    "portrait_id": "miji"
   },
   {
     "id": "xiangzu",
@@ -6712,7 +6805,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "汉末名士."
+    "summary": "汉末名士.",
+    "portrait_id": "xiangzu"
   },
   {
     "id": "xujing",
@@ -6734,7 +6828,8 @@
     "debut_year": 130,
     "debut_month": 1,
     "status": "dead",
-    "summary": "汉末名臣."
+    "summary": "汉末名臣.",
+    "portrait_id": "xujing"
   },
   {
     "id": "fanyou",
@@ -6756,7 +6851,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "武陵太守."
+    "summary": "武陵太守.",
+    "portrait_id": "fanyou"
   },
   {
     "id": "xunzong",
@@ -6778,7 +6874,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "荀彧族."
+    "summary": "荀彧族.",
+    "portrait_id": "xunzong"
   },
   {
     "id": "zhouchang",
@@ -6800,7 +6897,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "豫州官员."
+    "summary": "豫州官员.",
+    "portrait_id": "zhouchang"
   },
   {
     "id": "lijue_2",
@@ -6822,7 +6920,8 @@
     "debut_year": 189,
     "debut_month": 1,
     "status": "dead",
-    "summary": "尚书."
+    "summary": "尚书.",
+    "portrait_id": "lijue_2"
   },
   {
     "id": "wenming",
@@ -6848,7 +6947,8 @@
     "debut_year": 195,
     "debut_month": 1,
     "status": "dead",
-    "summary": "原刘表部, 镇守江夏数十年."
+    "summary": "原刘表部, 镇守江夏数十年.",
+    "portrait_id": "wenming"
   },
   {
     "id": "xiahoumao",
@@ -6872,7 +6972,8 @@
     "debut_year": 230,
     "debut_month": 1,
     "status": "dead",
-    "summary": "夏侯渊子, 驸马, 庸才, 失汉中."
+    "summary": "夏侯渊子, 驸马, 庸才, 失汉中.",
+    "portrait_id": "xiahoumao"
   },
   {
     "id": "wuyan",
@@ -6894,7 +6995,8 @@
     "debut_year": 210,
     "debut_month": 1,
     "status": "dead",
-    "summary": "东吴官员."
+    "summary": "东吴官员.",
+    "portrait_id": "wuyan"
   },
   {
     "id": "liji_2",
@@ -6916,7 +7018,8 @@
     "debut_year": 200,
     "debut_month": 1,
     "status": "dead",
-    "summary": "南海太守."
+    "summary": "南海太守.",
+    "portrait_id": "liji_2"
   },
   {
     "id": "kangju",
@@ -6940,7 +7043,8 @@
     "debut_year": 130,
     "debut_month": 1,
     "status": "active",
-    "summary": "西域康居国."
+    "summary": "西域康居国.",
+    "portrait_id": "kangju"
   },
   {
     "id": "wusunwang",
@@ -6964,7 +7068,8 @@
     "debut_year": 130,
     "debut_month": 1,
     "status": "active",
-    "summary": "乌孙国王."
+    "summary": "乌孙国王.",
+    "portrait_id": "wusunwang"
   },
   {
     "id": "fufengou",
@@ -6986,7 +7091,8 @@
     "debut_year": 130,
     "debut_month": 1,
     "status": "dead",
-    "summary": "扶风官员."
+    "summary": "扶风官员.",
+    "portrait_id": "fufengou"
   },
   {
     "id": "nandian",
@@ -7010,7 +7116,8 @@
     "debut_year": 130,
     "debut_month": 1,
     "status": "dead",
-    "summary": "氐族王."
+    "summary": "氐族王.",
+    "portrait_id": "nandian"
   },
   {
     "id": "qiangw",
@@ -7034,7 +7141,8 @@
     "debut_year": 130,
     "debut_month": 1,
     "status": "dead",
-    "summary": "羌族首领."
+    "summary": "羌族首领.",
+    "portrait_id": "qiangw"
   },
   {
     "id": "shanyue",
@@ -7058,7 +7166,8 @@
     "debut_year": 130,
     "debut_month": 1,
     "status": "dead",
-    "summary": "山越, 江东心腹之患."
+    "summary": "山越, 江东心腹之患.",
+    "portrait_id": "shanyue"
   },
   {
     "id": "nanyue",
@@ -7080,7 +7189,8 @@
     "debut_year": 130,
     "debut_month": 1,
     "status": "dead",
-    "summary": "南越."
+    "summary": "南越.",
+    "portrait_id": "nanyue"
   },
   {
     "id": "yizhouy",
@@ -7102,7 +7212,8 @@
     "debut_year": 130,
     "debut_month": 1,
     "status": "dead",
-    "summary": "益州蛮夷."
+    "summary": "益州蛮夷.",
+    "portrait_id": "yizhouy"
   },
   {
     "id": "wulingman",
@@ -7124,7 +7235,8 @@
     "debut_year": 130,
     "debut_month": 1,
     "status": "dead",
-    "summary": "武陵蛮."
+    "summary": "武陵蛮.",
+    "portrait_id": "wulingman"
   },
   {
     "id": "shulocal",
@@ -7146,6 +7258,7 @@
     "debut_year": 130,
     "debut_month": 1,
     "status": "dead",
-    "summary": "蜀地土司."
+    "summary": "蜀地土司.",
+    "portrait_id": "shulocal"
   }
 ]

@@ -1036,7 +1036,13 @@ def apply_issue_inertia_and_ongoing(
                 bar = int(row["bar_value"])
 
         # 2) ongoing_effects
-        ongoing = json.loads(row.get("ongoing_effects") or "{}")
+        _raw = row.get("ongoing_effects")
+        if isinstance(_raw, dict):
+            ongoing = _raw
+        elif isinstance(_raw, (str, bytes, bytearray)):
+            ongoing = json.loads(_raw or "{}")
+        else:
+            ongoing = {}
         if not ongoing:
             continue
 
