@@ -33,6 +33,8 @@ import type { SecretOrder } from './api'
 import { api } from './api'
 // v2.0.0 Phase 3: 抽 9 Tab 后 CourtLayout/MinisterPortrait/ProvinceMap/BattleView/FactionRelationDiagram 不再直接用
 import { ConsortTab } from './components/ConsortTab'
+// v5.2.0 P6-1: MenuPage 主菜单 (替代 WelcomeScreen)
+import { MenuPage } from './components/MenuPage'
 // v2.0.0 Phase 3.1: 9 个 Tab 抽到独立文件
 import { OverviewTab } from './components/tabs/OverviewTab'
 import { DecreeTab } from './components/tabs/DecreeTab'
@@ -49,17 +51,8 @@ type Tab = 'overview' | 'decree' | 'ministers' | 'factions' | 'skills' | 'buildi
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('overview')
-  const [showNewGameModal, setShowNewGameModal] = useState(false)
-
-  // W2: Escape 关闭 New Game Modal (v3.3 UX 大修)
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setShowNewGameModal(false);
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, []);
-  const [emperorName, setEmperorName] = useState('刘协')
+  // v5.2.0 P6-1: New Game 流程整合到 MenuPage, 不再需要内联 modal
+  // (Header "新朝" 按钮改为 returnToMenu 走 MenuPage)
 
   // Modal states (showSettlement/settlementStages/currentSettlementStage 抽到 useSettlement)
   const [showEdictModal, setShowEdictModal] = useState(false)
@@ -151,7 +144,7 @@ export default function App() {
 
   const {
     campaignId, gameState, ministers, factions, loading, error, log,
-    createCampaign, saveGame, issueDecree, nextTurn
+    createCampaign, loadCampaign, saveGame, issueDecree, nextTurn, returnToMenu
   } = useGame()
 
   // v2.0.0 Phase 3.3: 抽 3 个 handleMinister/Send/Cheat 调用到 useChatModal/useCheatConsole
@@ -186,10 +179,18 @@ export default function App() {
   }, [])
   useKeyboard(keyboardShortcuts, !!campaignId)
 
-  const handleNewGame = async () => {
-    setShowNewGameModal(false)
+  // v5.2.0 P6-1: MenuPage handlers
+  const handleMenuNewGame = useCallback(async (emperorName: string) => {
     await createCampaign(emperorName, [])
-  }
+  }, [createCampaign])
+
+  const handleMenuLoad = useCallback(async (cid: string) => {
+    await loadCampaign(cid)
+  }, [campaignId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleMenuContinue = useCallback(async (cid: string) => {
+    await loadCampaign(cid)
+  }, [campaignId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // v2.0.0 Phase 3.3: handleMinisterSelect/handleSendMessage/handleExecuteCheat 已抽到 hook
   // v2.0.0 P0-B3: useCallback 稳定引用，避免 OrdersTab useEffect 死循环
@@ -230,7 +231,7 @@ export default function App() {
       <Header
         gameState={gameState}
         onSave={saveGame}
-        onNewGame={() => setShowNewGameModal(true)}
+        onReturnToMenu={returnToMenu}
         theme={theme}
         season={season}
         onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -269,7 +270,12 @@ export default function App() {
         {/* Content */}
         <div className="content">
           {!campaignId ? (
-            <WelcomeScreen onNewGame={() => setShowNewGameModal(true)} />
+            // v5.2.0 P6-1: MenuPage 替代 WelcomeScreen (含建新朝/存档列表/LLM 状态)
+            <MenuPage
+              onNewGame={handleMenuNewGame}
+              onLoadSave={handleMenuLoad}
+              onContinue={handleMenuContinue}
+            />
           ) : (
             <>
               <div className="tabs">
@@ -334,33 +340,7 @@ export default function App() {
         )}
       </main>
 
-      {/* New Game Modal */}
-      {showNewGameModal && (
-        <div className="modal-overlay" onClick={() => setShowNewGameModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal__title">建立新朝</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '6px', color: 'var(--color-text-secondary)', fontSize: '13px' }}>
-                  皇帝名（默认刘协）
-                </label>
-                <input
-                  type="text"
-                  value={emperorName}
-                  onChange={e => setEmperorName(e.target.value)}
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                <button type="button" className="btn" onClick={() => setShowNewGameModal(false)}>取消</button>
-                <button type="button" className="btn btn--primary" onClick={handleNewGame} disabled={loading}>
-                  {loading ? '创建中...' : '建立朝代'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* v5.2.0 P6-1: 内联 New Game Modal 已删除, 整合到 MenuPage */}
 
       {error && (
         <div className="modal-overlay" onClick={() => {}}>
@@ -469,20 +449,6 @@ export default function App() {
 
 // ---- Sub-components ----
 
-function WelcomeScreen({ onNewGame }: { onNewGame: () => void }) {
-  return (
-    <div className="empty-state" style={{ paddingTop: '80px' }}>
-      <div style={{ fontSize: '48px', marginBottom: '20px' }}>战斗️</div>
-      <h2 style={{ color: 'var(--color-gold)', marginBottom: '12px', fontSize: '22px' }}>汉献帝之末路</h2>
-      <p style={{ marginBottom: '30px', maxWidth: '400px', lineHeight: '1.7' }}>
-        你是汉献帝刘协，在董卓、李傕、郭汜的阴影下苟延残喘。
-        通过诏书、派系、技能和建筑，一步步夺回皇权。
-      </p>
-      <button type="button" className="btn btn--primary" onClick={onNewGame}>
-        + 建立新朝
-      </button>
-    </div>
-  )
-}
+// v5.2.0 P6-1: WelcomeScreen 已删除, 整合到 MenuPage
 
 // v2.0.0 Phase 3.1: getAuthorityTier 已迁到 components/tabs/OverviewTab.tsx

@@ -8,6 +8,8 @@ interface Props {
   gameState: GameState | null
   onSave?: () => void
   onNewGame?: () => void
+  // v5.2.0 P6-1: 游戏中按"新朝"返回主菜单
+  onReturnToMenu?: () => void
   theme?: 'light' | 'dark'
   season?: 'spring' | 'summer' | 'autumn' | 'winter'
   onToggleTheme?: () => void
@@ -28,7 +30,7 @@ const SEASON_ICON: Record<string, string> = {
   winter: '冬️',
 }
 
-export function Header({ gameState, onSave, onNewGame, theme, season, onToggleTheme, onCycleSeason }: Props) {
+export function Header({ gameState, onSave, onNewGame, onReturnToMenu, theme, season, onToggleTheme, onCycleSeason }: Props) {
   return (
     <header className="app-header">
       <h1 className="app-header__title">战斗️ 汉献帝之末路</h1>
@@ -79,7 +81,7 @@ export function Header({ gameState, onSave, onNewGame, theme, season, onToggleTh
             {theme === 'dark' ? '夏️' : '夜'}
           </button>
         )}
-        <button type="button" className="btn" onClick={onNewGame}>新朝</button>
+        <button type="button" className="btn" onClick={onReturnToMenu || onNewGame}>主菜单</button>
         {gameState && (
           <button type="button" className="btn btn--gold" onClick={onSave}>存储 存档</button>
         )}

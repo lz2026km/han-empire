@@ -100,6 +100,16 @@ export function useGame() {
     if (campaignId) await loadCampaign(campaignId)
   }, [campaignId, loadCampaign])
 
+  // v5.2.0 P6-1: 返回主菜单 (清空所有 game state)
+  const returnToMenu = useCallback(() => {
+    setCampaignId(null)
+    setGameState(null)
+    setMinisters([])
+    setFactions([])
+    setError(null)
+    addLog('返回主菜单', false)
+  }, [addLog])
+
   return {
     campaignId,
     gameState,
@@ -115,6 +125,7 @@ export function useGame() {
     nextTurn,
     saveGame,
     refresh,
+    returnToMenu,
     addLog,
   }
 }
