@@ -523,6 +523,29 @@ def run_monthly_simulation(
     except Exception:
         pass
 
+    # ── 3e2. v5.1.0 P0-4: 开幕负担 (Legacies) 应用与结案 ──────────
+    try:
+        from han_sim.legacies import apply_legacy_modifiers as _apply_leg_mods
+        legacy_mods = _apply_leg_mods(state, db)
+        if legacy_mods:
+            state.log.append(f"【开幕负担】{len(legacy_mods)} 项 modifier 注入")
+    except Exception as e:
+        legacy_mods = {}
+    # 检查 clear_gate, 满足条件的 legacy 结案
+    try:
+        cleared_legacies = db.check_clear_gates(state)
+        for cl in cleared_legacies:
+            state.log.append(f"【legacy 清除】{cl.get('name', cl.get('legacy_key', ''))}")
+    except Exception:
+        cleared_legacies = []
+    # 到期 legacy 标记为 expired
+    try:
+        expired_leg = db.expire_legacies(state.turn)
+        for el in expired_leg:
+            state.log.append(f"【legacy 到期】{el.get('name', el.get('legacy_key', ''))}")
+    except Exception:
+        pass
+
     # ── 3e. 派系主导事件 ──────────────────────────────────────
     from han_sim.flows import apply_faction_events as _apply_faction_events
     faction_events = _apply_faction_events(state, db)

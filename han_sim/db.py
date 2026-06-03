@@ -1280,6 +1280,8 @@ class GameDB:
         """新档开局时根据 preset legacies 写入 legacies 表（开局负面修正）。"""
         if self.table_has_rows("legacies"):
             return
+        # v5.1.0 P0-4: 6 条开幕负担 (汉末乱世)
+        # duration_months=-1 = 永久, 仅靠 clear_gate 清除
         opening_legacies = [
             {
                 "name": "董卓余威",
@@ -1304,6 +1306,31 @@ class GameDB:
                 "narrative_hint": "连年战乱，百姓流离失所，民心已不再向汉。",
                 "duration_months": 24,
                 "clear_gate": {"metric": "声望", "min": 50},
+            },
+            # v5.1.0 P0-4 新增 3 条 (皇室式微 / 群臣观望 / 边患四起)
+            {
+                "name": "皇室式微",
+                "legacy_key": "imperial_weak",
+                "modifiers": {"威权": -20, "decay_authority": 0.3},
+                "narrative_hint": "献帝年幼, 四百年炎汉气数已尽, 纵有天命, 亦需铁腕。",
+                "duration_months": -1,  # 永久, 仅靠 clear_gate
+                "clear_gate": {"metric": "威权", "min": 60},
+            },
+            {
+                "name": "群臣观望",
+                "legacy_key": "courtiers_watchful",
+                "modifiers": {"faction_decay": 0.2},
+                "narrative_hint": "百官观望朝局, 投闲置散, 大事不决, 小事不理。",
+                "duration_months": -1,  # 永久
+                "clear_gate": {"metric": "威权", "min": 70},
+            },
+            {
+                "name": "边患四起",
+                "legacy_key": "border_raids",
+                "modifiers": {"military_pressure_total": 30},
+                "narrative_hint": "北匈奴/鲜卑/南匈奴时扰幽并, 西羌乱凉州, 边疆告急文书日不暇接。",
+                "duration_months": -1,  # 永久
+                "clear_gate": {"metric": "威权", "min": 80},
             },
         ]
         for leg in opening_legacies:
@@ -2380,6 +2407,101 @@ class GameDB:
         if expired:
             self.conn.commit()
         return expired
+
+    def check_clear_gates(self, state: "GameState") -> List[Dict]:
+        """v5.1.0 P0-4: 检查每条 active legacy 的 clear_gate 条件, 满足则结案 (改为 cleared 状态).
+
+        Clear gate 格式 (JSON):
+          {"metric": "威权", "min": 50}     - 当前值 >= min
+          {"metric": "藩镇", "max": 30}     - 当前值 <= max
+          {"events_resolved": ["event_id"]}  - 已结案 issue 包含
+          {"events_fired": ["event_id"]}     - 已触发 issue 包含
+
+        Returns: 刚刚结案的 legacy 列表 (含 legacy_key/name/modifiers/narrative_hint)
+        """
+        cleared: List[Dict] = []
+        rows = self.conn.execute(
+            "SELECT * FROM legacies WHERE status='active'"
+        ).fetchall()
+        for row in rows:
+            row_dict = dict(row)
+            gate = row_dict.get("clear_gate") or "{}"
+            if isinstance(gate, str):
+                try:
+                    gate = json.loads(gate)
+                except Exception:
+                    continue
+            if not isinstance(gate, dict) or not gate:
+                continue
+
+            # 1) metric.min / metric.max
+            metric = gate.get("metric")
+            if metric:
+                value = int(state.metrics.get(metric, 0))
+                if "min" in gate and value < int(gate["min"]):
+                    continue
+                if "max" in gate and value > int(gate["max"]):
+                    continue
+            # 2) events_resolved (已结案 issues, 用 origin_ref/title 匹配)
+            events_resolved = gate.get("events_resolved") or []
+            if events_resolved:
+                try:
+                    found_refs = {
+                        str(r["origin_ref"] or "") for r in self.conn.execute(
+                            "SELECT origin_ref FROM issues WHERE status='resolved'"
+                        ).fetchall()
+                    }
+                    found_titles = {
+                        str(r["title"] or "") for r in self.conn.execute(
+                            "SELECT title FROM issues WHERE status='resolved'"
+                        ).fetchall()
+                    }
+                    # 任一 events_resolved 在 origin_ref 或 title 中找到即满足
+                    if not any(
+                        ev in found_refs or ev in found_titles
+                        for ev in events_resolved
+                    ):
+                        continue
+                except Exception:
+                    pass
+            # 3) events_fired (已触发 events, 查 event_triggers.event_id)
+            events_fired = gate.get("events_fired") or []
+            if events_fired:
+                try:
+                    found = {
+                        str(r["event_id"]) for r in self.conn.execute(
+                            "SELECT DISTINCT event_id FROM event_triggers"
+                        ).fetchall()
+                    }
+                    if not all(ev in found for ev in events_fired):
+                        continue
+                except Exception:
+                    pass
+
+            # 全部条件满足, 结案
+            self.conn.execute(
+                "UPDATE legacies SET status='cleared' WHERE id=?",
+                (row_dict["id"],),
+            )
+            cleared.append(row_dict)
+        if cleared:
+            self.conn.commit()
+        return cleared
+
+    def clear_legacy_by_key(self, legacy_key: str, reason: str = "") -> bool:
+        """v5.1.0 P0-4: 手动清除 legacy (作弊端点用). 返 True=成功"""
+        row = self.conn.execute(
+            "SELECT id FROM legacies WHERE legacy_key=? AND status='active'",
+            (legacy_key,),
+        ).fetchone()
+        if not row:
+            return False
+        self.conn.execute(
+            "UPDATE legacies SET status='cleared' WHERE id=?",
+            (row["id"],),
+        )
+        self.conn.commit()
+        return True
 
     # ── 建筑日志 ─────────────────────────────────────────────────────────
 

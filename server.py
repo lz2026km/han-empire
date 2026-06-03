@@ -1830,6 +1830,74 @@ def api_intro_hints():
     })
 
 
+# --- 6f) /api/legacies (v5.1.0 P0-4: Opening Legacies 开幕负担) ---
+@app.route('/api/legacies', methods=['GET'])
+def api_legacies():
+    """v5.1.0 P0-4: 列当前战役的所有 active legacy (开幕负担)
+
+    Query params:
+        campaign_id: 战役 ID (必需)
+        include_cleared: 是否含 cleared (默认 false)
+    """
+    from han_sim.paths import user_data_path
+    from han_sim.legacies import get_active_legacy_summary
+
+    campaign_id = (request.args.get("campaign_id") or "").strip()
+    if not campaign_id:
+        return jsonify({"error": "campaign_id required"}), 400
+
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+
+    include_cleared = (request.args.get("include_cleared", "false").lower() == "true")
+    try:
+        rows = db.list_active_legacies(turn=0) if not include_cleared else (
+            db.conn.execute(
+                "SELECT * FROM legacies WHERE status IN ('active', 'cleared') ORDER BY id"
+            ).fetchall()
+        )
+        rows = [dict(r) for r in rows]
+        from han_sim.legacies import format_legacy_for_display
+        items = [format_legacy_for_display(r) for r in rows]
+        return jsonify({
+            "legacies": items,
+            "total": len(items),
+            "active_count": sum(1 for x in items if x["status"] == "active"),
+            "cleared_count": sum(1 for x in items if x["status"] == "cleared"),
+        })
+    except Exception as e:
+        return jsonify({"error": f"legacies query failed: {e}"}), 500
+
+
+@app.route('/api/legacies/<legacy_key>/clear', methods=['POST'])
+def api_clear_legacy(legacy_key):
+    """v5.1.0 P0-4: 手动清除 legacy (作弊端点)"""
+    from han_sim.paths import user_data_path
+    from han_sim.legacies import get_active_legacy_summary
+
+    campaign_id = (request.args.get("campaign_id") or "").strip()
+    if not campaign_id:
+        return jsonify({"error": "campaign_id required"}), 400
+
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+    try:
+        ok = db.clear_legacy_by_key(legacy_key)
+        if ok:
+            return jsonify({"cleared": True, "key": legacy_key})
+        return jsonify({"cleared": False, "error": "legacy not found or not active"}), 404
+    except Exception as e:
+        return jsonify({"error": f"clear legacy failed: {e}"}), 500
+
+
 # --- 6e) /api/budget (v5.1.0 P0-2: 国库/内库 分账户预算视图) ---
 @app.route('/api/budget', methods=['GET'])
 def api_budget():

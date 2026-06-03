@@ -990,6 +990,9 @@ class GameState:
     # v5.1.0 P0-3: 国库/内库分账户预算视图 (兼容 metrics["汉室库"/"内库"] 旧字段)
     # 实际账户余额以 metrics 为准, budget 段用于 UI 弹窗 (收支流水/分账/截留)
     budget: Dict[str, "BudgetAccount"] = field(default_factory=dict)
+    # v5.1.0 P0-4: 开幕负担累加 modifier (decay_authority / faction_decay / military_pressure_total)
+    # 每月由 legacies.apply_legacy_modifiers 重算
+    legacy_modifiers: Dict[str, float] = field(default_factory=dict)
 
     def clamp(self) -> None:
         for key, value in list(self.metrics.items()):
