@@ -37,6 +37,8 @@ import { SettingsModal } from './components/SettingsModal'
 import { StatsModal } from './components/StatsModal'
 // v5.2.0 P6-9: 帮助弹窗 (HelpModal)
 import { HelpModal } from './components/HelpModal'
+// v5.2.0 P6-13: 9 Tab 顶部 hero 贴图 (TabHero)
+import { TabHero } from './components/TabHero'
 import { SecretOrdersModal } from './components/SecretOrdersModal'
 import { CheatConsole } from './components/CheatConsole'
 import { GrandMap } from './components/GrandMap'
@@ -355,6 +357,9 @@ export default function App() {
                   </div>
                 ))}
               </div>
+
+              {/* v5.2.0 P6-13: 当前 Tab 的 hero 贴图 */}
+              <TabHero tabId={activeTab} />
 
               <SceneTransition key={activeTab} type="fade" duration={400}>
                 {activeTab === 'overview' && (

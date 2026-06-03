@@ -2960,6 +2960,43 @@ input:focus, select:focus {
   animation: ls-spin 1.2s linear infinite;
 }
 
+/* v5.2.0 P6-13: TabHero 9 Tab 顶部 hero 贴图 (AI 生图) */
+.tab-hero {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  background-color: var(--color-bg-card);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border: 1px solid var(--color-border-gold);
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.3);
+  overflow: hidden;
+  animation: tab-hero-fade 500ms var(--ease-out);
+}
+@keyframes tab-hero-fade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.tab-hero__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 12px 18px;
+  background: linear-gradient(180deg, transparent 0%, transparent 40%, rgba(0,0,0,0.7) 100%);
+}
+.tab-hero__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--color-gold-bright);
+  letter-spacing: 4px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 1px var(--color-gold);
+}
+
 /* v5.2.0 P6-12: MenuPage 美化 (banner + 头像 + 4 季节背景) */
 .menu-page {
   position: relative;
