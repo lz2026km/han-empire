@@ -1,10 +1,12 @@
 /* =============================================
    MenuPage - 主菜单页 (v5.1.4 P4-1)
    仿 ming_sim MenuPage, 选项: 继续/新朝/读档/退出
+   v5.2.0 P6-3: 改用 NewGameModal 组件
    ============================================= */
 import { useEffect, useState } from 'react'
 import { Crown, Save, Plus, Power, Key, Folder, Trash2 } from 'lucide-react'
 import { api } from '../api'
+import { NewGameModal } from './NewGameModal'
 
 interface Save {
   campaign_id: string
@@ -33,8 +35,9 @@ export function MenuPage({ onNewGame, onLoadSave, onContinue, onShutdown }: Menu
   const [status, setStatus] = useState<MenuStatus | null>(null)
   const [error, setError] = useState<string>('')
   const [loading, setLoading] = useState(true)
-  const [emperorName, setEmperorName] = useState('刘协')
   const [busy, setBusy] = useState(false)
+  // v5.2.0 P6-3: 建新朝用 NewGameModal 弹窗 (替代原内联 input + button)
+  const [showNewGameModal, setShowNewGameModal] = useState(false)
 
   useEffect(() => {
     refresh()
@@ -53,11 +56,12 @@ export function MenuPage({ onNewGame, onLoadSave, onContinue, onShutdown }: Menu
     }
   }
 
-  const handleNewGame = async () => {
+  const handleNewGame = async (name: string) => {
     setBusy(true)
     setError('')
     try {
-      await onNewGame(emperorName)
+      await onNewGame(name)
+      setShowNewGameModal(false)
     } catch (e: any) {
       setError(e?.message || '建立新朝失败')
     } finally {
@@ -138,18 +142,10 @@ export function MenuPage({ onNewGame, onLoadSave, onContinue, onShutdown }: Menu
         <div className="menu-page__action-card">
           <h3>建立新朝</h3>
           <p>以汉献帝身份开始, 在 189-220 年的乱局中求存</p>
-          <input
-            type="text"
-            value={emperorName}
-            onChange={(e) => setEmperorName(e.target.value)}
-            placeholder="天子姓名 (默认: 刘协)"
-            className="menu-page__input"
-            disabled={busy}
-          />
           <button
             type="button"
             className="menu-page__btn menu-page__btn--primary"
-            onClick={handleNewGame}
+            onClick={() => setShowNewGameModal(true)}
             disabled={busy}
           >
             <Plus size={16} /> + 建立新朝
@@ -226,6 +222,14 @@ export function MenuPage({ onNewGame, onLoadSave, onContinue, onShutdown }: Menu
           </button>
         </div>
       )}
+
+      {/* v5.2.0 P6-3: 建新朝弹窗 (从内联 input 抽到组件) */}
+      <NewGameModal
+        open={showNewGameModal}
+        loading={busy}
+        onConfirm={handleNewGame}
+        onCancel={() => setShowNewGameModal(false)}
+      />
     </div>
   )
 }
