@@ -2120,6 +2120,65 @@ class GameDB:
             result.append(d)
         return result
 
+    def write_extraction(
+        self, turn: int, year: int, period: int,
+        decree_text: str = "", narrative: str = "",
+        extractor_input: str = "", extractor_output: str = "",
+    ) -> None:
+        """v5.1.2 P2-3: 写本月 extractor 调用的输入输出到 turn_extractions 表.
+
+        由 score_extractor_pipeline 或 simulation 在月末调一次.
+        """
+        self.conn.execute(
+            """INSERT INTO turn_extractions
+               (turn, year, period, decree_text, narrative,
+                extractor_input, extractor_output)
+               VALUES (?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(turn) DO UPDATE SET
+                   year=excluded.year, period=excluded.period,
+                   decree_text=excluded.decree_text,
+                   narrative=excluded.narrative,
+                   extractor_input=excluded.extractor_input,
+                   extractor_output=excluded.extractor_output""",
+            (int(turn), int(year), int(period),
+             str(decree_text or "")[:4000],
+             str(narrative or "")[:8000],
+             str(extractor_input or "")[:8000],
+             str(extractor_output or "")[:16000]),
+        )
+        self.conn.commit()
+
+    def get_extraction(self, turn: int) -> Dict:
+        """v5.1.2 P2-3: 读指定 turn 的 extractor 记录."""
+        row = self.conn.execute(
+            "SELECT * FROM turn_extractions WHERE turn=?",
+            (int(turn),),
+        ).fetchone()
+        if not row:
+            return {}
+        d = dict(row)
+        d["turn"] = int(d["turn"])
+        d["year"] = int(d["year"])
+        d["period"] = int(d["period"])
+        return d
+
+    def list_recent_extractions(self, limit: int = 5) -> List[Dict]:
+        """v5.1.2 P2-3: 最近 N 个 turn 的 extractor 记录 (倒序)."""
+        rows = self.conn.execute(
+            "SELECT turn, year, period, created_at FROM turn_extractions "
+            "ORDER BY turn DESC LIMIT ?",
+            (int(limit),),
+        ).fetchall()
+        return [
+            {
+                "turn": int(r["turn"]),
+                "year": int(r["year"]),
+                "period": int(r["period"]),
+                "created_at": r["created_at"],
+            }
+            for r in rows
+        ]
+
     def get_active_issues_by_kind(self, kind: str) -> List[Dict]:
         """按 kind 筛选进行中的事项。"""
         rows = self.conn.execute(

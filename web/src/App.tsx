@@ -24,6 +24,7 @@ import { SettlementLock } from './components/SettlementLock'
 import { ReportModal } from './components/ReportModal'
 import { ClosedIssuesModal } from './components/ClosedIssuesModal'
 import { HistoryModal } from './components/HistoryModal'
+import { ExtractionModal } from './components/ExtractionModal'
 import { SecretOrdersModal } from './components/SecretOrdersModal'
 import { CheatConsole } from './components/CheatConsole'
 import { GrandMap } from './components/GrandMap'
@@ -79,6 +80,10 @@ export default function App() {
   const [showHistoryModal, setShowHistoryModal] = useState(false)
   const [historyData, setHistoryData] = useState<any>(null)
 
+  // v5.1.2 P2-3: ExtractionModal 手动触发 (按 E 键)
+  const [showExtractionModal, setShowExtractionModal] = useState(false)
+  const [extractionData, setExtractionData] = useState<any>(null)
+
   // v5.1.1 P1-3: 检测 gameState.turn 变化 → 拉 /api/gazette → 弹 ReportModal
   useEffect(() => {
     const currentTurn = gameState?.turn
@@ -127,6 +132,22 @@ export default function App() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [campaignId, showHistoryModal])
+
+  // v5.1.2 P2-3: E 键弹 ExtractionModal
+  useEffect(() => {
+    if (!campaignId) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'e' || e.key === 'E') {
+        if (showExtractionModal) return
+        api.getExtraction(campaignId).then((d) => {
+          setExtractionData(d)
+          setShowExtractionModal(true)
+        }).catch(() => {/* 静默 */})
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [campaignId, showExtractionModal])
 
   const {
     campaignId, gameState, ministers, factions, loading, error, log,
@@ -422,6 +443,13 @@ export default function App() {
         open={showHistoryModal}
         data={historyData}
         onClose={() => setShowHistoryModal(false)}
+      />
+
+      {/* v5.1.2 P2-3: 提取透明 (E 键触发) */}
+      <ExtractionModal
+        open={showExtractionModal}
+        data={extractionData}
+        onClose={() => setShowExtractionModal(false)}
       />
 
       {/* Grand Map */}

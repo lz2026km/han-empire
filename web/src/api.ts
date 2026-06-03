@@ -167,6 +167,14 @@ export const api = {
       `/history?${params.toString()}`
     )
   },
+  getExtraction: (id: string, turn?: number, recent?: number) => {
+    const params = new URLSearchParams({ campaign_id: id })
+    if (turn) params.set('turn', String(turn))
+    if (recent) params.set('recent', String(recent))
+    return request<{ turn?: number; tiers?: any; summary?: any; turns?: any[]; error?: string }>(
+      `/extraction?${params.toString()}`
+    )
+  },
   saveGame: (save: GameSave) =>
     request<{ ok: boolean }>('/save', { method: 'POST', body: JSON.stringify(save) }),
   saveCampaign: (id: string) =>

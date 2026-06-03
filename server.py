@@ -1835,6 +1835,106 @@ def api_intro_hints():
     })
 
 
+# --- 6j) /api/extraction (v5.1.2 P2-3: ExtractionModal 提取透明) ---
+@app.route('/api/extraction', methods=['GET'])
+def api_extraction():
+    """v5.1.2 P2-3: 读 turn_extractions 表 (仿 ming_sim ExtractionModal)
+
+    Query params:
+        campaign_id: 战役 ID (必需)
+        turn: 指定 turn (缺省 = state.turn)
+        recent: 返回最近 N 个 turn (含字段元信息) (缺省 0=单条)
+    """
+    from han_sim.paths import user_data_path
+
+    campaign_id = (request.args.get("campaign_id") or "").strip()
+    if not campaign_id:
+        return jsonify({"error": "campaign_id required"}), 400
+
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+
+    try:
+        recent = int(request.args.get("recent", 0))
+    except (ValueError, TypeError):
+        recent = 0
+    try:
+        turn = int(request.args.get("turn", 0))
+    except (ValueError, TypeError):
+        turn = 0
+
+    if recent > 0:
+        # 列表模式
+        items = db.list_recent_extractions(limit=recent)
+        return jsonify({"turns": items, "total": len(items)})
+    elif turn > 0:
+        # 指定 turn
+        item = db.get_extraction(turn)
+        if not item:
+            return jsonify({
+                "turn": turn,
+                "tiers": {
+                    "internal": {"prompt": "", "output": ""},
+                    "issues": {"prompt": "", "output": ""},
+                    "military_external": {"prompt": "", "output": ""},
+                    "personnel_secret": {"prompt": "", "output": ""},
+                },
+                "summary": {"decree_length": 0, "narrative_length": 0, "has_output": False},
+                "note": f"turn {turn} 无 extraction 记录 (extract_score 未运行 / 未存储)",
+            })
+        return jsonify({
+            "turn": turn,
+            "tiers": {
+                "internal": {
+                    "prompt": "score_extractor_internal.md",
+                    "output": item.get("extractor_output", ""),
+                },
+                "issues": {
+                    "prompt": "score_extractor_issues.md",
+                    "output": "",
+                },
+                "military_external": {
+                    "prompt": "score_extractor_military_external.md",
+                    "output": "",
+                },
+                "personnel_secret": {
+                    "prompt": "score_extractor_personnel_secret.md",
+                    "output": "",
+                },
+            },
+            "summary": {
+                "decree_length": len(item.get("decree_text", "")),
+                "narrative_length": len(item.get("narrative", "")),
+                "has_output": bool(item.get("extractor_output")),
+            },
+        })
+    else:
+        # 最新一条
+        items = db.list_recent_extractions(limit=1)
+        if not items:
+            return jsonify({"error": "no extractions yet"}), 404
+        t = items[0]["turn"]
+        return api_extraction_turn(campaign_id, t)
+
+
+def api_extraction_turn(campaign_id: str, turn: int):
+    """内部 helper: 重定向到 /api/extraction?turn=."""
+    from han_sim.paths import user_data_path
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not db_path.is_file():
+        return jsonify({"error": "campaign not found"}), 404
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+    item = db.get_extraction(turn)
+    if not item:
+        return jsonify({"error": f"no extraction for turn {turn}"}), 404
+    return jsonify({"turn": turn, "item": item})
+
+
 # --- 6i) /api/history (v5.1.2 P2-2: HistoryModal 回合回看) ---
 @app.route('/api/history', methods=['GET'])
 def api_history():
