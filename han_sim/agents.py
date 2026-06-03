@@ -13,6 +13,7 @@ except ImportError:
 
 from han_sim.llm_config import load_llm_config
 from han_sim.llm_model import create_chat_model, extract_agent_text, verify_llm_available
+from han_sim.llm_router import get_config_for_v4_role  # v5.0 P0-2: 模型分级路由
 from han_sim.models import GameState
 from han_sim.exceptions import LLMUnavailable
 
@@ -33,12 +34,17 @@ def create_minister_agent(minister: Dict, state: GameState, memory_brief: str = 
     """
     import os as _os
     _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
-    llm_cfg = load_llm_config(
-        base_url="https://api.minimaxi.com/v1",
-        model="MiniMax-M2.5",
-        api_key=_api_key,
-        timeout_seconds=180.0,
-    )
+    # v5.0 P0-2: 用 router 按 tier 选 model (大臣 = ROLEPLAY tier)
+    try:
+        llm_cfg = get_config_for_v4_role("minister")
+    except RuntimeError:
+        # 无 api_key 时降级用 v4.9 行为
+        llm_cfg = load_llm_config(
+            base_url="https://api.minimaxi.com/v1",
+            model="MiniMax-M2.5",
+            api_key=_api_key,
+            timeout_seconds=180.0,
+        )
     if Agent is None:
         raise LLMUnavailable("agno未安装，无法创建大臣Agent")
     verify_llm_available(llm_cfg)
@@ -275,12 +281,17 @@ def create_season_simulator_agent(
     import os as _os
     from han_sim.llm_config import load_llm_config
     _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
-    cfg = load_llm_config(
-        base_url="https://api.minimaxi.com/v1",
-        model="MiniMax-M2.5",
-        api_key=_api_key,
-        timeout_seconds=180.0,
-    )
+    # v5.0 P0-2: 用 router 按 tier 选 model (推演 = SIMULATE tier, 用 flash 降本)
+    try:
+        cfg = get_config_for_v4_role("simulator")
+    except RuntimeError:
+        # 无 api_key 时降级用 v4.9 行为
+        cfg = load_llm_config(
+            base_url="https://api.minimaxi.com/v1",
+            model="MiniMax-M2.5",
+            api_key=_api_key,
+            timeout_seconds=180.0,
+        )
     turn_header = ""
     if state is not None:
         turn_header = (
@@ -310,12 +321,16 @@ def create_score_extractor_agent(game_content: Any) -> Agent:
     import os as _os
     from han_sim.llm_config import load_llm_config
     _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
-    cfg = load_llm_config(
-        base_url="https://api.minimaxi.com/v1",
-        model="MiniMax-M2.5",
-        api_key=_api_key,
-        timeout_seconds=120.0,
-    )
+    # v5.0 P0-2: 用 router 按 tier 选 model (抽取 = SIMULATE tier, 用 flash 降本)
+    try:
+        cfg = get_config_for_v4_role("extractor")
+    except RuntimeError:
+        cfg = load_llm_config(
+            base_url="https://api.minimaxi.com/v1",
+            model="MiniMax-M2.5",
+            api_key=_api_key,
+            timeout_seconds=120.0,
+        )
     ctx = _ctx()
     return Agent(
         name="档房书办",
@@ -346,12 +361,16 @@ def create_memory_retrieval_agent() -> Agent:
     import os as _os
     from han_sim.llm_config import load_llm_config
     _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
-    cfg = load_llm_config(
-        base_url="https://api.minimaxi.com/v1",
-        model="MiniMax-M2.5",
-        api_key=_api_key,
-        timeout_seconds=60.0,
-    )
+    # v5.0 P0-2: 用 router 按 tier 选 model (memory = SANITIZE tier, 用 flash)
+    try:
+        cfg = get_config_for_v4_role("memory")
+    except RuntimeError:
+        cfg = load_llm_config(
+            base_url="https://api.minimaxi.com/v1",
+            model="MiniMax-M2.5",
+            api_key=_api_key,
+            timeout_seconds=60.0,
+        )
     return Agent(
         name="记忆检索员",
         id="memory-retrieval",
@@ -370,16 +389,20 @@ JSON_SANITIZER_PROMPT = (
 
 
 def create_json_sanitizer_agent() -> Agent:
-    """JSON 修复 Agent。"""
+    """JSON 清洗 Agent（容错解析 LLM 输出）。"""
     import os as _os
     from han_sim.llm_config import load_llm_config
     _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
-    cfg = load_llm_config(
-        base_url="https://api.minimaxi.com/v1",
-        model="MiniMax-M2.5",
-        api_key=_api_key,
-        timeout_seconds=60.0,
-    )
+    # v5.0 P0-2: 用 router 按 tier 选 model (json 清洗 = SANITIZE tier, 用 flash)
+    try:
+        cfg = get_config_for_v4_role("memory")
+    except RuntimeError:
+        cfg = load_llm_config(
+            base_url="https://api.minimaxi.com/v1",
+            model="MiniMax-M2.5",
+            api_key=_api_key,
+            timeout_seconds=60.0,
+        )
     return Agent(
         name="JSON修复匠",
         id="json-sanitizer",
@@ -392,16 +415,20 @@ def create_json_sanitizer_agent() -> Agent:
 
 
 def create_chat_memory_agent() -> Agent:
-    """对话记忆提取 Agent（从召对聊天提取承诺/建议/情报）。"""
+    """召对聊天记忆 Agent。"""
     import os as _os
     from han_sim.llm_config import load_llm_config
     _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
-    cfg = load_llm_config(
-        base_url="https://api.minimaxi.com/v1",
-        model="MiniMax-M2.5",
-        api_key=_api_key,
-        timeout_seconds=60.0,
-    )
+    # v5.0 P0-2: 用 router 按 tier 选 model (chat_memory = BRIEFING tier)
+    try:
+        cfg = get_config_for_v4_role("chat_memory")
+    except RuntimeError:
+        cfg = load_llm_config(
+            base_url="https://api.minimaxi.com/v1",
+            model="MiniMax-M2.5",
+            api_key=_api_key,
+            timeout_seconds=60.0,
+        )
     ctx = _ctx()
     prompt = ctx.chat_memory_extractor_prompt if hasattr(ctx, "chat_memory_extractor_prompt") else (
         "从当月召对聊天中提取承诺/建议/情报，写入结构化记忆卡。闲聊跳过。"
@@ -425,11 +452,26 @@ def create_consort_agent(consort_id: str, db, state):
     返：一个 Agno Agent 实例，prompt 注入 consort_agent.md + 7. 当前被召妃嫔画像。
     """
     import json as _json
+    import os as _os
     from agno.agent import Agent
     from han_sim.content import _ctx as content_ctx
-    from han_sim.llm_config import load_runtime_llm, create_chat_model
+    from han_sim.llm_config import load_runtime_llm, load_llm_config
+    from han_sim.llm_model import create_chat_model
+    from han_sim.llm_router import ModelTier
 
-    cfg = load_runtime_llm() or {}
+    # v5.0 P0-2: 妃嫔 = ROLEPLAY tier
+    _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
+    try:
+        cfg = get_config_for_v4_role("consort")
+    except RuntimeError:
+        # 无 api_key 时降级用 v4.9 行为
+        runtime = load_runtime_llm()
+        cfg = load_llm_config(
+            base_url=runtime.get("base_url", "https://api.minimaxi.com/v1"),
+            model=runtime.get("model", "MiniMax-M2.5"),
+            api_key=_api_key,
+            timeout_seconds=180.0,
+        )
     ctx = content_ctx()
     # 加载 prompt
     prompt = ctx.load_prompt("consort_agent") if ctx else ""
@@ -486,11 +528,26 @@ def create_event_selector_agent() -> Agent:
     工厂函数，与现有 create_*_agent 同款风格。
     加载 content/prompts/event_selector.md + game_world 双层 prompt。
     """
+    import os as _os
     from agno.agent import Agent
     from han_sim.content import _ctx as content_ctx
-    from han_sim.llm_config import load_runtime_llm, create_chat_model
+    from han_sim.llm_config import load_runtime_llm, load_llm_config
+    from han_sim.llm_model import create_chat_model
+    from han_sim.llm_router import ModelTier
 
-    cfg = load_runtime_llm() or {}
+    # v5.0 P0-2: event_selector = BRIEFING tier (中等质量)
+    _api_key = _os.environ.get("MINIMAX_API_KEY", _os.environ.get("OPENAI_API_KEY", ""))
+    try:
+        cfg = get_config_for_v4_role("chat_memory")  # BRIEFING tier
+    except RuntimeError:
+        # 无 api_key 时降级用 v4.9 行为
+        runtime = load_runtime_llm()
+        cfg = load_llm_config(
+            base_url=runtime.get("base_url", "https://api.minimaxi.com/v1"),
+            model=runtime.get("model", "MiniMax-M2.5"),
+            api_key=_api_key,
+            timeout_seconds=180.0,
+        )
     ctx = content_ctx()
     prompt = ctx.load_prompt("event_selector") if ctx else ""
 

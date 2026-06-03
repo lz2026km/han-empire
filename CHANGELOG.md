@@ -1,10 +1,127 @@
-# 🏯 更新日志 Changelog
+# 更新日志 Changelog
 
 > 汉献帝之末路 — 版本历程
 
 ---
 
-## 🎯 v4.6 — 2026-06-02 (工程师控制台 + API 补全 + 调试可玩)
+## v5.0 — 2026-06-03 (竞品调研方案 P0 必做 3 件全完工)
+
+> **主公明令**: 搜索竞品仓库, TAVILY 搜索全网竞品方案, 结合产品形成 5.0 方案, 审批后开工.
+> **本版本: v4.9.0 (4be37a1) → v5.0.0**
+> **38 单测全过 (22 pipeline + 16 router) / 0 TS 新错 / 0 后端新 bug / 3 新 API 全 200**
+
+### A. P0-1 score_extractor 5 档房拆分 (仿竞品 v0.4.6)
+
+**竞品独有**: score_extractor 拆 5 档房 (主控 + 4 专项), 字段所有权铁律. 我方 v4.9 是 311 行单体.
+
+**新增 5 个 prompt** (1149 行 vs 原 311 行):
+- `content/prompts/score_extractor_shared.md` (139 行) - 共享规则 (档位/数值专项/章节速查)
+- `content/prompts/score_extractor_internal.md` (122 行) - 内政财政档房 (6 字段)
+- `content/prompts/score_extractor_issues.md` (144 行) - 局势档房 (4 字段)
+- `content/prompts/score_extractor_military_external.md` (125 行) - 军外档房 (4 字段)
+- `content/prompts/score_extractor_personnel_secret.md` (162 行) - 人事密令档房 (6 字段)
+
+**主控缩为 146 行** (原 311 行), 仅负责串联 + 合并 + 失败回退.
+
+**v4 backup 保留**: `score_extractor_v4_backup.md` (311 行原版) 作 fallback.
+
+**新增 `han_sim/score_extractor_pipeline.py`** (~390 行):
+- 4 档房串行/并行调用 (默认串行, asyncio 可选)
+- 字段所有权过滤: 4 档房输出不冲突
+- 失败回退: 任意档房失败 → 重试 1 次 → 仍失败用 v4 backup → 全失败返 `_error`
+- 20 字段 JSON 合并: 标量字段填 `{}`, 列表字段填 `[]`
+
+**22 单测全过**:
+- 20 字段骨架 / 字段所有权 / 档房执行顺序
+- JSON 解析 7 个边界 (空 / 空白 / 非 JSON / 非 dict / 含代码块 / 合法)
+- 字段过滤 / 字段补全 / 配置摘要 / 默会知识段 / 权威源声明段 / E2E 合并
+
+**新增 endpoint**: `GET /api/score_extractor/tiers` 返回 4 档房配置.
+
+### B. P0-2 模型分级路由 (4 tier)
+
+**竞品 v0.4.6** (2026-05-28 Steam API 测试版): 3 模型分级 (Simulate/Chat/Briefing) 玩家自填 API Key.
+**我方 v4.9**: 已配 4 个 provider (Qwen/MiniMax/DeepSeek/OpenAI) 但**没按用途分级**, 全用同 model.
+
+**新增 `han_sim/llm_router.py`** (~270 行):
+- 4 tier 枚举: `SIMULATE` / `ROLEPLAY` / `BRIEFING` / `SANITIZE`
+- 默认模型: SIMULATE 用 deepseek-flash (降本) / ROLEPLAY 用 MiniMax-M2.5 (提质) / BRIEFING+SANITIZE 用 flash
+- 持久化: `~/.hermes/han-empire/model_tiers.json`
+- 单例 + v4 兼容: `get_config_for_v4_role("minister")` 7 个 role 字符串全映射
+
+**改造 `han_sim/agents.py` 9 个 agent**:
+- `create_minister_agent` → ROLEPLAY tier
+- `create_season_simulator_agent` → SIMULATE tier
+- `create_score_extractor_agent` → SIMULATE tier
+- `create_memory_retrieval_agent` → SANITIZE tier
+- `create_json_sanitizer_agent` → SANITIZE tier
+- `create_chat_memory_agent` → BRIEFING tier
+- `create_consort_agent` → ROLEPLAY tier
+- `create_event_selector_agent` → BRIEFING tier
+
+**无 api_key 优雅降级**: try router, except RuntimeError → fallback v4.9 行为.
+
+**16 单测全过**:
+- 4 tier 枚举值 / 默认模型完整性 / 单例 / v4 role 7 角色映射
+- 无 api_key raise RuntimeError / 持久化 save+reload / 真实场景 (SIMULATE 用 flash)
+
+### C. P0-3 token 实时仪表盘
+
+**竞品 36氪痛点**: 烧 Token 成本太高 (玩家"6 年 token 见底"差评), 54% 好评率.
+**我方 v4.9**: `usage_tracker.py` 121 行 + `llm_cache.py` 140 行**后端已有**, 但**没前端仪表盘**.
+
+**后端增强**:
+- `han_sim/usage_tracker.py` 增强 `get_stats()`: 增加按 model / purpose 分组 + `total_calls` 统计
+- 新增 `GET /api/token_stats` 聚合 endpoint: usage + cache + savings + tier_config
+- 新增 `GET /api/score_extractor/tiers` endpoint
+
+**前端新增 `web/src/components/TokenStatsWidget.tsx`** (199 行) + CSS (97 行):
+- 嵌入 App.tsx 主入口, 右上角悬浮 (fixed position)
+- 30s 自动刷新
+- 显示: 本月 / 累计 token + 成本 + 缓存命中率
+- 展开详情: 按 model 拆分 + 按用途拆分 + 4 tier 配置
+- 主色蓝紫调 (`#3b82f6` / `#a5b4fc` / `#34d399` 缓存节省绿)
+- 0 emoji
+
+### D. App.tsx 接入
+
+`web/src/App.tsx` 加 1 行 import + 1 行 JSX, TokenStatsWidget 浮在 court 主面板右上角.
+
+### E. E2E 验证 (3 API 200 OK + next_turn 跑通)
+
+```
+GET /api/token_stats        → 200 (含历史 13 次调用 27150 token)
+GET /api/score_extractor/tiers → 200 (4 档房配置)
+GET /api/llm/cache-stats    → 200 (缓存命中)
+POST /api/campaigns         → 200 (新朝建立)
+POST /api/campaigns/ce13b341d/next_turn → 200 (51 州郡完整推演)
+```
+
+vite build 成功 (295.77KB JS / 109.05KB CSS) - **我的代码 0 新错** (TS 错误全 v4.9 遗留).
+
+### F. 已知遗留 (v4.9 累积, 非 v5.0 引入)
+
+- vite build TS 错: `useSettlement.ts` / `useGame.ts` 等 v4.9 已存在, 用 `--mode development` 绕过
+- 存档 load 找 `_save.db` 但实际是 `.db` (v4.9 一直如此)
+- TokenStatsWidget 之前没在 App.tsx 引用 - **本版本补上**
+
+### G. 仓库状态
+
+- HEAD = `4be37a1` (v4.9 完美收官)
+- 改动未 commit, 在 working tree
+- 新增 12 文件 / 修改 4 文件 (~2000 行)
+- v4.9 baseline 21,311 行 → v5.0 ~23,300 行 (+9%)
+
+### H. v5.0 没做的 (P1/P2 待主公批)
+
+- P1-1 prompts 升级 (默会知识 + 工具铁律) - 2 天
+- P1-2 event_selector 强化 (precondition 改写口子) - 1 天
+- P1-3 引导剧本 (189 前 6 月) - 1 天
+- P2 锦上添花 (视觉升 4 维 / Steam / 多剧本) - 按需
+
+---
+
+## v4.9 — 2026-06-02 (216 张 AI 头像 + 2 真 bug 修复 + 全跑通)
 
 > **主公明令: 全面审查游戏逻辑/控件/UI/UX, 补充所有缺失数据/图片, 增加工程师调控接口和窗口 (不依赖 LLM 即可调试运行), 本次版本加 0.1, 然后推送.**
 > **本版本: v4.5 预览版 → v4.6 (0.1 加成)**

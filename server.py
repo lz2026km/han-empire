@@ -1766,6 +1766,37 @@ def api_llm_cache_stats():
     return jsonify({'cache_stats': stats, 'savings': saved})
 
 
+# --- 6a) /api/token_stats (v5.0 P0-3: 仪表盘聚合) ---
+@app.route('/api/token_stats', methods=['GET'])
+def api_token_stats():
+    """v5.0 P0-3: 仪表盘聚合 endpoint
+    返回: token 用量 + 缓存命中率 + 按 model/tier 拆分
+    """
+    from han_sim.usage_tracker import get_stats
+    from han_sim.llm_cache import get_cache_stats, estimate_cache_savings
+    from han_sim.llm_router import get_tier_summary
+
+    usage = get_stats()
+    cache = get_cache_stats()
+    savings = estimate_cache_savings()
+    tiers = get_tier_summary()
+
+    return jsonify({
+        "usage": usage,
+        "cache": cache,
+        "savings": savings,
+        "tier_config": tiers,
+    })
+
+
+# --- 6b) /api/score_extractor/tiers (v5.0 P0-1: 4 档房状态) ---
+@app.route('/api/score_extractor/tiers', methods=['GET'])
+def api_score_extractor_tiers():
+    """v5.0 P0-1: 4 档房配置"""
+    from han_sim.score_extractor_pipeline import get_tier_summary
+    return jsonify(get_tier_summary())
+
+
 # --- 7) /api/saves/list (存档列表含元数据) ---
 @app.route('/api/saves/list', methods=['GET'])
 def api_saves_list():

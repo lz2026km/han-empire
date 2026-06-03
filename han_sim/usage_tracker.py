@@ -70,7 +70,10 @@ def record_usage(
 
 
 def get_stats() -> Dict[str, Any]:
-    """返回今日/本周/本月的 token 用量统计."""
+    """返回今日/本周/本月的 token 用量统计.
+
+    v5.0 P0-3 增强: 增加按 model/purpose 拆分 + cache 命中率
+    """
     with _LOCK:
         _ensure_db()
         now = int(time.time())
@@ -80,6 +83,7 @@ def get_stats() -> Dict[str, Any]:
 
         with sqlite3.connect(DB_PATH) as conn:
             cur = conn.cursor()
+            # 总计
             cur.execute(
                 "SELECT COALESCE(SUM(total_tokens),0) FROM usage_records WHERE ts > ?",
                 (now - one_day,),
@@ -96,6 +100,47 @@ def get_stats() -> Dict[str, Any]:
             )
             month = cur.fetchone()[0]
 
+            # v5.0 P0-3: 按 model 拆分 (本月)
+            cur.execute(
+                """SELECT model, COALESCE(SUM(total_tokens),0) AS total,
+                          COALESCE(SUM(prompt_tokens),0) AS pt,
+                          COALESCE(SUM(completion_tokens),0) AS ct,
+                          COUNT(*) AS calls
+                   FROM usage_records
+                   WHERE ts > ?
+                   GROUP BY model
+                   ORDER BY total DESC""",
+                (now - one_month,),
+            )
+            by_model = [
+                {
+                    "model": r[0] or "(unknown)",
+                    "total_tokens": r[1],
+                    "prompt_tokens": r[2],
+                    "completion_tokens": r[3],
+                    "calls": r[4],
+                }
+                for r in cur.fetchall()
+            ]
+
+            # v5.0 P0-3: 按 purpose 拆分 (本月)
+            cur.execute(
+                """SELECT purpose, COALESCE(SUM(total_tokens),0) AS total, COUNT(*) AS calls
+                   FROM usage_records
+                   WHERE ts > ?
+                   GROUP BY purpose
+                   ORDER BY total DESC""",
+                (now - one_month,),
+            )
+            by_purpose = [
+                {"purpose": r[0] or "(unknown)", "total_tokens": r[1], "calls": r[2]}
+                for r in cur.fetchall()
+            ]
+
+            # v5.0 P0-3: 调用总数
+            cur.execute("SELECT COUNT(*) FROM usage_records")
+            total_calls = cur.fetchone()[0]
+
         cost = month * COST_PER_MILLION_TOKENS_USD / 1_000_000
         return {
             "today": today,
@@ -104,6 +149,10 @@ def get_stats() -> Dict[str, Any]:
             "cost": round(cost, 4),
             "currency": "USD",
             "rate_per_million": COST_PER_MILLION_TOKENS_USD,
+            # v5.0 P0-3 新增
+            "by_model": by_model,
+            "by_purpose": by_purpose,
+            "total_calls": total_calls,
         }
 
 

@@ -18,6 +18,8 @@ import { EmperorPanel } from './components/EmperorPanel'
 import { SceneTransition } from './components/SceneTransition'
 import { ChatModal } from './components/ChatModal'
 import { EdictModal } from './components/EdictModal'
+// v5.0 P0-3: Token 实时仪表盘
+import { TokenStatsWidget } from './components/TokenStatsWidget'
 import { SettlementLock } from './components/SettlementLock'
 import { SecretOrdersModal } from './components/SecretOrdersModal'
 import { CheatConsole } from './components/CheatConsole'
@@ -344,6 +346,9 @@ export default function App() {
         provinces={[]}
         onProvinceClick={(id) => { console.log('v2.0.0 P0-B2 选中州郡', id) }}
       />
+
+      {/* v5.0 P0-3: Token 实时仪表盘 (右上角悬浮) */}
+      <TokenStatsWidget refreshIntervalSec={30} />
     </div>
   )
 }
