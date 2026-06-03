@@ -1580,8 +1580,13 @@ class GameDB:
             return 0
         importance = max(1, min(5, int(importance or 3)))
         if expires_turn is None:
-            _ttl = {1: 6, 2: 12, 3: 24, 4: 48}
-            expires_turn = int(state.turn) + _ttl.get(importance, 12)
+            # v5.1.0 P0-1: importance=5 → 永久 (expires_turn = -1, 永不过期)
+            _ttl = {1: 6, 2: 12, 3: 24, 4: 48, 5: -1}
+            ttl_turns = _ttl.get(importance, 12)
+            if ttl_turns == -1:
+                expires_turn = -1
+            else:
+                expires_turn = int(state.turn) + ttl_turns
         clean_tags = [str(t).strip()[:40] for t in (tags or []) if str(t).strip()]
         self.conn.execute(
             """INSERT INTO event_memories
@@ -1674,7 +1679,8 @@ class GameDB:
             if issue.get("title"):
                 active_issue_tags.append(str(issue["title"])[:20])
         tag_needles = [character_name, faction, office_type] + active_issue_tags
-        expiry_clause = "" if ignore_expiry else "AND (expires_turn IS NULL OR expires_turn >= ?)"
+        # v5.1.0 P0-1: expires_turn = -1 表示永久 (importance=5), 不过滤
+        expiry_clause = "" if ignore_expiry else "AND (expires_turn IS NULL OR expires_turn = -1 OR expires_turn >= ?)"
         params: List = [int(turn)]
         if not ignore_expiry:
             params.append(int(turn))
@@ -1757,9 +1763,10 @@ class GameDB:
             )
         else:
             all_params["exp_turn"] = int(turn)
+            # v5.1.0 P0-1: expires_turn = -1 表示永久 (importance=5), 不过滤
             sql = (
                 "SELECT * FROM event_memories "
-                "WHERE (expires_turn IS NULL OR expires_turn >= :exp_turn) "
+                "WHERE (expires_turn IS NULL OR expires_turn = -1 OR expires_turn >= :exp_turn) "
                 "AND turn <= :turn "
                 "AND (" + tag_conditions + ") "
                 "ORDER BY importance DESC, turn DESC LIMIT :limit"

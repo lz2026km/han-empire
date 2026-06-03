@@ -1830,6 +1830,152 @@ def api_intro_hints():
     })
 
 
+# --- 6d) /api/event_memories (v5.1.0 P0-1: 事件记忆) ---
+@app.route('/api/event_memories', methods=['GET'])
+def api_event_memories():
+    """v5.1.0 P0-1: 事件记忆召回 (仿 ming_sim/memories.py:729)
+
+    支持 3 种召回模式:
+        1) subject 召回: ?campaign_id=&subject=曹操&subject_type=character&limit=10
+        2) keyword 召回: ?campaign_id=&keywords=董卓,衣带诏&turn=50&limit=10
+        3) time 召回: ?campaign_id=&year=200&period=3&keywords=曹操
+
+    Query params:
+        campaign_id: 战役 ID (必需)
+        subject: 主体名 (可选, 与 subject_type 配套)
+        subject_type: character/region/army/court/faction (可选)
+        keywords: 逗号分隔关键词 (可选)
+        year: 年份 (可选, time 召回用)
+        period: 月份 (可选, time 召回用)
+        turn: 当前回合 (用于 TTL 过滤)
+        limit: 上限 (默认 10)
+        ignore_expiry: True 时忽略 TTL (默认 False)
+    """
+    from han_sim.paths import user_data_path
+
+    campaign_id = (request.args.get("campaign_id") or "").strip()
+    if not campaign_id:
+        return jsonify({"error": "campaign_id required"}), 400
+
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+
+    try:
+        limit = int(request.args.get("limit", 10))
+    except (ValueError, TypeError):
+        limit = 10
+    try:
+        turn = int(request.args.get("turn", 0))
+    except (ValueError, TypeError):
+        turn = 0
+    ignore_expiry = (request.args.get("ignore_expiry", "false").lower() == "true")
+
+    # 模式 1: subject 召回
+    subject = (request.args.get("subject") or "").strip()
+    subject_type = (request.args.get("subject_type") or "").strip()
+    if subject and subject_type:
+        try:
+            rows = db.conn.execute(
+                """SELECT * FROM event_memories
+                   WHERE subject_type = ? AND subject_id = ?
+                   AND (expires_turn IS NULL OR expires_turn = -1 OR expires_turn >= ?)
+                   ORDER BY importance DESC, turn DESC LIMIT ?""",
+                (subject_type, subject, turn, limit),
+            ).fetchall()
+            memories = [dict(r) for r in rows]
+            for m in memories:
+                m["id"] = int(m["id"])
+                m["turn"] = int(m["turn"])
+                m["year"] = int(m["year"])
+                m["period"] = int(m["period"])
+                m["importance"] = int(m["importance"])
+                if m.get("expires_turn") is not None:
+                    m["expires_turn"] = int(m["expires_turn"])
+                try:
+                    m["tags"] = json.loads(m.get("tags") or "[]")
+                except Exception:
+                    m["tags"] = []
+            return jsonify({
+                "memories": memories,
+                "total": len(memories),
+                "mode": "subject",
+                "subject": subject,
+                "subject_type": subject_type,
+                "ignore_expiry": ignore_expiry,
+            })
+        except Exception as e:
+            return jsonify({"error": f"subject query failed: {e}"}), 500
+
+    # 模式 2 & 3: keyword / time 召回
+    keywords_raw = (request.args.get("keywords") or "").strip()
+    keywords = [k.strip() for k in keywords_raw.split(",") if k.strip()]
+    if not keywords:
+        return jsonify({"error": "subject/subject_type OR keywords required"}), 400
+
+    try:
+        # 模式 3: time 召回 (ignore_expiry=True, 查该月历史)
+        year = int(request.args.get("year", 0))
+        period = int(request.args.get("period", 0))
+        if year and period:
+            memories = db.conn.execute(
+                """SELECT * FROM event_memories
+                   WHERE year = ? AND period = ?
+                   AND (subject_id IN ({placeholders}) OR tags LIKE ? OR tags LIKE ? OR tags LIKE ?)
+                   ORDER BY importance DESC, id DESC LIMIT ?""".format(
+                    placeholders=",".join("?" for _ in keywords)
+                ),
+                (year, period, *keywords, f"%{keywords[0]}%",
+                 f"%{keywords[0] if len(keywords) < 2 else keywords[1]}%",
+                 f"%{keywords[-1]}%", limit),
+            ).fetchall()
+            memories = [dict(r) for r in memories]
+            for m in memories:
+                m["id"] = int(m["id"])
+                m["turn"] = int(m["turn"])
+                m["year"] = int(m["year"])
+                m["period"] = int(m["period"])
+                m["importance"] = int(m["importance"])
+                if m.get("expires_turn") is not None:
+                    m["expires_turn"] = int(m["expires_turn"])
+                try:
+                    m["tags"] = json.loads(m.get("tags") or "[]")
+                except Exception:
+                    m["tags"] = []
+            return jsonify({
+                "memories": memories,
+                "total": len(memories),
+                "mode": "time",
+                "year": year,
+                "period": period,
+                "keywords": keywords,
+            })
+    except (ValueError, TypeError):
+        pass
+
+    # 模式 2: keyword 召回 (走 get_memories_by_keywords)
+    try:
+        memories = db.get_memories_by_keywords(
+            keywords=keywords,
+            turn=turn or 999,
+            limit=limit,
+            ignore_expiry=ignore_expiry,
+        )
+        return jsonify({
+            "memories": memories,
+            "total": len(memories),
+            "mode": "keyword",
+            "keywords": keywords,
+            "turn": turn,
+            "ignore_expiry": ignore_expiry,
+        })
+    except Exception as e:
+        return jsonify({"error": f"keyword query failed: {e}"}), 500
+
+
 # --- 7) /api/saves/list (存档列表含元数据) ---
 @app.route('/api/saves/list', methods=['GET'])
 def api_saves_list():
