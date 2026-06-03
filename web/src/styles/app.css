@@ -2960,6 +2960,92 @@ input:focus, select:focus {
   animation: ls-spin 1.2s linear infinite;
 }
 
+/* v5.2.0 P6-14: 5 modal header 美化 (hero 贴图 + 角饰) */
+.report-modal__titlebar,
+.closed-modal__titlebar,
+.state-modal__titlebar,
+.hist-modal__titlebar,
+.extract-modal__titlebar {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-blend-mode: overlay;
+  border-bottom: 1px solid var(--color-gold-dim);
+  overflow: hidden;
+}
+.report-modal__titlebar {
+  background-image:
+    linear-gradient(180deg, rgba(20,12,8,0.55) 0%, rgba(20,12,8,0.85) 100%),
+    url('/v4-epic/modal_report.jpg');
+}
+.closed-modal__titlebar {
+  background-image:
+    linear-gradient(180deg, rgba(20,12,8,0.55) 0%, rgba(20,12,8,0.85) 100%),
+    url('/v4-epic/modal_closed.jpg');
+}
+.state-modal__titlebar {
+  background-image:
+    linear-gradient(180deg, rgba(20,12,8,0.55) 0%, rgba(20,12,8,0.85) 100%),
+    url('/v4-epic/modal_state.jpg');
+}
+.hist-modal__titlebar {
+  background-image:
+    linear-gradient(180deg, rgba(20,12,8,0.55) 0%, rgba(20,12,8,0.85) 100%),
+    url('/v4-epic/modal_history.jpg');
+}
+.extract-modal__titlebar {
+  background-image:
+    linear-gradient(180deg, rgba(20,12,8,0.55) 0%, rgba(20,12,8,0.85) 100%),
+    url('/v4-epic/modal_extraction.jpg');
+}
+.report-modal__title,
+.closed-modal__title,
+.state-modal__title,
+.hist-modal__title,
+.extract-modal__title {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.9), 0 0 2px var(--color-gold);
+  letter-spacing: 2px;
+  font-family: var(--font-display);
+  font-size: 16px;
+}
+/* 4 角云纹装饰 (复用 v4-epic corner_cloud.jpg) */
+.report-modal,
+.closed-modal,
+.state-modal,
+.hist-modal,
+.extract-modal {
+  position: relative;
+  overflow: hidden;
+}
+.report-modal::before, .closed-modal::before,
+.state-modal::before, .hist-modal::before, .extract-modal::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 48px; height: 48px;
+  background: url('/v4-epic/corner_cloud.jpg') no-repeat;
+  background-size: cover;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+.report-modal::after, .closed-modal::after,
+.state-modal::after, .hist-modal::after, .extract-modal::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 48px; height: 48px;
+  background: url('/v4-epic/corner_cloud.jpg') no-repeat;
+  background-size: cover;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+  transform: scaleX(-1);
+}
+
 /* v5.2.0 P6-13: TabHero 9 Tab 顶部 hero 贴图 (AI 生图) */
 .tab-hero {
   position: relative;
