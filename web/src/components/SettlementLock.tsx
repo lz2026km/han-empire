@@ -1,7 +1,7 @@
 /* =============================================
-   SettlementLock - 全屏锁推演组件 (v2.2.0 借鉴明末)
+   SettlementLock - 全屏锁推演组件 (v2.2.0 借鉴明末, v5.1.1 双栏)
    - 推演期间锁键盘
-   - 3 区: 阶段/思考/正文
+   - v5.1.1 升级: 双栏布局 (左推敲 / 右正文), 仿 ming_sim SettlementLock
    - 自动滚到底
    - 完成后显示「已颁布」+ 「退朝/退下」按钮
    ============================================= */
@@ -72,23 +72,21 @@ export function SettlementLock({
           </div>
         )}
 
-        {thinking && (
-          <div className="settlement-block">
-            <div className="settlement-block-label">想 推演</div>
-            <div ref={thinkRef} className="settlement-block-content settlement-thinking">
-              {thinking}
+        {/* v5.1.1 P1-2: 双栏布局 (左推敲 / 右正文), 仿 ming_sim SettlementLock:1376-1427 */}
+        <div className="settlement-two-col">
+          <div className="settlement-col settlement-col--thinking">
+            <div className="settlement-col-label">邸报房推敲</div>
+            <div ref={thinkRef} className="settlement-col-content settlement-thinking">
+              {thinking || '（暂无推敲）'}
             </div>
           </div>
-        )}
-
-        {narrative && (
-          <div className="settlement-block">
-            <div className="settlement-block-label">诏书 诏书</div>
-            <div ref={narrRef} className="settlement-block-content settlement-narrative">
-              {narrative}
+          <div className="settlement-col settlement-col--narrative">
+            <div className="settlement-col-label">月末奏章</div>
+            <div ref={narrRef} className="settlement-col-content settlement-narrative">
+              {narrative || '（暂无奏章）'}
             </div>
           </div>
-        )}
+        </div>
 
         {decree && done && (
           <div className="settlement-decree-final">

@@ -2360,6 +2360,41 @@ input:focus, select:focus {
   font-family: 'KaiTi', 'STKaiti', serif; line-height: 1.7;
   font-size: 13px;
 }
+
+/* v5.1.1 P1-2: 双栏布局 (仿 ming_sim SettlementLock:1376-1427) */
+.settlement-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+  min-height: 320px;
+}
+.settlement-col {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #2a325a;
+  border-radius: 8px;
+  padding: 12px 14px;
+  overflow: hidden;
+}
+.settlement-col--thinking { border-color: #3a4a3a; }
+.settlement-col--narrative { border-color: #5a4a2a; }
+.settlement-col-label {
+  font-size: 12px; color: #c8a87a; font-weight: 600;
+  margin-bottom: 8px; letter-spacing: 0.5px;
+  border-bottom: 1px solid #2a325a;
+  padding-bottom: 6px;
+}
+.settlement-col-content {
+  flex: 1;
+  overflow-y: auto;
+  font-family: 'KaiTi', 'STKaiti', serif;
+  line-height: 1.7;
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 .settlement-decree-final {
   background: rgba(245, 158, 11, 0.08); border: 1px solid #f59e0b33;
   border-radius: 8px; padding: 16px; margin-top: 16px;
