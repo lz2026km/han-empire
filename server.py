@@ -66,6 +66,29 @@ DB_DIR = os.path.join(os.path.dirname(__file__), 'data')
 GAMES: dict = {}
 
 
+def _load_dotenv_once() -> None:
+    """v5.1.5 P5-2: 启动时一次性加载项目根 .env (简单 KEY=VALUE 解析, 不依赖 dotenv).
+    只填 os.environ 中未设的 key, 现有 shell 环境优先."""
+    env_path = os.path.join(os.path.dirname(__file__), '.env')
+    if not os.path.exists(env_path):
+        return
+    try:
+        for line in open(env_path, encoding='utf-8'):
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            k, _, v = line.partition('=')
+            k = k.strip()
+            v = v.strip().strip('"').strip("'")
+            if k and k not in os.environ and v and v != 'your_minimax_key_here':
+                os.environ[k] = v
+    except Exception:
+        pass
+
+
+_load_dotenv_once()
+
+
 def _state_to_dict(state):
     """Convert GameState to dict for JSON serialization."""
     return {
