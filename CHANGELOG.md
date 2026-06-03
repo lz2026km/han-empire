@@ -4,6 +4,71 @@
 
 ---
 
+## v5.1.1 — 2026-06-03 (借鉴崇祯 3 项体验升级, 4 单测过, 47/47 累计单测)
+
+> **本版本: v5.1.0 (c1d2a9c) → v5.1.1 (3 commit)**
+> **4 v5.1.1 单测全过 / 0 借鉴 emoji / 0 回归**
+
+### A. 任务 1.1: 天命控制台 (强制结算注入)
+
+仿 ming_sim/decree.py:50-57 `CHEAT_NARRATIVE_PREFIX`。
+- 新增常量 `CHEAT_NARRATIVE_PREFIX` (13 行人话声明, 强调"既成事实/最高优先级/无视合理性/照字面落库")
+- `han_sim/decree_stream.py:stream_issue_decree` 加 `cheat_directive` 入参, 非空时拼到本期 narrative 最前
+- cheat 经 `tlog` 200 字截断记日志 (避免爆盘)
+- `server.py:/api/decree/issue/stream` body 加 `cheat` 字段, 透传到 stream_issue_decree
+- 4 单测: prefix 字符串 / 注入 / 不注入 / 长 cheat 不崩
+
+### B. 任务 1.2: 流式结算双栏 (推敲+正文)
+
+仿 ming_sim SettlementLock:1376-1427 双栏布局。
+- `web/src/components/SettlementLock.tsx`: 改 3 区顺序 → 双栏并排
+  - 左 "邸报房推敲" (含 stage/thinking 累加)
+  - 右 "月末奏章" (text 累加)
+  - 保留自动滚到底 + 锁键盘 + 完成后"已颁布"按钮
+- `web/src/styles/app.css`: .settlement-two-col (grid 1fr 1fr) + .settlement-col-{thinking/narrative} 暗色边框
+
+### C. 任务 1.3: 月初邸报自动弹 (ReportModal)
+
+仿 ming_sim ReportModal 全屏竹简底图。
+- `han_sim/db.py:write_turn_report`/`get_turn_report`/`list_recent_reports` 3 方法
+- `han_sim/decree_stream.py:stream_issue_decree` 阶段 5 末尾调 write_turn_report 落库
+- 新端点 `GET /api/gazette?campaign_id=&turn=&recent=` (3 模式)
+- 新前端 `web/src/components/ReportModal.tsx` (73 行):
+  - 全屏竹简底色 + 横线纹理 (仿明邸报)
+  - 标题: 年号/回合
+  - 复制按钮 (navigator.clipboard) + "朕已知悉"关闭 + Esc 关闭
+- `web/src/App.tsx`: 3 state (showReportModal/latestGazette/lastGazetteTurn)
+  - useEffect 检测 gameState.turn 变化 → 拉 /api/gazette → 弹窗
+  - 跳过 `turn=0` 与 `登基伊始` summary
+
+### D. 端点增量
+
+95 v5.1.0 → 96 v5.1.1 (+1):
+- `/api/gazette` (P1-3)
+
+### E. 单测增量
+
+74 v5.1.0 → 78 v5.1.1 (+4):
+- test_cheat_inject_v511.py: 4 (prefix/注入/不注入/长 cheat)
+
+### F. 仓库状态
+
+- HEAD: `91eb7a1` (v5.1.1 task 1.3)
+- 3 commit (任务 1.1-1.3) + 1 acceptance
+- 4 文件新增: test_cheat_inject_v511.py + ReportModal.tsx
+- 累计 47 单测全过 (26 v5.1.0 + 4 v5.1.1 + 17 intro)
+- 累计 89 → 96 路由
+- 累计 51 → 51 表 (无新增)
+
+### G. v5.1.1 没做的 (v5.1.2 起继续)
+
+- v5.1.2: ClosedIssuesModal + HistoryModal + ExtractionModal
+- v5.1.3: 嫔妃调教持久化 + 立绘上传
+- v5.1.4: 菜单页 + CSS 整合 + 国势详情弹窗
+- v5.1.5: 多周目统计 + .env 模板 + auto_play.py
+
+---
+
 ## v5.1.0 — 2026-06-03 (借鉴崇祯 5 项后端基建, 26 单测全过, 59/59 累计单测)
 
 > **主公明令**: 借鉴历史模拟器《崇祯》(明末力挽狂澜) 进行详细优化。
