@@ -29,6 +29,8 @@ import { ExtractionModal } from './components/ExtractionModal'
 import { StateModal } from './components/StateModal'
 // v5.2.0 P6-5: 通用确认弹窗 (ConfirmDialog)
 import { ConfirmDialog } from './components/ConfirmDialog'
+// v5.2.0 P6-6: 全屏推演 Loading (LoadingScreen, 替代裸 SettlementLock 显示)
+import { LoadingScreen } from './components/LoadingScreen'
 import { SecretOrdersModal } from './components/SecretOrdersModal'
 import { CheatConsole } from './components/CheatConsole'
 import { GrandMap } from './components/GrandMap'
@@ -543,6 +545,12 @@ export default function App() {
         onClose={() => setShowGrandMap(false)}
         provinces={[]}
         onProvinceClick={(id) => { console.log('v2.0.0 P0-B2 选中州郡', id) }}
+      />
+
+      {/* v5.2.0 P6-6: 全局推演 Loading (任何 loading=true 时显示, 仿 ming_sim) */}
+      <LoadingScreen
+        open={loading && !!campaignId}
+        title={showSettlement ? '推演下月' : '处理中'}
       />
 
       {/* v5.0 P0-3: Token 实时仪表盘 (右上角悬浮) */}
