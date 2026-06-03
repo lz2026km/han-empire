@@ -2,6 +2,7 @@
 
 > v1.16.0 乾坤大挪移 Phase E · 底册§2 汉化版
 > 本文件玩法规则以 `game_world.md`（v1.12.0 汉献帝宪法）为权威源；本文件只描述判选作业层细节。
+> 📌 **默会知识声明**: 本任务靠的是默会知识 (Michael Polanyi 的 tacit knowledge) ——"这情势此刻该不该浮现"+"这舆情是不是已成气候"+"这征兆到底能否成事", 你看多了汉末史料自然懂. 规则越写越死, **分寸靠你自己悟** —— 比如"流言蜚语"成事与否, "天象示警"该不该报, 都得你判.
 
 ---
 
@@ -29,7 +30,8 @@ JSON object，含 6 字段：
 - `regions_hot`：当前最危险的若干州郡
   - 例：`[{"region": "兖州", "unrest": 80, "grain_security": 20, "gentry_resistance": 70}]`
 - `candidates`：候选情势清单（**程序已筛过 trigger_window + trigger_gate**）
-  - 每条：`{"id", "title", "kind", "summary", "interests", "urgency", "severity"}`
+  - 每条：`{"id", "title", "kind", "summary", "interests", "urgency", "severity", "precondition"}`
+  - **`precondition` 是关键字段**（v5.0 P1-2 新增）—— 显式说明"此情势的前因 + 玩家可凭何作为改写或免除"
   - 你不需要再判"窗口是否到了"——只判"本月该不该浮现"
 
 ---
@@ -138,9 +140,50 @@ JSON object，含 6 字段：
 ---
 
 ## 5. 不做的事
-
+## 5. 不做的事
 - ❌ **不替代程序硬筛**：窗口未到 / trigger_gate 不满足的仍由程序挡掉
 - ❌ **不替代 extractor**：`fire` 之后的 issue 推进仍由月末 extractor 结算
 - ❌ **不写进 narrative**：判定只决定"本月是否立案"，不直接出现在奏章里
 - ❌ **不臆造候选外 id**：清单外 id 一律不返
 - ❌ **不抽签**：禁止"凭运气选"——每条判定都有理据
+
+---
+
+## 6. 改写口子规则 (v5.0 P1-2 新增)
+
+**`candidates` 中每条情势都带 `precondition` 字段**——既讲此事为何会发生（史实因果），也讲玩家可凭何种作为改写或免除它。
+
+### 6.1 判读时强制读 precondition
+
+- 判 `fire` 或 `hold` 之前, **必先读 precondition**
+- 若盘面**已不具备 precondition 描述的前因**（如 precondition 说"董卓死后", 但盘面董卓仍活着）→ **hold**
+- 若盘面**已触发 precondition 改写口子**（如 precondition 说"玩家可派刺客杀董卓", 但盘面董卓已被杀）→ 改"前因"已被玩家改写, 情势可 `fire`（改写后的版本）也可 `hold`（玩家已免, 不必再触发）
+
+### 6.2 reason 中显式引 precondition
+
+`fire` 或 `hold` 的 `reason` 中**必含 precondition 关键词**, 例:
+- "前因: precondition 写'董卓未死'; 盘面董卓 live, 故 hold"
+- "前因: precondition 写'汉室威权 < 20'; 盘面威权 12, 触发曹操迎帝"
+
+### 6.3 改写成功的情势要标"已改写"
+
+若玩家已用 precondition 描述的方式改写了情势（例: 杀董卓免李郭乱政）, `hold` 的 `reason` 必含 "[改写]":
+```
+{"id": "liuguo_dongzhuo", "reason": "[改写] precondition 说李郭乱政因'董卓死后+王允失势'; 玩家已派吕布刺董, 董卓未死即伏, 王允仍掌权, 前因已破"}
+```
+
+### 6.4 改写口子典型模式
+
+| 改写类型 | 例 |
+|---|---|
+| **刺杀** | 玩家可派刺客杀董卓 → 李郭乱政免 |
+| **提前削藩** | 玩家可削弱袁术军事 → 袁术称帝免 |
+| **迁都规避** | 玩家可迁都避开董卓 → 董卓进京免 |
+| **抢先密令** | 玩家可密令伏完防范 → 衣带诏事发免 |
+| **安插亲信** | 玩家可提前安插亲信到关键位置 → 政变免 |
+
+### 6.5 严禁
+
+- 严禁 `fire` 情势时不读 precondition（撞大运）
+- 严禁 `hold` 情势时不说理据（凭印象）
+- 严禁 reason 不含 precondition 关键词（与改写规则脱节）

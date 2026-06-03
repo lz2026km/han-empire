@@ -1797,6 +1797,39 @@ def api_score_extractor_tiers():
     return jsonify(get_tier_summary())
 
 
+# --- 6c) /api/intro_hints (v5.0 P1-3: 引导剧本) ---
+@app.route('/api/intro_hints', methods=['GET'])
+def api_intro_hints():
+    """v5.0 P1-3: 返回 6 个月引导剧本 + 当前状态应触发的 hint
+
+    Query params:
+        year: 当前年份
+        month: 当前月份
+        turn: 当前回合
+    """
+    from han_sim.intro_hints import get_hints_summary, get_intro_hints
+    from han_sim.intro_hints import is_in_intro_window
+
+    data = get_hints_summary()
+    in_window = False
+    try:
+        year = int(request.args.get("year", 0))
+        month = int(request.args.get("month", 0))
+        turn = int(request.args.get("turn", 0))
+        from types import SimpleNamespace
+        state = SimpleNamespace(year=year, period=month, turn=turn)
+        in_window = is_in_intro_window(state)
+    except (ValueError, TypeError):
+        in_window = False
+
+    return jsonify({
+        "hints": data["hints"],
+        "window": data["window"],
+        "in_intro_window": in_window,
+        "total_hints": data["total_hints"],
+    })
+
+
 # --- 7) /api/saves/list (存档列表含元数据) ---
 @app.route('/api/saves/list', methods=['GET'])
 def api_saves_list():

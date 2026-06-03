@@ -1,0 +1,81 @@
+{
+  "version": "1.0",
+  "description": "汉献帝之末路 v5.0 P1-3 新手引导剧本 (189 年 3-8 月, 董卓进京前 6 个月)",
+  "intro_window_months": 6,
+  "campaign_start": {"year": 189, "month": 3},
+  "intro_end": {"year": 189, "month": 8},
+  "hints": [
+    {
+      "id": "intro_01_hejin_in_power",
+      "turn": 1,
+      "year": 189,
+      "month": 3,
+      "title": "何进掌政",
+      "hint": "陛下, 何进以外戚身份掌政, 把持朝纲。可考虑: 1) 召见何进询问国事 2) 派密使探查何进与十常侍的紧张关系 3) 暂不出手, 静观其变",
+      "expected_issues": ["hejin_eunuch_struggle"],
+      "trigger_if": "turn == 1",
+      "action_target": "minister.hejin",
+      "priority": 10
+    },
+    {
+      "id": "intro_02_hejin_consultation",
+      "turn": 2,
+      "year": 189,
+      "month": 4,
+      "title": "何进请旨",
+      "hint": "陛下, 何进近日请召外兵入京以诛宦官。这是双刃剑——若成, 宦官可除; 若败, 外兵失控。可: 1) 召见何进当面问询 2) 派密使查何进与董卓的密约 3) 抢先下手, 亲自诛宦官",
+      "expected_issues": ["hejin_secret_recruit"],
+      "trigger_if": "hejin_alive AND not yet seen hejin",
+      "action_target": "minister.hejin",
+      "priority": 9
+    },
+    {
+      "id": "intro_03_eunuch_alert",
+      "turn": 3,
+      "year": 189,
+      "month": 5,
+      "title": "十常侍警讯",
+      "hint": "陛下, 张让赵忠等十常侍已察觉何进的密谋, 开始在宫中布防。可: 1) 召见张让试探态度 2) 暗中联络何进加快动手 3) 亲自下密旨给何皇后 (何进之妹) 居中协调",
+      "expected_issues": ["eunuch_counterplot"],
+      "trigger_if": "turn >= 3 AND eunuch_alive",
+      "action_target": "minister.zhangrang",
+      "priority": 8
+    },
+    {
+      "id": "intro_04_dongzhuo_warning",
+      "turn": 4,
+      "year": 189,
+      "month": 6,
+      "title": "董卓异动",
+      "hint": "陛下, 边关急报: 董卓率西凉军东来, 借口'勤王'。此乃千钧一发。可: 1) 急召何进问询 2) 派密使拦截董卓 3) 调遣洛阳禁军严守 4) 抢先迁都避祸",
+      "expected_issues": ["dongzhuo_eastern_march"],
+      "trigger_if": "turn >= 4 AND dongzhuo_alive",
+      "action_target": "minister.dongzhuo",
+      "priority": 10
+    },
+    {
+      "id": "intro_05_hejin_crisis",
+      "turn": 5,
+      "year": 189,
+      "month": 7,
+      "title": "何进之难",
+      "hint": "陛下, 何进已进入宫中, 准备与十常侍决战。但董卓已近在咫尺, 局势失控在即。可: 1) 急召何进退兵 2) 调遣禁军护驾 3) 派密使截董卓 4) 抢先下手, 不再犹豫",
+      "expected_issues": ["hejin_ambush"],
+      "trigger_if": "turn >= 5 AND hejin_alive",
+      "action_target": "minister.hejin",
+      "priority": 10
+    },
+    {
+      "id": "intro_06_final_warning",
+      "turn": 6,
+      "year": 189,
+      "month": 8,
+      "title": "最后窗口",
+      "hint": "陛下, 这是董卓进京前的最后一个月。若再不行动, 汉室将陷 17 年之乱。可: 1) 急下密旨调动天下勤王 2) 亲率禁军围何进逼其退让 3) 派密使火速联络袁绍 4) 承认现实, 准备接位后徐图",
+      "expected_issues": ["final_chance"],
+      "trigger_if": "turn == 6 AND dongzhuo_not_in_luoyang",
+      "action_target": "self.emperor",
+      "priority": 10
+    }
+  ]
+}
