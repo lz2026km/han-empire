@@ -2560,6 +2560,70 @@ input:focus, select:focus {
   font-style: italic;
 }
 
+/* v5.2.0 P6-7: SettingsModal 4 段设置 (主题/季节/快捷键/关于) */
+.settings-section {
+  padding: 10px 0 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+.settings-section:last-of-type {
+  border-bottom: none;
+}
+.settings-section h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--color-gold);
+  font-family: var(--font-display);
+  letter-spacing: 1px;
+}
+.settings-section--danger {
+  background: rgba(196, 43, 43, 0.06);
+  margin: 0 -22px -20px;
+  padding: 10px 22px 14px;
+  border-top: 1px solid var(--color-accent-red-dim);
+  border-bottom: none;
+  border-radius: 0 0 8px 8px;
+}
+.settings-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.settings-shortcut-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.settings-shortcut-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.settings-kbd {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-gold);
+  border-radius: 3px;
+  padding: 1px 6px;
+  min-width: 36px;
+  text-align: center;
+  color: var(--color-gold-bright);
+  white-space: nowrap;
+}
+.settings-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.settings-stats b {
+  color: var(--color-gold);
+}
+
 /* v5.2.0 P6-6: LoadingScreen 全屏推演 (仿 ming_sim simulate_loading) */
 .loading-screen {
   position: fixed; inset: 0; z-index: 1100;

@@ -179,6 +179,15 @@ export const api = {
     saves: any[]; total_saves: number; has_api_key: boolean;
     has_running_game: boolean; llm: any; version: string;
   }>('/menu/status'),
+  // v5.2.0 P6-7: 多周目统计 (SettingsModal 用)
+  getStatsGlobal: () => request<{
+    total_runs: number; wins: number; losses: number;
+    total_turns: number; max_authority: number;
+    max_legacy: string; endings_unlocked: string[];
+  }>('/stats/global'),
+  getStatsRuns: (limit: number = 20) => request<{
+    runs: any[]; total: number; limit: number;
+  }>(`/stats/runs?limit=${limit}`),
   saveGame: (save: GameSave) =>
     request<{ ok: boolean }>('/save', { method: 'POST', body: JSON.stringify(save) }),
   saveCampaign: (id: string) =>

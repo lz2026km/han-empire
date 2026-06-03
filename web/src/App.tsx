@@ -31,6 +31,8 @@ import { StateModal } from './components/StateModal'
 import { ConfirmDialog } from './components/ConfirmDialog'
 // v5.2.0 P6-6: 全屏推演 Loading (LoadingScreen, 替代裸 SettlementLock 显示)
 import { LoadingScreen } from './components/LoadingScreen'
+// v5.2.0 P6-7: 设置弹窗 (SettingsModal)
+import { SettingsModal } from './components/SettingsModal'
 import { SecretOrdersModal } from './components/SecretOrdersModal'
 import { CheatConsole } from './components/CheatConsole'
 import { GrandMap } from './components/GrandMap'
@@ -513,17 +515,10 @@ export default function App() {
       />
 
       {/* v5.2.0 P6-4: 设置 Modal (6.7 实现) */}
-      {showSettingsModal && (
-        <div className="modal-overlay" onClick={() => setShowSettingsModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal__title">设置</div>
-            <p style={{ color: 'var(--color-text-secondary)' }}>v5.2.0 P6-7 任务实现 (主题/季节/音量/快捷键)</p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '14px' }}>
-              <button type="button" className="btn" onClick={() => setShowSettingsModal(false)}>关闭</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <SettingsModal
+        open={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+      />
 
       {/* v5.2.0 P6-4: 帮助 Modal (6.9 实现) */}
       {showHelpModal && (
