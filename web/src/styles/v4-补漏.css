@@ -1,0 +1,270 @@
+/* =============================================
+   v4.0.1 补漏: 全 UI 场景接入 AI 图 (25+ 处)
+   主公明令: 审查整个游戏, 缺啥补啥, 0.1 收尾
+   ============================================= */
+
+/* === 1. 7 个 Notification 通知类型图标 (替换字符 列表/[OK]/诏书/战斗/建筑) === */
+.notif-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+}
+.notif-icon--info { background-image: url("/notif_info.png"); }
+.notif-icon--success { background-image: url("/notif_success.png"); }
+.notif-icon--warning { background-image: url("/notif_warning.png"); }
+.notif-icon--critical { background-image: url("/notif_critical.png"); }
+.notif-icon--decree { background-image: url("/notif_decree.png"); }
+.notif-icon--battle { background-image: url("/notif_battle.png"); }
+.notif-icon--political { background-image: url("/notif_political.png"); }
+
+/* === 2. Notification 7 类型 整体背景 (替换渐变) === */
+.notification-toast--decree {
+  background:
+    linear-gradient(135deg, rgba(58, 26, 10, 0.5) 0%, rgba(26, 10, 5, 0.85) 100%),
+    url("/bg_edict.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+.notification-toast--battle {
+  background:
+    linear-gradient(135deg, rgba(60, 20, 20, 0.5) 0%, rgba(20, 8, 8, 0.85) 100%),
+    url("/scene_battle_siege.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+.notification-toast--critical {
+  background:
+    linear-gradient(135deg, rgba(80, 10, 10, 0.6) 0%, rgba(20, 5, 5, 0.9) 100%),
+    url("/notif_critical.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  border-left-color: var(--color-accent-red-bright);
+}
+.notification-toast--political {
+  background:
+    linear-gradient(135deg, rgba(40, 30, 10, 0.5) 0%, rgba(20, 14, 5, 0.85) 100%),
+    url("/bg_court.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+
+/* === 3. 9 个 Tab 入口小图 (替换侧栏文字图标) === */
+.tab-icon {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.4));
+}
+.tab-icon--overview { background-image: url("/tab_overview.png"); }
+.tab-icon--skill { background-image: url("/tab_skill.png"); }
+.tab-icon--decree { background-image: url("/tab_decree.png"); }
+.tab-icon--minister { background-image: url("/tab_minister.png"); }
+.tab-icon--faction { background-image: url("/tab_faction.png"); }
+.tab-icon--building { background-image: url("/tab_building.png"); }
+.tab-icon--orders { background-image: url("/tab_orders.png"); }
+.tab-icon--log { background-image: url("/tab_log.png"); }
+.tab-icon--map { background-image: url("/tab_map.png"); }
+
+/* === 4. BattleView 战役主背景 (替换纯渐变) === */
+.battle-field {
+  background:
+    linear-gradient(135deg, rgba(60, 20, 20, 0.3) 0%, rgba(20, 8, 8, 0.6) 100%),
+    url("/scene_battle_cold.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+
+/* === 5. FactionRelationDiagram 派系图 (替换纯色) === */
+.faction-diagram {
+  background:
+    linear-gradient(180deg, rgba(20, 10, 8, 0.4) 0%, rgba(8, 4, 3, 0.7) 100%),
+    url("/maps/map_battle_guandu.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+
+/* === 6. MinisterChat 君臣对话 (替换纯色) === */
+.minister-chat {
+  background:
+    linear-gradient(180deg, rgba(26, 14, 10, 0.4) 0%, rgba(10, 5, 5, 0.6) 100%),
+    url("/bg_chat.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+.chat-modal {
+  background:
+    linear-gradient(180deg, rgba(26, 14, 10, 0.4) 0%, rgba(10, 5, 5, 0.6) 100%),
+    url("/bg_chat.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+
+/* === 7. ProvinceList 州郡 (按当前州接图) === */
+.province-list {
+  background:
+    linear-gradient(180deg, rgba(20, 10, 8, 0.3) 0%, rgba(8, 4, 3, 0.6) 100%),
+    url("/maps/map_province_yangzhou.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+
+/* === 8. 各 Tab 主背景 (9 Tab 各不同) === */
+.tab-overview {
+  background:
+    linear-gradient(180deg, rgba(20, 10, 8, 0.2) 0%, rgba(8, 4, 3, 0.5) 100%),
+    url("/bg_court.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+.tab-skill {
+  background:
+    linear-gradient(180deg, rgba(20, 10, 5, 0.3) 0%, rgba(10, 5, 3, 0.6) 100%),
+    url("/bg_node.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+.tab-decree {
+  background:
+    linear-gradient(180deg, rgba(58, 26, 10, 0.3) 0%, rgba(26, 10, 5, 0.6) 100%),
+    url("/bg_edict.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+.tab-minister {
+  background:
+    linear-gradient(180deg, rgba(20, 10, 8, 0.2) 0%, rgba(8, 4, 3, 0.5) 100%),
+    url("/bg_court.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+.tab-faction {
+  background:
+    linear-gradient(180deg, rgba(20, 10, 8, 0.3) 0%, rgba(8, 4, 3, 0.6) 100%),
+    url("/maps/map_battle_guandu.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+.tab-building {
+  background:
+    linear-gradient(180deg, rgba(20, 10, 8, 0.2) 0%, rgba(8, 4, 3, 0.5) 100%),
+    url("/bg_court.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+.tab-orders {
+  background:
+    linear-gradient(180deg, rgba(10, 5, 5, 0.5) 0%, rgba(0, 0, 0, 0.8) 100%),
+    url("/bg_chat_dark.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+.tab-log {
+  background:
+    linear-gradient(180deg, rgba(20, 10, 8, 0.3) 0%, rgba(8, 4, 3, 0.6) 100%),
+    url("/bg_loading.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+.tab-map {
+  background:
+    linear-gradient(180deg, rgba(20, 10, 8, 0.2) 0%, rgba(8, 4, 3, 0.4) 100%),
+    url("/maps/map_china.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+
+/* === 9. SettlementLock 城攻略 (战争图) === */
+.settlement-lock {
+  background:
+    linear-gradient(180deg, rgba(60, 30, 20, 0.4) 0%, rgba(20, 10, 8, 0.7) 100%),
+    url("/scene_battle_siege.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+
+/* === 10. Inbox 奏折 (诏书房图) === */
+.inbox {
+  background:
+    linear-gradient(180deg, rgba(58, 26, 10, 0.3) 0%, rgba(26, 10, 5, 0.6) 100%),
+    url("/bg_edict.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+
+/* === 11. SceneTransition 场景过渡 === */
+.scene-transition {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.9) 100%),
+    url("/bg_loading.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+}
+
+/* === 12. 装饰角花 === */
+.corner-tl { background: url("/corner_tl.png") top left / contain no-repeat; }
+.corner-tr { background: url("/corner_tr.png") top right / contain no-repeat; }
+.corner-bl { background: url("/corner_bl.png") bottom left / contain no-repeat; }
+.corner-br { background: url("/corner_br.png") bottom right / contain no-repeat; }
+
+/* === 13. 状态指示器 (忠诚/威权/武力/智力) - 装饰边 === */
+.stat-bar-fill {
+  background:
+    linear-gradient(90deg, rgba(201, 168, 76, 0.3) 0%, rgba(201, 168, 76, 0.8) 100%),
+    url("/medal_l.png") right / auto 100% no-repeat;
+  background-blend-mode: overlay, normal;
+  height: 100%;
+  border-radius: 3px;
+}
+.stat-bar-fill--war {
+  background:
+    linear-gradient(90deg, rgba(196, 43, 43, 0.3) 0%, rgba(196, 43, 43, 0.8) 100%),
+    url("/medal_c.png") right / auto 100% no-repeat;
+  background-blend-mode: overlay, normal;
+}
+.stat-bar-fill--wit {
+  background:
+    linear-gradient(90deg, rgba(59, 130, 246, 0.3) 0%, rgba(59, 130, 246, 0.8) 100%),
+    url("/medal_w.png") right / auto 100% no-repeat;
+  background-blend-mode: overlay, normal;
+}
+.stat-bar-fill--int {
+  background:
+    linear-gradient(90deg, rgba(16, 185, 129, 0.3) 0%, rgba(16, 185, 129, 0.8) 100%),
+    url("/medal_d.png") right / auto 100% no-repeat;
+  background-blend-mode: overlay, normal;
+}
+.stat-bar-fill--cmd {
+  background:
+    linear-gradient(90deg, rgba(168, 85, 247, 0.3) 0%, rgba(168, 85, 247, 0.8) 100%),
+    url("/medal_cmd.png") right / auto 100% no-repeat;
+  background-blend-mode: overlay, normal;
+}
+
+/* === 14. 侧栏 Tab 入口 (应用 9 个 tab-icon) === */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sidebar-item:hover {
+  background: rgba(201, 168, 76, 0.1);
+}
+.sidebar-item--active {
+  background: rgba(201, 168, 76, 0.15);
+  border-left: 3px solid var(--color-gold);
+}
+
+/* === 15. Decorative corner (4 角花纹) === */
+.deco-frame {
+  position: relative;
+  padding: 24px;
+}
+.deco-frame::before,
+.deco-frame::after {
+  content: "";
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  pointer-events: none;
+}
+.deco-frame::before {
+  top: 0;
+  left: 0;
+  background: url("/corner_tl.png") top left / contain no-repeat;
+}
+.deco-frame::after {
+  bottom: 0;
+  right: 0;
+  background: url("/corner_br.png") bottom right / contain no-repeat;
+}

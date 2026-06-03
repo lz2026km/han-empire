@@ -1,0 +1,3298 @@
+[
+  {
+    "id": "dongzhuo_enter",
+    "title": "董卓进京",
+    "kind": "historical",
+    "summary": "189年，外戚何进召董卓进京诛宦官，董卓率凉州兵入洛阳，废少帝立陈留王刘协为汉献帝，独揽朝政。",
+    "urgency": 95,
+    "severity": 90,
+    "credibility": 100,
+    "interests": [
+      "朝堂",
+      "天下",
+      "藩镇"
+    ],
+    "audiences": [
+      "皇帝",
+      "百官",
+      "诸侯"
+    ],
+    "trigger_year": 189,
+    "trigger_month": 1,
+    "precondition": "游戏开局即触发",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.威权": ">0"
+    },
+    "trigger_condition": {},
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "luoyang_burned",
+    "title": "董卓焚城",
+    "kind": "historical",
+    "summary": "董卓因关东诸侯讨伐，挟献帝迁都长安，临走前纵火焚烧洛阳，洛阳化为焦土，汉室根基尽毁。",
+    "urgency": 90,
+    "severity": 95,
+    "credibility": 100,
+    "interests": [
+      "朝堂",
+      "天下"
+    ],
+    "audiences": [
+      "皇帝",
+      "百官"
+    ],
+    "trigger_year": 190,
+    "trigger_month": 1,
+    "precondition": "董卓进京后触发",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.威权": ">0"
+    },
+    "trigger_condition": {},
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "lvbu_zhuofu",
+    "title": "吕布刺董",
+    "kind": "historical",
+    "summary": "192年，司徒王允设连环计，吕布于未央宫刺杀董卓，凉州兵溃散，李傕郭汜率兵攻入长安。",
+    "urgency": 85,
+    "severity": 80,
+    "credibility": 100,
+    "interests": [
+      "朝堂",
+      "凉州"
+    ],
+    "audiences": [
+      "皇帝",
+      "百官"
+    ],
+    "trigger_year": 192,
+    "trigger_month": 4,
+    "precondition": "董卓存活至192年",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.威权": ">0"
+    },
+    "trigger_condition": {
+      "powers.dongzhuo.status": "active"
+    },
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "lijue_guoha",
+    "title": "李傕郭汜之乱",
+    "kind": "historical",
+    "summary": "192年后，李傕、郭汜率凉州残部攻入长安，劫持献帝，百官受辱，长安再度陷入混乱，献帝流亡。",
+    "urgency": 90,
+    "severity": 90,
+    "credibility": 100,
+    "interests": [
+      "朝堂",
+      "长安"
+    ],
+    "audiences": [
+      "皇帝",
+      "百官"
+    ],
+    "trigger_year": 193,
+    "trigger_month": 1,
+    "precondition": "吕布刺董后触发",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.威权": ">0"
+    },
+    "trigger_condition": {},
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "luoyang_burned",
+    "title": "董卓焚城",
+    "kind": "historical",
+    "summary": "董卓因关东诸侯讨伐，挟献帝迁都长安，临走前纵火焚烧洛阳，洛阳化为焦土，汉室根基尽毁。",
+    "urgency": 90,
+    "severity": 95,
+    "credibility": 100,
+    "interests": [
+      "朝堂",
+      "天下"
+    ],
+    "audiences": [
+      "皇帝",
+      "百官"
+    ],
+    "trigger_year": 190,
+    "trigger_month": 1,
+    "precondition": "董卓进京后触发",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.威权": ">0"
+    },
+    "trigger_condition": {},
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "lvbu_zhuofu",
+    "title": "吕布刺董",
+    "kind": "historical",
+    "summary": "192年，司徒王允设连环计，吕布于未央宫刺杀董卓，凉州兵溃散，李傕郭汜率兵攻入长安。",
+    "urgency": 85,
+    "severity": 80,
+    "credibility": 100,
+    "interests": [
+      "朝堂",
+      "凉州"
+    ],
+    "audiences": [
+      "皇帝",
+      "百官"
+    ],
+    "trigger_year": 192,
+    "trigger_month": 4,
+    "precondition": "董卓存活至192年",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.威权": ">0"
+    },
+    "trigger_condition": {
+      "powers.dongzhuo.status": "active"
+    },
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "lijue_guoha",
+    "title": "李傕郭汜之乱",
+    "kind": "historical",
+    "summary": "192年后，李傕、郭汜率凉州残部攻入长安，劫持献帝，百官受辱，长安再度陷入混乱，献帝流亡。",
+    "urgency": 90,
+    "severity": 90,
+    "credibility": 100,
+    "interests": [
+      "朝堂",
+      "长安"
+    ],
+    "audiences": [
+      "皇帝",
+      "百官"
+    ],
+    "trigger_year": 193,
+    "trigger_month": 1,
+    "precondition": "吕布刺董后触发",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.威权": ">0"
+    },
+    "trigger_condition": {},
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "guangwu_restored",
+    "title": "献帝东归",
+    "kind": "historical",
+    "summary": "196年，献帝在杨奉等人护送下逃离长安，经辗转回到洛阳，洛阳已是一片废墟，百官饥困交加。",
+    "urgency": 85,
+    "severity": 75,
+    "credibility": 100,
+    "interests": [
+      "朝堂",
+      "洛阳"
+    ],
+    "audiences": [
+      "皇帝",
+      "百官"
+    ],
+    "trigger_year": 196,
+    "trigger_month": 1,
+    "precondition": "李傕郭汜之乱期间",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.威权": ">0"
+    },
+    "trigger_condition": {},
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "caocao_xuchang",
+    "title": "曹操迎帝都许",
+    "kind": "historical",
+    "summary": "196年，曹操率兵迎接献帝迁都许昌，挟天子以令诸侯，献帝名为天子，实为阶下囚。",
+    "urgency": 95,
+    "severity": 85,
+    "credibility": 100,
+    "interests": [
+      "朝堂",
+      "许昌",
+      "诸侯"
+    ],
+    "audiences": [
+      "皇帝",
+      "曹操",
+      "百官"
+    ],
+    "trigger_year": 196,
+    "trigger_month": 7,
+    "precondition": "献帝东归后",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.威权": ">0"
+    },
+    "trigger_condition": {
+      "state.year": 196
+    },
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "guandu_battle",
+    "title": "官渡之战",
+    "kind": "historical",
+    "summary": "200年官渡之战，曹操以2万兵对袁绍12万。曹操奇袭乌巢，烧毁袁军全部粮草，袁绍大败，奠定统一北方基础。",
+    "urgency": 100,
+    "severity": 95,
+    "credibility": 100,
+    "interests": [
+      "河北",
+      "许昌",
+      "诸侯"
+    ],
+    "audiences": [
+      "曹操",
+      "袁绍",
+      "皇帝"
+    ],
+    "trigger_year": 200,
+    "trigger_month": 10,
+    "precondition": "袁绍存活且与曹操对峙",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.藩镇": ">60"
+    },
+    "trigger_condition": {
+      "powers.caowei.status": "active",
+      "powers.yuanshao.status": "active"
+    },
+    "resolve_condition": "",
+    "fail_condition": "",
+    "year": 200,
+    "month": 10,
+    "options": [
+      {
+        "label": "支持曹操",
+        "effect": "威权-15, 曹操+30, 袁绍-20"
+      },
+      {
+        "label": "密诏袁绍",
+        "effect": "威权+5(高风险), 袁绍+15"
+      },
+      {
+        "label": "中立观望",
+        "effect": "威权-5, 维持现状"
+      }
+    ],
+    "impact": {
+      "曹操": 30,
+      "袁绍": -20,
+      "威权": -5
+    },
+    "historical": true
+  },
+  {
+    "id": "chibi_battle",
+    "title": "赤壁之战",
+    "kind": "historical",
+    "summary": "208年赤壁之战，孙刘联军3.5万对曹操20余万。周瑜黄盖火攻，曹操大败。三国鼎立之势自此始定。",
+    "urgency": 100,
+    "severity": 95,
+    "credibility": 100,
+    "interests": [
+      "荆州",
+      "江东",
+      "天下"
+    ],
+    "audiences": [
+      "曹操",
+      "刘备",
+      "孙权",
+      "皇帝"
+    ],
+    "trigger_year": 208,
+    "trigger_month": 10,
+    "precondition": "曹操统一北方后南下",
+    "event_type": "ending",
+    "trigger_gate": {
+      "metrics.藩镇": ">50"
+    },
+    "trigger_condition": {
+      "powers.caowei.status": "active",
+      "powers.shuhan.status": "active",
+      "powers.dongwu.status": "active"
+    },
+    "resolve_condition": "",
+    "fail_condition": "",
+    "year": 208,
+    "month": 12,
+    "options": [
+      {
+        "label": "支持孙刘",
+        "effect": "威权+10, 孙权+20, 刘备+15, 曹操-30"
+      },
+      {
+        "label": "亲曹自保",
+        "effect": "威权-20, 曹操+10, 孙刘-10"
+      },
+      {
+        "label": "密诏反曹",
+        "effect": "威权+5(极高风险), 触发衣带诏剧情"
+      }
+    ],
+    "impact": {
+      "曹操": -30,
+      "孙权": 20,
+      "刘备": 15,
+      "威权": 5
+    },
+    "historical": true
+  },
+  {
+    "id": "hanzhong_battle",
+    "title": "汉中之战",
+    "kind": "historical",
+    "summary": "219年，刘备夺汉中，进位汉中王，曹操失汉中，刘备疆域达到极盛，关羽随后北伐威震华夏。",
+    "urgency": 90,
+    "severity": 80,
+    "credibility": 100,
+    "interests": [
+      "汉中",
+      "荆州",
+      "天下"
+    ],
+    "audiences": [
+      "刘备",
+      "曹操",
+      "皇帝"
+    ],
+    "trigger_year": 219,
+    "trigger_month": 5,
+    "precondition": "刘备占据益州后",
+    "event_type": "node",
+    "trigger_gate": {
+      "metrics.藩镇": ">40"
+    },
+    "trigger_condition": {
+      "powers.shuhan.status": "active"
+    },
+    "resolve_condition": "",
+    "fail_condition": ""
+  },
+  {
+    "id": "caopi_abdication",
+    "title": "曹丕篡汉",
+    "kind": "ending",
+    "summary": "220年曹丕篡汉，逼迫汉献帝禅让。历经407年的汉朝正式终结。",
+    "urgency": 100,
+    "severity": 100,
+    "credibility": 100,
+    "interests": [
+      "天下",
+      "汉室"
+    ],
+    "audiences": [
+      "皇帝",
+      "曹丕",
+      "天下"
+    ],
+    "trigger_year": 220,
+    "trigger_month": 12,
+    "precondition": "曹操死后",
+    "event_type": "ending",
+    "trigger_gate": {
+      "metrics.威权": "<10"
+    },
+    "trigger_condition": {
+      "state.year": 220,
+      "powers.caowei.status": "active"
+    },
+    "resolve_condition": "",
+    "fail_condition": "",
+    "year": 220,
+    "month": 10,
+    "options": [
+      {
+        "label": "禅让(历史)",
+        "effect": "威权-100, 游戏结束(汉亡)"
+      },
+      {
+        "label": "拒绝禅让",
+        "effect": "威权+30, 极高概率被弑"
+      },
+      {
+        "label": "衣带诏决战",
+        "effect": "需已发动衣带诏线"
+      }
+    ],
+    "impact": {
+      "威权": -100,
+      "声望": 50
+    },
+    "historical": true,
+    "game_ending": "汉朝终结"
+  },
+  {
+    "id": "e_189_hejin",
+    "year": 189,
+    "month": 1,
+    "title": "何进谋诛宦官",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "何进召董卓入京，欲诛宦官，宦官先下手杀何进。",
+    "impact": {
+      "han_authority": -15,
+      "chaos": 20
+    },
+    "tags": [
+      "何进",
+      "宦官",
+      "董卓"
+    ]
+  },
+  {
+    "id": "e_189_dongzhuo_enter",
+    "year": 189,
+    "month": 9,
+    "title": "董卓进京",
+    "type": "military",
+    "location": "洛阳",
+    "summary": "何进死后，董卓率凉州军入京，废少帝立献帝，专权乱政。",
+    "impact": {
+      "han_authority": -25,
+      "dongzhuo_power": 30
+    },
+    "tags": [
+      "董卓",
+      "洛阳"
+    ]
+  },
+  {
+    "id": "e_190_fengliu",
+    "year": 190,
+    "month": 1,
+    "title": "关东联军讨董卓",
+    "type": "military",
+    "location": "洛阳",
+    "summary": "关东诸侯联军讨伐董卓，董卓焚洛阳迁都长安。",
+    "impact": {
+      "han_authority": -10,
+      "chaos": 15
+    },
+    "tags": [
+      "董卓",
+      "讨伐"
+    ]
+  },
+  {
+    "id": "e_191_zhoucang",
+    "year": 191,
+    "month": 4,
+    "title": "孙坚阵亡",
+    "type": "character",
+    "location": "鲁阳",
+    "summary": "孙坚征荆州刘表时，被刘表部将射杀。",
+    "impact": {
+      "sun_power": -20
+    },
+    "tags": [
+      "孙坚",
+      "刘表"
+    ]
+  },
+  {
+    "id": "e_192_dongzhuo_dead",
+    "year": 192,
+    "month": 4,
+    "title": "董卓被刺杀",
+    "type": "political",
+    "location": "长安",
+    "summary": "王允与吕布合谋利用貂蝉施连环计，董卓被吕布刺杀。",
+    "impact": {
+      "dongzhuo_power": -100,
+      "han_authority": 10
+    },
+    "tags": [
+      "董卓",
+      "吕布",
+      "王允"
+    ],
+    "options": [
+      {
+        "id": "op_reward",
+        "title": "嘉奖王允",
+        "description": "下诏嘉奖王允, 复位朝政"
+      },
+      {
+        "id": "op_avoid",
+        "title": "暂避锋芒",
+        "description": "暂不出手, 让王允与西凉军互斗"
+      },
+      {
+        "id": "op_seek_friend",
+        "title": "亲近西凉军",
+        "description": "暗中联络李傕郭汜"
+      }
+    ],
+    "choices": {
+      "op_reward": {
+        "authority": 15,
+        "favor_王允": 30,
+        "favor_西凉军": -40
+      },
+      "op_avoid": {
+        "authority": 0,
+        "favor_王允": 0,
+        "favor_西凉军": 0
+      },
+      "op_seek_friend": {
+        "authority": -10,
+        "favor_西凉军": 30,
+        "favor_王允": -30
+      }
+    }
+  },
+  {
+    "id": "e_193_licuo",
+    "year": 193,
+    "month": 1,
+    "title": "李傕郭汜之乱",
+    "type": "military",
+    "location": "长安",
+    "summary": "董卓死后，李傕郭汜合攻长安，劫持献帝，杀王允。",
+    "impact": {
+      "han_authority": -20,
+      "chaos": 25
+    },
+    "tags": [
+      "李傕",
+      "郭汜"
+    ]
+  },
+  {
+    "id": "e_195_liugong",
+    "year": 195,
+    "month": 2,
+    "title": "献帝东归",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "李傕郭汜互攻，献帝得以逃离长安，东归洛阳。",
+    "impact": {
+      "han_authority": 15,
+      "public_support": 10
+    },
+    "tags": [
+      "献帝",
+      "东归"
+    ]
+  },
+  {
+    "id": "e_196_caowei_move",
+    "year": 196,
+    "month": 8,
+    "title": "曹操迎献帝迁都许昌",
+    "type": "political",
+    "location": "许昌",
+    "summary": "曹操迎献帝迁都许昌，挟天子以令诸侯，汉室名存实亡。",
+    "impact": {
+      "han_authority": -10,
+      "caowei_power": 25,
+      "xundi_authority": 5
+    },
+    "tags": [
+      "曹操",
+      "献帝",
+      "许昌"
+    ]
+  },
+  {
+    "id": "e_197_yuanshu_emperor",
+    "year": 197,
+    "month": 1,
+    "title": "袁术称帝",
+    "type": "political",
+    "location": "寿春",
+    "summary": "袁术在寿春称帝，国号仲氏，被曹操刘备吕布群起而攻。",
+    "impact": {
+      "yuanshu_power": -30,
+      "caowei_power": 10
+    },
+    "tags": [
+      "袁术",
+      "称帝"
+    ]
+  },
+  {
+    "id": "e_197_wancheng",
+    "year": 197,
+    "month": 11,
+    "title": "宛城之战",
+    "type": "military",
+    "location": "宛城",
+    "summary": "曹操纳张济遗孀邹氏，张绣夜袭，典韦曹昂战死。",
+    "impact": {
+      "caowei_authority": -15,
+      "dianwei_death": 1
+    },
+    "tags": [
+      "曹操",
+      "张绣",
+      "宛城"
+    ]
+  },
+  {
+    "id": "e_198_lvbu_xuzhou",
+    "year": 198,
+    "month": 3,
+    "title": "吕布夺徐州",
+    "type": "military",
+    "location": "下邳",
+    "summary": "吕布趁刘备与袁术交战时夺取徐州。",
+    "impact": {
+      "liubei_power": -20,
+      "lvbu_power": 15
+    },
+    "tags": [
+      "吕布",
+      "徐州"
+    ]
+  },
+  {
+    "id": "e_199_guanduzhan",
+    "year": 200,
+    "month": 4,
+    "title": "官渡之战",
+    "type": "military",
+    "location": "官渡",
+    "summary": "200年官渡之战，曹操以2万兵对袁绍12万。许攸献计乌巢，曹操亲率精兵夜袭，烧毁袁军全部粮草。袁绍军心大乱，曹操趁势追击，袁绍仅率800骑北逃，从此无力南顾。",
+    "impact": {
+      "曹操": 30,
+      "袁绍": -20,
+      "威权": -5,
+      "声望": 5
+    },
+    "tags": [
+      "三国",
+      "官渡",
+      "曹操",
+      "袁绍",
+      "许攸",
+      "乌巢",
+      "汉末转折点"
+    ],
+    "narrative": "建安五年(200年)，袁绍自恃兵多粮足，进军黎阳。曹操以少胜多，奠定统一北方基础。天子此时困于许昌，名为汉相实为汉贼。",
+    "options": [
+      {
+        "label": "支持曹操",
+        "effect": "威权-15, 曹操+30, 袁绍-20, 历史锁定"
+      },
+      {
+        "label": "密诏袁绍",
+        "effect": "威权+5(高风险), 袁绍+15, 曹操警觉-10, 若被泄露则崩盘"
+      },
+      {
+        "label": "中立观望",
+        "effect": "威权-5, 维持现状, 后续可改立场"
+      }
+    ],
+    "historical": true
+  },
+  {
+    "id": "e_208_chibi",
+    "year": 208,
+    "month": 11,
+    "title": "赤壁之战",
+    "type": "military",
+    "location": "赤壁",
+    "summary": "208年赤壁之战，孙刘联军3.5万对曹操20余万。周瑜任大都督，黄盖诈降火攻，曹操水军船舰尽焚，败走华容道。三国鼎立之势自此始定。",
+    "impact": {
+      "曹操": -30,
+      "孙权": 20,
+      "刘备": 15,
+      "威权": 5,
+      "声望": 10
+    },
+    "tags": [
+      "三国",
+      "赤壁",
+      "周瑜",
+      "黄盖",
+      "诸葛亮",
+      "孙刘联军",
+      "三分天下"
+    ],
+    "narrative": "建安十三年(208年)，曹操南征得荆州，号称83万大军南下。孙权在鲁肃、周瑜力主下与刘备结盟。周瑜以火攻破曹，曹操从此无力统一天下。天子欲借机脱曹，幸被曹识破。",
+    "options": [
+      {
+        "label": "支持孙刘",
+        "effect": "威权+10, 孙权+20, 刘备+15, 曹操-30, 衣带诏机会"
+      },
+      {
+        "label": "亲曹自保",
+        "effect": "威权-20, 曹操+10, 孙刘-10, 历史锁定"
+      },
+      {
+        "label": "密诏反曹",
+        "effect": "威权+5(极高风险), 触发衣带诏剧情"
+      }
+    ],
+    "historical": true,
+    "choices": {
+      "op_persuade": {
+        "authority": 5,
+        "favor_孙权": 20,
+        "favor_刘备": 20,
+        "favor_曹操": -30
+      },
+      "op_surrender": {
+        "authority": -30,
+        "favor_曹操": 50,
+        "loyalty": -20
+      },
+      "op_escape": {
+        "authority": -10,
+        "favor_曹操": -40,
+        "defection": 20
+      }
+    }
+  },
+  {
+    "id": "e_190_liugong_tongmeng",
+    "year": 190,
+    "month": 1,
+    "title": "十八路诸侯讨董卓",
+    "type": "military",
+    "location": "酸枣",
+    "summary": "关东各州郡起兵讨伐董卓，推袁绍为盟主，曹操、孙坚等响应，联军十余万人会师酸枣。",
+    "impact": {
+      "han_authority": 5,
+      "dongzhuo_power": -10,
+      "chaos": 10
+    },
+    "tags": [
+      "袁绍",
+      "曹操",
+      "孙坚",
+      "讨董"
+    ]
+  },
+  {
+    "id": "e_192_wangyun_diaochan",
+    "year": 192,
+    "month": 4,
+    "title": "王允献貂蝉",
+    "type": "political",
+    "location": "长安",
+    "summary": "司徒王允利用貂蝉施连环计，离间董卓与吕布，终成诛董之功。",
+    "impact": {
+      "dongzhuo_power": -20,
+      "han_authority": 10
+    },
+    "tags": [
+      "王允",
+      "貂蝉",
+      "董卓",
+      "吕布"
+    ]
+  },
+  {
+    "id": "e_207_san.gu.maoliu",
+    "year": 207,
+    "month": 12,
+    "title": "刘备三顾茅庐",
+    "type": "character",
+    "location": "隆中",
+    "summary": "刘备三次拜访诸葛亮，诸葛亮提出隆中对策，建议刘备取荆益二州，联合孙权，抗击曹操。",
+    "impact": {
+      "liubei_strategy": 25,
+      "shu_cohesion": 20
+    },
+    "tags": [
+      "刘备",
+      "诸葛亮",
+      "隆中对"
+    ]
+  },
+  {
+    "id": "e_219_hanzhong_battle",
+    "year": 219,
+    "month": 5,
+    "title": "汉中之战",
+    "type": "military",
+    "location": "汉中",
+    "summary": "刘备与曹操争夺汉中，黄忠定军山斩夏侯渊，刘备夺汉中，进位汉中王。",
+    "impact": {
+      "caowei_power": -15,
+      "shuhan_power": 20
+    },
+    "tags": [
+      "刘备",
+      "曹操",
+      "黄忠",
+      "夏侯渊",
+      "汉中"
+    ]
+  },
+  {
+    "id": "e_211_mateng",
+    "year": 211,
+    "month": 3,
+    "title": "马超起兵",
+    "type": "military",
+    "location": "关中",
+    "summary": "马超联合韩遂在关中起兵反抗曹操，渭水大破曹操。",
+    "impact": {
+      "caowei_authority": -15,
+      "mateng_power": 20
+    },
+    "tags": [
+      "马超",
+      "曹操"
+    ]
+  },
+  {
+    "id": "e_215_hanzhong",
+    "year": 215,
+    "month": 7,
+    "title": "曹操平张鲁取汉中",
+    "type": "military",
+    "location": "汉中",
+    "summary": "曹操西征张鲁平定汉中，后被刘备夺去。",
+    "impact": {
+      "caowei_power": 15,
+      "zhanglu_power": -100
+    },
+    "tags": [
+      "曹操",
+      "张鲁",
+      "汉中"
+    ]
+  },
+  {
+    "id": "e_219_yiling",
+    "year": 222,
+    "month": 6,
+    "title": "夷陵之战",
+    "type": "military",
+    "location": "夷陵",
+    "summary": "刘备东征孙权，陆逊火烧连营，刘备大败，蜀汉元气大伤。",
+    "impact": {
+      "liubei_power": -40,
+      "sunquan_power": 10
+    },
+    "tags": [
+      "刘备",
+      "陆逊",
+      "孙权",
+      "夷陵"
+    ]
+  },
+  {
+    "id": "e_220_caopi_zhouyan",
+    "year": 220,
+    "month": 12,
+    "title": "曹丕篡汉",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "220年曹丕篡汉，逼迫汉献帝禅让，代汉建魏，改元黄初。历经407年的汉朝正式终结。",
+    "impact": {
+      "威权": -100,
+      "声望": 50,
+      "汉室": -100
+    },
+    "tags": [
+      "曹丕",
+      "汉献帝",
+      "禅让",
+      "魏"
+    ],
+    "narrative": "建安二十五年(220年)，曹操病逝于洛阳，其子曹丕继魏王。同年十月，华歆、王朗等大臣逼献帝禅让。献帝降封山阳公，居浊鹿城。",
+    "options": [
+      {
+        "label": "禅让(历史)",
+        "effect": "威权-100, 游戏结束(汉亡), 转入三国剧本"
+      },
+      {
+        "label": "拒绝禅让",
+        "effect": "威权+30, 曹丕警觉+50, 极高概率被弑, 不推荐"
+      },
+      {
+        "label": "衣带诏决战",
+        "effect": "需在 200-220 年间已发动衣带诏线, 触发篡汉保卫战"
+      }
+    ],
+    "historical": true,
+    "game_ending": "汉朝终结, 转三国",
+    "choices": {
+      "op_refuse": {
+        "authority": 5,
+        "favor_曹丕": -50,
+        "loyalty": 10
+      },
+      "op_three_relay": {
+        "authority": -10,
+        "favor_曹丕": 30,
+        "loyalty": -10
+      },
+      "op_protest": {
+        "authority": 3,
+        "favor_蜀汉": 30,
+        "favor_东吴": 20,
+        "favor_曹丕": -50
+      }
+    }
+  },
+  {
+    "id": "e_222_yiling",
+    "year": 222,
+    "month": 6,
+    "title": "夷陵之战",
+    "type": "political",
+    "location": "夷陵",
+    "summary": "刘备东征孙权，陆逊火烧连营，刘备大败，蜀汉元气大伤。",
+    "impact": {
+      "han_authority": -100,
+      "caowei_power": 0,
+      "xundi_authority": -100
+    },
+    "tags": [
+      "曹丕",
+      "代汉",
+      "献帝"
+    ],
+    "options": [
+      {
+        "id": "op_celebrate",
+        "title": "嘉奖刘备",
+        "description": "下诏嘉奖刘备讨伐东吴"
+      },
+      {
+        "id": "op_criticize",
+        "title": "谴责刘备",
+        "description": "下诏谴责刘备兴兵"
+      },
+      {
+        "id": "op_neutral",
+        "title": "保持沉默",
+        "description": "不参与, 观望成败"
+      }
+    ],
+    "choices": {
+      "op_celebrate": {
+        "favor_蜀汉": 25,
+        "favor_东吴": -25
+      },
+      "op_criticize": {
+        "favor_蜀汉": -25,
+        "favor_东吴": 25
+      },
+      "op_neutral": {
+        "authority": -3
+      }
+    }
+  },
+  {
+    "id": "e_221_liubei_chengdi",
+    "year": 221,
+    "month": 4,
+    "title": "刘备称帝",
+    "type": "political",
+    "location": "成都",
+    "summary": "刘备在成都称帝国号蜀汉，年号章武，欲讨伐孙权为关羽复仇。",
+    "impact": {
+      "shuhan_power": 20,
+      "han_authority": 15
+    },
+    "tags": [
+      "刘备",
+      "称帝"
+    ]
+  },
+  {
+    "id": "e_225_zhugeliang_nan",
+    "year": 225,
+    "month": 3,
+    "title": "诸葛亮南征",
+    "type": "military",
+    "location": "南中",
+    "summary": "诸葛亮南征平定南中夷族，俘虏孟获，七擒七纵。",
+    "impact": {
+      "shuhan_power": 10
+    },
+    "tags": [
+      "诸葛亮",
+      "南中"
+    ]
+  },
+  {
+    "id": "e_227_chuci",
+    "year": 227,
+    "month": 6,
+    "title": "诸葛亮出师表",
+    "type": "political",
+    "location": "成都",
+    "summary": "诸葛亮上《出师表》，誓言北伐中原，复兴汉室。",
+    "impact": {
+      "shuhan_authority": 15
+    },
+    "tags": [
+      "诸葛亮",
+      "出师表"
+    ]
+  },
+  {
+    "id": "e_228_1st_beifa",
+    "year": 228,
+    "month": 1,
+    "title": "诸葛亮第一次北伐",
+    "type": "military",
+    "location": "祁山",
+    "summary": "诸葛亮第一次北伐，因马谡失街亭而失败。",
+    "impact": {
+      "shuhan_authority": -10,
+      "caowei_authority": -5
+    },
+    "tags": [
+      "诸葛亮",
+      "北伐"
+    ]
+  },
+  {
+    "id": "e_228_2nd_beifa",
+    "year": 228,
+    "month": 6,
+    "title": "诸葛亮第二次北伐",
+    "type": "military",
+    "location": "陈仓",
+    "summary": "诸葛亮攻陈仓，郝昭防守不下，因粮尽退兵。",
+    "impact": {
+      "shuhan_authority": -5
+    },
+    "tags": [
+      "诸葛亮",
+      "北伐"
+    ]
+  },
+  {
+    "id": "e_234_wuzhangyuan",
+    "year": 234,
+    "month": 8,
+    "title": "诸葛亮五丈原病逝",
+    "type": "character",
+    "location": "五丈原",
+    "summary": "诸葛亮五伐中原病逝于五丈原，临终遗命退兵。",
+    "impact": {
+      "shuhan_power": -30,
+      "zhugeliang_death": 1
+    },
+    "tags": [
+      "诸葛亮",
+      "五丈原"
+    ]
+  },
+  {
+    "id": "e_249_gaopingling",
+    "year": 249,
+    "month": 1,
+    "title": "高平陵之变",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "司马懿趁曹爽出祭时发动政变诛曹爽，司马氏专权。",
+    "impact": {
+      "caowei_power": -80
+    },
+    "tags": [
+      "司马懿",
+      "曹爽"
+    ]
+  },
+  {
+    "id": "e_263_wei_mie_shu",
+    "year": 263,
+    "month": 8,
+    "title": "魏灭蜀汉",
+    "type": "military",
+    "location": "成都",
+    "summary": "钟会邓艾伐蜀，邓艾偷渡阴平，刘禅投降，蜀汉灭亡。",
+    "impact": {
+      "shuhan_power": -100,
+      "han_authority": -50
+    },
+    "tags": [
+      "邓艾",
+      "刘禅",
+      "蜀汉"
+    ]
+  },
+  {
+    "id": "e_265_xin",
+    "year": 265,
+    "month": 12,
+    "title": "司马炎代魏建晋",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "司马炎受禅代魏建立西晋，曹魏灭亡。",
+    "impact": "汉献帝以山阳公身份目睹晋朝建立, 14 年后薨",
+    "tags": [
+      "司马炎",
+      "代魏"
+    ],
+    "options": [
+      {
+        "id": "op_denounce",
+        "title": "下诏谴责",
+        "description": "以山阳公名义下诏谴责司马氏"
+      },
+      {
+        "id": "op_endorse",
+        "title": "承认晋朝",
+        "description": "承认晋朝正统"
+      },
+      {
+        "id": "op_ignore",
+        "title": "不表态"
+      }
+    ],
+    "choices": {
+      "op_denounce": {
+        "fame": 5,
+        "favor_晋": -20
+      },
+      "op_endorse": {
+        "favor_晋": 30,
+        "authority": -10
+      },
+      "op_ignore": {
+        "authority": -5
+      }
+    }
+  },
+  {
+    "id": "e_280_jin_wu",
+    "year": 280,
+    "month": 3,
+    "title": "晋灭东吴",
+    "type": "military",
+    "location": "建业",
+    "summary": "晋灭吴，三国时代结束，天下统一。",
+    "impact": {
+      "sunquan_power": -100,
+      "han_authority": 10
+    },
+    "tags": [
+      "东吴",
+      "统一"
+    ]
+  },
+  {
+    "id": "e_154_hanlingdi",
+    "year": 168,
+    "month": 3,
+    "title": "汉灵帝即位",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "汉灵帝刘宏即位，东汉最后一位实权皇帝。",
+    "impact": {},
+    "tags": [
+      "汉灵帝"
+    ]
+  },
+  {
+    "id": "e_168_chaos",
+    "year": 168,
+    "month": 12,
+    "title": "第一次党锢之祸",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "汉桓帝与宦官合作，逮捕党人，李膺等百余人下狱。",
+    "impact": {
+      "han_authority": -10
+    },
+    "tags": [
+      "党锢"
+    ]
+  },
+  {
+    "id": "e_184_yellow_turban",
+    "year": 184,
+    "month": 2,
+    "title": "黄巾起义",
+    "type": "military",
+    "location": "全国",
+    "summary": "张角领导黄巾起义，天下大乱，汉室根基动摇。",
+    "impact": {
+      "han_authority": -20,
+      "chaos": 30
+    },
+    "tags": [
+      "黄巾",
+      "张角"
+    ]
+  },
+  {
+    "id": "e_189_shaodian",
+    "year": 189,
+    "month": 5,
+    "title": "少帝刘辩即位",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "汉灵帝崩，少帝刘辩即位，何太后临朝。",
+    "impact": {},
+    "tags": [
+      "少帝"
+    ]
+  },
+  {
+    "id": "e_189_wuhuan",
+    "year": 189,
+    "month": 8,
+    "title": "十常侍乱政",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "十常侍宦官集团专权，何进谋诛之，反被宦官先杀。",
+    "impact": {
+      "han_authority": -15
+    },
+    "tags": [
+      "宦官",
+      "十常侍"
+    ]
+  },
+  {
+    "id": "e_190_zhouyi",
+    "year": 190,
+    "month": 3,
+    "title": "孙坚北伐",
+    "type": "military",
+    "location": "鲁阳",
+    "summary": "孙坚率军北上讨董卓，斩华雄，大破董卓军。",
+    "impact": {
+      "dongzhuo_power": -10
+    },
+    "tags": [
+      "孙坚",
+      "董卓"
+    ]
+  },
+  {
+    "id": "e_190_caocao_fight",
+    "year": 190,
+    "month": 5,
+    "title": "曹操追击董卓",
+    "type": "military",
+    "location": "荥阳",
+    "summary": "曹操单独追击董卓，大败而还，士卒伤亡惨重。",
+    "impact": {
+      "caowei_power": -5
+    },
+    "tags": [
+      "曹操",
+      "董卓"
+    ]
+  },
+  {
+    "id": "e_191_liubei_meet",
+    "year": 191,
+    "month": 1,
+    "title": "刘备投公孙瓒",
+    "type": "political",
+    "location": "蓟城",
+    "summary": "刘备与公孙瓒会面，后因鞭打督邮而逃亡。",
+    "impact": {
+      "liubei_power": 5
+    },
+    "tags": [
+      "刘备",
+      "公孙瓒"
+    ]
+  },
+  {
+    "id": "e_192_lvbu_fight",
+    "year": 192,
+    "month": 1,
+    "title": "吕布投袁术",
+    "type": "political",
+    "location": "袁术",
+    "summary": "吕布杀董卓后投袁术，但不被信任，四处流落。",
+    "impact": {
+      "lvbu_power": 5
+    },
+    "tags": [
+      "吕布",
+      "袁术"
+    ]
+  },
+  {
+    "id": "e_192_liugong_xian",
+    "year": 192,
+    "month": 4,
+    "title": "献帝封董卓余部",
+    "type": "political",
+    "location": "长安",
+    "summary": "董卓死后，献帝封李傕郭汜等人为将军，局势更加混乱。",
+    "impact": {
+      "han_authority": -10
+    },
+    "tags": [
+      "献帝"
+    ]
+  },
+  {
+    "id": "e_194_liugong_jiachi",
+    "year": 194,
+    "month": 6,
+    "title": "李傕郭汜相攻",
+    "type": "military",
+    "location": "长安",
+    "summary": "李傕郭汜因嫌隙互相攻击，长安再次陷入战乱。",
+    "impact": {
+      "chaos": 15,
+      "han_authority": -10
+    },
+    "tags": [
+      "李傕",
+      "郭汜"
+    ]
+  },
+  {
+    "id": "e_194_caowei_ji",
+    "year": 194,
+    "month": 8,
+    "title": "曹操任兖州牧",
+    "type": "political",
+    "location": "兖州",
+    "summary": "曹操击败黄巾军，被朝廷任为兖州牧，势力大增。",
+    "impact": {
+      "caowei_power": 15
+    },
+    "tags": [
+      "曹操",
+      "兖州"
+    ]
+  },
+  {
+    "id": "e_195_dongzhuo_remains",
+    "year": 195,
+    "month": 1,
+    "title": "董卓余部占据关中",
+    "type": "military",
+    "location": "关中",
+    "summary": "董卓余部仍占据关中，关中三辅残破不堪。",
+    "impact": {
+      "chaos": 10
+    },
+    "tags": [
+      "董卓"
+    ]
+  },
+  {
+    "id": "e_196_tuntian",
+    "year": 196,
+    "month": 1,
+    "title": "曹操推行屯田制",
+    "type": "political",
+    "location": "许昌",
+    "summary": "曹操推行屯田制，招募流民开垦，国库渐实。",
+    "impact": {
+      "caowei_power": 10,
+      "fiscal": 15
+    },
+    "tags": [
+      "曹操",
+      "屯田"
+    ]
+  },
+  {
+    "id": "e_197_jiayedian",
+    "year": 197,
+    "month": 1,
+    "title": "曹操纳邹氏",
+    "type": "character",
+    "location": "宛城",
+    "summary": "曹操纳张济遗孀邹氏，引发宛城之战，典韦曹昂战死。",
+    "impact": {
+      "caowei_authority": -15
+    },
+    "tags": [
+      "曹操",
+      "邹氏"
+    ]
+  },
+  {
+    "id": "e_198_tianjuana",
+    "year": 198,
+    "month": 9,
+    "title": "曹操擒吕布",
+    "type": "military",
+    "location": "下邳",
+    "summary": "曹操围攻下邳，吕布被擒，曹操将其缢杀。",
+    "impact": {
+      "lvbu_power": -100
+    },
+    "tags": [
+      "曹操",
+      "吕布"
+    ]
+  },
+  {
+    "id": "e_199_wuhuan_shu",
+    "year": 199,
+    "month": 6,
+    "title": "曹操破袁术",
+    "type": "military",
+    "location": "寿春",
+    "summary": "曹操大破袁术，袁术北上投奔袁绍，呕血而死。",
+    "impact": {
+      "yuanshu_power": -100
+    },
+    "tags": [
+      "曹操",
+      "袁术"
+    ]
+  },
+  {
+    "id": "e_199_guanshu",
+    "year": 199,
+    "month": 4,
+    "title": "曹操杀孔融",
+    "type": "political",
+    "location": "许昌",
+    "summary": "孔融因反对曹操，被以谋反罪族诛。",
+    "impact": {
+      "han_authority": -5
+    },
+    "tags": [
+      "曹操",
+      "孔融"
+    ]
+  },
+  {
+    "id": "e_200_caozhi",
+    "year": 200,
+    "month": 1,
+    "title": "曹操纳荀彧",
+    "type": "political",
+    "location": "许昌",
+    "summary": "荀彧归曹操，曹操如虎添翼，北方渐趋统一。",
+    "impact": {
+      "caowei_power": 10
+    },
+    "tags": [
+      "曹操",
+      "荀彧"
+    ]
+  },
+  {
+    "id": "e_200_yuancaozhi",
+    "year": 200,
+    "month": 3,
+    "title": "袁绍诛曹操",
+    "type": "military",
+    "location": "官渡",
+    "summary": "袁绍率十万精兵南下，与曹操对峙于官渡。",
+    "impact": {
+      "yuanshao_power": 10
+    },
+    "tags": [
+      "袁绍",
+      "曹操"
+    ]
+  },
+  {
+    "id": "e_200_wutao",
+    "year": 200,
+    "month": 10,
+    "title": "曹操奇袭乌巢",
+    "type": "military",
+    "location": "乌巢",
+    "summary": "曹操亲率五千精骑奇袭乌巢，焚毁袁绍军粮，扭转战局。",
+    "impact": {
+      "yuanshao_power": -40,
+      "caowei_power": 20
+    },
+    "tags": [
+      "曹操",
+      "乌巢"
+    ]
+  },
+  {
+    "id": "e_201_liu Bei_run",
+    "year": 201,
+    "month": 4,
+    "title": "刘备投袁绍",
+    "type": "political",
+    "location": "邺城",
+    "summary": "刘备被曹操击败，投奔袁绍，后又南下投刘表。",
+    "impact": {
+      "liubei_power": -10
+    },
+    "tags": [
+      "刘备",
+      "袁绍"
+    ]
+  },
+  {
+    "id": "e_202_yuan_death",
+    "year": 202,
+    "month": 5,
+    "title": "袁绍忧死",
+    "type": "character",
+    "location": "邺城",
+    "summary": "袁绍官渡战败后忧郁而亡，河北袁氏分裂。",
+    "impact": {
+      "yuanshao_power": -100
+    },
+    "tags": [
+      "袁绍"
+    ]
+  },
+  {
+    "id": "e_203_court_debate",
+    "year": 203,
+    "month": 2,
+    "title": "朝堂激辩",
+    "type": "political",
+    "location": "许昌",
+    "summary": "朝臣就讨伐袁氏之子还是先灭吕布展开激辩，曹操采纳荀彧建议先破吕布。",
+    "impact": {
+      "caowei_strategy": "divide_rule"
+    },
+    "tags": [
+      "曹操",
+      "荀彧",
+      "袁尚"
+    ]
+  },
+  {
+    "id": "e_204_huangzu_death",
+    "year": 204,
+    "month": 8,
+    "title": "黄祖被杀",
+    "type": "military",
+    "location": "江夏",
+    "summary": "孙权部将凌统攻破江夏，黄祖战死，东吴势力深入荆州北部。",
+    "impact": {
+      "dongwu_territory": 10,
+      "huangpu_power": -100
+    },
+    "tags": [
+      "孙权",
+      "黄祖",
+      "凌统"
+    ]
+  },
+  {
+    "id": "e_205_guandu_main",
+    "year": 205,
+    "month": 10,
+    "title": "曹操平定河北",
+    "type": "military",
+    "location": "冀州",
+    "summary": "曹操率军北渡黄河，攻占邺城，袁氏残余势力逃往辽东。",
+    "impact": {
+      "caowei_strength": 30,
+      "yuanshao_power": -100
+    },
+    "tags": [
+      "曹操",
+      "袁尚",
+      "河北"
+    ]
+  },
+  {
+    "id": "e_206_tuntian_widespread",
+    "year": 196,
+    "month": 7,
+    "title": "屯田制推行全国",
+    "type": "economic",
+    "location": "许昌",
+    "summary": "曹操将许昌屯田经验推广至各州郡，流民归心，军粮渐足。",
+    "impact": {
+      "caowei_fiscal": 15,
+      "public_support": 5
+    },
+    "tags": [
+      "曹操",
+      "屯田",
+      "经济"
+    ]
+  },
+  {
+    "id": "e_197_dongzhuo_shanxi",
+    "year": 197,
+    "month": 3,
+    "title": "袁术称帝",
+    "type": "political",
+    "location": "寿春",
+    "summary": "袁术在寿春称帝，建号仲氏，诸侯共弃，旋即被曹操击败。",
+    "impact": {
+      "yuan_shu_power": -50,
+      "authority": -10
+    },
+    "tags": [
+      "袁术",
+      "称帝",
+      "众叛亲离"
+    ]
+  },
+  {
+    "id": "e_198_sunces_death",
+    "year": 195,
+    "month": 4,
+    "title": "孙策遇刺",
+    "type": "character",
+    "location": "吴郡",
+    "summary": "孙策狩猎时被许贡门客射伤，不治身亡，年仅二十六岁。",
+    "impact": {
+      "sunquan_leadership": -15,
+      "dongwu_cohesion": -10
+    },
+    "tags": [
+      "孙策",
+      "许贡",
+      "孙权"
+    ]
+  },
+  {
+    "id": "e_199_hanfu_reform",
+    "year": 199,
+    "month": 1,
+    "title": "汉服制度恢复",
+    "type": "cultural",
+    "location": "许昌",
+    "summary": "曹操迎献帝后恢复汉服制度，重定朝仪，朝廷气象为之一新。",
+    "impact": {
+      "authority": 5,
+      "public_support": 3
+    },
+    "tags": [
+      "汉仪",
+      "曹操",
+      "献帝"
+    ]
+  },
+  {
+    "id": "e_200_xiahou淵_death",
+    "year": 200,
+    "month": 4,
+    "title": "夏侯渊阵亡",
+    "type": "military",
+    "location": "定军山",
+    "summary": "刘备取益州后，遣黄忠在定军山袭杀夏侯渊，曹操痛失股肱。",
+    "impact": {
+      "caowei_military": -15,
+      "shu_military": 10
+    },
+    "tags": [
+      "夏侯渊",
+      "黄忠",
+      "定军山"
+    ]
+  },
+  {
+    "id": "e_201_guandu_prelude",
+    "year": 199,
+    "month": 6,
+    "title": "官渡前哨战",
+    "type": "military",
+    "location": "白马",
+    "summary": "曹操用荀攸计，佯攻延津，分散袁绍兵力，随即突袭白马，斩颜良。",
+    "impact": {
+      "caowei_military": 5,
+      "yuanshao_military": -5
+    },
+    "tags": [
+      "曹操",
+      "荀攸",
+      "颜良",
+      "白马"
+    ]
+  },
+  {
+    "id": "e_207_xunyu_conflict",
+    "year": 212,
+    "month": 5,
+    "title": "荀彧反对晋魏公",
+    "type": "character",
+    "location": "许昌",
+    "summary": "曹操欲进爵魏公，荀彧以春秋大义反对，二人关系破裂，荀彧饮药而亡。",
+    "impact": {
+      "han_authority": -10,
+      "caowei_faction": -5
+    },
+    "tags": [
+      "荀彧",
+      "曹操",
+      "魏公"
+    ]
+  },
+  {
+    "id": "e_208_zhangxiu_surrender",
+    "year": 201,
+    "month": 9,
+    "title": "张绣降曹",
+    "type": "political",
+    "location": "许昌",
+    "summary": "张绣在贾诩劝说下再次降曹，曹操封其为扬武将军。",
+    "impact": {
+      "caowei_military": 8,
+      "liangzhou_power": -20
+    },
+    "tags": [
+      "张绣",
+      "贾诩",
+      "曹操"
+    ]
+  },
+  {
+    "id": "e_209_liubei_xianke",
+    "year": 208,
+    "month": 7,
+    "title": "刘备三顾茅庐",
+    "type": "character",
+    "location": "隆中",
+    "summary": "刘备三次拜访诸葛亮，终于得见，诸葛亮提出隆中对。",
+    "impact": {
+      "liubei_strategy": 20,
+      "shu_cohesion": 15
+    },
+    "tags": [
+      "刘备",
+      "诸葛亮",
+      "隆中对"
+    ]
+  },
+  {
+    "id": "e_210_guangzong_dynasty",
+    "year": 220,
+    "month": 1,
+    "title": "汉献帝禅位",
+    "type": "political",
+    "location": "许昌",
+    "summary": "曹丕逼迫汉献帝禅位，汉朝正式终结，魏朝建立。",
+    "impact": {
+      "han_authority": -100,
+      "caowei_faction": 100
+    },
+    "tags": [
+      "汉献帝",
+      "曹丕",
+      "禅让"
+    ]
+  },
+  {
+    "id": "e_211_xu_disease",
+    "year": 194,
+    "month": 5,
+    "title": "徐州大屠杀",
+    "type": "military",
+    "location": "徐州",
+    "summary": "曹操为报父仇，攻陷徐州后屠城泄愤，泗水为之不流。",
+    "impact": {
+      "caowei_reputation": -20,
+      "xuzhou_unrest": 30
+    },
+    "tags": [
+      "曹操",
+      "徐州",
+      "屠杀"
+    ]
+  },
+  {
+    "id": "e_212_liubei_xianbei",
+    "year": 207,
+    "month": 11,
+    "title": "刘备北逃公孙瓒",
+    "type": "political",
+    "location": "幽州",
+    "summary": "刘备被曹操击败，北上投奔公孙瓒，后助田楷守平原。",
+    "impact": {
+      "liubei_territory": -10
+    },
+    "tags": [
+      "刘备",
+      "公孙瓒"
+    ]
+  },
+  {
+    "id": "e_213_xiaoyao_palace",
+    "year": 197,
+    "month": 1,
+    "title": "曹操兴修铜雀台",
+    "type": "cultural",
+    "location": "邺城",
+    "summary": "曹操在邺城修建铜雀台，与文士饮酒作诗，邺下文人集团形成。",
+    "impact": {
+      "caowei_culture": 15,
+      "public_support": 3
+    },
+    "tags": [
+      "曹操",
+      "铜雀台",
+      "文人"
+    ]
+  },
+  {
+    "id": "e_214_yue_lak",
+    "year": 203,
+    "month": 3,
+    "title": "乐进守合肥",
+    "type": "military",
+    "location": "合肥",
+    "summary": "乐进以少胜多，数次击退孙权进攻，合肥守军心大振。",
+    "impact": {
+      "caowei_military": 5,
+      "dongwu_military": -3
+    },
+    "tags": [
+      "乐进",
+      "孙权",
+      "合肥"
+    ]
+  },
+  {
+    "id": "e_215_yuan_fang",
+    "year": 202,
+    "month": 1,
+    "title": "袁方投刘表",
+    "type": "character",
+    "location": "荆州",
+    "summary": "袁绍另一子袁方南奔刘表，后下落不明，袁氏血脉散落四方。",
+    "impact": {
+      "yuanshao_legacy": -10
+    },
+    "tags": [
+      "袁方",
+      "刘表"
+    ]
+  },
+  {
+    "id": "e_189_hejin_death",
+    "year": 189,
+    "month": 8,
+    "title": "何进遇害",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "何进欲诛宦官，反为宦官所杀，京师大乱。",
+    "impact": {
+      "han_authority": -15,
+      "chaos": 20
+    },
+    "tags": [
+      "何进",
+      "宦官",
+      "洛阳"
+    ]
+  },
+  {
+    "id": "e_189_tenchangshi",
+    "year": 189,
+    "month": 8,
+    "title": "十常侍乱政",
+    "type": "political",
+    "location": "洛阳",
+    "summary": "十常侍杀何进后把持朝政，何后之兄何进部将攻入宫中。",
+    "impact": {
+      "han_authority": -20,
+      "chaos": 25
+    },
+    "tags": [
+      "十常侍",
+      "宦官"
+    ]
+  },
+  {
+    "id": "e_196_xu_chang_capital",
+    "year": 196,
+    "month": 8,
+    "title": "迁都许昌",
+    "type": "political",
+    "location": "许昌",
+    "summary": "曹操迎献帝迁都许昌，从此汉室名存实亡，曹操挟天子以令诸侯。",
+    "impact": {
+      "han_authority": -10,
+      "caowei_power": 20,
+      "xundi_authority": 5
+    },
+    "tags": [
+      "曹操",
+      "献帝",
+      "许昌"
+    ]
+  },
+  {
+    "id": "e_193_yongnian",
+    "year": 193,
+    "month": 3,
+    "title": "曹操报仇屠徐州",
+    "type": "military",
+    "location": "徐州",
+    "summary": "曹操为报父仇，攻陷徐州后屠城，泗水为之不流。",
+    "impact": {
+      "caowei_reputation": -20,
+      "xuzhou_unrest": 30
+    },
+    "tags": [
+      "曹操",
+      "徐州",
+      "屠杀"
+    ]
+  },
+  {
+    "id": "e_198_pangxi",
+    "year": 194,
+    "month": 8,
+    "title": "曹操任兖州牧",
+    "type": "political",
+    "location": "兖州",
+    "summary": "曹操击败黄巾军，被朝廷任为兖州牧，势力大增。",
+    "impact": {
+      "caowei_power": 15
+    },
+    "tags": [
+      "曹操",
+      "兖州"
+    ]
+  },
+  {
+    "id": "e_200_yidai_zhau",
+    "year": 200,
+    "month": 6,
+    "title": "衣带诏事件",
+    "type": "secret",
+    "location": "许昌",
+    "summary": "天子亲笔血书缝入衣带，密令国舅董承诛杀曹操。董承联络种辑、吴硕、王子服、刘备等五人。后事发，董承、种辑、吴硕、王子服皆夷三族。",
+    "narrative": "官渡之战前夕，天子不甘为曹操傀儡，于衣带中暗藏血诏，授意董承。建安五年正月事发，曹操屠董承等三族。",
+    "options": [
+      {
+        "label": "发动衣带诏",
+        "effect": "威权+15, 曹操警觉+30, 触发谋反线, 高风险高收益"
+      },
+      {
+        "label": "暂缓不动",
+        "effect": "维持现状, 继续隐忍"
+      },
+      {
+        "label": "亲自操办",
+        "effect": "威权+25, 失败率最高, 但若成功可除曹"
+      }
+    ],
+    "impact": "衣带诏密谋失败, 董承三族被诛, 献帝自此孤立",
+    "historical": true,
+    "tags": [
+      "衣带诏",
+      "汉献帝",
+      "董承",
+      "曹操",
+      "血诏",
+      "衣带密令"
+    ],
+    "choices": {
+      "op_yizhao": {
+        "authority": 10,
+        "favor_曹操": -30,
+        "loyalty": 15,
+        "fame": 10
+      },
+      "op_delay": {
+        "authority": 0,
+        "favor_曹操": 0,
+        "loyalty": 5,
+        "fame": 0
+      },
+      "op_expose": {
+        "authority": -15,
+        "favor_曹操": 40,
+        "loyalty": -20
+      }
+    }
+  },
+  {
+    "id": "evt_yjzj_qiyi",
+    "title": "黄巾起义",
+    "kind": "rebel",
+    "summary": "中平元年二月, 张角举三十六万黄巾同日反, 天下响应.",
+    "urgency": 9,
+    "severity": 10,
+    "credibility": 9,
+    "interests": "汉室/民",
+    "audiences": "皇帝",
+    "trigger_year": 184,
+    "trigger_month": 2,
+    "precondition": "none",
+    "event_type": "突发",
+    "trigger_gate": "always",
+    "trigger_condition": "year>=184",
+    "resolve_condition": "张角死",
+    "fail_condition": "汉亡"
+  },
+  {
+    "id": "evt_hj_chengdu",
+    "title": "皇甫嵩破黄巾",
+    "kind": "battle",
+    "summary": "皇甫嵩朱儁讨黄巾, 屡战屡胜.",
+    "urgency": 8,
+    "severity": 8,
+    "credibility": 8,
+    "interests": "汉室",
+    "audiences": "皇帝",
+    "trigger_year": 184,
+    "trigger_month": 6,
+    "precondition": "evt_yjzj_qiyi",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "evt_yjzj_qiyi=resolved",
+    "resolve_condition": "黄巾主力灭",
+    "fail_condition": "黄巾占领洛阳"
+  },
+  {
+    "id": "evt_he_jin_zhuan",
+    "title": "何进谋诛宦官",
+    "kind": "political",
+    "summary": "中平元年, 何进欲诛宦官, 召董卓入京.",
+    "urgency": 7,
+    "severity": 9,
+    "credibility": 8,
+    "interests": "汉室/外戚",
+    "audiences": "皇帝",
+    "trigger_year": 189,
+    "trigger_month": 4,
+    "precondition": "none",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=189",
+    "resolve_condition": "何进胜",
+    "fail_condition": "董卓入京"
+  },
+  {
+    "id": "evt_dongzhuo_rujing",
+    "title": "董卓入京",
+    "kind": "political",
+    "summary": "中平六年, 董卓率军入洛阳, 废少帝, 立献帝.",
+    "urgency": 10,
+    "severity": 10,
+    "credibility": 10,
+    "interests": "汉室/董卓",
+    "audiences": "皇帝",
+    "trigger_year": 189,
+    "trigger_month": 8,
+    "precondition": "evt_he_jin_zhuan",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "evt_he_jin_zhuan=fail",
+    "resolve_condition": "董卓败亡",
+    "fail_condition": "汉亡"
+  },
+  {
+    "id": "evt_taofeng_zhaohuan",
+    "title": "王允召董卓",
+    "kind": "political",
+    "summary": "王允密谋吕布诛董卓.",
+    "urgency": 9,
+    "severity": 9,
+    "credibility": 8,
+    "interests": "汉室/王允",
+    "audiences": "皇帝",
+    "trigger_year": 192,
+    "trigger_month": 4,
+    "precondition": "evt_dongzhuo_rujing",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "evt_dongzhuo_rujing",
+    "resolve_condition": "董卓死",
+    "fail_condition": "王允被灭"
+  },
+  {
+    "id": "evt_zhu_tao",
+    "title": "诸侯讨董卓",
+    "kind": "political",
+    "summary": "初平元年, 关东诸侯起兵讨董卓, 共推袁绍为盟主.",
+    "urgency": 9,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "汉室/群雄",
+    "audiences": "皇帝",
+    "trigger_year": 190,
+    "trigger_month": 1,
+    "precondition": "evt_dongzhuo_rujing",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "evt_dongzhuo_rujing",
+    "resolve_condition": "董卓迁长安",
+    "fail_condition": "诸侯解散"
+  },
+  {
+    "id": "evt_dongzhuo_fencheng",
+    "title": "董卓焚洛阳",
+    "kind": "disaster",
+    "summary": "初平元年, 董卓焚洛阳, 挟献帝迁长安.",
+    "urgency": 10,
+    "severity": 10,
+    "credibility": 10,
+    "interests": "汉室/民",
+    "audiences": "皇帝",
+    "trigger_year": 190,
+    "trigger_month": 4,
+    "precondition": "evt_zhu_tao",
+    "event_type": "灾变",
+    "trigger_gate": "always",
+    "trigger_condition": "evt_zhu_tao=resolved",
+    "resolve_condition": "抵达长安",
+    "fail_condition": "皇帝被劫杀"
+  },
+  {
+    "id": "evt_caocao_qingxiang",
+    "title": "曹操迎奉献帝",
+    "kind": "political",
+    "summary": "建安元年, 曹操迎奉献帝都许, 挟天子以令诸侯.",
+    "urgency": 10,
+    "severity": 10,
+    "credibility": 10,
+    "interests": "曹魏/汉室",
+    "audiences": "皇帝",
+    "trigger_year": 196,
+    "trigger_month": 8,
+    "precondition": "evt_dongzhuo_fencheng",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=196",
+    "resolve_condition": "迁都许昌",
+    "fail_condition": "献帝被劫"
+  },
+  {
+    "id": "evt_yidai_zhao",
+    "title": "衣带诏事发",
+    "kind": "political",
+    "summary": "建安五年, 董承衣带诏事发, 夷三族.",
+    "urgency": 9,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "汉室/曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 200,
+    "trigger_month": 4,
+    "precondition": "evt_caocao_qingxiang",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=200",
+    "resolve_condition": "皇帝保",
+    "fail_condition": "皇帝废"
+  },
+  {
+    "id": "evt_guandu",
+    "title": "官渡之战",
+    "kind": "battle",
+    "summary": "建安五年, 曹操袁绍决战官渡, 曹胜.",
+    "urgency": 10,
+    "severity": 10,
+    "credibility": 10,
+    "interests": "曹魏/袁绍",
+    "audiences": "皇帝",
+    "trigger_year": 200,
+    "trigger_month": 9,
+    "precondition": "evt_caocao_qingxiang",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=200",
+    "resolve_condition": "曹胜",
+    "fail_condition": "袁胜"
+  },
+  {
+    "id": "evt_chibi",
+    "title": "赤壁之战",
+    "kind": "battle",
+    "summary": "建安十三年, 孙刘联军火攻破曹军于赤壁.",
+    "urgency": 10,
+    "severity": 10,
+    "credibility": 10,
+    "interests": "孙刘/曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 208,
+    "trigger_month": 11,
+    "precondition": "evt_guandu",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=208",
+    "resolve_condition": "孙刘胜",
+    "fail_condition": "曹胜"
+  },
+  {
+    "id": "evt_liubei_ruShu",
+    "title": "刘备入蜀",
+    "kind": "political",
+    "summary": "建安十六年, 刘备入蜀, 助刘璋讨张鲁.",
+    "urgency": 9,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "蜀汉/益州",
+    "audiences": "皇帝",
+    "trigger_year": 211,
+    "trigger_month": 1,
+    "precondition": "evt_chibi",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=211",
+    "resolve_condition": "取成都",
+    "fail_condition": "刘璋胜"
+  },
+  {
+    "id": "evt_hanzhong",
+    "title": "汉中之战",
+    "kind": "battle",
+    "summary": "建安二十年至二十四年, 曹刘争汉中, 刘备胜.",
+    "urgency": 9,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "蜀汉/曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 219,
+    "trigger_month": 5,
+    "precondition": "evt_liubei_ruShu",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=219",
+    "resolve_condition": "刘备夺汉中",
+    "fail_condition": "曹胜"
+  },
+  {
+    "id": "evt_caopi_cuohuan",
+    "title": "曹丕篡汉",
+    "kind": "political",
+    "summary": "建安二十五年, 曹丕代汉称帝, 献帝禅让.",
+    "urgency": 10,
+    "severity": 10,
+    "credibility": 10,
+    "interests": "曹魏/汉室",
+    "audiences": "皇帝",
+    "trigger_year": 220,
+    "trigger_month": 10,
+    "precondition": "evt_hanzhong",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=220",
+    "resolve_condition": "禅让",
+    "fail_condition": "曹丕废"
+  },
+  {
+    "id": "evt_zhouyu_bing",
+    "title": "周瑜病逝",
+    "kind": "death",
+    "summary": "建安十五年, 周瑜病逝于巴丘.",
+    "urgency": 5,
+    "severity": 7,
+    "credibility": 9,
+    "interests": "东吴",
+    "audiences": "皇帝",
+    "trigger_year": 210,
+    "trigger_month": 6,
+    "precondition": "evt_chibi",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=210",
+    "resolve_condition": "周瑜死",
+    "fail_condition": "周瑜存"
+  },
+  {
+    "id": "evt_zhugeliang_beifa",
+    "title": "诸葛亮北伐",
+    "kind": "battle",
+    "summary": "建安二十四年至建兴十二年, 诸葛亮五次北伐.",
+    "urgency": 8,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "蜀汉/曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 228,
+    "trigger_month": 1,
+    "precondition": "evt_hanzhong",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=228",
+    "resolve_condition": "北伐成",
+    "fail_condition": "北伐败"
+  },
+  {
+    "id": "evt_xianxi_chuanshan",
+    "title": "献帝传山",
+    "kind": "political",
+    "summary": "建安二十五年, 献帝禅位, 山阳公.",
+    "urgency": 9,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "汉室",
+    "audiences": "皇帝",
+    "trigger_year": 220,
+    "trigger_month": 11,
+    "precondition": "evt_caopi_cuohuan",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "evt_caopi_cuohuan=resolved",
+    "resolve_condition": "禅位",
+    "fail_condition": "献帝被杀"
+  },
+  {
+    "id": "evt_liubiao_si",
+    "title": "刘表病逝",
+    "kind": "death",
+    "summary": "建安十三年, 刘表病逝, 刘琮降曹.",
+    "urgency": 7,
+    "severity": 8,
+    "credibility": 9,
+    "interests": "荆州/曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 208,
+    "trigger_month": 9,
+    "precondition": "evt_zhu_tao",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=208",
+    "resolve_condition": "刘表死",
+    "fail_condition": "刘表存"
+  },
+  {
+    "id": "evt_sunwu_yangshi",
+    "title": "孙权重掌江东",
+    "kind": "political",
+    "summary": "建安五年, 孙策死, 孙权重掌江东.",
+    "urgency": 8,
+    "severity": 8,
+    "credibility": 9,
+    "interests": "东吴",
+    "audiences": "皇帝",
+    "trigger_year": 200,
+    "trigger_month": 5,
+    "precondition": "evt_zhu_tao",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=200",
+    "resolve_condition": "孙权稳",
+    "fail_condition": "江东乱"
+  },
+  {
+    "id": "evt_qunxiong_zhengzhi",
+    "title": "群雄割据形成",
+    "kind": "political",
+    "summary": "初平年间, 群雄并起, 割据一方.",
+    "urgency": 8,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "群雄",
+    "audiences": "皇帝",
+    "trigger_year": 192,
+    "trigger_month": 1,
+    "precondition": "evt_dongzhuo_rujing",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=192",
+    "resolve_condition": "三分",
+    "fail_condition": "汉统一"
+  },
+  {
+    "id": "evt_shaanxi_dahan",
+    "title": "陕西大旱",
+    "kind": "disaster",
+    "summary": "中平年间, 陕西大旱, 流民四起.",
+    "urgency": 8,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "民",
+    "audiences": "皇帝",
+    "trigger_year": 189,
+    "trigger_month": 6,
+    "precondition": "none",
+    "event_type": "灾变",
+    "trigger_gate": "always",
+    "trigger_condition": "year=189",
+    "resolve_condition": "赈灾",
+    "fail_condition": "流民成乱"
+  },
+  {
+    "id": "evt_liang_zhou_jiang",
+    "title": "凉州之乱",
+    "kind": "rebel",
+    "summary": "中平年间, 凉州叛军.",
+    "urgency": 7,
+    "severity": 7,
+    "credibility": 8,
+    "interests": "凉州",
+    "audiences": "皇帝",
+    "trigger_year": 188,
+    "trigger_month": 1,
+    "precondition": "none",
+    "event_type": "叛乱",
+    "trigger_gate": "always",
+    "trigger_condition": "year=188",
+    "resolve_condition": "平叛",
+    "fail_condition": "叛军占凉州"
+  },
+  {
+    "id": "evt_zhanglu_hanhan",
+    "title": "张鲁据汉中",
+    "kind": "political",
+    "summary": "初平年间, 张鲁据汉中, 五斗米道.",
+    "urgency": 6,
+    "severity": 7,
+    "credibility": 8,
+    "interests": "汉中",
+    "audiences": "皇帝",
+    "trigger_year": 191,
+    "trigger_month": 1,
+    "precondition": "evt_dongzhuo_rujing",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=191",
+    "resolve_condition": "张鲁降",
+    "fail_condition": "张鲁称王"
+  },
+  {
+    "id": "evt_huainan_yinliu",
+    "title": "淮南隐流",
+    "kind": "disaster",
+    "summary": "建安年间, 淮南流民.",
+    "urgency": 6,
+    "severity": 6,
+    "credibility": 7,
+    "interests": "民",
+    "audiences": "皇帝",
+    "trigger_year": 200,
+    "trigger_month": 6,
+    "precondition": "evt_yidai_zhao",
+    "event_type": "灾变",
+    "trigger_gate": "always",
+    "trigger_condition": "year=200",
+    "resolve_condition": "赈济",
+    "fail_condition": "流民成乱"
+  },
+  {
+    "id": "evt_zhangchun_qi",
+    "title": "张纯起辽东",
+    "kind": "rebel",
+    "summary": "初平年间, 张纯与乌丸攻辽东.",
+    "urgency": 7,
+    "severity": 7,
+    "credibility": 8,
+    "interests": "辽东",
+    "audiences": "皇帝",
+    "trigger_year": 189,
+    "trigger_month": 9,
+    "precondition": "evt_yjzj_qiyi",
+    "event_type": "叛乱",
+    "trigger_gate": "always",
+    "trigger_condition": "year=189",
+    "resolve_condition": "张纯灭",
+    "fail_condition": "辽东失"
+  },
+  {
+    "id": "evt_caocao_tuntian",
+    "title": "曹操屯田",
+    "kind": "economic",
+    "summary": "建安元年, 曹操兴屯田, 解决军粮.",
+    "urgency": 5,
+    "severity": 7,
+    "credibility": 9,
+    "interests": "曹魏/民",
+    "audiences": "皇帝",
+    "trigger_year": 196,
+    "trigger_month": 3,
+    "precondition": "evt_caocao_qingxiang",
+    "event_type": "经济",
+    "trigger_gate": "always",
+    "trigger_condition": "year=196",
+    "resolve_condition": "屯田成",
+    "fail_condition": "民反"
+  },
+  {
+    "id": "evt_xiapi_zhan",
+    "title": "下邳之战",
+    "kind": "battle",
+    "summary": "建安三年, 曹操水淹下邳, 擒杀吕布.",
+    "urgency": 8,
+    "severity": 8,
+    "credibility": 9,
+    "interests": "曹魏/吕布",
+    "audiences": "皇帝",
+    "trigger_year": 198,
+    "trigger_month": 11,
+    "precondition": "evt_caocao_qingxiang",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=198",
+    "resolve_condition": "曹胜",
+    "fail_condition": "吕胜"
+  },
+  {
+    "id": "evt_liubiao_yingqi",
+    "title": "刘表迎刘备",
+    "kind": "political",
+    "summary": "建安六年, 刘备投荆州, 刘表待之以上宾.",
+    "urgency": 6,
+    "severity": 6,
+    "credibility": 8,
+    "interests": "蜀汉/荆州",
+    "audiences": "皇帝",
+    "trigger_year": 201,
+    "trigger_month": 1,
+    "precondition": "evt_xiapi_zhan",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=201",
+    "resolve_condition": "刘表善待",
+    "fail_condition": "刘表杀备"
+  },
+  {
+    "id": "evt_sunjian_si",
+    "title": "孙坚战死",
+    "kind": "death",
+    "summary": "初平二年, 孙坚攻刘表, 中伏身亡.",
+    "urgency": 7,
+    "severity": 8,
+    "credibility": 9,
+    "interests": "东吴",
+    "audiences": "皇帝",
+    "trigger_year": 191,
+    "trigger_month": 7,
+    "precondition": "evt_dongzhuo_rujing",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=191",
+    "resolve_condition": "孙坚死",
+    "fail_condition": "孙坚存"
+  },
+  {
+    "id": "evt_sunce_chuangye",
+    "title": "孙策创业江东",
+    "kind": "political",
+    "summary": "兴平年间, 孙策平江东.",
+    "urgency": 7,
+    "severity": 8,
+    "credibility": 9,
+    "interests": "东吴",
+    "audiences": "皇帝",
+    "trigger_year": 195,
+    "trigger_month": 1,
+    "precondition": "evt_sunjian_si",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=195",
+    "resolve_condition": "孙策稳",
+    "fail_condition": "孙策死"
+  },
+  {
+    "id": "evt_sunce_si",
+    "title": "孙策遇刺",
+    "kind": "death",
+    "summary": "建安五年, 孙策遇刺重伤, 传位孙权.",
+    "urgency": 8,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "东吴",
+    "audiences": "皇帝",
+    "trigger_year": 200,
+    "trigger_month": 4,
+    "precondition": "evt_sunce_chuangye",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=200",
+    "resolve_condition": "孙策死",
+    "fail_condition": "孙策活"
+  },
+  {
+    "id": "evt_taoqian_si",
+    "title": "陶谦病逝",
+    "kind": "death",
+    "summary": "兴平元年, 陶谦病逝, 三让徐州.",
+    "urgency": 6,
+    "severity": 7,
+    "credibility": 9,
+    "interests": "徐州",
+    "audiences": "皇帝",
+    "trigger_year": 194,
+    "trigger_month": 5,
+    "precondition": "evt_dongzhuo_rujing",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=194",
+    "resolve_condition": "陶谦死",
+    "fail_condition": "陶谦活"
+  },
+  {
+    "id": "evt_caocao_yingxian",
+    "title": "曹操迎许",
+    "kind": "political",
+    "summary": "建安元年, 曹操迎献帝都许, 升迁.",
+    "urgency": 10,
+    "severity": 10,
+    "credibility": 10,
+    "interests": "曹魏/汉室",
+    "audiences": "皇帝",
+    "trigger_year": 196,
+    "trigger_month": 8,
+    "precondition": "evt_taoqian_si",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=196",
+    "resolve_condition": "都许",
+    "fail_condition": "献帝被劫"
+  },
+  {
+    "id": "evt_caopi_jianwei",
+    "title": "曹丕建魏",
+    "kind": "political",
+    "summary": "建安二十五年, 曹丕代汉, 建国号魏.",
+    "urgency": 10,
+    "severity": 10,
+    "credibility": 10,
+    "interests": "曹魏/汉室",
+    "audiences": "皇帝",
+    "trigger_year": 220,
+    "trigger_month": 10,
+    "precondition": "evt_caocao_yingxian",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=220",
+    "resolve_condition": "代汉",
+    "fail_condition": "不代汉"
+  },
+  {
+    "id": "evt_liubei_ji_cheng",
+    "title": "刘备取成都",
+    "kind": "battle",
+    "summary": "建安十九年, 刘备围成都, 刘璋降.",
+    "urgency": 9,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "蜀汉/益州",
+    "audiences": "皇帝",
+    "trigger_year": 214,
+    "trigger_month": 5,
+    "precondition": "evt_liubei_ruShu",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=214",
+    "resolve_condition": "取成都",
+    "fail_condition": "攻不下"
+  },
+  {
+    "id": "evt_guanyu_beima",
+    "title": "关羽败走麦城",
+    "kind": "battle",
+    "summary": "建安二十四年, 关羽北伐, 败走麦城.",
+    "urgency": 9,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "蜀汉/曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 219,
+    "trigger_month": 12,
+    "precondition": "evt_hanzhong",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=219",
+    "resolve_condition": "关羽存",
+    "fail_condition": "关羽死"
+  },
+  {
+    "id": "evt_fancheng_zhan",
+    "title": "樊城之战",
+    "kind": "battle",
+    "summary": "建安二十四年, 关羽围樊城, 水淹七军.",
+    "urgency": 8,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "蜀汉/曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 219,
+    "trigger_month": 8,
+    "precondition": "evt_hanzhong",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=219",
+    "resolve_condition": "关羽胜",
+    "fail_condition": "关羽败"
+  },
+  {
+    "id": "evt_zhugeliang_chuShu",
+    "title": "诸葛亮出师",
+    "kind": "political",
+    "summary": "建安二十六年, 诸葛亮出师北伐.",
+    "urgency": 7,
+    "severity": 8,
+    "credibility": 9,
+    "interests": "蜀汉",
+    "audiences": "皇帝",
+    "trigger_year": 228,
+    "trigger_month": 1,
+    "precondition": "evt_guanyu_beima",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=228",
+    "resolve_condition": "出师表",
+    "fail_condition": "不出师"
+  },
+  {
+    "id": "evt_dengai_qie Shu",
+    "title": "邓艾偷渡阴平",
+    "kind": "battle",
+    "summary": "景元四年, 邓艾偷渡阴平, 灭蜀.",
+    "urgency": 10,
+    "severity": 10,
+    "credibility": 10,
+    "interests": "曹魏/蜀汉",
+    "audiences": "皇帝",
+    "trigger_year": 263,
+    "trigger_month": 11,
+    "precondition": "evt_zhugeliang_chuShu",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=263",
+    "resolve_condition": "邓艾胜",
+    "fail_condition": "邓艾败"
+  },
+  {
+    "id": "evt_zhonghui_fan",
+    "title": "钟会谋反",
+    "kind": "political",
+    "summary": "景元五年, 钟会谋反, 与姜维谋复蜀.",
+    "urgency": 8,
+    "severity": 9,
+    "credibility": 9,
+    "interests": "曹魏/蜀汉",
+    "audiences": "皇帝",
+    "trigger_year": 264,
+    "trigger_month": 1,
+    "precondition": "evt_dengai_qie Shu",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=264",
+    "resolve_condition": "复蜀",
+    "fail_condition": "事败"
+  },
+  {
+    "id": "evt_dahan_xiang",
+    "title": "襄樊大水",
+    "kind": "disaster",
+    "summary": "建安二十四年, 汉水暴涨, 关羽水淹七军.",
+    "urgency": 5,
+    "severity": 6,
+    "credibility": 8,
+    "interests": "民",
+    "audiences": "皇帝",
+    "trigger_year": 219,
+    "trigger_month": 8,
+    "precondition": "evt_hanzhong",
+    "event_type": "灾变",
+    "trigger_gate": "always",
+    "trigger_condition": "year=219",
+    "resolve_condition": "水退",
+    "fail_condition": "成洪"
+  },
+  {
+    "id": "evt_dahan_you",
+    "title": "幽州蝗灾",
+    "kind": "disaster",
+    "summary": "中平年间, 幽州蝗灾.",
+    "urgency": 6,
+    "severity": 7,
+    "credibility": 8,
+    "interests": "民",
+    "audiences": "皇帝",
+    "trigger_year": 194,
+    "trigger_month": 6,
+    "precondition": "none",
+    "event_type": "灾变",
+    "trigger_gate": "always",
+    "trigger_condition": "year=194",
+    "resolve_condition": "灭蝗",
+    "fail_condition": "成灾"
+  },
+  {
+    "id": "evt_qunxiong_jingzheng",
+    "title": "群雄净增",
+    "kind": "political",
+    "summary": "中平末, 群雄净增.",
+    "urgency": 7,
+    "severity": 8,
+    "credibility": 9,
+    "interests": "群雄",
+    "audiences": "皇帝",
+    "trigger_year": 195,
+    "trigger_month": 1,
+    "precondition": "evt_dongzhuo_rujing",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=195",
+    "resolve_condition": "三分",
+    "fail_condition": "汉统一"
+  },
+  {
+    "id": "evt_caocao_chixian",
+    "title": "曹操赤壁败",
+    "kind": "battle",
+    "summary": "建安十三年, 曹操南征, 兵败赤壁.",
+    "urgency": 10,
+    "severity": 10,
+    "credibility": 10,
+    "interests": "曹魏/孙刘",
+    "audiences": "皇帝",
+    "trigger_year": 208,
+    "trigger_month": 11,
+    "precondition": "evt_chibi",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=208",
+    "resolve_condition": "曹败",
+    "fail_condition": "曹胜"
+  },
+  {
+    "id": "evt_wenjian_chufu",
+    "title": "文帝出府",
+    "kind": "political",
+    "summary": "建安二十五年, 曹丕继位.",
+    "urgency": 8,
+    "severity": 9,
+    "credibility": 10,
+    "interests": "曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 220,
+    "trigger_month": 1,
+    "precondition": "evt_caocao_qingxiang",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=220",
+    "resolve_condition": "曹丕继",
+    "fail_condition": "曹丕不继"
+  },
+  {
+    "id": "evt_menghuo_zhuan",
+    "title": "孟获传记",
+    "kind": "political",
+    "summary": "建兴三年, 诸葛亮南征, 七擒孟获.",
+    "urgency": 6,
+    "severity": 7,
+    "credibility": 7,
+    "interests": "蜀汉/南中",
+    "audiences": "皇帝",
+    "trigger_year": 225,
+    "trigger_month": 3,
+    "precondition": "evt_zhugeliang_chuShu",
+    "event_type": "军事",
+    "trigger_gate": "always",
+    "trigger_condition": "year=225",
+    "resolve_condition": "平南中",
+    "fail_condition": "南中反"
+  },
+  {
+    "id": "evt_liufeng_si",
+    "title": "刘封自杀",
+    "kind": "death",
+    "summary": "建安二十五年, 刘封因不救关羽, 自杀.",
+    "urgency": 6,
+    "severity": 7,
+    "credibility": 9,
+    "interests": "蜀汉",
+    "audiences": "皇帝",
+    "trigger_year": 220,
+    "trigger_month": 3,
+    "precondition": "evt_guanyu_beima",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=220",
+    "resolve_condition": "刘封死",
+    "fail_condition": "刘封活"
+  },
+  {
+    "id": "evt_pangtong_si",
+    "title": "庞统中箭",
+    "kind": "death",
+    "summary": "建安十九年, 庞统攻雒城, 中流矢死.",
+    "urgency": 8,
+    "severity": 9,
+    "credibility": 10,
+    "interests": "蜀汉",
+    "audiences": "皇帝",
+    "trigger_year": 214,
+    "trigger_month": 4,
+    "precondition": "evt_liubei_ruShu",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=214",
+    "resolve_condition": "庞统死",
+    "fail_condition": "庞统活"
+  },
+  {
+    "id": "evt_dongcheng_si",
+    "title": "董承之死",
+    "kind": "death",
+    "summary": "建安五年, 衣带诏事发, 董承被诛.",
+    "urgency": 7,
+    "severity": 8,
+    "credibility": 9,
+    "interests": "汉室/曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 200,
+    "trigger_month": 4,
+    "precondition": "evt_yidai_zhao",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=200",
+    "resolve_condition": "董承死",
+    "fail_condition": "董承活"
+  },
+  {
+    "id": "evt_dongshuo_chi",
+    "title": "董卓吃",
+    "kind": "death",
+    "summary": "初平三年, 王允吕布诛董卓, 满城食其肉.",
+    "urgency": 10,
+    "severity": 10,
+    "credibility": 10,
+    "interests": "汉室",
+    "audiences": "皇帝",
+    "trigger_year": 192,
+    "trigger_month": 4,
+    "precondition": "evt_taofeng_zhaohuan",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=192",
+    "resolve_condition": "董卓死",
+    "fail_condition": "董卓活"
+  },
+  {
+    "id": "evt_han_dun_jue",
+    "title": "韩馥让冀",
+    "kind": "political",
+    "summary": "初平二年, 韩馥让冀州于袁绍.",
+    "urgency": 6,
+    "severity": 7,
+    "credibility": 9,
+    "interests": "袁绍",
+    "audiences": "皇帝",
+    "trigger_year": 191,
+    "trigger_month": 3,
+    "precondition": "evt_zhu_tao",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=191",
+    "resolve_condition": "袁绍据冀",
+    "fail_condition": "韩馥不让"
+  },
+  {
+    "id": "evt_jinhan_zhaohuan",
+    "title": "金环三",
+    "kind": "death",
+    "summary": "金环三姐妹, 助董卓.",
+    "urgency": 5,
+    "severity": 6,
+    "credibility": 7,
+    "interests": "董卓",
+    "audiences": "皇帝",
+    "trigger_year": 192,
+    "trigger_month": 1,
+    "precondition": "evt_dongzhuo_rujing",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=192",
+    "resolve_condition": "姐妹死",
+    "fail_condition": "姐妹活"
+  },
+  {
+    "id": "evt_machao_kang",
+    "title": "马超抗曹",
+    "kind": "battle",
+    "summary": "建安十六年, 马超抗曹, 兵败.",
+    "urgency": 7,
+    "severity": 7,
+    "credibility": 9,
+    "interests": "西凉/曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 211,
+    "trigger_month": 1,
+    "precondition": "evt_zhu_tao",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=211",
+    "resolve_condition": "马超败",
+    "fail_condition": "马超胜"
+  },
+  {
+    "id": "evt_caocong_chusheng",
+    "title": "曹聪出生",
+    "kind": "character",
+    "summary": "建安十年, 曹聪(曹冲)生.",
+    "urgency": 3,
+    "severity": 4,
+    "credibility": 10,
+    "interests": "曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 205,
+    "trigger_month": 1,
+    "precondition": "evt_caocao_qingxiang",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=205",
+    "resolve_condition": "曹冲生",
+    "fail_condition": "曹冲不生"
+  },
+  {
+    "id": "evt_guanyu_hua",
+    "title": "关羽华容",
+    "kind": "battle",
+    "summary": "建安十三年, 关羽华容道义释曹操.",
+    "urgency": 7,
+    "severity": 7,
+    "credibility": 7,
+    "interests": "蜀汉/曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 208,
+    "trigger_month": 11,
+    "precondition": "evt_chibi",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=208",
+    "resolve_condition": "曹脱",
+    "fail_condition": "曹死"
+  },
+  {
+    "id": "evt_caoren_jin",
+    "title": "曹仁进",
+    "kind": "battle",
+    "summary": "建安十三年, 曹仁南征, 守南郡.",
+    "urgency": 7,
+    "severity": 7,
+    "credibility": 8,
+    "interests": "曹魏/东吴",
+    "audiences": "皇帝",
+    "trigger_year": 208,
+    "trigger_month": 12,
+    "precondition": "evt_chibi",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=208",
+    "resolve_condition": "曹仁守",
+    "fail_condition": "曹仁失"
+  },
+  {
+    "id": "evt_sunquan_lu",
+    "title": "孙权虏",
+    "kind": "battle",
+    "summary": "建安二十四年, 孙权虏关羽.",
+    "urgency": 8,
+    "severity": 9,
+    "credibility": 10,
+    "interests": "东吴/蜀汉",
+    "audiences": "皇帝",
+    "trigger_year": 219,
+    "trigger_month": 12,
+    "precondition": "evt_guanyu_beima",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=219",
+    "resolve_condition": "孙权胜",
+    "fail_condition": "孙权败"
+  },
+  {
+    "id": "evt_luxia_panshi",
+    "title": "鲁肃磐石",
+    "kind": "political",
+    "summary": "建安七年, 鲁肃单刀赴会.",
+    "urgency": 6,
+    "severity": 7,
+    "credibility": 8,
+    "interests": "东吴/蜀汉",
+    "audiences": "皇帝",
+    "trigger_year": 202,
+    "trigger_month": 1,
+    "precondition": "evt_sunce_si",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=202",
+    "resolve_condition": "鲁肃存",
+    "fail_condition": "鲁肃死"
+  },
+  {
+    "id": "evt_caoren_xun",
+    "title": "曹仁殉",
+    "kind": "death",
+    "summary": "建安二十五年, 曹仁病故.",
+    "urgency": 5,
+    "severity": 6,
+    "credibility": 9,
+    "interests": "曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 220,
+    "trigger_month": 1,
+    "precondition": "evt_caoren_jin",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=220",
+    "resolve_condition": "曹仁死",
+    "fail_condition": "曹仁活"
+  },
+  {
+    "id": "evt_zhouyu_chi",
+    "title": "周瑜赤壁",
+    "kind": "battle",
+    "summary": "建安十三年, 周瑜主战, 火攻.",
+    "urgency": 9,
+    "severity": 10,
+    "credibility": 10,
+    "interests": "东吴/曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 208,
+    "trigger_month": 11,
+    "precondition": "evt_chibi",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=208",
+    "resolve_condition": "周瑜胜",
+    "fail_condition": "周瑜败"
+  },
+  {
+    "id": "evt_xiahoudun_yanjin",
+    "title": "夏侯惇眼箭",
+    "kind": "battle",
+    "summary": "建安二年, 夏侯惇被射中左眼.",
+    "urgency": 6,
+    "severity": 7,
+    "credibility": 9,
+    "interests": "曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 197,
+    "trigger_month": 6,
+    "precondition": "evt_caocao_qingxiang",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=197",
+    "resolve_condition": "夏侯惇残",
+    "fail_condition": "夏侯惇死"
+  },
+  {
+    "id": "evt_sunshangxiang",
+    "title": "孙尚香归蜀",
+    "kind": "political",
+    "summary": "建安十四年, 孙权妹嫁刘备, 后归.",
+    "urgency": 5,
+    "severity": 6,
+    "credibility": 8,
+    "interests": "东吴/蜀汉",
+    "audiences": "皇帝",
+    "trigger_year": 209,
+    "trigger_month": 1,
+    "precondition": "evt_chibi",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=209",
+    "resolve_condition": "归",
+    "fail_condition": "不归"
+  },
+  {
+    "id": "evt_huatuo_zhiliao",
+    "title": "华佗医治",
+    "kind": "character",
+    "summary": "建安十三年, 华佗为关羽刮骨疗毒.",
+    "urgency": 5,
+    "severity": 6,
+    "credibility": 8,
+    "interests": "蜀汉",
+    "audiences": "皇帝",
+    "trigger_year": 208,
+    "trigger_month": 6,
+    "precondition": "evt_chibi",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=208",
+    "resolve_condition": "刮骨成",
+    "fail_condition": "刮骨败"
+  },
+  {
+    "id": "evt_caocao_touteng",
+    "title": "曹操头疼",
+    "kind": "character",
+    "summary": "建安二十四年, 曹操头痛, 华佗欲治.",
+    "urgency": 5,
+    "severity": 6,
+    "credibility": 8,
+    "interests": "曹魏",
+    "audiences": "皇帝",
+    "trigger_year": 219,
+    "trigger_month": 3,
+    "precondition": "evt_hanzhong",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=219",
+    "resolve_condition": "华佗死",
+    "fail_condition": "华佗活"
+  },
+  {
+    "id": "evt_huatuo_si",
+    "title": "华佗死",
+    "kind": "death",
+    "summary": "建安十三年, 华佗被曹操所杀.",
+    "urgency": 6,
+    "severity": 7,
+    "credibility": 9,
+    "interests": "曹魏/医",
+    "audiences": "皇帝",
+    "trigger_year": 208,
+    "trigger_month": 1,
+    "precondition": "evt_caocao_qingxiang",
+    "event_type": "人物",
+    "trigger_gate": "always",
+    "trigger_condition": "year=208",
+    "resolve_condition": "华佗死",
+    "fail_condition": "华佗活"
+  },
+  {
+    "id": "evt_zhaoyun_dan",
+    "title": "赵云胆",
+    "kind": "battle",
+    "summary": "建安十三年, 赵云长坂坡救主.",
+    "urgency": 8,
+    "severity": 9,
+    "credibility": 10,
+    "interests": "蜀汉",
+    "audiences": "皇帝",
+    "trigger_year": 208,
+    "trigger_month": 11,
+    "precondition": "evt_chibi",
+    "event_type": "战斗",
+    "trigger_gate": "always",
+    "trigger_condition": "year=208",
+    "resolve_condition": "赵云胜",
+    "fail_condition": "赵云败"
+  },
+  {
+    "id": "evt_zhuge_chuShu",
+    "title": "诸葛亮出师",
+    "kind": "political",
+    "summary": "建兴五年, 诸葛亮北伐.",
+    "urgency": 7,
+    "severity": 8,
+    "credibility": 9,
+    "interests": "蜀汉",
+    "audiences": "皇帝",
+    "trigger_year": 227,
+    "trigger_month": 1,
+    "precondition": "evt_zhugeliang_chuShu",
+    "event_type": "政治",
+    "trigger_gate": "always",
+    "trigger_condition": "year=227",
+    "resolve_condition": "出师",
+    "fail_condition": "不出师"
+  }
+]

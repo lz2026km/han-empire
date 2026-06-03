@@ -1,0 +1,36 @@
+.battle-view { background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 20px; }
+.battle-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--color-border); }
+.battle-title { font-size: 20px; color: var(--color-gold); margin: 0; }
+.battle-controls { display: flex; gap: 10px; }
+.battle-field { display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: center; margin-bottom: 24px; padding: 30px; background: linear-gradient(135deg, var(--color-bg-tertiary) 0%, var(--color-bg-secondary) 100%); border-radius: var(--border-radius); position: relative; }
+.army-group { display: flex; flex-direction: column; gap: 12px; padding: 16px; background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius); }
+.army-group--attacker { border-left: 4px solid var(--color-accent-red); }
+.army-group--defender { border-right: 4px solid var(--color-gold-dim); }
+.army-info { display: flex; flex-direction: column; gap: 4px; }
+.army-name { font-size: 16px; font-weight: 600; color: var(--color-text-primary); }
+.army-faction { font-size: 12px; color: var(--color-text-muted); }
+.army-troops { display: flex; flex-direction: column; gap: 6px; }
+.troops-bar { height: 12px; background: var(--color-bg-primary); border-radius: 6px; overflow: hidden; }
+.troops-fill { height: 100%; background: linear-gradient(90deg, var(--color-accent-red) 0%, var(--color-accent-red-bright) 100%); border-radius: 6px; transition: width 0.5s ease; }
+.troops-fill--defender { background: linear-gradient(90deg, var(--color-gold-dim) 0%, var(--color-gold) 100%); }
+.troops-count { font-size: 14px; font-weight: 600; color: var(--color-gold); }
+.army-stats { display: flex; gap: 16px; font-size: 12px; color: var(--color-text-secondary); }
+.battle-center { display: flex; flex-direction: column; align-items: center; gap: 12px; position: relative; }
+.vs-badge { font-size: 28px; font-weight: bold; color: var(--color-text-muted); padding: 10px 20px; background: var(--color-bg-primary); border-radius: 50%; border: 2px solid var(--color-border); }
+.battle-round-indicator { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); background: var(--color-accent-red-dim); padding: 6px 16px; border-radius: 20px; border: 1px solid var(--color-accent-red); }
+.round-label { font-size: 13px; color: var(--color-text-primary); font-weight: 600; }
+.battle-result-banner { padding: 12px 24px; border-radius: var(--border-radius); font-size: 18px; font-weight: 600; margin-top: 12px; }
+.battle-log { border-top: 1px solid var(--color-border); padding-top: 16px; }
+.battle-log h3 { font-size: 14px; color: var(--color-text-muted); margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.05em; }
+.log-entries { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
+.log-entry { display: grid; grid-template-columns: 60px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; background: var(--color-bg-tertiary); border-radius: var(--border-radius); font-size: 13px; animation: fadeIn 0.3s ease-out; }
+.log-entry--latest { background: var(--color-accent-red-dim); border: 1px solid var(--color-accent-red); }
+.log-round { font-size: 12px; color: var(--color-text-muted); font-weight: 600; }
+.log-dice { display: flex; align-items: center; gap: 8px; }
+.dice-roll { font-size: 14px; color: var(--color-gold); }
+.dice-vs { color: var(--color-text-muted); font-size: 11px; }
+.log-damage { display: flex; gap: 12px; font-size: 12px; }
+.damage-attacker { color: var(--color-accent-red); }
+.damage-defender { color: var(--color-gold); }
+.log-narrative { grid-column: 1 / -1; color: var(--color-text-secondary); font-size: 12px; line-height: 1.4; padding-top: 4px; border-top: 1px dashed var(--color-border); margin-top: 4px; }
+ .battle-center { order: -1; } .log-entry { grid-template-columns: 1fr; gap: 8px; } }

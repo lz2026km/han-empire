@@ -1,0 +1,52 @@
+/* ============================================
+ * 汉献帝之末路 v4.0 — 议政厅背景层
+ * AI 朝堂大殿图 (1920x1080 工笔重彩)
+ * ============================================ */
+
+.court-backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(20, 10, 8, 0.3) 0%, rgba(8, 4, 3, 0.5) 100%),
+    url("/bg_court.png") center / cover no-repeat;
+  background-blend-mode: multiply, normal;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.court-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.6;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+.court-backdrop::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 720px;
+  height: 720px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.court-backdrop__title {
+  position: absolute;
+  top: 16px;
+  left: 24px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  z-index: 1;
+  font-weight: 500;
+}

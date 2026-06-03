@@ -1,0 +1,72 @@
+{
+  "_comment": "阶级数据：汉末社会基本盘。region_id='' 为全国汇总；其它对应 regions.id。机制：leverage 高 + satisfaction 低 → 易触发阶级骚乱事件，由 LLM 判定。",
+
+  "classes": [
+    {"name": "豪族",   "region_id": "",   "population": 50,   "satisfaction": 55, "leverage": 80, "agenda": "护田产、避赋税、控地方辟举"},
+    {"name": "寒门",   "region_id": "",   "population": 120,  "satisfaction": 45, "leverage": 50, "agenda": "求仕进、护家族、抗豪族兼并"},
+    {"name": "羌胡",   "region_id": "",   "population": 200,  "satisfaction": 30, "leverage": 45, "agenda": "求自治、抗边将暴敛、护草场"},
+    {"name": "流民",   "region_id": "",   "population": 300,  "satisfaction": 15, "leverage": 60, "agenda": "求活命、求安置、就食于城"},
+    {"name": "商贾",   "region_id": "",   "population": 80,   "satisfaction": 50, "leverage": 55, "agenda": "通有无、贩盐铁、抗重税"},
+    {"name": "士人",   "region_id": "",   "population": 30,   "satisfaction": 48, "leverage": 70, "agenda": "清议讽议、保忠义名、议朝政得失"},
+    {"name": "宦官",   "region_id": "",   "population": 5,    "satisfaction": 60, "leverage": 90, "agenda": "保权势、护产业、干预朝政"},
+    {"name": "宗室",   "region_id": "",   "population": 20,   "satisfaction": 55, "leverage": 65, "agenda": "保宗禄、护藩田、抗削藩"},
+
+    {"name": "豪族",   "region_id": "河南尹",   "population": 8,    "satisfaction": 60, "leverage": 85, "agenda": "洛阳豪族，护庄园，抗清议"},
+    {"name": "寒门",   "region_id": "河南尹",   "population": 15,   "satisfaction": 48, "leverage": 50, "agenda": "洛阳士子，求仕进"},
+    {"name": "羌胡",   "region_id": "河南尹",   "population": 5,    "satisfaction": 25, "leverage": 40, "agenda": "京畿羌胡杂居"},
+    {"name": "流民",   "region_id": "河南尹",   "population": 40,   "satisfaction": 12, "leverage": 65, "agenda": "洛阳难民涌入"},
+    {"name": "士人",   "region_id": "河南尹",   "population": 8,    "satisfaction": 45, "leverage": 80, "agenda": "太学生清议主力"},
+    {"name": "宦官",   "region_id": "河南尹",   "population": 2,    "satisfaction": 70, "leverage": 95, "agenda": "中常侍把持朝政"},
+
+    {"name": "豪族",   "region_id": "颍川郡",   "population": 6,    "satisfaction": 58, "leverage": 80, "agenda": "颍川荀、钟、陈诸姓大族"},
+    {"name": "寒门",   "region_id": "颍川郡",   "population": 18,   "satisfaction": 50, "leverage": 55, "agenda": "荀氏旁支、小姓士子"},
+    {"name": "流民",   "region_id": "颍川郡",   "population": 15,   "satisfaction": 20, "leverage": 55, "agenda": "南阳流民涌入"},
+    {"name": "士人",   "region_id": "颍川郡",   "population": 5,    "satisfaction": 55, "leverage": 85, "agenda": "名士清议核心圈"},
+
+    {"name": "豪族",   "region_id": "南阳郡",   "population": 7,    "satisfaction": 55, "leverage": 82, "agenda": "南阳樊、杜、阴、岑诸姓"},
+    {"name": "寒门",   "region_id": "南阳郡",   "population": 20,   "satisfaction": 42, "leverage": 48, "agenda": "南阳士子"},
+    {"name": "流民",   "region_id": "南阳郡",   "population": 50,   "satisfaction": 10, "leverage": 70, "agenda": "黄巾余部沦为流民"},
+    {"name": "羌胡",   "region_id": "南阳郡",   "population": 10,   "satisfaction": 28, "leverage": 42, "agenda": "荆豫交界羌胡杂居"},
+
+    {"name": "豪族",   "region_id": "涿郡",     "population": 4,    "satisfaction": 52, "leverage": 75, "agenda": "幽州大族"},
+    {"name": "羌胡",   "region_id": "涿郡",     "population": 30,   "satisfaction": 22, "leverage": 55, "agenda": "乌桓、鲜卑近塞"},
+    {"name": "寒门",   "region_id": "涿郡",     "population": 8,    "satisfaction": 40, "leverage": 45, "agenda": "公孙瓒所部中小姓"},
+    {"name": "流民",   "region_id": "涿郡",     "population": 20,   "satisfaction": 15, "leverage": 60, "agenda": "边地难民"},
+
+    {"name": "豪族",   "region_id": "太原郡",   "population": 5,    "satisfaction": 50, "leverage": 78, "agenda": "太原王、郭诸姓"},
+    {"name": "羌胡",   "region_id": "太原郡",   "population": 25,   "satisfaction": 20, "leverage": 58, "agenda": "并州匈奴、羌胡近塞"},
+    {"name": "寒门",   "region_id": "太原郡",   "population": 10,   "satisfaction": 38, "leverage": 42, "agenda": "并州士子"},
+
+    {"name": "豪族",   "region_id": "北平郡",   "population": 3,    "satisfaction": 48, "leverage": 70, "agenda": "燕地大族"},
+    {"name": "羌胡",   "region_id": "北平郡",   "population": 20,   "satisfaction": 25, "leverage": 50, "agenda": "乌桓、鲜卑"},
+
+    {"name": "豪族",   "region_id": "辽东郡",   "population": 3,    "satisfaction": 55, "leverage": 72, "agenda": "辽东大族"},
+    {"name": "羌胡",   "region_id": "辽东郡",   "population": 15,   "satisfaction": 30, "leverage": 48, "agenda": "辽东鲜卑、秽貘"},
+
+    {"name": "豪族",   "region_id": "安定郡",   "population": 4,    "satisfaction": 48, "leverage": 75, "agenda": "陇西大族"},
+    {"name": "羌胡",   "region_id": "安定郡",   "population": 40,   "satisfaction": 18, "leverage": 65, "agenda": "陇右羌胡，反抗激烈"},
+    {"name": "寒门",   "region_id": "安定郡",   "population": 8,    "satisfaction": 35, "leverage": 40, "agenda": "陇右士子"},
+
+    {"name": "豪族",   "region_id": "天水郡",   "population": 3,    "satisfaction": 45, "leverage": 72, "agenda": "天水姜氏大族"},
+    {"name": "羌胡",   "region_id": "天水郡",   "population": 35,   "satisfaction": 15, "leverage": 68, "agenda": "陇右羌族，民变温床"},
+    {"name": "寒门",   "region_id": "天水郡",   "population": 6,    "satisfaction": 32, "leverage": 38, "agenda": "天水士子"},
+
+    {"name": "豪族",   "region_id": "武威郡",   "population": 3,    "satisfaction": 45, "leverage": 70, "agenda": "凉州豪族"},
+    {"name": "羌胡",   "region_id": "武威郡",   "population": 45,   "satisfaction": 12, "leverage": 72, "agenda": "凉州羌胡为主要人口"},
+
+    {"name": "豪族",   "region_id": "广陵郡",   "population": 4,    "satisfaction": 55, "leverage": 78, "agenda": "广陵大族"},
+    {"name": "寒门",   "region_id": "广陵郡",   "population": 12,   "satisfaction": 48, "leverage": 52, "agenda": "江东士子"},
+    {"name": "流民",   "region_id": "广陵郡",   "population": 25,   "satisfaction": 18, "leverage": 58, "agenda": "徐州流民南渡"},
+
+    {"name": "豪族",   "region_id": "吴郡",     "population": 5,    "satisfaction": 58, "leverage": 82, "agenda": "吴郡顾、陆、朱、张诸姓"},
+    {"name": "寒门",   "region_id": "吴郡",     "population": 15,   "satisfaction": 50, "leverage": 55, "agenda": "江东小姓士子"},
+    {"name": "商贾",   "region_id": "吴郡",     "population": 20,   "satisfaction": 55, "leverage": 60, "agenda": "吴会商贾，贩运海货"},
+
+    {"name": "豪族",   "region_id": "南海郡",   "population": 3,    "satisfaction": 50, "leverage": 68, "agenda": "岭南大族"},
+    {"name": "羌胡",   "region_id": "南海郡",   "population": 10,   "satisfaction": 30, "leverage": 40, "agenda": "岭南百越遗民"},
+
+    {"name": "豪族",   "region_id": "南郡",     "population": 5,    "satisfaction": 52, "leverage": 76, "agenda": "荆州大族蔡、蒯诸姓"},
+    {"name": "寒门",   "region_id": "南郡",     "population": 14,   "satisfaction": 45, "leverage": 50, "agenda": "荆州士子"},
+    {"name": "流民",   "region_id": "南郡",     "population": 35,   "satisfaction": 15, "leverage": 62, "agenda": "南阳、颍川流民涌入"}
+  ]
+}

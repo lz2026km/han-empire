@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="aerial" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a2a1a"/>
+      <stop offset="100%" stop-color="#0a0506"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#aerial)"/>
+  <!-- 城墙（圆角矩形） -->
+  <rect x="100" y="200" width="1720" height="700" fill="none" stroke="#7a5a1a" stroke-width="6" opacity="0.7"/>
+  <rect x="120" y="220" width="1680" height="660" fill="none" stroke="#5a3a1a" stroke-width="2" opacity="0.5"/>
+  <!-- 城楼四角 -->
+  <rect x="100" y="200" width="80" height="60" fill="#8b1a1a" opacity="0.8"/>
+  <rect x="1740" y="200" width="80" height="60" fill="#8b1a1a" opacity="0.8"/>
+  <rect x="100" y="840" width="80" height="60" fill="#8b1a1a" opacity="0.8"/>
+  <rect x="1740" y="840" width="80" height="60" fill="#8b1a1a" opacity="0.8"/>
+  <!-- 主殿（中央） -->
+  <rect x="700" y="400" width="520" height="200" fill="#8b1a1a" opacity="0.7"/>
+  <rect x="700" y="380" width="520" height="20" fill="#d4a548" opacity="0.5"/>
+  <!-- 配殿 × 4 -->
+  <rect x="300" y="450" width="200" height="120" fill="#4a0a0a" opacity="0.6"/>
+  <rect x="1420" y="450" width="200" height="120" fill="#4a0a0a" opacity="0.6"/>
+  <rect x="500" y="700" width="180" height="100" fill="#4a0a0a" opacity="0.6"/>
+  <rect x="1240" y="700" width="180" height="100" fill="#4a0a0a" opacity="0.6"/>
+  <!-- 庭院空地 -->
+  <rect x="900" y="620" width="120" height="60" fill="#1a1a0a" opacity="0.5"/>
+  <text x="50%" y="50%" font-family="serif" font-size="48" fill="#d4a548" opacity="0.15" text-anchor="middle">未央宫俯视</text>
+</svg>

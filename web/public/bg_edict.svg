@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8d8a8"/>
+      <stop offset="100%" stop-color="#c8b888"/>
+    </linearGradient>
+    <linearGradient id="seal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#cc1a1a"/>
+      <stop offset="100%" stop-color="#5a0a0a"/>
+    </linearGradient>
+  </defs>
+  <!-- 玄黑底 -->
+  <rect width="1920" height="1080" fill="#0a0506"/>
+  <!-- 远景水墨山 -->
+  <path d="M 0 700 L 400 600 L 800 700 L 1200 580 L 1600 680 L 1920 620 L 1920 1080 L 0 1080 Z" fill="#1a1a1a" opacity="0.5"/>
+  <!-- 中央诏书黄绢 -->
+  <rect x="600" y="200" width="720" height="680" fill="url(#paper)"/>
+  <rect x="600" y="200" width="720" height="40" fill="#d4a548" opacity="0.6"/>
+  <rect x="600" y="840" width="720" height="40" fill="#d4a548" opacity="0.6"/>
+  <!-- 龙纹印章（朱红） -->
+  <rect x="1180" y="780" width="120" height="120" fill="url(#seal)"/>
+  <text x="1240" y="850" font-family="serif" font-size="80" fill="#e8d8a8" text-anchor="middle" font-weight="bold">御</text>
+  <!-- 简牍文字（虚线代表） -->
+  <g stroke="#5a4a1a" stroke-width="2" opacity="0.5">
+    <line x1="680" y1="300" x2="1240" y2="300"/>
+    <line x1="680" y1="360" x2="1240" y2="360"/>
+    <line x1="680" y1="420" x2="1240" y2="420"/>
+    <line x1="680" y1="480" x2="1240" y2="480"/>
+    <line x1="680" y1="540" x2="1240" y2="540"/>
+    <line x1="680" y1="600" x2="1240" y2="600"/>
+    <line x1="680" y1="660" x2="1240" y2="660"/>
+    <line x1="680" y1="720" x2="1240" y2="720"/>
+  </g>
+  <!-- 标题"圣旨" -->
+  <text x="960" y="280" font-family="serif" font-size="40" fill="#8b1a1a" text-anchor="middle" font-weight="bold">圣旨</text>
+  <text x="50%" y="1000" font-family="serif" font-size="48" fill="#d4a548" opacity="0.15" text-anchor="middle">汉献帝诏书</text>
+</svg>

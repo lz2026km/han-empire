@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a2a1a"/>
+      <stop offset="100%" stop-color="#1a0a0a"/>
+    </linearGradient>
+    <linearGradient id="vermilion" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8b1a1a"/>
+      <stop offset="100%" stop-color="#4a0a0a"/>
+    </linearGradient>
+    <pattern id="pavement" width="60" height="60" patternUnits="userSpaceOnUse">
+      <rect width="60" height="60" fill="#2a201a"/>
+      <rect x="5" y="5" width="50" height="50" fill="none" stroke="#3a2a1a" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+  <!-- 远山 -->
+  <path d="M 0 500 L 300 380 L 600 440 L 900 360 L 1200 420 L 1500 380 L 1920 440 L 1920 1080 L 0 1080 Z" fill="#0a0303" opacity="0.6"/>
+  <!-- 古柏 5 棵 -->
+  <g fill="#1a2a1a" opacity="0.9">
+    <ellipse cx="200" cy="700" rx="80" ry="200"/>
+    <rect x="190" y="700" width="20" height="280" fill="#3a2a1a"/>
+    <ellipse cx="500" cy="650" rx="100" ry="250"/>
+    <rect x="490" y="650" width="20" height="350" fill="#3a2a1a"/>
+    <ellipse cx="960" cy="620" rx="120" ry="300"/>
+    <rect x="950" y="620" width="20" height="400" fill="#3a2a1a"/>
+    <ellipse cx="1420" cy="650" rx="100" ry="250"/>
+    <rect x="1410" y="650" width="20" height="350" fill="#3a2a1a"/>
+    <ellipse cx="1720" cy="700" rx="80" ry="200"/>
+    <rect x="1710" y="700" width="20" height="280" fill="#3a2a1a"/>
+  </g>
+  <!-- 远景墙垣 -->
+  <rect x="0" y="500" width="1920" height="60" fill="url(#vermilion)" opacity="0.7"/>
+  <!-- 灰瓦飞檐 -->
+  <path d="M 100 500 L 1820 500 L 1900 540 L 20 540 Z" fill="#1a1a1a" opacity="0.8"/>
+  <g stroke="#3a3a3a" stroke-width="2" opacity="0.5">
+    <line x1="120" y1="510" x2="1800" y2="510"/>
+    <line x1="140" y1="520" x2="1780" y2="520"/>
+  </g>
+  <!-- 廊庑立柱 -->
+  <g fill="url(#vermilion)">
+    <rect x="100" y="540" width="40" height="350"/>
+    <rect x="500" y="540" width="40" height="350"/>
+    <rect x="900" y="540" width="40" height="350"/>
+    <rect x="1300" y="540" width="40" height="350"/>
+    <rect x="1700" y="540" width="40" height="350"/>
+  </g>
+  <!-- 汉白玉石阶 -->
+  <rect x="0" y="850" width="1920" height="100" fill="url(#pavement)"/>
+  <line x1="0" y1="850" x2="1920" y2="850" stroke="#5a4a3a" stroke-width="2"/>
+  <line x1="0" y1="900" x2="1920" y2="900" stroke="#5a4a3a" stroke-width="1"/>
+  <line x1="0" y1="940" x2="1920" y2="940" stroke="#5a4a3a" stroke-width="1"/>
+  <text x="50%" y="50%" font-family="serif" font-size="48" fill="#d4a548" opacity="0.15" text-anchor="middle">洛阳宫廷</text>
+</svg>

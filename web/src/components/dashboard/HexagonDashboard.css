@@ -1,0 +1,43 @@
+/* HexagonDashboard 6 维雷达 CSS */
+.hex-dashboard {
+  padding: var(--space-4);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.hex-dashboard-title {
+  font-size: var(--fs-md);
+  color: var(--color-gold);
+  letter-spacing: 0.3em;
+  margin-bottom: var(--space-3);
+  text-align: center;
+}
+
+.hex-dashboard-svg {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
+
+.hex-dashboard-data-animated {
+  animation: hex-pulse 3s ease-in-out infinite;
+}
+
+@keyframes hex-pulse {
+  0%, 100% { fill-opacity: 0.2; }
+  50% { fill-opacity: 0.4; }
+}
+
+.hex-dashboard-dot {
+  transition: r var(--transition-fast);
+}
+
+.hex-dashboard-dot:hover {
+  r: 6;
+}
+
+.hex-dashboard-value {
+  font-family: var(--font-imperial);
+}

@@ -1,0 +1,210 @@
+/* EdictComposer 拟旨面板 CSS */
+.edict-composer {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-accent);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  max-width: 720px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-3);
+}
+
+.edict-composer-header {
+  padding: var(--space-4);
+  background: var(--color-bg-tertiary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.edict-composer-title {
+  font-size: var(--fs-lg);
+  color: var(--color-gold);
+  letter-spacing: 0.3em;
+  margin-bottom: var(--space-3);
+  text-align: center;
+}
+
+.edict-composer-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.edict-composer-preset {
+  padding: 4px 12px;
+  font-size: var(--fs-xs);
+  color: var(--color-fg-secondary);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.edict-composer-preset:hover {
+  color: var(--color-gold);
+  border-color: var(--color-gold);
+}
+
+.edict-composer-preset-active {
+  color: var(--color-gold);
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-gold);
+}
+
+.edict-composer-tabs {
+  display: flex;
+  background: var(--color-bg-tertiary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.edict-composer-tab {
+  flex: 1;
+  padding: var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--color-fg-tertiary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.edict-composer-tab:hover {
+  color: var(--color-fg-primary);
+  background: var(--color-bg-secondary);
+}
+
+.edict-composer-tab-active {
+  color: var(--color-gold);
+  border-bottom-color: var(--color-gold);
+}
+
+.edict-composer-body {
+  padding: var(--space-4);
+  min-height: 280px;
+}
+
+.edict-composer-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.edict-composer-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.edict-composer-label {
+  font-size: var(--fs-xs);
+  color: var(--color-fg-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.edict-composer-required {
+  color: var(--color-accent-red-bright);
+}
+
+.edict-composer-hint {
+  color: var(--color-fg-tertiary);
+  font-size: 10px;
+  font-style: italic;
+}
+
+.edict-composer-input,
+.edict-composer-textarea {
+  padding: 8px 12px;
+  font-size: var(--fs-sm);
+  color: var(--color-fg-primary);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.edict-composer-input:focus,
+.edict-composer-textarea:focus {
+  border-color: var(--color-gold);
+}
+
+.edict-composer-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.edict-composer-authority-hint {
+  padding: var(--space-3);
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--color-fg-secondary);
+}
+
+.edict-composer-authority-hint strong {
+  font-size: var(--fs-md);
+  margin: 0 4px;
+}
+
+.edict-composer-authority-desc {
+  color: var(--color-fg-tertiary);
+  font-size: var(--fs-xs);
+}
+
+.edict-composer-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-tertiary);
+  border-top: 1px solid var(--color-border);
+}
+
+.edict-composer-btn {
+  padding: 8px 20px;
+  font-size: var(--fs-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-ui);
+}
+
+.edict-composer-btn-cancel {
+  color: var(--color-fg-tertiary);
+  background: transparent;
+}
+
+.edict-composer-btn-cancel:hover {
+  color: var(--color-fg-primary);
+  background: var(--color-bg-secondary);
+}
+
+.edict-composer-btn-preview {
+  color: var(--color-fg-secondary);
+  background: var(--color-bg-secondary);
+}
+
+.edict-composer-btn-preview:hover {
+  color: var(--color-gold);
+  border-color: var(--color-gold);
+}
+
+.edict-composer-btn-submit {
+  color: var(--color-bg-primary);
+  background: linear-gradient(180deg, #c9a84c 0%, #8b6f30 100%);
+  border-color: var(--color-gold);
+  font-weight: var(--fw-medium);
+}
+
+.edict-composer-btn-submit:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 12px rgba(201, 168, 76, 0.4);
+}

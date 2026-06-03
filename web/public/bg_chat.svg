@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="lamp" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#ffcc66"/>
+      <stop offset="50%" stop-color="#cc661a"/>
+      <stop offset="100%" stop-color="#1a0a0a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a2a1a"/>
+      <stop offset="100%" stop-color="#1a0a05"/>
+    </linearGradient>
+    <pattern id="wood" width="100" height="40" patternUnits="userSpaceOnUse">
+      <rect width="100" height="40" fill="#2a1a0a"/>
+      <line x1="0" y1="20" x2="100" y2="20" stroke="#1a0a00" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#wall)"/>
+  <!-- 御书房立柱 -->
+  <g fill="#2a1a0a" opacity="0.8">
+    <rect x="100" y="0" width="80" height="1080"/>
+    <rect x="1740" y="0" width="80" height="1080"/>
+  </g>
+  <!-- 明黄帷幔 -->
+  <path d="M 0 0 L 1920 0 L 1920 200 L 1700 250 L 1200 200 L 700 250 L 200 200 L 0 250 Z" fill="#d4a548" opacity="0.4"/>
+  <path d="M 0 0 L 1920 0 L 1920 100 Q 960 150 0 100 Z" fill="#8b1a1a" opacity="0.5"/>
+  <!-- 古木书案 -->
+  <rect x="600" y="650" width="720" height="40" fill="#3a2a1a"/>
+  <rect x="620" y="690" width="680" height="200" fill="url(#wood)"/>
+  <rect x="600" y="650" width="720" height="20" fill="#5a3a1a"/>
+  <!-- 竹简卷 -->
+  <g fill="#d8c890">
+    <rect x="700" y="620" width="200" height="40" rx="4"/>
+    <line x1="700" y1="640" x2="900" y2="640" stroke="#8b6a3a" stroke-width="1"/>
+    <rect x="950" y="630" width="180" height="30" rx="3"/>
+    <rect x="1180" y="625" width="160" height="35" rx="3"/>
+  </g>
+  <!-- 青铜香炉 -->
+  <g>
+    <rect x="1380" y="600" width="60" height="50" fill="#5a6a5a"/>
+    <ellipse cx="1410" cy="600" rx="30" ry="10" fill="#3a4a3a"/>
+    <rect x="1405" y="570" width="10" height="30" fill="#3a4a3a"/>
+  </g>
+  <!-- 油灯（暖光） -->
+  <circle cx="960" cy="500" r="200" fill="url(#lamp)"/>
+  <rect x="950" y="480" width="20" height="100" fill="#5a3a1a"/>
+  <ellipse cx="960" cy="475" rx="15" ry="20" fill="#ffcc66"/>
+  <text x="50%" y="50%" font-family="serif" font-size="48" fill="#d4a548" opacity="0.15" text-anchor="middle">御书房</text>
+</svg>
