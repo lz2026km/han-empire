@@ -1112,6 +1112,12 @@ class GameDB:
                    turn=excluded.turn, turn_phase=excluded.turn_phase""",
             (state.year, state.period, state.turn, getattr(state, "turn_phase", "summoning")),
         )
+        # v5.1.0 P0-3: 写 metrics 前先同步 budget 余额 (避免 budget 滞后 metrics)
+        try:
+            from han_sim.budget import sync_budget_to_metrics
+            sync_budget_to_metrics(state)
+        except Exception:
+            pass
         for key, value in state.metrics.items():
             if isinstance(value, (list, dict)):
                 # 复合值: 序列化为 JSON 字符串 (SQLite bind 不支持 list/dict)
@@ -1171,6 +1177,12 @@ class GameDB:
         for account in account_rows:
             state.metrics[str(account["account"])] = int(account["balance"])
         self.sync_economy_accounts(state)
+        # v5.1.0 P0-3: load_state 后从 metrics 重建 state.budget (双口径同步)
+        try:
+            from han_sim.budget import sync_metrics_to_budget
+            sync_metrics_to_budget(state)
+        except Exception:
+            pass
         self.conn.commit()
         return state
 
