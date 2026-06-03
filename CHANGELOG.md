@@ -4,6 +4,103 @@
 
 ---
 
+## v5.1.5 — 2026-06-03 (借鉴崇祯 收尾, 66/66 累计单测)
+
+> **本版本: v5.1.4 (0740382) → v5.1.5 (4 commit)**
+> **+12 新单测 (P5-1 4 + P5-2 4 + P5-3 4) / 0 借鉴 emoji / 0 回归**
+
+### A. 任务 5.1: 多周目统计 (P5-1)
+
+仿 ming_sim README TODO '多周目统计'。
+- `han_sim/legacy_stats.py` (154 行): 新模块
+  - `detect_ending`: 根据 state.turn/威权/藩镇 自动判断
+    (中兴/南迁/议和/禅让/衣带诏/流亡/崩盘 7 结局)
+  - `compute_final_score`: 威权*0.4 + 声望*0.3 + (100-藩镇)*0.3
+  - `record_run_completion`: 写 run_history
+    (started/ended_at/ending/final_turn/final_year/final_period/final_score/decisions_count)
+  - `get_global_stats`: 汇总 total_runs/wins/losses/total_turns/max_authority/endings_unlocked
+  - `get_run_history`: 倒序列表 (limit 20)
+  - `format_legacy_for_display`: ending 中文化
+- `han_sim/db.py`: 新表 `run_history` (+1 表 51→52) + idx_run_history_ending
+- `server.py`: 2 端点 (+2 路由 100→102)
+  - `GET /api/stats/global`: 全局统计 (使用 user_data_path('stats.db'))
+  - `GET /api/stats/runs?limit=20`: 历史列表 (上限 100)
+- `tests/test_legacy_stats_v515.py` (4 case):
+  - detect_ending 中兴 / 议和 / 崩盘 3 case
+  - record_and_query 端到端 (3 局, 验证 wins/losses/endings_unlocked/倒序/得分排序)
+
+### B. 任务 5.2: .env 模板 (P5-2)
+
+仿 ming_sim `.env.example` 风格。
+- `.env.example` (39 行): 主公复制本文件为 `.env` 后填 KEY
+  - 必填: `MINIMAX_API_KEY` (或 `OPENAI_API_KEY` / `DEEPSEEK_API_KEY`)
+  - 选填: `OPENAI_BASE_URL`/`OPENAI_MODEL`(默认 deepseek-v4-flash)/`OPENAI_TIMEOUT_SECONDS`
+  - 选填: `OPENAI_ADVANCED_MODEL` (verdict extractor) / `PORT` / `HAN_EMPIRE_DB_DIR` / `HAN_EMPIRE_SEED`
+  - 选填: `PLAYTEST_*` (scripts/auto_play_v51.py v5.1.5 P5-3 用)
+  - 注释: 3 KEY 检查顺序 (llm_router.py 链式 fallback)
+- `server.py`: 新函数 `_load_dotenv_once()` 启动时一次性加载项目根 `.env`
+  - 简单 KEY=VALUE 解析 (不依赖 python-dotenv)
+  - 跳过 # 注释 / 空行 / 无 = 行
+  - 只填 os.environ 中未设的 key (shell 环境优先)
+  - 跳过占位符 `your_minimax_key_here` (避免误注入)
+  - 异常 try/except 静默
+- `tests/test_dotenv_v515.py` (4 case):
+  - `.env.example` 存在 + 含 3 KEY
+  - `.env` 在 `.gitignore`
+  - `_load_dotenv` 正确注入 3 KEY (含 quoted value)
+  - 占位符被忽略
+
+### C. 任务 5.3: auto_play 平衡性测试 (P5-3)
+
+仿 ming_sim `scripts/play_as_emperor.py`, 但**无 LLM** (主公跑 30 局 < 1s)。
+- `scripts/auto_play_v51.py` (140 行): 无 LLM 快速跑 N 局
+  - `_play_one(seed)`: 起手 威权 25 / 藩镇 60 / 库银 200
+  - 每 turn: 藩镇 0-2 / 威权 ±2 / 声望 ±3 / 库银 -20..+10 漂移
+  - 25% 概率 好事件 (威权+5, 藩镇-3, 声望+2, 库银+50)
+  - 10% 概率 坏事件 (威权-3, 藩镇+4, 声望-5, 库银-30)
+  - 跑满 max_turn (默认 200), 终局由 `detect_ending` 判定
+  - `record_run_completion` 写 run_history
+  - `_report`: 局数/耗时/平均回合/崩盘率/ending 分布 5 段
+  - main: argparse `--runs`/`--seed`/`--max-turn`/`--db`
+- `tests/test_auto_play_v515.py` (4 case):
+  - `runs_and_records`: 5 局后 run_history 5 行 + 报告含 崩盘率/ending 分布
+  - `endings_varied`: 30 局应至少 1 局非崩盘 (30 局纯随机验证 detect_ending 路径)
+  - `report_shape`: 5 段 (局数/耗时/平均回合/崩盘率/ending 分布) 都在
+  - `quick`: 10 局 < 5s (无 LLM 性能)
+
+### D. 端点增量
+
+101 v5.1.4 → 102 v5.1.5 (+2):
+- `/api/stats/global` (P5-1)
+- `/api/stats/runs` (P5-1)
+
+### E. 单测增量
+
+54 v5.1.4 → 66 v5.1.5 (+12):
+- 4 test_legacy_stats_v515.py
+- 4 test_dotenv_v515.py
+- 4 test_auto_play_v515.py
+
+### F. 仓库状态
+
+- HEAD: `ee871ec` (v5.1.5 task 5.3)
+- 3 commit (任务 5.1-5.3) + 1 acceptance
+- 1 新模块: `han_sim/legacy_stats.py` (154 行)
+- 1 新脚本: `scripts/auto_play_v51.py` (140 行)
+- 1 新模板: `.env.example` (39 行)
+- 1 新表: `run_history` (51 → 52)
+- 累计 66 单测全过 (26 v5.1.0 + 4 v5.1.1 + 7 v5.1.3 + 17 intro + 12 v5.1.5)
+- 累计 89 → 102 路由
+- 累计 51 → 52 表
+
+### G. v5.1.5 后续 (v5.2.0 候选)
+
+- 前后端整合: StateModal/MenuPage 嵌入 App.tsx (UI 收口)
+- 真实 LLM 跑 N 局 (scripts/auto_play_v51.py 集成 PLAYTEST_* 走 LLM)
+- 多语言 (英/繁中)
+
+---
+
 ## v5.1.4 — 2026-06-03 (借鉴崇祯 体验收口, 54/54 累计单测)
 
 > **本版本: v5.1.3 (8c3f9f6) → v5.1.4 (4 commit)**
