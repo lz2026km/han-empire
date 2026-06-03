@@ -88,6 +88,7 @@ def stream_issue_decree(
     db: GameDB,
     campaign_id: str,
     on_event: Callable[[str, str], None],
+    cheat_directive: str = "",
 ) -> Dict:
     """SSE 流式推演: 拟诏 → 研判 → 推演 → 月结 → 完成
 
@@ -95,11 +96,29 @@ def stream_issue_decree(
         kind: 'stage' | 'thinking' | 'text' | 'done' | 'error'
         content: 该类型内容
 
+    cheat_directive: v5.1.1 P1-1 天命控制台强制结算项 (M# 仿点)
+        非空时拼到本期 narrative 前, 标 CHEAT_NARRATIVE_PREFIX, 强制
+        LLM/规则把它当既成事实. 一次性, 不持久化.
+
     返回: {'decree': ..., 'report': ..., 'state': ...}
     """
     # ---- 阶段 1: 拟诏 ----
     on_event('stage', STAGES[0][0])
     on_event('thinking', f'📋 准备: 草拟本月诏书 (公元{state.year}年{state.period}月)\n')
+
+    # v5.1.1 P1-1: 注入 cheat_directive 到 narrative (若非空)
+    if cheat_directive and cheat_directive.strip():
+        from han_sim.decree import CHEAT_NARRATIVE_PREFIX
+        cheat_block = CHEAT_NARRATIVE_PREFIX + cheat_directive.strip() + "\n\n"
+        on_event('thinking', f'⚡ 天命控制台: 强制结算项已挂载 ({len(cheat_directive)} 字)\n')
+        # cheat_directive 通过 tlog 记入状态, 一次性
+        try:
+            from han_sim.token_stats import tlog
+            tlog(f"[CHEAT] 强制结算项注入 ({len(cheat_directive)}字): {cheat_directive[:200]}")
+        except Exception:
+            pass
+    else:
+        cheat_block = ""
 
     # 收集 confirmed 草案
     directives = []
@@ -116,7 +135,7 @@ def stream_issue_decree(
     if not directives:
         on_event('stage', STAGES[4][0])
         on_event('thinking', '⚠️ 本月无待颁草案\n')
-        on_event('text', '本月无待颁诏书, 天下静默。')
+        on_event('text', cheat_block + '本月无待颁诏书, 天下静默。')
 
     on_event('thinking', f'   ✓ 找到 {len(directives)} 道待颁指令\n')
 
@@ -151,6 +170,9 @@ def stream_issue_decree(
             full_text = evidence_intro + full_text
     except Exception as e:
         full_text = f'奉天承运, 皇帝诏曰: {intent}。布告天下, 咸使闻知。'
+
+    # v5.1.1 P1-1: cheat_directive 拼在最前 (最高优先级)
+    full_text = cheat_block + full_text
 
     on_event('text', full_text)
 

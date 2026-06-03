@@ -1587,6 +1587,8 @@ def api_issue_decree_stream():
 
     data = request.get_json() or {}
     campaign_id = data.get('campaign_id', '')
+    # v5.1.1 P1-1: 天命控制台 cheat_directive 透传 (一次性, 不持久化)
+    cheat_directive = (data.get('cheat') or '').strip()
 
     if campaign_id not in GAMES:
         try:
@@ -1605,7 +1607,10 @@ def api_issue_decree_stream():
 
     def worker():
         try:
-            result = stream_issue_decree(state, db, campaign_id, on_event)
+            result = stream_issue_decree(
+                state, db, campaign_id, on_event,
+                cheat_directive=cheat_directive,
+            )
             ev_queue.put(('__done__', result))
         except Exception as e:
             ev_queue.put(('__error__', str(e)))
