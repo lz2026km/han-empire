@@ -21,6 +21,7 @@ import { EdictModal } from './components/EdictModal'
 // v5.0 P0-3: Token 实时仪表盘
 import { TokenStatsWidget } from './components/TokenStatsWidget'
 import { SettlementLock } from './components/SettlementLock'
+import { ReportModal } from './components/ReportModal'
 import { SecretOrdersModal } from './components/SecretOrdersModal'
 import { CheatConsole } from './components/CheatConsole'
 import { GrandMap } from './components/GrandMap'
@@ -62,6 +63,27 @@ export default function App() {
   const [showSecretOrders, setShowSecretOrders] = useState(false)
   const [showGrandMap, setShowGrandMap] = useState(false)
   const [secretOrders, setSecretOrders] = useState<SecretOrder[]>([])
+  // v5.1.1 P1-3: 月初邸报弹窗
+  const [showReportModal, setShowReportModal] = useState(false)
+  const [latestGazette, setLatestGazette] = useState<any>(null)
+  const [lastGazetteTurn, setLastGazetteTurn] = useState<number>(-1)
+
+  // v5.1.1 P1-3: 检测 gameState.turn 变化 → 拉 /api/gazette → 弹 ReportModal
+  useEffect(() => {
+    const currentTurn = gameState?.turn
+    if (!campaignId || currentTurn === undefined || currentTurn === null) return
+    if (currentTurn === lastGazetteTurn) return  // 已弹过
+    api.getGazette(campaignId).then((res) => {
+      const g = res?.gazette
+      if (!g) return
+      // 跳过登基伊始 (turn=0 或 summary 以其开头)
+      if (g.turn === 0) return
+      if (g.report && g.report.trim().startsWith('登基伊始')) return
+      setLatestGazette(g)
+      setLastGazetteTurn(currentTurn)
+      setShowReportModal(true)
+    }).catch(() => {/* 静默 */})
+  }, [gameState?.turn, campaignId, lastGazetteTurn])
 
   const {
     campaignId, gameState, ministers, factions, loading, error, log,
@@ -336,6 +358,13 @@ export default function App() {
         onClose={() => setShowCheatConsole(false)}
         onExecuteCommand={handleExecuteCheat}
         campaignId={campaignId}
+      />
+
+      {/* v5.1.1 P1-3: 月初邸报弹窗 */}
+      <ReportModal
+        open={showReportModal}
+        gazette={latestGazette}
+        onClose={() => setShowReportModal(false)}
       />
 
       {/* Grand Map */}

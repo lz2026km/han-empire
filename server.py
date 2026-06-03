@@ -1835,6 +1835,59 @@ def api_intro_hints():
     })
 
 
+# --- 6g) /api/gazette (v5.1.1 P1-3: 月初邸报弹窗) ---
+@app.route('/api/gazette', methods=['GET'])
+def api_gazette():
+    """v5.1.1 P1-3: 读 turn_reports 表 (仿 ming_sim /api/menu/status gazette)
+
+    Query params:
+        campaign_id: 战役 ID (必需)
+        turn: 指定 turn (可选, 缺省=最新)
+        recent: 返回最近 N 条 (缺省 0=单条, 12=12条)
+    """
+    from han_sim.paths import user_data_path
+
+    campaign_id = (request.args.get("campaign_id") or "").strip()
+    if not campaign_id:
+        return jsonify({"error": "campaign_id required"}), 400
+
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+
+    try:
+        recent = int(request.args.get("recent", 0))
+    except (ValueError, TypeError):
+        recent = 0
+    try:
+        turn = int(request.args.get("turn", 0))
+    except (ValueError, TypeError):
+        turn = 0
+
+    if recent > 0:
+        # 列表模式
+        items = db.list_recent_reports(limit=recent)
+        return jsonify({
+            "gazettes": items,
+            "total": len(items),
+        })
+    elif turn > 0:
+        # 指定 turn
+        item = db.get_turn_report(turn)
+        if not item:
+            return jsonify({"error": f"no report for turn {turn}"}), 404
+        return jsonify({"gazette": item})
+    else:
+        # 最新一条
+        items = db.list_recent_reports(limit=1)
+        if not items:
+            return jsonify({"error": "no reports yet"}), 404
+        return jsonify({"gazette": items[0]})
+
+
 # --- 6f) /api/legacies (v5.1.0 P0-4: Opening Legacies 开幕负担) ---
 @app.route('/api/legacies', methods=['GET'])
 def api_legacies():

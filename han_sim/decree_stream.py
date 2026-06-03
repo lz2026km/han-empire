@@ -224,6 +224,12 @@ def stream_issue_decree(
     except Exception:
         pass
 
+    # v5.1.1 P1-3: 写本月 narrative 到 turn_reports (供月初邸报弹窗)
+    try:
+        db.write_turn_report(state, full_text)
+    except Exception:
+        pass
+
     return {
         'decree': full_text,
         'report': {

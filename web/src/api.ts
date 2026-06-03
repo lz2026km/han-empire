@@ -144,6 +144,14 @@ export const api = {
     request<DecreeResult>(`/campaigns/${id}/decrees/${decreeId}/reject`, { method: 'POST' }),
   nextTurn: (id: string) =>
     request<{ turn: number; year: number; period: number }>(`/campaigns/${id}/next_turn`, { method: 'POST', body: '{}' }),
+  getGazette: (id: string, turn?: number, recent?: number) => {
+    const params = new URLSearchParams({ campaign_id: id })
+    if (turn) params.set('turn', String(turn))
+    if (recent) params.set('recent', String(recent))
+    return request<{ gazette?: any; gazettes?: any[]; total?: number; error?: string }>(
+      `/gazette?${params.toString()}`
+    )
+  },
   saveGame: (save: GameSave) =>
     request<{ ok: boolean }>('/save', { method: 'POST', body: JSON.stringify(save) }),
   saveCampaign: (id: string) =>

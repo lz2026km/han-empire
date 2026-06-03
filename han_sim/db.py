@@ -1242,6 +1242,56 @@ class GameDB:
         )
         self.conn.commit()
 
+    def write_turn_report(self, state: "GameState", report: str) -> None:
+        """v5.1.1 P1-3: 把本月 LLM 生成的 narrative 写到 turn_reports 表.
+
+        同一 (campaign, turn) 覆盖写. 供月初邸报弹窗 API 读取.
+        """
+        if not report:
+            return
+        text = str(report)[:8000]  # 8KB 上限, 防爆
+        self.conn.execute(
+            """INSERT INTO turn_reports (turn, year, period, report)
+               VALUES (?, ?, ?, ?)
+               ON CONFLICT(turn) DO UPDATE SET
+                   year=excluded.year, period=excluded.period,
+                   report=excluded.report""",
+            (state.turn, state.year, state.period, text),
+        )
+        self.conn.commit()
+
+    def get_turn_report(self, turn: int) -> Dict:
+        """v5.1.1 P1-3: 读指定 turn 的 report, 无则返空 dict."""
+        row = self.conn.execute(
+            "SELECT turn, year, period, report, created_at FROM turn_reports WHERE turn=?",
+            (turn,),
+        ).fetchone()
+        if not row:
+            return {}
+        d = dict(row)
+        d["turn"] = int(d["turn"])
+        d["year"] = int(d["year"])
+        d["period"] = int(d["period"])
+        return d
+
+    def list_recent_reports(self, limit: int = 12) -> List[Dict]:
+        """v5.1.1 P1-3: 读最近 N 个 turn 的 report (倒序)."""
+        rows = self.conn.execute(
+            "SELECT turn, year, period, report, created_at FROM turn_reports "
+            "ORDER BY turn DESC LIMIT ?",
+            (int(limit),),
+        ).fetchall()
+        return [
+            {
+                "turn": int(r["turn"]),
+                "year": int(r["year"]),
+                "period": int(r["period"]),
+                "report": r["report"],
+                "created_at": r["created_at"],
+            }
+            for r in rows
+        ]
+
     def seed_opening_crises(self, state: "GameState") -> None:
         """新档开局时从 opening_crises.json 植入初始危机事项。"""
         if self.table_has_rows("issues"):
