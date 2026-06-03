@@ -81,6 +81,9 @@ export default function App() {
 
   // v5.2.0 P6-2: 国势详情弹窗 (按 S 键 / OverviewTab 按钮)
   const [showStateModal, setShowStateModal] = useState(false)
+  // v5.2.0 P6-4: Header 4 入口对应 Modal state (Settings/Help 在 6.7/6.9 实现)
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [showHelpModal, setShowHelpModal] = useState(false)
 
   // v5.1.1 P1-3: 检测 gameState.turn 变化 → 拉 /api/gazette → 弹 ReportModal
   useEffect(() => {
@@ -161,6 +164,30 @@ export default function App() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [campaignId])
+
+  // v5.2.0 P6-4: ? 键弹 HelpModal / Esc 游戏中返回主菜单
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tgt = e.target as HTMLElement
+      const inInput = tgt && (tgt.tagName === 'INPUT' || tgt.tagName === 'TEXTAREA')
+      if (e.key === '?' && !inInput) {
+        setShowHelpModal(true)
+        return
+      }
+      if (e.key === 'Escape' && campaignId && !showStateModal && !showHistoryModal
+          && !showExtractionModal && !showReportModal && !showClosedModal
+          && !showEdictModal && !showChatModal && !showCheatConsole
+          && !showSecretOrders && !showGrandMap && !showSettingsModal
+          && !showHelpModal && !inInput) {
+        // Esc 在游戏中 → 返回主菜单
+        returnToMenu()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [campaignId, returnToMenu, showStateModal, showHistoryModal, showExtractionModal,
+      showReportModal, showClosedModal, showEdictModal, showChatModal, showCheatConsole,
+      showSecretOrders, showGrandMap, showSettingsModal, showHelpModal])
 
   const {
     campaignId, gameState, ministers, factions, loading, error, log,
@@ -252,6 +279,9 @@ export default function App() {
         gameState={gameState}
         onSave={saveGame}
         onReturnToMenu={returnToMenu}
+        onOpenStateModal={() => setShowStateModal(true)}
+        onOpenSettingsModal={() => setShowSettingsModal(true)}
+        onOpenHelpModal={() => setShowHelpModal(true)}
         theme={theme}
         season={season}
         onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -460,6 +490,32 @@ export default function App() {
         factions={factions}
         onClose={() => setShowStateModal(false)}
       />
+
+      {/* v5.2.0 P6-4: 设置 Modal (6.7 实现) */}
+      {showSettingsModal && (
+        <div className="modal-overlay" onClick={() => setShowSettingsModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal__title">设置</div>
+            <p style={{ color: 'var(--color-text-secondary)' }}>v5.2.0 P6-7 任务实现 (主题/季节/音量/快捷键)</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '14px' }}>
+              <button type="button" className="btn" onClick={() => setShowSettingsModal(false)}>关闭</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* v5.2.0 P6-4: 帮助 Modal (6.9 实现) */}
+      {showHelpModal && (
+        <div className="modal-overlay" onClick={() => setShowHelpModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal__title">帮助</div>
+            <p style={{ color: 'var(--color-text-secondary)' }}>v5.2.0 P6-9 任务实现 (玩法/快捷键/致谢)</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '14px' }}>
+              <button type="button" className="btn" onClick={() => setShowHelpModal(false)}>关闭</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Grand Map */}
       {/* v2.0.0 P0-B2: provinces 为空数组时 onProvinceClick 应可空调用 */}

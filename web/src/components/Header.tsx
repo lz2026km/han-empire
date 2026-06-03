@@ -1,15 +1,21 @@
 /* =============================================
    Header - Top status bar
    v2.1.0 Phase 3.3: 加主题切换 + 季节指示按钮
+   v5.2.0 P6-4: 加 4 入口按钮 (主菜单/国势/设置/帮助)
    ============================================= */
+import { Menu, BarChart3, Settings, HelpCircle } from 'lucide-react'
 import type { GameState } from '../types'
 
 interface Props {
   gameState: GameState | null
   onSave?: () => void
   onNewGame?: () => void
-  // v5.2.0 P6-1: 游戏中按"新朝"返回主菜单
+  // v5.2.0 P6-1: 游戏中按"主菜单"返回主菜单
   onReturnToMenu?: () => void
+  // v5.2.0 P6-4: 4 入口 (国势/设置/帮助/关于) — 弹对应 Modal
+  onOpenStateModal?: () => void
+  onOpenSettingsModal?: () => void
+  onOpenHelpModal?: () => void
   theme?: 'light' | 'dark'
   season?: 'spring' | 'summer' | 'autumn' | 'winter'
   onToggleTheme?: () => void
@@ -30,7 +36,7 @@ const SEASON_ICON: Record<string, string> = {
   winter: '冬️',
 }
 
-export function Header({ gameState, onSave, onNewGame, onReturnToMenu, theme, season, onToggleTheme, onCycleSeason }: Props) {
+export function Header({ gameState, onSave, onNewGame, onReturnToMenu, onOpenStateModal, onOpenSettingsModal, onOpenHelpModal, theme, season, onToggleTheme, onCycleSeason }: Props) {
   return (
     <header className="app-header">
       <h1 className="app-header__title">战斗️ 汉献帝之末路</h1>
@@ -81,7 +87,24 @@ export function Header({ gameState, onSave, onNewGame, onReturnToMenu, theme, se
             {theme === 'dark' ? '夏️' : '夜'}
           </button>
         )}
-        <button type="button" className="btn" onClick={onReturnToMenu || onNewGame}>主菜单</button>
+        <button type="button" className="btn" onClick={onReturnToMenu || onNewGame} data-tooltip="主菜单 (Esc)">
+          <Menu size={14} /> 主菜单
+        </button>
+        {gameState && onOpenStateModal && (
+          <button type="button" className="btn" onClick={onOpenStateModal} data-tooltip="国势详情 (S)">
+            <BarChart3 size={14} /> 国势
+          </button>
+        )}
+        {onOpenSettingsModal && (
+          <button type="button" className="btn" onClick={onOpenSettingsModal} data-tooltip="设置">
+            <Settings size={14} /> 设置
+          </button>
+        )}
+        {onOpenHelpModal && (
+          <button type="button" className="btn" onClick={onOpenHelpModal} data-tooltip="帮助 (?)">
+            <HelpCircle size={14} /> 帮助
+          </button>
+        )}
         {gameState && (
           <button type="button" className="btn btn--gold" onClick={onSave}>存储 存档</button>
         )}
