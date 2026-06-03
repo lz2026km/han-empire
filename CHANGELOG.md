@@ -4,6 +4,60 @@
 
 ---
 
+## v5.1.3 — 2026-06-03 (借鉴崇祯 后宫嫔妃, 54/54 累计单测)
+
+> **本版本: v5.1.2 (7d25d4c) → v5.1.3 (2 commit)**
+> **7 v5.1.3 单测全过 / 0 借鉴 emoji / 0 回归**
+
+### A. 任务 3.1: 嫔妃调教持久化
+
+仿 ming_sim HaremDrawer 调教历史面板。
+- `consort_traits` 表 (v0.4 已存在): extra_skills + extra_traits (JSON 数组)
+- `db.cultivate_consort` (v0.4 已存在): 单次调教落库, 旧记录不丢
+- `consort_events` 表 (v0.4 已存在): 流水记录 (调教/召见)
+- `db.list_consort_events` (v0.4 已存在): 按 turn DESC
+- 新端点 `GET /api/campaigns/<id>/consorts/<consort_id>/memories` (4 合一):
+  - `portrait` (从 consorts.json 画像)
+  - `permanent_traits` (从 consort_traits 表)
+  - `learned_skills` / `personality_changes` (JSON 解析)
+  - `events` (从 consort_events 流水)
+- 4 单测 (test_consort_train_v513.py): cultivate 落库 / 多次累加 / get_consort_traits 字段 / list_consort_events 倒序
+
+### B. 任务 3.2: 嫔妃立绘池 + 自定义上传
+
+仿 ming_sim HaremDrawer 立绘 + 自定义上传。
+- 15 张 consort_pool_*.png (v4.0 已生成) + 16 张 minister + 16 张 emperor 池
+- 上传端点 `POST/DELETE/GET /api/portraits/custom/<name>` (v0.4-v4.0 已存在)
+- 8MB 上限 (MIMAX_TYPE 限制) + 路径清洗 (防穿越)
+- 3 单测 (test_portrait_upload_v513.py): save+list+delete 周期 / 不存在返 False / 路径清洗
+
+### C. 端点增量
+
+99 v5.1.2 → 100 v5.1.3 (+1):
+- `/api/campaigns/<id>/consorts/<consort_id>/memories` (P3-1)
+
+### D. 单测增量
+
+47 v5.1.2 → 54 v5.1.3 (+7):
+- test_consort_train_v513.py: 4 (cultivate 落库/累加/traits 字段/events 倒序)
+- test_portrait_upload_v513.py: 3 (周期/不存在/清洗)
+
+### E. 仓库状态
+
+- HEAD: `41cf649` (v5.1.3 task 3.2)
+- 2 commit (任务 3.1-3.2) + 1 acceptance
+- 2 文件新增: test_consort_train_v513.py + test_portrait_upload_v513.py
+- 累计 54 单测全过 (26 v5.1.0 + 4 v5.1.1 + 7 v5.1.3 + 17 intro)
+- 累计 89 → 100 路由
+- 累计 51 → 51 表 (无新增)
+
+### F. v5.1.3 没做的 (v5.1.4 起继续)
+
+- v5.1.4: 菜单页 + CSS 整合 + 国势详情弹窗
+- v5.1.5: 多周目统计 + .env 模板 + auto_play.py
+
+---
+
 ## v5.1.2 — 2026-06-03 (借鉴崇祯 3 项详情弹窗, 47/47 累计单测)
 
 > **本版本: v5.1.1 (578bb28) → v5.1.2 (3 commit)**
