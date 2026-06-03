@@ -4,6 +4,83 @@
 
 ---
 
+## v5.1.2 — 2026-06-03 (借鉴崇祯 3 项详情弹窗, 47/47 累计单测)
+
+> **本版本: v5.1.1 (578bb28) → v5.1.2 (3 commit)**
+> **0 新单测 (前端组件, 视觉回归靠主公 Vite build) / 0 借鉴 emoji / 0 回归**
+
+### A. 任务 2.1: ClosedIssuesModal 关案弹窗
+
+仿 ming_sim ClosedIssuesModal 自动弹。
+- `han_sim/db.py:list_closed_issues_for_turn(turn)` 列本 turn 内结案 issues (含 effect_on_resolve 解析)
+- 新端点 `GET /api/issues/closed?campaign_id=&turn=` (turn 缺省时从 state 取)
+- 新前端 `ClosedIssuesModal.tsx` (126 行):
+  - 3 状态徽章: 已了 (绿) / 崩坏 (红) / 撤销 (灰)
+  - 卡片含 id/标题/状态/T 回合/进度条/stage_text/effects/tags
+  - 暗色背景 + 数字 + 楷体标题混排
+- `App.tsx`: useEffect 检测 turn 变化 → 拉 /api/issues/closed → 延迟 600ms 弹窗 (让 ReportModal 先弹)
+
+### B. 任务 2.2: HistoryModal 回合回看
+
+仿 ming_sim HistoryModal H 键触发。
+- 新端点 `GET /api/history?campaign_id=&limit=20&session_id=`: 3 合一返
+  - `summaries` (从 turn_reports 表)
+  - `decisions` (从 session DecisionLog)
+  - `closed_issues` (从 issues 表, 按 turn 分组)
+- 新前端 `HistoryModal.tsx` (191 行):
+  - 3 Tab: 邸报 / 决策 / 关案 (数字徽章)
+  - Summary: T+日期+字数+pre 文本
+  - Decision: T+类型+action+description+timestamp
+  - Closed: T+#id+状态徽章+title+effect 串
+  - Esc 关闭
+- `App.tsx`: H 键 → 拉 /api/history → 弹窗
+
+### C. 任务 2.3: ExtractionModal 提取透明
+
+仿 ming_sim ExtractionModal E 键触发。
+- `han_sim/db.py:write_extraction` / `get_extraction` / `list_recent_extractions` 3 方法
+- 新端点 `GET /api/extraction?campaign_id=&turn=&recent=`: 3 模式
+  - 单条: 4 档房 (internal/issues/military_external/personnel_secret) prompt 路径 + output
+  - 最新一条: 同上但 turn 缺省
+  - recent N: 元信息列表
+- 新前端 `ExtractionModal.tsx` (165 行):
+  - 4 档房 Tab (内政/局势/军外/人事)
+  - 每档房 2 折叠区: prompt 模板 (chevron) + 输出 JSON (默认展开)
+  - 描述区显示档房字段 (6+4+4+6 字段)
+  - 输出 320px 滚动 + monospace
+  - 空数据友好提示
+  - Esc 关闭
+- `App.tsx`: E 键 → 拉 /api/extraction → 弹窗
+
+### D. 端点增量
+
+96 v5.1.1 → 99 v5.1.2 (+3):
+- `/api/issues/closed` (P2-1)
+- `/api/history` (P2-2)
+- `/api/extraction` (P2-3)
+
+### E. 单测增量
+
+47 v5.1.1 → 47 v5.1.2 (+0):
+- 任务 2.1/2.2/2.3 全前端组件, 视觉回归靠主公 Vite build
+
+### F. 仓库状态
+
+- HEAD: `025ce84` (v5.1.2 task 2.3)
+- 3 commit (任务 2.1-2.3) + 1 acceptance
+- 3 文件新增: ClosedIssuesModal / HistoryModal / ExtractionModal
+- 累计 47 单测全过 (26 v5.1.0 + 4 v5.1.1 + 17 intro)
+- 累计 89 → 99 路由
+- 累计 51 → 51 表 (无新增)
+
+### G. v5.1.2 没做的 (v5.1.3 起继续)
+
+- v5.1.3: 嫔妃调教持久化 + 立绘上传
+- v5.1.4: 菜单页 + CSS 整合 + 国势详情弹窗
+- v5.1.5: 多周目统计 + .env 模板 + auto_play.py
+
+---
+
 ## v5.1.1 — 2026-06-03 (借鉴崇祯 3 项体验升级, 4 单测过, 47/47 累计单测)
 
 > **本版本: v5.1.0 (c1d2a9c) → v5.1.1 (3 commit)**
