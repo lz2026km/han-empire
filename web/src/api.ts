@@ -159,6 +159,14 @@ export const api = {
       `/issues/closed?${params.toString()}`
     )
   },
+  getHistory: (id: string, limit?: number, sessionId?: string) => {
+    const params = new URLSearchParams({ campaign_id: id })
+    if (limit) params.set('limit', String(limit))
+    if (sessionId) params.set('session_id', sessionId)
+    return request<{ summaries: any[]; decisions: any[]; closed_issues: any[]; current_turn: number; error?: string }>(
+      `/history?${params.toString()}`
+    )
+  },
   saveGame: (save: GameSave) =>
     request<{ ok: boolean }>('/save', { method: 'POST', body: JSON.stringify(save) }),
   saveCampaign: (id: string) =>

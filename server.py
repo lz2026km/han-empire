@@ -1835,6 +1835,75 @@ def api_intro_hints():
     })
 
 
+# --- 6i) /api/history (v5.1.2 P2-2: HistoryModal 回合回看) ---
+@app.route('/api/history', methods=['GET'])
+def api_history():
+    """v5.1.2 P2-2: 回合历史 (Summary + Decisions + Closed 三合一)
+
+    Query params:
+        campaign_id: 战役 ID (必需)
+        limit: 最近 N 回合 (默认 20)
+    """
+    from han_sim.paths import user_data_path
+
+    campaign_id = (request.args.get("campaign_id") or "").strip()
+    if not campaign_id:
+        return jsonify({"error": "campaign_id required"}), 400
+
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+
+    try:
+        limit = int(request.args.get("limit", 20))
+    except (ValueError, TypeError):
+        limit = 20
+
+    # 1) Summaries (从 turn_reports 表)
+    summaries = db.list_recent_reports(limit=limit)
+
+    # 2) Decisions (从 session DecisionLog)
+    session_id = request.args.get("session_id", "default")
+    log = _get_decision_log(session_id)
+    decision_entries = [e.__dict__ for e in log.get_entries()]
+    # 倒序按 turn
+    decision_entries.sort(key=lambda e: e.get("turn", 0), reverse=True)
+    decision_entries = decision_entries[:limit]
+
+    # 3) Closed issues (每个 turn 一条)
+    state = db.load_state()
+    closed_by_turn = []
+    for s in summaries:
+        turn = int(s.get("turn", 0))
+        items = db.list_closed_issues_for_turn(turn)
+        for it in items:
+            closed_by_turn.append({
+                "turn": turn,
+                "year": int(s.get("year", 0)),
+                "period": int(s.get("period", 0)),
+                "id": int(it.get("id", 0)),
+                "title": it.get("title", ""),
+                "status": it.get("status", "resolved"),
+                "kind": it.get("kind", "situation"),
+                "effect_on_resolve": it.get("effect_on_resolve", {}),
+            })
+    closed_by_turn.sort(key=lambda x: x.get("turn", 0), reverse=True)
+    closed_by_turn = closed_by_turn[:limit * 2]
+
+    return jsonify({
+        "campaign_id": campaign_id,
+        "limit": limit,
+        "current_turn": state.turn if state else 0,
+        "summaries": summaries,
+        "decisions": decision_entries,
+        "closed_issues": closed_by_turn,
+        "stats": log.get_stats() if log else {},
+    })
+
+
 # --- 6h) /api/issues/closed (v5.1.2 P2-1: ClosedIssuesModal 关案弹窗) ---
 @app.route('/api/issues/closed', methods=['GET'])
 def api_issues_closed():

@@ -23,6 +23,7 @@ import { TokenStatsWidget } from './components/TokenStatsWidget'
 import { SettlementLock } from './components/SettlementLock'
 import { ReportModal } from './components/ReportModal'
 import { ClosedIssuesModal } from './components/ClosedIssuesModal'
+import { HistoryModal } from './components/HistoryModal'
 import { SecretOrdersModal } from './components/SecretOrdersModal'
 import { CheatConsole } from './components/CheatConsole'
 import { GrandMap } from './components/GrandMap'
@@ -74,6 +75,10 @@ export default function App() {
   const [closedIssues, setClosedIssues] = useState<any[]>([])
   const [lastClosedTurn, setLastClosedTurn] = useState<number>(-1)
 
+  // v5.1.2 P2-2: HistoryModal 手动触发 (按 H 键)
+  const [showHistoryModal, setShowHistoryModal] = useState(false)
+  const [historyData, setHistoryData] = useState<any>(null)
+
   // v5.1.1 P1-3: 检测 gameState.turn 变化 → 拉 /api/gazette → 弹 ReportModal
   useEffect(() => {
     const currentTurn = gameState?.turn
@@ -106,6 +111,22 @@ export default function App() {
       }
     }).catch(() => {/* 静默 */})
   }, [gameState?.turn, campaignId, lastClosedTurn])
+
+  // v5.1.2 P2-2: H 键弹 HistoryModal
+  useEffect(() => {
+    if (!campaignId) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'h' || e.key === 'H') {
+        if (showHistoryModal) return
+        api.getHistory(campaignId, 20).then((d) => {
+          setHistoryData(d)
+          setShowHistoryModal(true)
+        }).catch(() => {/* 静默 */})
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [campaignId, showHistoryModal])
 
   const {
     campaignId, gameState, ministers, factions, loading, error, log,
@@ -394,6 +415,13 @@ export default function App() {
         open={showClosedModal}
         issues={closedIssues}
         onClose={() => setShowClosedModal(false)}
+      />
+
+      {/* v5.1.2 P2-2: 回合历史 (H 键触发) */}
+      <HistoryModal
+        open={showHistoryModal}
+        data={historyData}
+        onClose={() => setShowHistoryModal(false)}
       />
 
       {/* Grand Map */}
