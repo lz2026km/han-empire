@@ -22,6 +22,7 @@ import { EdictModal } from './components/EdictModal'
 import { TokenStatsWidget } from './components/TokenStatsWidget'
 import { SettlementLock } from './components/SettlementLock'
 import { ReportModal } from './components/ReportModal'
+import { ClosedIssuesModal } from './components/ClosedIssuesModal'
 import { SecretOrdersModal } from './components/SecretOrdersModal'
 import { CheatConsole } from './components/CheatConsole'
 import { GrandMap } from './components/GrandMap'
@@ -68,6 +69,11 @@ export default function App() {
   const [latestGazette, setLatestGazette] = useState<any>(null)
   const [lastGazetteTurn, setLastGazetteTurn] = useState<number>(-1)
 
+  // v5.1.2 P2-1: 关案弹窗
+  const [showClosedModal, setShowClosedModal] = useState(false)
+  const [closedIssues, setClosedIssues] = useState<any[]>([])
+  const [lastClosedTurn, setLastClosedTurn] = useState<number>(-1)
+
   // v5.1.1 P1-3: 检测 gameState.turn 变化 → 拉 /api/gazette → 弹 ReportModal
   useEffect(() => {
     const currentTurn = gameState?.turn
@@ -84,6 +90,22 @@ export default function App() {
       setShowReportModal(true)
     }).catch(() => {/* 静默 */})
   }, [gameState?.turn, campaignId, lastGazetteTurn])
+
+  // v5.1.2 P2-1: 检测 gameState.turn 变化 → 拉 /api/issues/closed → 弹 ClosedIssuesModal
+  useEffect(() => {
+    const currentTurn = gameState?.turn
+    if (!campaignId || currentTurn === undefined || currentTurn === null) return
+    if (currentTurn === lastClosedTurn) return  // 已弹过
+    api.getClosedIssues(campaignId, currentTurn).then((res) => {
+      const items = res?.issues || []
+      setLastClosedTurn(currentTurn)
+      if (items.length > 0) {
+        setClosedIssues(items)
+        // 延迟 600ms, 让 ReportModal 先弹
+        setTimeout(() => setShowClosedModal(true), 600)
+      }
+    }).catch(() => {/* 静默 */})
+  }, [gameState?.turn, campaignId, lastClosedTurn])
 
   const {
     campaignId, gameState, ministers, factions, loading, error, log,
@@ -365,6 +387,13 @@ export default function App() {
         open={showReportModal}
         gazette={latestGazette}
         onClose={() => setShowReportModal(false)}
+      />
+
+      {/* v5.1.2 P2-1: 关案弹窗 */}
+      <ClosedIssuesModal
+        open={showClosedModal}
+        issues={closedIssues}
+        onClose={() => setShowClosedModal(false)}
       />
 
       {/* Grand Map */}

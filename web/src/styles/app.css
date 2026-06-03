@@ -2370,6 +2370,174 @@ input:focus, select:focus {
   min-height: 320px;
 }
 
+/* v5.1.2 P2-1: ClosedIssuesModal 关案弹窗 (仿 ming_sim ClosedIssuesModal) */
+.closed-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1090;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(8, 12, 8, 0.78);
+  backdrop-filter: blur(4px);
+  padding: 24px;
+}
+.closed-modal {
+  width: min(720px, 100%);
+  max-height: 86vh;
+  background: linear-gradient(180deg, #1c1f1e, #0e1210);
+  border: 1px solid #3a4a3a;
+  border-radius: 8px;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  color: #d8e0d0;
+}
+.closed-modal__titlebar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  background: linear-gradient(90deg, #1a2a1a, #2a3a2a);
+  border-bottom: 1px solid #3a4a3a;
+}
+.closed-modal__title {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'KaiTi', 'STKaiti', serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #c8e6c9;
+}
+.closed-modal__close {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #2a3a2a; border: 1px solid #3a5a3a; color: #c8e6c9;
+  padding: 6px 12px; border-radius: 4px; cursor: pointer;
+  font-size: 12px; font-family: inherit;
+}
+.closed-modal__close:hover { background: #3a5a3a; }
+.closed-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 22px;
+}
+.closed-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6a8a6a;
+  font-size: 14px;
+}
+.closed-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex; flex-direction: column;
+  gap: 14px;
+}
+.closed-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #2a3a2a;
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.closed-item__head {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.closed-item__id {
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-size: 12px;
+  color: #6a8a6a;
+}
+.closed-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 12px; font-size: 11px;
+  font-weight: 600;
+  border: 1px solid;
+}
+.closed-badge--resolved {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80; border-color: #22c55e;
+}
+.closed-badge--failed {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171; border-color: #ef4444;
+}
+.closed-badge--dropped {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1; border-color: #94a3b8;
+}
+.closed-item__title {
+  flex: 1; min-width: 200px;
+  font-family: 'KaiTi', 'STKaiti', serif;
+  font-size: 15px;
+  color: #efe5c8;
+}
+.closed-item__turn {
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-size: 11px;
+  color: #6a8a6a;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.closed-item__stage {
+  font-size: 12px;
+  color: #8aa88a;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+.closed-item__bar {
+  display: flex; align-items: center; gap: 8px;
+  margin: 8px 0;
+}
+.closed-item__bar-label {
+  font-size: 11px;
+  color: #6a8a6a;
+  min-width: 30px;
+}
+.closed-item__bar-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.closed-item__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+  border-radius: 3px;
+}
+.closed-item__bar-value {
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-size: 11px;
+  color: #8aa88a;
+  min-width: 60px;
+  text-align: right;
+}
+.closed-effects {
+  list-style: none;
+  margin: 6px 0;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-size: 12px;
+}
+.closed-effects li {
+  display: inline-block;
+  margin-right: 14px;
+}
+.closed-pos { color: #4ade80; margin-left: 4px; }
+.closed-neg { color: #f87171; margin-left: 4px; }
+.closed-muted { color: #6a8a6a; font-size: 12px; font-style: italic; }
+.closed-tags {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin-top: 8px;
+}
+.closed-tag {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid #2a3a2a;
+  color: #8aa88a;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+}
+
 /* v5.1.1 P1-3: 月初邸报弹窗 (仿 ming_sim ReportModal) */
 .report-modal-overlay {
   position: fixed;

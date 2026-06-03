@@ -152,6 +152,13 @@ export const api = {
       `/gazette?${params.toString()}`
     )
   },
+  getClosedIssues: (id: string, turn?: number) => {
+    const params = new URLSearchParams({ campaign_id: id })
+    if (turn) params.set('turn', String(turn))
+    return request<{ issues: any[]; total: number; turn: number; error?: string }>(
+      `/issues/closed?${params.toString()}`
+    )
+  },
   saveGame: (save: GameSave) =>
     request<{ ok: boolean }>('/save', { method: 'POST', body: JSON.stringify(save) }),
   saveCampaign: (id: string) =>

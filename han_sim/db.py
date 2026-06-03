@@ -2087,9 +2087,38 @@ class GameDB:
 
     def get_issues_by_tag(self, tag: str) -> List[Dict]:
         rows = self.conn.execute(
-            "SELECT * FROM issues WHERE tags LIKE ? ORDER BY id", (f"%{tag}%",)
+            "SELECT * FROM issues WHERE tags LIKE ? ORDER BY id", (f"%{tag}%",),
         ).fetchall()
         return self._rows_to_dicts(rows)
+
+    def list_closed_issues_for_turn(self, turn: int) -> List[Dict]:
+        """v5.1.2 P2-1: 列出本 turn 内结案的事项 (closed_turn == turn).
+
+        用于 ClosedIssuesModal 月末自动弹窗.
+        """
+        rows = self.conn.execute(
+            "SELECT * FROM issues WHERE closed_turn = ? ORDER BY id",
+            (int(turn),),
+        ).fetchall()
+        result = []
+        for r in rows:
+            d = dict(r)
+            d["id"] = int(d["id"])
+            d["origin_turn"] = int(d.get("origin_turn") or 0)
+            d["severity"] = int(d.get("severity") or 0)
+            d["bar_value"] = int(d.get("bar_value") or 0)
+            d["last_advance_turn"] = int(d.get("last_advance_turn") or 0)
+            d["closed_turn"] = int(d.get("closed_turn") or 0)
+            try:
+                d["tags"] = json.loads(d.get("tags") or "[]")
+            except Exception:
+                d["tags"] = []
+            try:
+                d["effect_on_resolve"] = json.loads(d.get("effect_on_resolve") or "{}")
+            except Exception:
+                d["effect_on_resolve"] = {}
+            result.append(d)
+        return result
 
     def get_active_issues_by_kind(self, kind: str) -> List[Dict]:
         """按 kind 筛选进行中的事项。"""

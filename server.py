@@ -1835,6 +1835,48 @@ def api_intro_hints():
     })
 
 
+# --- 6h) /api/issues/closed (v5.1.2 P2-1: ClosedIssuesModal 关案弹窗) ---
+@app.route('/api/issues/closed', methods=['GET'])
+def api_issues_closed():
+    """v5.1.2 P2-1: 列本 turn 内结案的事项 (仿 ming_sim ClosedIssuesModal)
+
+    Query params:
+        campaign_id: 战役 ID (必需)
+        turn: 当前 turn (缺省=state.turn)
+    """
+    from han_sim.paths import user_data_path
+
+    campaign_id = (request.args.get("campaign_id") or "").strip()
+    if not campaign_id:
+        return jsonify({"error": "campaign_id required"}), 400
+
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    from han_sim.db import GameDB
+    db = GameDB(db_path)
+
+    try:
+        turn = int(request.args.get("turn", 0))
+    except (ValueError, TypeError):
+        turn = 0
+    if turn <= 0:
+        # 从 state 拿当前 turn
+        state = db.load_state()
+        turn = state.turn if state else 0
+
+    try:
+        items = db.list_closed_issues_for_turn(turn)
+        return jsonify({
+            "issues": items,
+            "total": len(items),
+            "turn": turn,
+        })
+    except Exception as e:
+        return jsonify({"error": f"closed issues query failed: {e}"}), 500
+
+
 # --- 6g) /api/gazette (v5.1.1 P1-3: 月初邸报弹窗) ---
 @app.route('/api/gazette', methods=['GET'])
 def api_gazette():
