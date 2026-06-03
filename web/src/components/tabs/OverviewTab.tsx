@@ -8,6 +8,8 @@ interface OverviewTabProps {
   factions: any[]
   onNextTurn: () => void
   onSave: () => void
+  // v5.2.0 P6-2: 打开国势详情弹窗
+  onOpenStateModal?: () => void
 }
 
 function getAuthorityTier(authority: number): string {
@@ -20,7 +22,7 @@ function getAuthorityTier(authority: number): string {
   return '待宰羔羊'
 }
 
-export function OverviewTab({ gameState, ministers, factions, onNextTurn, onSave }: OverviewTabProps) {
+export function OverviewTab({ gameState, ministers, factions, onNextTurn, onSave, onOpenStateModal }: OverviewTabProps) {
   if (!gameState) return null
   return (
     <div className="fade-in">
@@ -28,6 +30,13 @@ export function OverviewTab({ gameState, ministers, factions, onNextTurn, onSave
         <button type="button" className="btn btn--primary" onClick={onNextTurn}>下️ 下一个月</button>
         {/* v2.0.0 P0-B1: 存档按钮接 saveGame */}
         <button type="button" className="btn btn--gold" onClick={onSave}>存储 存档</button>
+        {/* v5.2.0 P6-2: 国势详情弹窗按钮 (S 键亦可触发) */}
+        {onOpenStateModal && (
+          <button type="button" className="btn" onClick={onOpenStateModal}>
+            国势详情
+            <kbd className="tab__kbd" style={{ marginLeft: '6px' }}>S</kbd>
+          </button>
+        )}
       </div>
 
       <div className="grid-3" style={{ marginBottom: '20px' }}>

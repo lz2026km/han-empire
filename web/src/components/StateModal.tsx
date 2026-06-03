@@ -17,7 +17,8 @@ interface BudgetAccount {
 interface StateModalProps {
   open: boolean
   gameState: any
-  budget: { 汉室库: BudgetAccount; 内库: BudgetAccount } | null
+  // v5.2.0 P6-2: budget 改为可选 (不传则从 gameState.metrics["汉室库"/"内库"] 读)
+  budget?: { 汉室库: BudgetAccount; 内库: BudgetAccount } | null
   factions?: any[]
   regions?: any[]
   armies?: any[]
@@ -72,47 +73,69 @@ export function StateModal({ open, gameState, budget, factions, regions, armies,
   }
 
   const renderBudget = () => {
-    if (!budget) return <div className="state-empty">财政数据加载中...</div>
+    // v5.2.0 P6-2: 优先用 budget prop, 否则从 gameState.metrics 合成 (单数字 fallback)
+    const effBudget = budget || (gameState?.metrics ? {
+      汉室库: {
+        balance: Number(gameState.metrics['汉室库'] || 0),
+        net: 0, income_total: 0, expense_total: 0,
+        income: [], expense: [],
+      },
+      内库: {
+        balance: Number(gameState.metrics['内库'] || 0),
+        net: 0, income_total: 0, expense_total: 0,
+        income: [], expense: [],
+      },
+    } : null)
+    if (!effBudget) return <div className="state-empty">财政数据加载中...</div>
     const renderAccount = (label: string, acc: BudgetAccount | undefined) => {
       if (!acc) return null
+      const detail = acc.income_total || acc.expense_total
       return (
         <div className="state-account">
           <h4>{label}</h4>
           <div className="state-account__balance">{formatMoney(acc.balance)}</div>
-          <div className="state-account__net" style={{ color: acc.net >= 0 ? '#4ade80' : '#f87171' }}>
-            月净: {acc.net > 0 ? '+' : ''}{formatMoney(acc.net)}
-          </div>
-          <div className="state-account__detail">
-            <div className="state-account__income">
-              <strong>收入 ({acc.income_total})</strong>
-              <ul>
-                {acc.income.map((it, i) => (
-                  <li key={i}>
-                    {it.name}: {formatMoney(it.amount)}
-                    {it.note && <span className="state-account__note"> - {it.note}</span>}
-                  </li>
-                ))}
-              </ul>
+          {detail ? (
+            <div className="state-account__net" style={{ color: acc.net >= 0 ? '#4ade80' : '#f87171' }}>
+              月净: {acc.net > 0 ? '+' : ''}{formatMoney(acc.net)}
             </div>
-            <div className="state-account__expense">
-              <strong>支出 ({acc.expense_total})</strong>
-              <ul>
-                {acc.expense.map((it, i) => (
-                  <li key={i}>
-                    {it.name}: {formatMoney(it.amount)}
-                    {it.note && <span className="state-account__note"> - {it.note}</span>}
-                  </li>
-                ))}
-              </ul>
+          ) : (
+            <div className="state-account__net" style={{ color: 'var(--color-text-muted)' }}>
+              (详细流水需 1 个回合后生成)
             </div>
-          </div>
+          )}
+          {detail ? (
+            <div className="state-account__detail">
+              <div className="state-account__income">
+                <strong>收入 ({acc.income_total})</strong>
+                <ul>
+                  {acc.income.map((it, i) => (
+                    <li key={i}>
+                      {it.name}: {formatMoney(it.amount)}
+                      {it.note && <span className="state-account__note"> - {it.note}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="state-account__expense">
+                <strong>支出 ({acc.expense_total})</strong>
+                <ul>
+                  {acc.expense.map((it, i) => (
+                    <li key={i}>
+                      {it.name}: {formatMoney(it.amount)}
+                      {it.note && <span className="state-account__note"> - {it.note}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ) : null}
         </div>
       )
     }
     return (
       <div className="state-budget">
-        {renderAccount('汉室库 (公帑)', budget.汉室库)}
-        {renderAccount('内库 (私帑)', budget.内库)}
+        {renderAccount('汉室库 (公帑)', effBudget.汉室库)}
+        {renderAccount('内库 (私帑)', effBudget.内库)}
       </div>
     )
   }

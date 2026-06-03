@@ -25,6 +25,8 @@ import { ReportModal } from './components/ReportModal'
 import { ClosedIssuesModal } from './components/ClosedIssuesModal'
 import { HistoryModal } from './components/HistoryModal'
 import { ExtractionModal } from './components/ExtractionModal'
+// v5.2.0 P6-2: 国势详情弹窗 (StateModal)
+import { StateModal } from './components/StateModal'
 import { SecretOrdersModal } from './components/SecretOrdersModal'
 import { CheatConsole } from './components/CheatConsole'
 import { GrandMap } from './components/GrandMap'
@@ -76,6 +78,9 @@ export default function App() {
   // v5.1.2 P2-3: ExtractionModal 手动触发 (按 E 键)
   const [showExtractionModal, setShowExtractionModal] = useState(false)
   const [extractionData, setExtractionData] = useState<any>(null)
+
+  // v5.2.0 P6-2: 国势详情弹窗 (按 S 键 / OverviewTab 按钮)
+  const [showStateModal, setShowStateModal] = useState(false)
 
   // v5.1.1 P1-3: 检测 gameState.turn 变化 → 拉 /api/gazette → 弹 ReportModal
   useEffect(() => {
@@ -141,6 +146,21 @@ export default function App() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [campaignId, showExtractionModal])
+
+  // v5.2.0 P6-2: S 键弹 StateModal (国势详情, 仿 ming_sim)
+  useEffect(() => {
+    if (!campaignId) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 's' || e.key === 'S') {
+        // 不在 input/textarea 中触发
+        const tgt = e.target as HTMLElement
+        if (tgt && (tgt.tagName === 'INPUT' || tgt.tagName === 'TEXTAREA')) return
+        setShowStateModal((v) => !v)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [campaignId])
 
   const {
     campaignId, gameState, ministers, factions, loading, error, log,
@@ -294,7 +314,7 @@ export default function App() {
 
               <SceneTransition key={activeTab} type="fade" duration={400}>
                 {activeTab === 'overview' && (
-                  <OverviewTab gameState={gameState} ministers={ministers} factions={factions} onNextTurn={handleStreamSettlement} onSave={saveGame} />
+                  <OverviewTab gameState={gameState} ministers={ministers} factions={factions} onNextTurn={handleStreamSettlement} onSave={saveGame} onOpenStateModal={() => setShowStateModal(true)} />
                 )}
                 {activeTab === 'decree' && (
                   <DecreeTab gameState={gameState} ministers={ministers} onIssue={issueDecree} />
@@ -430,6 +450,15 @@ export default function App() {
         open={showExtractionModal}
         data={extractionData}
         onClose={() => setShowExtractionModal(false)}
+      />
+
+      {/* v5.2.0 P6-2: 国势详情 (S 键触发 / OverviewTab 按钮) */}
+      <StateModal
+        open={showStateModal}
+        gameState={gameState}
+        ministers={ministers}
+        factions={factions}
+        onClose={() => setShowStateModal(false)}
       />
 
       {/* Grand Map */}
