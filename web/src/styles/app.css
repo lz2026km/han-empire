@@ -4293,3 +4293,25 @@ input:focus, select:focus {
   max-width: 300px;
   text-align: center;
 }
+
+/* v5.5.0+ P8-F: 9 Tab 占位组件 (原 tabs/ 子目录已删, 仅留 stub) */
+.tab-placeholder {
+  padding: var(--space-fluid-5) var(--space-fluid-4);
+  text-align: center;
+  color: var(--color-text-secondary);
+  background: rgba(10, 10, 13, 0.4);
+  border: 1px dashed var(--color-border);
+  border-radius: 8px;
+  margin: var(--space-fluid-4) auto;
+  max-width: var(--modal-md);
+}
+.tab-placeholder h2 {
+  color: var(--color-gold);
+  font-size: var(--fs-fluid-lg);
+  margin-bottom: var(--space-fluid-3);
+}
+.tab-placeholder p {
+  font-size: var(--fs-fluid-sm);
+  line-height: 1.6;
+  margin: var(--space-fluid-2) 0;
+}

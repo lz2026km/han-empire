@@ -18,6 +18,9 @@ cinematic lighting, no text, no watermark, ultra-detailed'
   python scripts/gen_images_v52.py --only liuxie_emperor  # 只跑含此串的文件名
   python scripts/gen_images_v52.py --limit 3   # 只跑前 3 张
   python scripts/gen_images_v52.py --force     # 覆盖已有
+
+⚠ v5.5.0+ P8-E: 跑完后必须跑 scripts/compress_images.py 压缩 (节省 77% 仓库空间)
+   原图 1024x1024 ~400KB -> 压缩后 512x512 ~30KB
 """
 from __future__ import annotations
 

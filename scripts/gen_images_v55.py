@@ -9,12 +9,15 @@
   - 25 small_deco 小装饰 (卷轴端/分隔条/花纹/...)
   - 20 status 状态指示 (loading/success/error/warning/info 4 季节)
   - 15 ranking 品阶 (5 阶 x 3 风格)
-  - 22 misc 杂项 (trophy/coin/jade/scroll/...) 
+  - 22 misc 杂项 (trophy/coin/jade/scroll/...)
   - 12 扩展 ending 备用 (1:1)
 
 合计 208 张
 
 风格: 与 v5.2.0/v5.4.0 保持一致 (水墨 + 赭金 + 朱砂 + 翡翠 + 灰蓝)
+
+⚠ v5.5.0+ P8-E: 跑完后必须跑 scripts/compress_images.py 压缩 (节省 77% 仓库空间)
+   原图 1024x1024 ~400KB -> 压缩后 512x512 ~30KB (UI 元素足够清晰)
 
 用法:
   export MINIMAX_API_KEY=sk-xxx
@@ -23,6 +26,10 @@
   python scripts/gen_images_v55.py --limit 50   # 只跑前 50 张
   python scripts/gen_images_v55.py --force     # 覆盖已有
   python scripts/gen_images_v55.py --dry-run   # 只打印计划
+
+跑完压缩:
+  python scripts/compress_images.py            # 512x512 质量 75
+  python scripts/compress_images.py --max 384 --quality 65  # 更激进
 """
 from __future__ import annotations
 
