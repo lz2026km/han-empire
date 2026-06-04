@@ -2,6 +2,7 @@
    Header - Top status bar
    v2.1.0 Phase 3.3: 加主题切换 + 季节指示按钮
    v5.2.0 P6-4: 加 4 入口按钮 (主菜单/国势/设置/帮助)
+   v5.5.0+ P8-G8: 5 阶品秩图 (rank/rank_*_formal.jpg)
    ============================================= */
 import { Menu, BarChart3, Settings, HelpCircle } from 'lucide-react'
 import type { GameState } from '../types'
@@ -10,9 +11,7 @@ interface Props {
   gameState: GameState | null
   onSave?: () => void
   onNewGame?: () => void
-  // v5.2.0 P6-1: 游戏中按"主菜单"返回主菜单
   onReturnToMenu?: () => void
-  // v5.2.0 P6-4: 4 入口 (国势/设置/帮助/关于) — 弹对应 Modal
   onOpenStateModal?: () => void
   onOpenSettingsModal?: () => void
   onOpenHelpModal?: () => void
@@ -22,24 +21,29 @@ interface Props {
   onCycleSeason?: () => void
 }
 
-// v2.1.0 Phase 3.3: 季节中文名 + emoji
+// v5.5.0+ P8-G8: 5 阶品秩 (rank/rank_*_formal.jpg)
+const RANK_IMG: Record<string, string> = {
+  gong: '/rank/rank_gong_formal.jpg',
+  hou: '/rank/rank_hou_formal.jpg',
+  bo: '/rank/rank_bo_formal.jpg',
+  zi: '/rank/rank_zi_formal.jpg',
+  nan: '/rank/rank_nan_formal.jpg',
+}
+
 const SEASON_LABEL: Record<string, string> = {
   spring: '春',
   summer: '夏',
   autumn: '秋',
   winter: '冬',
 }
-const SEASON_ICON: Record<string, string> = {
-  spring: '春',
-  summer: '夏️',
-  autumn: '秋',
-  winter: '冬️',
-}
 
 export function Header({ gameState, onSave, onNewGame, onReturnToMenu, onOpenStateModal, onOpenSettingsModal, onOpenHelpModal, theme, season, onToggleTheme, onCycleSeason }: Props) {
   return (
     <header className="app-header">
-      <h1 className="app-header__title">战斗️ 汉献帝之末路</h1>
+      <h1 className="app-header__title">
+        <img src={RANK_IMG.gong} alt="" className="rank-icon" style={{ width: 24, height: 24, marginRight: 6 }} />
+        汉献帝之末路
+      </h1>
 
       {gameState && (
         <>
