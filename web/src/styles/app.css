@@ -5,30 +5,45 @@
 /* v5.3.0 P7-fix: 5 dead @import 已移除 (CSS 整合 v5.2.0 P4-2 时移走 4 文件到 archive) */
 
 :root {
-  /* 玄黑 - 主背景 */
-  --color-bg-primary: #0a0a0d;
-  --color-bg-secondary: #111116;
-  --color-bg-tertiary: #1a1a22;
-  --color-bg-card: #141418;
+  /* =============================================
+     v5.6.0 Visual Upgrade — 参考大明·救亡sim 设计系统
+     主题: 明朝宫廷古风 (玄黑底 + 朱红/古金 + 米黄面板)
+     ============================================= */
 
-  /* 朱红 - 强调色 */
-  --color-accent-red: #8b1a1a;
-  --color-accent-red-bright: #c42b2b;
-  --color-accent-red-dim: #5a1111;
+  /* 玄黑 - 主背景 (明朝 HUD 深色调) */
+  --color-bg-primary: #14120f;
+  --color-bg-secondary: #1a1410;
+  --color-bg-tertiary: #272018;
+  --color-bg-card: #1a140d;
 
-  /* 古金 - 点缀色 */
-  --color-gold: #c9a84c;
-  --color-gold-bright: #e8c86d;
-  --color-gold-dim: #8a7034;
+  /* 明朝主色系 (参考大明·救亡sim) */
+  --panel: rgba(239, 222, 177, 0.92);          /* 米黄面板 */
+  --panel-strong: rgba(249, 236, 196, 0.98);   /* 深米黄 */
+  --border: rgba(74, 45, 20, 0.42);            /* 边框 */
+  --gold: #d2a34a;                              /* 金色强调 */
+  --gold-soft: #8a6424;                         /* 暗金 */
+  --red: #8f2f25;                               /* 朱红主色 */
+  --jade: #315d47;                              /* 玉绿 */
+  --blue: #39596a;                              /* 石青 */
+  --paper: #26190f;                             /* 纸张深色 */
+  --muted: #725f42;                             /* 辅助文字 */
+  --ink: #1a1410;                               /* 墨色文字 */
+  --cinnabar: #9e3429;                          /* 硃砂红 */
+  --hud: #272018;                               /* HUD 深色 */
+  --hud-deep: #14120f;                          /* HUD 极深 */
 
-  /* 文字 */
-  --color-text-primary: #e8dcc8;
-  --color-text-secondary: #a89b82;
-  --color-text-muted: #6b5f4f;
-
-  /* 边框 */
-  --color-border: #2a2530;
-  --color-border-gold: #3d3225;
+  /* 兼容旧变量 */
+  --color-accent-red: #8f2f25;
+  --color-accent-red-bright: #c43d2d;
+  --color-accent-red-dim: #5a201a;
+  --color-gold: #d2a34a;
+  --color-gold-bright: #ffe8a0;
+  --color-gold-dim: #8a6424;
+  --color-text-primary: #ffe8a0;
+  --color-text-secondary: #a89060;
+  --color-text-muted: #725f42;
+  --color-border: rgba(74, 45, 20, 0.42);
+  --color-border-gold: rgba(226, 180, 86, 0.28);
 
   /* 派系色 */
   --faction-dong: #8b4513;
@@ -76,13 +91,17 @@
   --leading-normal: 1.5;
   --leading-relaxed: 1.75;
 
-  /* 阴影 - 4 等级 */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
-  --shadow-gold: 0 4px 16px rgba(201, 168, 76, 0.25);
-  --shadow-red: 0 4px 16px rgba(196, 43, 43, 0.25);
+  /* 阴影 - 6 等级 (大明·救亡sim体系) */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.55);
+  /* v5.6: 大明·救亡sim风格全局阴影 */
+  --shadow: 0 22px 54px rgba(24, 18, 11, 0.38);
+  --shadow-gold: 0 8px 24px rgba(210, 163, 74, 0.25);
+  --shadow-red: 0 8px 24px rgba(196, 43, 43, 0.25);
+  /* v5.6: 大明·救亡sim命令图标shadow */
+  --shadow-icon: 0 6px 10px rgba(15, 8, 4, 0.6);
 
   /* v5.3.0 P7-6: z-index 统一 (8 层梯度, 避免遮挡) */
   --z-base: 0;            /* 内容层 */
@@ -208,8 +227,10 @@
   padding: 0;
 }
 
+/* v5.6.0 主体 — 参考大明·救亡sim .game-shell
+   深色沉浸 + 径向高光 + 金色光晕 */
 body {
-  background: var(--color-bg-primary);
+  background: var(--hud-deep);
   color: var(--color-text-primary);
   font-family: var(--font-body);
   font-size: var(--text-base);
@@ -217,7 +238,7 @@ body {
   font-weight: 500;
   min-height: 100vh;
   overflow-x: hidden;
-  /* v3.4 升华: 商业软件级文字渲染 */
+  /* 商业软件级文字渲染 */
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -233,7 +254,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.02em;
 }
 
-/* v3.4 升华: 数字等宽 (商业软件感) */
+/* v5.6: 数字等宽 (大明·救亡sim风格) */
 .numeric, .stat-value, [data-numeric] {
   font-family: var(--font-numeric);
   font-variant-numeric: tabular-nums;
@@ -247,10 +268,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ---- Scrollbar ---- */
+/* v5.6: 大明·救亡sim风格滚动条 */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--color-bg-secondary); }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-gold-dim); }
+::-webkit-scrollbar-track { background: var(--hud); }
+::-webkit-scrollbar-thumb { background: var(--gold-soft); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
 /* ---- Header ---- */
 .app-header {
@@ -374,66 +396,115 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ---- Buttons ---- */
+/* =============================================
+   v5.6.0 按钮系统 — 参考大明·救亡sim
+   大话西游风格: 渐变 + 金边 + hover浮起
+   ============================================= */
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-  font-family: var(--font-main);
+  padding: 8px 18px;
+  border: 1px solid rgba(226, 180, 86, 0.38);
+  border-radius: 4px;
+  /* v5.6: 明朝按钮渐变 (大明·救亡sim风格) */
+  background: linear-gradient(180deg, #3a3329, #272018);
+  color: #ffe4b0;
+  font-family: var(--font-display);
   font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  /* v5.6: 4属性独立transition (大明·救亡sim: translateY + shadow) */
+  transition: background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .btn:hover {
-  background: var(--color-accent-red-dim);
-  border-color: var(--color-gold-dim);
+  /* v5.6: hover上浮大明·救亡sim风格 */
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(24, 18, 11, 0.38);
+  background: linear-gradient(180deg, #4a3d30, #352a1e);
+  border-color: rgba(226, 180, 86, 0.55);
 }
 
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* v5.6: 主按钮 — 朱红渐变 (大明·救亡sim .primary-action) */
 .btn--primary {
-  background: var(--color-accent-red);
-  border-color: var(--color-accent-red-bright);
-  color: var(--color-gold-bright);
+  border-color: rgba(226, 180, 86, 0.38);
+  background:
+    linear-gradient(90deg, rgba(255, 225, 143, 0.16), transparent 34%),
+    linear-gradient(180deg, #9c392c, #561f19);
+  color: #ffe4b0;
+  box-shadow: 0 22px 54px rgba(24, 18, 11, 0.38);
+  font-family: var(--font-display);
+  font-weight: 700;
+  min-height: 38px;
 }
 
 .btn--primary:hover {
-  background: var(--color-accent-red-bright);
+  transform: translateY(-1px);
+  box-shadow: 0 30px 86px rgba(0, 0, 0, 0.56);
+  background:
+    linear-gradient(90deg, rgba(255, 225, 143, 0.2), transparent 34%),
+    linear-gradient(180deg, #b2402f, #6a261d);
+  border-color: rgba(226, 180, 86, 0.55);
 }
 
+/* v5.6: 金色按钮 (大明·救亡sim .secondary-action变体) */
 .btn--gold {
-  background: var(--color-gold-dim);
-  border-color: var(--color-gold);
-  color: var(--color-gold-bright);
+  border-color: rgba(226, 180, 86, 0.45);
+  background:
+    linear-gradient(90deg, rgba(255, 225, 143, 0.2), transparent 34%),
+    linear-gradient(180deg, #b0802a, #6a5018);
+  color: #ffe8a0;
+  box-shadow: 0 4px 14px rgba(210, 163, 74, 0.2), 0 22px 54px rgba(24, 18, 11, 0.3);
 }
 
 .btn--gold:hover {
-  background: var(--color-gold);
-  color: var(--color-bg-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(210, 163, 74, 0.3), 0 30px 86px rgba(0, 0, 0, 0.4);
+  background:
+    linear-gradient(90deg, rgba(255, 225, 143, 0.25), transparent 34%),
+    linear-gradient(180deg, #d2a34a, #8a6424);
 }
 
-/* v5.2.0 P6-5: ConfirmDialog 危险按钮 (红色实心) */
+/* v5.6: 危险按钮 — 暗红 (大明·救亡sim .command-badge) */
 .btn--danger {
-  background: var(--color-accent-red);
-  color: #fff;
-  border: 1px solid var(--color-accent-red-bright);
+  border: 1px solid rgba(255, 238, 190, 0.55);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #c0432f, #7c241b);
+  color: #fff2cf;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
+  min-height: 38px;
 }
+
 .btn--danger:hover {
-  background: var(--color-accent-red-bright);
+  background: linear-gradient(180deg, #d05040, #8c2e20);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
 }
 
-/* v5.2.0 P6-5: ConfirmDialog 紧凑型 modal */
-.modal--confirm {
-  padding: 20px 22px;
-  min-width: 360px;
-}
-
+/* v5.6: 禁用状态 */
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* v5.6: 紧凑型 modal (大明·救亡sim风格) */
+.modal--confirm {
+  padding: 20px 22px;
+  min-width: 360px;
 }
 
 /* ---- Cards ---- */
@@ -542,30 +613,46 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ---- Tabs ---- */
+/* v5.6.0 Tab系统 — 参考大明·救亡sim .segmented
+   分段控件风格: 深底+金边+朱红激活态 */
 .tabs {
   display: flex;
   gap: 4px;
-  border-bottom: 1px solid var(--color-border);
+  border: 1px solid rgba(84, 52, 23, 0.24);
+  border-radius: 4px;
+  background: rgba(55, 35, 16, 0.1);
+  padding: 4px;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  width: fit-content;
 }
 
 .tab {
-  padding: 10px 18px;
-  color: var(--color-text-secondary);
+  padding: 8px 18px;
+  color: var(--muted);
   cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  transition: all var(--duration-fast) var(--ease-out);
+  font-family: var(--font-display);
   font-size: 13px;
+  font-weight: 700;
+  min-height: 30px;
+  min-width: 56px;
+  text-align: center;
+  background: transparent;
 }
 
 .tab:hover {
-  color: var(--color-text-primary);
+  color: #ffe8a0;
+  background: rgba(55, 35, 16, 0.25);
 }
 
 .tab--active {
-  color: var(--color-gold);
-  border-bottom-color: var(--color-gold);
+  color: #f9e0aa;
+  background: linear-gradient(180deg, #8b382b, #5a241d);
+  border: 1px solid rgba(226, 180, 86, 0.35);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* ---- Minister Card ---- */
@@ -804,32 +891,87 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ---- Modal ---- */
+/* v5.6.0 Modal系统 — 参考大明·救亡sim
+   全屏模态 + 面板 + 金边 + 阴影 */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-dropdown);
+  z-index: var(--z-modal);
+  backdrop-filter: blur(4px);
 }
 
 .modal {
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-gold-dim);
-  border-radius: 6px;
+  /* v5.6: 大明·救亡sim全屏模态风格 */
+  border: 1px solid rgba(226, 180, 86, 0.38);
+  border-radius: 5px;
+  background: linear-gradient(180deg, rgba(48, 39, 28, 0.98), rgba(23, 20, 16, 0.98));
+  box-shadow: 0 30px 86px rgba(0, 0, 0, 0.56), inset 0 1px 0 rgba(255, 232, 162, 0.14);
   padding: var(--space-fluid-4);
   max-width: var(--modal-sm);
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
+  color: #ffe8a0;
+  font-family: var(--font-display);
 }
 
 .modal__title {
   font-size: 18px;
-  color: var(--color-gold);
+  font-family: var(--font-display);
+  color: #ffe8a0;
   margin-bottom: 16px;
   text-align: center;
+  text-shadow: 0 0 8px rgba(212, 163, 74, 0.4);
+}
+
+/* v5.6: 大明·救亡sim面板风格 (modal-pane类) */
+.modal-pane {
+  border: 1px solid rgba(226, 180, 86, 0.28);
+  border-radius: 5px;
+  background: linear-gradient(180deg, rgba(245, 229, 184, 0.96), rgba(215, 190, 136, 0.92));
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 244, 210, 0.28);
+  backdrop-filter: blur(8px);
+  padding: 16px 20px;
+  color: var(--ink);
+}
+
+/* v5.6: 大明·救亡sim弹窗标题栏风格 */
+.modal-header {
+  border-bottom: 1px solid rgba(226, 180, 86, 0.22);
+  background:
+    linear-gradient(90deg, rgba(143, 47, 37, 0.18), transparent 46%),
+    linear-gradient(180deg, rgba(69, 55, 38, 0.96), rgba(33, 28, 21, 0.96));
+  min-height: 66px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+/* v5.6: 大明·救亡sim角饰 */
+.decorative-corner::before,
+.decorative-corner::after {
+  content: "";
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.decorative-corner::before {
+  top: -1px;
+  left: -1px;
+}
+
+.decorative-corner::after {
+  bottom: -1px;
+  right: -1px;
 }
 
 /* ---- Result Banner ---- */
