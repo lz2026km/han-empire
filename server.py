@@ -303,7 +303,11 @@ def end_campaign(campaign_id):
     body = request.get_json(silent=True) or {}
     ending = body.get("ending") or None
     try:
-        run_id = record_run_completion(session.db, campaign_id, session.state, ending=ending)
+        # v5.3.0 P7-4 fix: 同时写 stats.db (全局多周目) 让 /api/stats/global 可见
+        from han_sim.paths import user_data_path as _udp
+        from han_sim.db import GameDB as _GDB
+        stats_db = _GDB(_udp("stats.db"))
+        run_id = record_run_completion(stats_db, campaign_id, session.state, ending=ending)
     except Exception as e:
         return jsonify({"error": "record_failed", "detail": str(e)}), 500
     return jsonify({
