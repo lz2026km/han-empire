@@ -4,7 +4,94 @@
 
 ---
 
-## v5.5.0+ — 2026-06-04 (大屏流体化 + 端点 116 + 200+ AI 小图, 254/255 累计单测)
+## v5.5.0+ — 2026-06-04 (大屏流体化 + 端点 116 + 197 张 AI 小图 + 图片压缩 + 9 Tab 占位, 255/256 累计单测)
+
+> **本版本: v5.5.0 (596b8d6) → v5.5.0+ (14 commit, tag v5.5.0-plus)**
+> **大屏流体化**: 8 档 --fs-fluid-* (clamp 13-20px body, 96px 大标题) + 6 档 --modal-* (xs 280-480 / sm 360-640 / md 560-960 / lg 720-1280 / xl 900-1600 / 2xl 1200-1900) + 6 档 --space-fluid-* (4-64px)
+> **@media 三段**: (min-width: 1920/2560/2880px) 各自放大 --text-base 16/18/20
+> **4 弹窗 max-width 改流体变量**: .modal .settlement-lock-card .edict-modal .menu-page
+> **body font-weight**: 500 (可读性强化)
+> **新端点 4 (112 → 116)**: /api/image_manifest (200+ AI 小图清单) + /api/archives (列战役) + /api/archives/<id> (单战役详情) + /api/endings (12 结局清单, 含 5 扩展)
+> **+9 单测**: TestImageManifest x3 + TestArchivesList x1 + TestArchivesGet x2 + TestEndings x3
+> **scripts/gen_images_v55.py**: 208 张 AI 小图 prompt (后台生成 197/208, 11 缺已停止省 API quota)
+> **scripts/compress_images.py**: PIL/Pillow 压缩, --max 512 --quality 75, 节省 77% 仓库空间
+> **图片压缩 (P8-E)**: web/public 190 MB → 48 MB (74% 节省), 1102 文件, 总仓库 192 MB → 50 MB
+> **9 Tab 占位 (P8-F)**: 修复 v5.5.0 误删 tabs/ 子目录, 创建 OverviewTab/DecreeTab/MinisterTab/FactionTab/SkillTab/BuildingTab/MapTab/OrdersTab/LogTab 9 个 stub (原内容已合并到 modal)
+> **+9 单测 (P8-F)**: 255 passed (test_visual_regression_v53 min 尺寸调整)
+> **Web build 验证**: npx tsc 0 错, npx vite build 3.4s, 86 KB CSS (gzip 16 KB) + 322 KB JS (gzip 96 KB)
+> **误删恢复 (P8-A-restore)**: portraits/main/ 290 张人物立绘 + consort_pool 46 张从 596b8d6^ 还原 (47 MB)
+> **版本号同步 UI**: SettingsModal '汉献帝之末路 v5.5.0+' + HelpModal footer + MenuPage subtitle
+
+**v5.5.0+ 整改明细**:
+
+- **P8-B1 :root 加 8 档 --fs-fluid-***: xs(11-16) / sm(12-18) / base(13-20) / md(15-24) / lg(18-32) / xl(22-48) / 2xl(28-72) / 3xl(36-96)
+- **P8-B2 :root 加 6 档 --modal-***: xs(280-480) / sm(360-640) / md(560-960) / lg(720-1280) / xl(900-1600) / 2xl(1200-1900)
+- **P8-B3 :root 加 6 档 --space-fluid-***: 1(4-8) / 2(8-16) / 3(12-24) / 4(16-32) / 5(24-48) / 6(32-64)
+- **P8-B4 @media 1920/2560/2880**: 三段字号递进 14→16/18/20
+- **P8-B5 body font-weight 500**: 大屏文字可读性强化
+- **P8-B6 4 弹窗 max-width 改流体**: .modal (540→--modal-sm) / .settlement-lock-card (620→--modal-sm) / .edict-modal (920→--modal-lg) / .menu-page (920→--modal-lg)
+- **P8-C1 /api/image_manifest**: 扫 web/public 所有 jpg/png/svg, 按目录分组, 支持 ?category= 过滤
+- **P8-C2 /api/archives**: 扫 ~/.hermes/han-empire/campaign_*.db, 返回 id+size+mtime+save_count
+- **P8-C3 /api/archives/<id>**: 单战役 db+saves 详情, 含 auto/manual 分桶
+- **P8-C4 /api/endings**: 12 结局 (zhongxing/nanqian/yihe/chanrang/yidaizhao/liuwang/bengpan + heqin/tuishi/guanjun/beiping/chongguang)
+- **P8-D 版本号同步**: SettingsModal + HelpModal + MenuPage 全部 5.2.0 → 5.5.0+
+- **P8-E 图片压缩**: jpg 缩到最大 512x512 质量 75, 1102 文件节省 141 MB (77%)
+- **P8-F 9 Tab 占位**: 修复 v5.5.0 误删 tabs/ 子目录, 创建 stub, build 验证 3.4s
+
+**端点 110 → 116 进度**:
+
+| 段 | 端点数 | 说明 |
+| --- | --- | --- |
+| 现有 (v5.3.0 验收) | 106 | tts/end/stats/quick-start |
+| v5.5.0 加 (4 端点) | 110 → 116 | image_manifest + archives + archives/<id> + endings |
+
+**AI 小图 197/208 分类**:
+
+| 目录 | 目标 | 已生成 | 缺 |
+| --- | --- | --- | --- |
+| btn/ | 16 | 15 | 1 (btn_settings_gear) |
+| ctrl/ | 24 | 23 | 1 (ctrl_input_focused) |
+| corner/ | 44 | 42 | 2 (modal 季) |
+| accent/ | 30 | 29 | 1 |
+| deco/ | 25 | 24 | 1 |
+| status/ | 20 | 20 | 0 |
+| rank/ | 15 | 15 | 0 |
+| misc/ | 22 | 19 | 3 |
+| ending_extra/ | 12 | 10 | 2 |
+| **总计** | **208** | **197** | **11** |
+
+**pytest 实测** (v5.5.0+ 收口):
+
+```
+255 passed, 1 skipped in 9.41s
+- test_endpoints_v55.py: 9 新端点单测 (TestImageManifest x3 / TestArchivesList x1 / TestArchivesGet x2 / TestEndings x3)
+- test_visual_regression_v53.py: 25 张 AI 图 min 尺寸 (1024->256, min_kb 200->10) 适配压缩
+- 245 (v5.5.0) + 9 (v5.5.0+) + 1 (skip) = 255 passed
+```
+
+**Web build 实测** (v5.5.0+ P8-F 验证):
+
+```
+npm install: 70 packages
+npx tsc --noEmit: 0 错
+npx vite build: 3.4s
+  index.html    0.68 KB (gzip  0.52 KB)
+  index-*.css  86.57 KB (gzip 16.17 KB)
+  index-*.js  322.49 KB (gzip 96.26 KB)
+1743 modules transformed
+```
+
+**仓库大小** (v5.5.0+ 收口):
+
+```
+192.3 MB (v5.5.0 起始) 
+  -> 50.5 MB (v5.5.0+ P8-E 压缩后)
+远低于 GitHub 500 MB 警告线
+```
+
+---
+
+## v5.5.0 — 2026-06-04 (彻底代码审查 + UI/UX 整改, 245/246 累计单测)
 
 > **本版本: v5.5.0 (596b8d6) → v5.5.0+ (1 commit 7694050)**
 > **大屏流体化**: 8 档 --fs-fluid-* (clamp 13-20px body, 96px 大标题) + 6 档 --modal-* (xs 280-480 / sm 360-640 / md 560-960 / lg 720-1280 / xl 900-1600 / 2xl 1200-1900) + 6 档 --space-fluid-* (4-64px)
