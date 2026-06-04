@@ -2055,6 +2055,39 @@ def api_menu_status():
     })
 
 
+# --- v5.2.0 P6-18: /api/menu/quick-start (一站式: 建新朝 + 初始化 stats) ---
+@app.route('/api/menu/quick-start', methods=['POST'])
+def api_menu_quick_start():
+    """v5.2.0 P6-18: 一站式开局 (替代 前端 2 步调 /api/menu/status + /api/campaigns)
+
+    body: {emperor_name?: str, save_slot?: str}
+    返: {campaign_id, emperor_name, year, month, turn, metrics, version}
+    """
+    from han_sim.session import GameSession
+    from han_sim.content import GameContent
+    body = request.get_json(silent=True) or {}
+    emperor_name = (body.get("emperor_name") or "刘协").strip() or "刘协"
+    try:
+        content = GameContent()
+        # 尝试把 emperor_name 写入 content (如果 GameContent 支持)
+        if hasattr(content, "emperor_name"):
+            content.emperor_name = emperor_name
+        session = GameSession.new(campaign_id=None, content=content)
+        GAMES[session.campaign_id] = session
+        state = session.state
+        return jsonify({
+            "campaign_id": session.campaign_id,
+            "emperor_name": emperor_name,
+            "year": int(getattr(state, "year", 189)),
+            "month": int(getattr(state, "month", 1)),
+            "turn": int(getattr(state, "turn", 1)),
+            "metrics": dict(getattr(state, "metrics", {})),
+            "version": "5.2.0",
+        })
+    except Exception as e:
+        return jsonify({"error": "quick_start_failed", "detail": str(e)}), 500
+
+
 # --- 6m) /api/stats/global + /api/stats/runs (v5.1.5 P5-1: 多周目统计) ---
 @app.route('/api/stats/global', methods=['GET'])
 def api_stats_global():
