@@ -2139,7 +2139,7 @@ def api_menu_status():
         "has_api_key": llm_status["has_api_key"],
         "has_running_game": has_running,
         "llm": llm_status,
-        "version": "5.2.0",
+        "version": "5.3.0",
     })
 
 
@@ -2206,7 +2206,7 @@ def api_menu_quick_start():
             "month": int(getattr(state, "month", 1)),
             "turn": int(getattr(state, "turn", 1)),
             "metrics": dict(getattr(state, "metrics", {})),
-            "version": "5.2.0",
+            "version": "5.3.0",
         })
     except Exception as e:
         return jsonify({"error": "quick_start_failed", "detail": str(e)}), 500

@@ -19,7 +19,7 @@ def test_quick_start_default_emperor(monkeypatch):
     assert data["campaign_id"].startswith("c")
     assert len(data["campaign_id"]) >= 9  # c + 8 hex
     assert data["emperor_name"] == "刘协"
-    assert data["version"] == "5.2.0"
+    assert data["version"] == "5.3.0"
     assert "威权" in data["metrics"]
     # 验证 session 已注册到 GAMES
     assert data["campaign_id"] in srv.GAMES

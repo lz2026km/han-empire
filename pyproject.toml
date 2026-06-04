@@ -1,7 +1,7 @@
 [project]
 name = "han-empire"
-version = "5.2.0"
-description = "汉献帝之末路 v5.2.0 - 借鉴崇祯模拟器 前后端整合 (Stage A 整合 + B 弹窗 + C AI 贴图 + D 后端 hook + EXE)"
+version = "5.3.0"
+description = "汉献帝之末路 v5.3.0 - 体验收口 (LoadingScreen 流式 + Cheat 加强 + TTS + e2e + 视觉回归 + z-index 统一)"
 requires-python = ">=3.11"
 dependencies = [
     "agno>=2.6.9",

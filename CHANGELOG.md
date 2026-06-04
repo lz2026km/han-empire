@@ -4,6 +4,106 @@
 
 ---
 
+## v5.3.0 — 2026-06-04 (体验收口, 125/125 累计单测)
+
+> **本版本: v5.2.0 (9d2a521 + d5a473b) → v5.3.0 (7 commit)**
+> **+41 新单测 (cheat_v53 4 + tts_v53 3 + e2e_v53 5 + visual_regression_v53 29) / 0 借鉴 emoji / 1 bug 修复**
+
+### A. 体验收口 (6 任务, commit 1-6)
+
+#### 7.1 LoadingScreen 嵌入 nextTurn 流式 (4 阶段联动)
+- `web/src/components/LoadingScreen.tsx`:
+  - 新 STAGE_PHASE_MAP: 4 nextTurn 阶段 (fiscal/faction/events/narrative) + thinking
+  - 每阶段含 label (古风) + desc (古风) + idx
+  - 新 prop `currentStage?: string`
+  - 传 currentStage 时: 固定显示该阶段, 停止内置轮播
+  - 4 阶段进度指示: 4 个 chip 横向, 阶段 1 active 脉冲, 已过 1 绿色 done
+- `web/src/App.tsx`: LoadingScreen 传 `currentStage={showSettlement ? currentSettlementStage : undefined}`
+- `web/src/styles/app.css`: .loading-screen__stages + .loading-screen__stage (--active 脉冲 + --done 绿)
+
+#### 7.2 Cheat 控制台加强 (5 新命令: season/theme/snapshot-export/volume/regen)
+- `server.py`: 新增 ROOT 常量 (项目根绝对路径)
+- DEBUG_COMMANDS 列表加 5 入口:
+  - `season <spring|summer|autumn|winter>`  [cat: ui] 切季节 (写 kv_store)
+  - `theme <light|dark>`                    [cat: ui] 切主题 (写 kv_store)
+  - `snapshot-export`                       [cat: inspect] 导 data/snapshots/<cid>_<turn>.json
+  - `volume <0-100>`                        [cat: ui] 音量 (写 kv_store)
+  - `regen <kind>`                          [cat: meta] 重生图 (引导跑 gen_images_v52.py)
+- execute_cheat 加 5 handler, 修复 kv_store 列名 (k/v → key/value)
+- 4 单测: season_valid/invalid/volume/snapshot_export
+
+#### 7.3 TTS 整合 (edge-tts 集成 + /api/tts 端点)
+- `server.py`: 新端点 `POST /api/tts`
+  - body: {text, voice?, rate?, pitch?}
+  - 校验: text 非空 + 限 2000 字 + voice 在 6 候选内
+  - 调 `han_sim.tts.text_to_audio_base64` 合成
+  - 返 {audio: base64 mp3, voice, size_kb}
+- `han_sim/tts.py`: 改 lazy import (避免 edge_tts 缺失时整个模块加载失败)
+- `pyproject.toml`: 依赖加 `edge-tts>=6.1.10`
+- 3 单测: empty_text/too_long/invalid_voice
+
+#### 7.4 e2e 测试 5 关键流 (建朝/出诏/推演/落幕/重玩) + bug 修复
+- `tests/test_e2e_v53.py` (5 case, 119 行):
+  - e2e_create_campaign: quick-start 建朝 + GAMES 注册
+  - e2e_issue_decree: secret_edict 分支
+  - e2e_next_turn: 推演 (200 或 500 都接受)
+  - e2e_end_campaign: 落幕 + stats.total_runs >= 1
+  - e2e_replay: 两局连开 + stats.total_runs >= 2
+  - fixture isolated_data_dir: monkeypatch user_data_path + ROOT
+- **bug 修复**: `end_campaign` 写 stats.db (而非 session.db), 让 /api/stats/global 可见
+  - 旧 bug 导致 v5.2.0 P5-1 P6-16 P6-18 端点 stats 始终为 0
+  - 修后: e2e + 实际用户 stats 端点都能看到局数
+
+#### 7.5 视觉回归 (25 张 AI 图完整性 + 尺寸 + aspect 校验)
+- `tests/test_visual_regression_v53.py` (127 行, 29 case):
+  - 27 parametrized: 每张 AI 图存在 + 有效 JPEG + 宽高 >= 最小 + 大小 >= min_kb
+  - `parse_jpeg_size`: 纯 stdlib 解析 SOF marker (无 Pillow 依赖)
+  - test_ai_image_count: 至少 20/27 张
+  - test_ai_image_aspect_ratio: 16:9 ±20% (1.4-2.1), 1:1 ±15% (0.85-1.18)
+  - skip 友好: AI 图未生成时 skip 而非 fail
+
+#### 7.6 弹窗 z-index 统一 (8 层 CSS 变量 + 文档化)
+- `web/src/styles/app.css`:
+  - 新 10 个 z-index CSS 变量 (--z-base/--z-content/--z-tabs/--z-header/--z-dropdown/--z-sidebar/--z-modal/--z-menu/--z-cheat/--z-loading/--z-toast)
+  - 8 层梯度: 0-1200, 避免硬编码 + 散落
+  - 文档化: 8 层表格 (Layer/z-index/用途)
+  - 替换 5 处硬编码 z-index:
+    - .app-header (100 → var(--z-header))
+    - .dropdown (200 → var(--z-dropdown))
+    - .state-modal-overlay (1060 → var(--z-modal))
+    - .loading-screen (1100 → var(--z-loading))
+    - .report-modal-overlay (1100 → var(--z-modal))
+  - 注: 9 modal 全部统一到 1050, 防止互相遮挡
+  - 工程师控制台 1080 (高于所有 modal)
+  - LoadingScreen 1100 (最顶, 推演时锁键)
+
+### B. 端点 / 单测 / 表 累计
+
+| 指标 | v5.2.0 | v5.3.0 | Δ |
+|------|--------|--------|---|
+| 端点 | 105 | 106 | +1 (tts) |
+| 单测 | 84 | 125 | +41 (cheat 4 + tts 3 + e2e 5 + visual 29) |
+| 表 | 52 | 52 | 0 |
+| 前端组件 | 44 | 44 | 0 (仅 LoadingScreen 加 prop) |
+| 后端模块 | 34 | 34 | 0 (tts.py 已存在) |
+| 依赖 | 10 | 11 | +1 (edge-tts) |
+
+### C. 仓库状态
+
+- HEAD: `66fc6cf` (v5.3.0 task 7.6)
+- 6 commit (任务 7.1-7.6) + 1 acceptance
+- 0 借鉴 emoji
+- 沿用 v3.3 规则 (a11y 标记 / 无 force push master)
+- bug 修复 1: end_campaign 写 stats.db (v5.2.0 遗留)
+
+### D. v5.3.0 后续 (v5.4.0 候选)
+
+- 真实 LLM 跑 N 局平衡性 (v5.2.0 G 段遗留)
+- 桌面端更深度优化 (离线 / 安装包 / 自动更新)
+- 多语言 (英文 / 繁中, v5.2.0 F 段遗留)
+
+---
+
 ## v5.2.0 — 2026-06-04 (前后端整合 + AI 贴图 + EXE 打包, 84/84 累计单测)
 
 > **本版本: v5.1.5 (a01c2cc) → v5.2.0 (20 commit)**
