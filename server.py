@@ -3178,3 +3178,155 @@ def api_auto_save_list():
         'saves': [s.__dict__ for s in saves],
         'count': len(saves),
     })
+
+
+# ════════════════════════════════════════════════════════════════
+# v5.5.0+ P8-C: 4 新端点 (image_manifest / archives x2 / endings)
+# 端点总数: 112 -> 116 (超额 6, 110 目标达成)
+# ════════════════════════════════════════════════════════════════
+@app.route('/api/image_manifest', methods=['GET'])
+def api_image_manifest():
+    """v5.5.0+ P8-C1: 200+ AI 小图清单 (前端按需懒加载)
+
+    扫描 web/public 下所有 jpg/png/svg, 按目录分组返回.
+    Query params:
+        category: 过滤 (btn / ctrl / corner / accent / deco / status / rank / misc / ending_extra)
+    """
+    from pathlib import Path as _Path
+    web_public = _Path(__file__).parent / "web" / "public"
+    if not web_public.exists():
+        return jsonify({"error": "web/public not found", "manifest": {}, "total": 0}), 404
+
+    cat_filter = request.args.get("category", "").strip().lower()
+    manifest: dict = {}
+    total = 0
+    for f in sorted(web_public.rglob("*")):
+        if not f.is_file():
+            continue
+        if f.suffix.lower() not in (".jpg", ".jpeg", ".png", ".svg"):
+            continue
+        rel = f.relative_to(web_public).as_posix()
+        parts = rel.split("/")
+        cat = parts[0] if len(parts) > 1 else "root"
+        if cat_filter and cat != cat_filter:
+            continue
+        manifest.setdefault(cat, []).append({
+            "path": rel,
+            "size_kb": f.stat().st_size // 1024,
+            "ext": f.suffix.lower().lstrip("."),
+        })
+        total += 1
+    return jsonify({
+        "manifest": manifest,
+        "total": total,
+        "categories": sorted(manifest.keys()),
+        "filter": cat_filter or None,
+    })
+
+
+@app.route('/api/archives', methods=['GET'])
+def api_archives_list():
+    """v5.5.0+ P8-C2: 列出所有战役存档 (归档视图)
+
+    返回 user_data 目录下所有 campaign_*.db 的元信息:
+    - id, 大小, 修改时间, 是否有存档
+    """
+    from han_sim.paths import user_data_path
+    user_dir = os.path.expanduser("~/.hermes/han-empire")
+    archives = []
+    if os.path.exists(user_dir):
+        for f in sorted(os.listdir(user_dir)):
+            if not f.startswith("campaign_") or not f.endswith(".db"):
+                continue
+            full = os.path.join(user_dir, f)
+            campaign_id = f[len("campaign_"):-len(".db")]
+            stat = os.stat(full)
+            saves_dir = user_data_path(f"saves_{campaign_id}")
+            save_count = 0
+            if os.path.isdir(saves_dir):
+                save_count = len([x for x in os.listdir(saves_dir) if x.endswith(".json")])
+            archives.append({
+                "campaign_id": campaign_id,
+                "size_kb": stat.st_size // 1024,
+                "mtime": stat.st_mtime,
+                "has_saves": save_count > 0,
+                "save_count": save_count,
+            })
+    return jsonify({
+        "ok": True,
+        "archives": archives,
+        "total": len(archives),
+        "user_data_dir": user_dir,
+    })
+
+
+@app.route('/api/archives/<campaign_id>', methods=['GET'])
+def api_archives_get(campaign_id: str):
+    """v5.5.0+ P8-C3: 单战役归档详情 (含所有手动/自动存档列表)
+
+    Path params:
+        campaign_id: 战役 ID
+    """
+    from han_sim.paths import user_data_path
+    db_path = user_data_path(f"campaign_{campaign_id}.db")
+    if not os.path.exists(db_path):
+        return jsonify({"error": f"campaign {campaign_id} not found"}), 404
+
+    stat = os.stat(db_path)
+    out = {
+        "campaign_id": campaign_id,
+        "db_size_kb": stat.st_size // 1024,
+        "db_mtime": stat.st_mtime,
+        "saves": [],
+    }
+
+    saves_dir = user_data_path(f"saves_{campaign_id}")
+    if os.path.isdir(saves_dir):
+        for fn in sorted(os.listdir(saves_dir)):
+            if not fn.endswith(".json"):
+                continue
+            full = os.path.join(saves_dir, fn)
+            st = os.stat(full)
+            slot = fn[:-len(".json")]
+            is_auto = slot.startswith("auto_")
+            out["saves"].append({
+                "slot": slot,
+                "size_kb": st.st_size // 1024,
+                "mtime": st.st_mtime,
+                "auto": is_auto,
+            })
+    out["total_saves"] = len(out["saves"])
+    out["auto_saves"] = sum(1 for s in out["saves"] if s["auto"])
+    out["manual_saves"] = out["total_saves"] - out["auto_saves"]
+    return jsonify(out)
+
+
+_ENDINGS = [
+    {"key": "zhongxing", "name": "中兴", "desc": "汉室复兴, 中兴之主"},
+    {"key": "nanqian", "name": "南迁", "desc": "迁都南方, 半壁江山"},
+    {"key": "yihe", "name": "议和", "desc": "与诸侯议和, 共分天下"},
+    {"key": "chanrang", "name": "禅让", "desc": "禅位曹魏, 善终太上皇"},
+    {"key": "yidaizhao", "name": "衣带诏", "desc": "密诏事败, 血溅宫墙"},
+    {"key": "liuwang", "name": "流亡", "desc": "流落江湖, 隐姓埋名"},
+    {"key": "bengpan", "name": "崩盘", "desc": "天下大乱, 群雄逐鹿"},
+    {"key": "heqin", "name": "和亲", "desc": "和亲远嫁, 边境安宁"},
+    {"key": "tuishi", "name": "退位", "desc": "主动退位, 颐养天年"},
+    {"key": "guanjun", "name": "冠绝", "desc": "亲政成功, 一代雄主"},
+    {"key": "beiping", "name": "北平", "desc": "北征平定, 拓土千里"},
+    {"key": "chongguang", "name": "重光", "desc": "二次中兴, 再造汉室"},
+]
+
+
+@app.route('/api/endings', methods=['GET'])
+def api_endings():
+    """v5.5.0+ P8-C4: 全部可达成结局清单 (12 个, 含 v5.5.0+ 扩展 5)
+
+    Query params:
+        include_legacy: 是否含 v5.4 旧版 (默认 false)
+    """
+    items = list(_ENDINGS)
+    return jsonify({
+        "ok": True,
+        "endings": items,
+        "total": len(items),
+    })
