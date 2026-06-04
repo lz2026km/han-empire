@@ -4,6 +4,164 @@
 
 ---
 
+## v5.2.0 — 2026-06-04 (前后端整合 + AI 贴图 + EXE 打包, 84/84 累计单测)
+
+> **本版本: v5.1.5 (a01c2cc) → v5.2.0 (20 commit)**
+> **+18 新单测 (image_gen 11 + campaign_end 3 + campaign_stats 2 + menu_quickstart 2) / 0 借鉴 emoji / 0 回归**
+
+### A. Stage A 整合 (4 任务, commit 1-4)
+
+#### 6.1 MenuPage 嵌入 App.tsx (替代 WelcomeScreen)
+- 删 showNewGameModal/emperorName state + 内联 New Game Modal + WelcomeScreen 函数
+- !campaignId 分支: `<MenuPage onNewGame onLoadSave onContinue>`
+- 解构 useGame 增加 loadCampaign + returnToMenu
+- `useGame.returnToMenu()` 清空所有 state
+
+#### 6.2 StateModal 嵌入 (S 键 + OverviewTab 按钮)
+- `showStateModal` state + S 键切换 (input/textarea 不触发)
+- OverviewTab 加 "国势详情" 按钮 (大, 金边)
+- StateModal budget 改可选 + 从 gameState.metrics fallback 合成
+
+#### 6.3 NewGameModal 抽组件
+- `web/src/components/NewGameModal.tsx` (78 行)
+- MenuPage 改用 `<NewGameModal open loading onConfirm onCancel/>`
+- 含 autoFocus + 4 句古风介绍
+
+#### 6.4 Header 4 入口 (主菜单/国势/设置/帮助)
+- Header 加 4 props + 4 按钮 (Menu/BarChart3/Settings/HelpCircle)
+- `?` 键弹 HelpModal, Esc 在游戏中弹返回确认
+- 占位 Settings/Help Modal (6.7/6.9 替换为完整组件)
+
+### B. Stage B 弹窗完备 (5 任务, commit 5-9)
+
+#### 6.5 ConfirmDialog (4 variant + Esc/Enter)
+- 99 行, danger/warning/info/success
+- 图标 + 彩色圆环 + autoFocus 在确认按钮
+- `Esc` 关闭, `Enter` 确认
+- 接入 Header "主菜单" 二次确认 (游戏中)
+
+#### 6.6 LoadingScreen (全屏月相轮转 + 5 文案)
+- 64 行, 5 阶段轮播 (1.6s/段): 主公稍候/群臣议事/诏书拟成/边关急报/月相轮转
+- 三圈月相轮转动画 (顺/逆/快) + 进度条
+- 触发条件: `loading && !!campaignId`
+
+#### 6.7 SettingsModal (4 段设置)
+- 159 行, 主题/季节/快捷键/统计/关于 + 危险区
+- `api.getStatsGlobal()` 显示多周目
+- 8 快捷键全表 (1-9/L/C/S/H/E/?/Esc/Ctrl+`)
+
+#### 6.8 StatsModal (5 卡 + 历史表)
+- 166 行, 调 `/api/stats/global` + `/api/stats/runs`
+- 5 卡: 总局数/胜率/败局/平均回合/结局解锁
+- 7 ending 颜色徽章 + 历史表 (倒序 20 局)
+- 从 SettingsModal "查看完整战绩 →" 嵌套打开
+
+#### 6.9 HelpModal (3 Tab)
+- 172 行, 玩法 (6 段) / 快捷键 (9 条) / 致谢 (5 段)
+- 玩法段: 开局/诏书/大臣/派系/技能/建筑
+- 致谢段: 灵感/技术栈/LLM/AI 生图/开发
+- 底部 "献给主公" 匾额 + GitHub URL
+
+### C. Stage C AI 贴图 (6 任务, commit 10-15)
+
+#### 6.10 han_sim/image_gen.py (MiniMax image-01 集成)
+- 161 行, curl 协议: `POST https://api.minimaxi.com/v1/image_generation`
+- 协议: `model=image-01, aspect_ratio, response_format=url, n, prompt_optimizer`
+- 链式 fallback: MINIMAX/OPENAI/DEEPSEEK API key
+- retry 1 + 60s 退避 (仿 ming_sim 5 RPM 经验)
+- 11 单测 (mock HTTP) 覆盖 4 场景 (成功/retry/失败/下载)
+
+#### 6.11 scripts/gen_images_v52.py (25 张关键图批量)
+- 280 行, 25 张图清单:
+  - 1 主公头像 liuxie_emperor.jpg (1:1)
+  - 1 朝代 banner banner_empire.jpg (16:9)
+  - 4 季节背景 bg_season_{spring,summer,autumn,winter}.jpg (16:9)
+  - 9 Tab hero tab_hero_{overview,...orders}.jpg (16:9)
+  - 5 modal 装饰 modal_{report,closed,history,extraction,state}.jpg (16:9)
+  - 7 ending ending_{zhongxing,nanqian,yihe,chanrang,yidaizhao,liuwang,bengpan}.jpg (1:1)
+- 风格统一 prompt 后缀 (Chinese ink painting, Han dynasty, gold-red-black, cinematic, no text, 8k)
+- argparse: --only/--limit/--force/--dry-run
+- 串行执行避免 5 RPM 限流
+
+#### 6.12 MenuPage 美化 (头像 + banner + 4 季节)
+- useTheme 拿 season
+- 引入 liuxie_emperor.jpg 头像 (圆形 mask, 3px 金边, 24px 金光晕)
+- banner_empire.jpg 默认 banner + 4 季节覆盖
+- 标题 letter-spacing 8px + 双层阴影
+- 360px banner 高度 + 0.45 透明 + mask 渐隐
+
+#### 6.13 9 Tab hero 贴图
+- `web/src/components/TabHero.tsx` (49 行)
+- 9 tabId → 9 url 映射 + 9 中文标签 (总览·朝会视角/诏书·颁布圣旨/...)
+- 140px 高度, 古金边, 500ms fade-in
+- title 22px 楷体 + 4px letter-spacing + 双层阴影
+
+#### 6.14 5 modal header 美化 (hero 贴图 + 4 角云纹)
+- 5 modal titlebar 加 AI hero 贴图 (gradient 蒙版 + url 双层)
+- 4 角云纹装饰 (corner_cloud.jpg, scaleX(-1) 镜像, 0.35 透明, z-index 0)
+- title 文字加双层阴影 + letter-spacing 2px
+
+#### 6.15 OverviewTab 美化 (3 metric 贴图)
+- 3 metric 卡片改用 .overview-metric (resource_people/gold/food.jpg 复用)
+- ::before 蒙版 (135deg 渐变)
+- "国势详情" 按钮改大 (overview-detail-btn, 古金边, 渐变 hover 光晕)
+
+### D. Stage D 后端 hook + EXE (4 任务, commit 16-19)
+
+#### 6.16 /api/campaigns/<id>/end
+- POST, body `{ending?: str}` → 调 record_run_completion
+- 返 `{run_id, ending, final_score}`
+- 3 单测: 中兴/崩盘/手动传 ending
+
+#### 6.17 /api/campaigns/<id>/stats
+- GET → 返单局统计快照 (区别 /api/stats/global 多周目)
+- 7 字段: turn/year/period/metrics/budget/legacy_modifiers/decisions_count
+- 2 单测: basic/404
+
+#### 6.18 /api/menu/quick-start
+- POST, body `{emperor_name?: '刘协', save_slot?: 'auto'}`
+- 一站式: GameSession.new + 注册 GAMES + 返初始 state
+- 替代前端 2 步 (menu/status + campaigns)
+- 2 单测: default/custom name
+
+#### 6.19 pyinstaller EXE 打包
+- `launcher.py` (60 行): 找空闲端口 + 子线程开 webbrowser + 启动 Flask
+- `HanEmpireSim.spec` (149 行): pyinstaller 配置 (仿 ming_sim spec)
+  - collect_all: flask + flask_cors + openai + urllib3
+  - datas: web/dist + web/public + data/ + .env.example
+  - console=False 双击无终端
+  - macOS 自动 BUNDLE 成 .app
+- `scripts/build_exe.py` (79 行): 一键打包 (前置检查 + 跑 pyinstaller + 清理 + 打印产物)
+- pyproject.toml: dev 加 `pyinstaller>=6.10`
+
+### E. 端点 / 单测 / 表 累计
+
+| 指标 | v5.1.5 | v5.2.0 | Δ |
+|------|--------|--------|---|
+| 端点 | 102 | 105 | +3 (end/stats/quick-start) |
+| 单测 | 66 | 84 | +18 (image_gen 11 + end 3 + stats 2 + quick-start 2) |
+| 表 | 52 | 52 | 0 |
+| 前端组件 | 38 | 44 | +6 (MenuPage 已用 + StateModal/NewGameModal/TabHero + LoadingScreen/SettingsModal/StatsModal/HelpModal/ConfirmDialog) |
+| 后端模块 | 33 | 34 | +1 (image_gen) |
+| 脚本 | 7 | 9 | +2 (gen_images_v52/build_exe) |
+| EXE 文件 | 0 | 3 | +3 (launcher/spec/build_exe) |
+
+### F. 仓库状态
+
+- HEAD: `c2ebf94` (v5.2.0 task 6.19)
+- 19 commit (任务 6.1-6.19) + 1 acceptance
+- 0 借鉴 emoji
+- 沿用 v3.3 规则 (a11y 标记 / 无 force push master / tag force update 合规)
+
+### G. v5.2.0 后续 (v5.3.0 候选)
+
+- 跑 `scripts/gen_images_v52.py` 出 25 张 AI 图 (主公跑, 需 MINIMAX_API_KEY)
+- 跑 `npm run build` → web/dist
+- 跑 `pip install pyinstaller` + `python scripts/build_exe.py` → EXE
+- v5.3.0 候选: LoadingScreen 集成到 nextTurn 流式 / 主公跑 N 局 LLM 平衡性
+
+---
+
 ## v5.1.5 — 2026-06-03 (借鉴崇祯 收尾, 66/66 累计单测)
 
 > **本版本: v5.1.4 (0740382) → v5.1.5 (4 commit)**

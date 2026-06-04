@@ -2051,7 +2051,7 @@ def api_menu_status():
         "has_api_key": llm_status["has_api_key"],
         "has_running_game": has_running,
         "llm": llm_status,
-        "version": "5.1.3",
+        "version": "5.2.0",
     })
 
 
