@@ -553,10 +553,11 @@ export default function App() {
         onProvinceClick={(id) => { console.log('v2.0.0 P0-B2 选中州郡', id) }}
       />
 
-      {/* v5.2.0 P6-6: 全局推演 Loading (任何 loading=true 时显示, 仿 ming_sim) */}
+      {/* v5.2.0 P6-6 + v5.3.0 P7-1: 全局推演 Loading (阶段联动) */}
       <LoadingScreen
         open={loading && !!campaignId}
         title={showSettlement ? '推演下月' : '处理中'}
+        currentStage={showSettlement ? currentSettlementStage : undefined}
       />
 
       {/* v5.0 P0-3: Token 实时仪表盘 (右上角悬浮) */}

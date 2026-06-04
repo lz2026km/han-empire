@@ -3053,6 +3053,40 @@ input:focus, select:focus {
   animation: ls-spin 1.2s linear infinite;
 }
 
+/* v5.3.0 P7-1: 4 阶段进度指示 (fiscal/faction/events/narrative) */
+.loading-screen__stages {
+  display: flex;
+  gap: 4px;
+  margin: 0 0 14px;
+  justify-content: center;
+}
+.loading-screen__stage {
+  font-family: var(--font-display);
+  font-size: 10px;
+  color: var(--color-text-muted);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  padding: 2px 6px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.loading-screen__stage--active {
+  color: var(--color-gold-bright);
+  background: rgba(201,168,76,0.15);
+  border-color: var(--color-gold);
+  animation: ls-stage-pulse 1.4s ease-in-out infinite;
+}
+.loading-screen__stage--done {
+  color: var(--color-text-secondary);
+  background: rgba(91,191,107,0.10);
+  border-color: rgba(91,191,107,0.3);
+}
+@keyframes ls-stage-pulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(201,168,76,0); }
+  50% { box-shadow: 0 0 8px rgba(201,168,76,0.4); }
+}
+
 /* v5.2.0 P6-14: 5 modal header 美化 (hero 贴图 + 角饰) */
 .report-modal__titlebar,
 .closed-modal__titlebar,
