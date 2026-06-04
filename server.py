@@ -312,6 +312,47 @@ def end_campaign(campaign_id):
     })
 
 
+# --- v5.2.0 P6-17: 单局统计 (turn/year/period/metrics/budget/legacies 快照) ---
+@app.route('/api/campaigns/<campaign_id>/stats', methods=['GET'])
+def api_campaign_stats(campaign_id):
+    """v5.2.0 P6-17: 单局统计 (区别 /api/stats/global 多周目)
+
+    返: {turn, year, period, metrics, budget, legacy_modifiers, decisions_count}
+    """
+    if campaign_id not in GAMES:
+        try:
+            GAMES[campaign_id] = GameSession.load(campaign_id)
+        except Exception as e:
+            return jsonify({"error": "load_failed", "detail": str(e)}), 404
+    session = GAMES[campaign_id]
+    state = session.state
+    decisions_count = 0
+    try:
+        row = session.db.conn.execute(
+            "SELECT COUNT(*) AS c FROM turn_directives WHERE status='issued'"
+        ).fetchone()
+        decisions_count = int(row["c"]) if row else 0
+    except Exception:
+        pass
+    return jsonify({
+        "turn": getattr(state, "turn", 0),
+        "year": getattr(state, "year", 189),
+        "period": getattr(state, "period", 1),
+        "metrics": dict(getattr(state, "metrics", {})),
+        "budget": {
+            k: {
+                "balance": getattr(acc, "balance", 0),
+                "net": getattr(acc, "net", 0),
+                "income_total": getattr(acc, "income_total", 0),
+                "expense_total": getattr(acc, "expense_total", 0),
+            }
+            for k, acc in getattr(state, "budget", {}).items()
+        } if getattr(state, "budget", None) else None,
+        "legacy_modifiers": dict(getattr(state, "legacy_modifiers", {})),
+        "decisions_count": decisions_count,
+    })
+
+
 @app.route('/api/campaigns/<campaign_id>/check_events', methods=['GET'])
 def check_events(campaign_id):
     if campaign_id not in GAMES:
