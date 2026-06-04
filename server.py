@@ -2139,6 +2139,42 @@ def api_menu_status():
     })
 
 
+# --- v5.3.0 P7-3: /api/tts (edge-tts 中文语音合成, 给前端 useTTS 备用) ---
+@app.route('/api/tts', methods=['POST'])
+def api_tts():
+    """v5.3.0 P7-3: 文本→语音 (edge-tts 微软免费)
+
+    body: {text: str, voice?: 'zh-CN-YunjianNeural', rate?: '-5%', pitch?: '-10Hz'}
+    返: {audio: base64 mp3, voice, size_kb}
+    """
+    try:
+        from han_sim.tts import text_to_audio_base64, ZH_VOICES
+    except ImportError as e:
+        return jsonify({"error": "tts_unavailable", "detail": str(e)}), 500
+    body = request.get_json(silent=True) or {}
+    text = (body.get("text") or "").strip()
+    voice = body.get("voice") or "zh-CN-YunjianNeural"
+    rate = body.get("rate") or "-5%"
+    pitch = body.get("pitch") or "-10Hz"
+    if not text:
+        return jsonify({"error": "empty_text", "detail": "text 不能为空"}), 400
+    if len(text) > 2000:
+        return jsonify({"error": "text_too_long", "detail": "text 限 2000 字内"}), 400
+    if voice not in ZH_VOICES:
+        voice = "zh-CN-YunjianNeural"
+    try:
+        audio_b64 = text_to_audio_base64(text, voice=voice, rate=rate, pitch=pitch)
+    except Exception as e:
+        return jsonify({"error": "synthesize_failed", "detail": str(e)}), 500
+    if not audio_b64:
+        return jsonify({"error": "synthesize_empty", "detail": "edge-tts 返空, 可能是网络问题"}), 500
+    return jsonify({
+        "audio": audio_b64,
+        "voice": voice,
+        "size_kb": len(audio_b64) // 1024,
+    })
+
+
 # --- v5.2.0 P6-18: /api/menu/quick-start (一站式: 建新朝 + 初始化 stats) ---
 @app.route('/api/menu/quick-start', methods=['POST'])
 def api_menu_quick_start():

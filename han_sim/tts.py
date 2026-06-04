@@ -2,6 +2,7 @@
 汉献帝之末路 v2.5.0 — 边缘 TTS 服务端模块
 edge-tts 微软免费中文语音合成, 给前端 useTTS 备用
 POST /api/tts { text, voice, rate, pitch } -> { audio: base64 mp3 }
+v5.3.0 P7-3: 改为 lazy import (避免无 edge_tts 时整个模块加载失败)
 """
 import asyncio
 import base64
@@ -9,9 +10,12 @@ import logging
 import tempfile
 from pathlib import Path
 
-import edge_tts
-
 log = logging.getLogger(__name__)
+
+# v5.3.0 P7-3: lazy import 让 tts 模块本身可加载, 真正调 edge_tts 才 import
+def _get_edge_tts():
+    import edge_tts
+    return edge_tts
 
 # 中文语音 (男声威压 / 女声柔美)
 ZH_VOICES = {
@@ -28,6 +32,7 @@ DEFAULT_VOICE = 'zh-CN-YunjianNeural'
 
 async def _synthesize(text: str, voice: str, rate: str, pitch: str) -> bytes:
     """异步合成语音 → MP3 bytes"""
+    edge_tts = _get_edge_tts()
     communicate = edge_tts.Communicate(
         text=text,
         voice=voice,
