@@ -221,6 +221,22 @@ def main():
     p.add_argument("--dry-run", action="store_true", help="只打印计划不生图")
     args = p.parse_args()
 
+    # v5.2.0+ 增量: 启动时加载项目根 .env (让 MINIMAX_API_KEY 自动化)
+    env_path = ROOT / ".env"
+    if env_path.exists():
+        try:
+            for line in open(env_path, encoding="utf-8"):
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, _, v = line.partition("=")
+                k = k.strip()
+                v = v.strip().strip('"').strip("'")
+                if k and k not in os.environ and v and v != "your_minimax_key_here":
+                    os.environ[k] = v
+        except Exception:
+            pass
+
     sys.path.insert(0, str(ROOT))
     try:
         from han_sim.image_gen import generate_image, download_image

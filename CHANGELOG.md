@@ -153,12 +153,22 @@
 - 0 借鉴 emoji
 - 沿用 v3.3 规则 (a11y 标记 / 无 force push master / tag force update 合规)
 
-### G. v5.2.0 后续 (v5.3.0 候选)
+### G. v5.2.0+ 增量 (v5.2.0 push 后): AI 图落盘 25 张 (MiniMax image-01, 12 MB)
 
-- 跑 `scripts/gen_images_v52.py` 出 25 张 AI 图 (主公跑, 需 MINIMAX_API_KEY)
-- 跑 `npm run build` → web/dist
+> 本节为 v5.2.0 push 后补充, 主公跑 `scripts/gen_images_v52.py` 后落盘.
+
+- 修改: `scripts/gen_images_v52.py` 启动时加载项目根 `.env` (让 MINIMAX_API_KEY 自动化)
+- 新增: 25 张 AI 生成 jpg (12 MB, 1 张主公头像 + 1 banner + 4 季节 + 9 tab hero + 5 modal + 7 ending)
+- 风格: cinematic 摄影风 (MiniMax prompt_optimizer 自动优化, 比纯水墨更震撼)
+- 失败重试: 1/8 失败 (modal_state 网络超时), 单张 `--only modal_state --force` 重试 1 次成功
+- 主公 npm run dev 即可看见美化效果, 6 个新 ending 替换旧 6 张 v4-epic/ending_*.jpg
+- 注: .env 含 MINIMAX_API_KEY 在 .gitignore, 安全
+
+### H. v5.2.0 后续 (v5.3.0 候选)
+
+- v5.3.0 启动 (B. 体验收口, 6 任务: LoadingScreen 流式 / Cheat 加强 / TTS / e2e / 视觉回归 / z-index 统一)
+- 跑 `npm run build` → web/dist (生产构建)
 - 跑 `pip install pyinstaller` + `python scripts/build_exe.py` → EXE
-- v5.3.0 候选: LoadingScreen 集成到 nextTurn 流式 / 主公跑 N 局 LLM 平衡性
 
 ---
 
