@@ -63,6 +63,7 @@ app = Flask(__name__)
 CORS(app)
 
 DB_DIR = os.path.join(os.path.dirname(__file__), 'data')
+ROOT = os.path.dirname(os.path.abspath(__file__))
 GAMES: dict = {}
 
 
@@ -973,6 +974,12 @@ DEBUG_COMMANDS = [
     {'cmd': 'reveal-map', 'cat': 'meta', 'desc': '显示所有省份 (需后端联动)'},
     {'cmd': 'clear', 'cat': 'meta', 'desc': '清除控制台'},
     {'cmd': 'exit', 'cat': 'meta', 'desc': '关闭控制台'},
+    # v5.3.0 P7-2: 5 新命令 (season/theme/snapshot-export/volume/regen)
+    {'cmd': 'season <name>', 'cat': 'ui', 'desc': '切换季节 (spring/summer/autumn/winter) 写入 kv_store'},
+    {'cmd': 'theme <name>', 'cat': 'ui', 'desc': '切换主题 (light/dark) 写入 kv_store'},
+    {'cmd': 'snapshot-export', 'cat': 'inspect', 'desc': '导出全状态 JSON 到 data/snapshots/<cid>_<turn>.json'},
+    {'cmd': 'volume <0-100>', 'cat': 'ui', 'desc': '设置音量百分比 (前端 BGM/音效)'},
+    {'cmd': 'regen <kind>', 'cat': 'meta', 'desc': '重生成内容: portrait(主公)/banner(朝代)/modal_<name>(5 modal)'},
 ]
 
 
@@ -1163,6 +1170,83 @@ def execute_cheat(campaign_id):
     elif command == 'reveal-map':
         regions = session.db.conn.execute('SELECT COUNT(*) AS c FROM regions').fetchone()['c']
         output = f'全图已揭示 (regions 表共 {regions} 条, UI 联动待前端配合)'
+    # v5.3.0 P7-2: 5 新命令
+    elif command.startswith('season '):
+        # season <spring|summer|autumn|winter>
+        name = command.split(' ', 1)[1].strip()
+        if name not in ('spring', 'summer', 'autumn', 'winter'):
+            output = f'季节名无效: {name} (允许: spring/summer/autumn/winter)'
+            success = False
+        else:
+            try:
+                session.db.conn.execute(
+                    "INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)",
+                    ('theme_season', name),
+                )
+                session.db.conn.commit()
+                output = f'季节已设置为: {name} (前端 useTheme 需刷新)'
+            except Exception as e:
+                output = f'写入失败: {e}'
+                success = False
+    elif command.startswith('theme '):
+        # theme <light|dark>
+        name = command.split(' ', 1)[1].strip()
+        if name not in ('light', 'dark'):
+            output = f'主题名无效: {name} (允许: light/dark)'
+            success = False
+        else:
+            try:
+                session.db.conn.execute(
+                    "INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)",
+                    ('theme_mode', name),
+                )
+                session.db.conn.commit()
+                output = f'主题已设置为: {name} (前端 useTheme 需刷新)'
+            except Exception as e:
+                output = f'写入失败: {e}'
+                success = False
+    elif command == 'snapshot-export':
+        # 导出全状态 JSON 到 data/snapshots/<cid>_<turn>.json
+        import json as _json
+        from pathlib import Path as _Path
+        snap_dir = _Path(ROOT) / "data" / "snapshots"
+        snap_dir.mkdir(parents=True, exist_ok=True)
+        snap_path = snap_dir / f"{campaign_id}_{state.turn}.json"
+        try:
+            data = {
+                "campaign_id": campaign_id,
+                "turn": getattr(state, "turn", 0),
+                "year": getattr(state, "year", 189),
+                "period": getattr(state, "period", 1),
+                "metrics": dict(state.metrics),
+                "timestamp": __import__('datetime').datetime.now().isoformat(timespec='seconds'),
+            }
+            snap_path.write_text(_json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
+            output = f'快照已导出: {snap_path}'
+        except Exception as e:
+            output = f'导出失败: {e}'
+            success = False
+    elif command.startswith('volume '):
+        # volume <0-100>
+        try:
+            v = int(command.split()[1])
+            if not 0 <= v <= 100:
+                output = f'音量需 0-100, 收到: {v}'
+                success = False
+            else:
+                session.db.conn.execute(
+                    "INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)",
+                    ('volume', str(v)),
+                )
+                session.db.conn.commit()
+                output = f'音量已设置为: {v}% (前端 useAudio 需刷新)'
+        except (ValueError, IndexError):
+            output = '用法: volume <0-100>'
+            success = False
+    elif command.startswith('regen '):
+        # regen <kind>: portrait|banner|modal_<name>
+        kind = command.split(' ', 1)[1].strip()
+        output = f'重生成 {kind}: 需主公跑 scripts/gen_images_v52.py --only {kind} --force'
     else:
         output = f'未知命令: {command}. 输入 help 查看'
         success = False
