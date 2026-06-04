@@ -1,29 +1,34 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""汉献帝之末路 PyInstaller 打包配置。
-   目标: Windows exe桌面程序
+"""PyInstaller spec for 汉献帝之末路 v5.2.0 桌面包。
+
+打 onedir（推荐，首启快）：
+    pyinstaller HanEmpireSim.spec
+
+打 onefile（单文件，启动慢 ~3-5s）：
+    pyinstaller --onefile HanEmpireSim.spec
+
+前置：先 `npm run build` 生成 web/dist/
+
+产物：
+- Windows: dist/HanEmpireSim/HanEmpireSim.exe + 资源
+- macOS: dist/HanEmpireSim.app (自动 BUNDLE)
+- Linux: dist/HanEmpireSim/
+
+双击 EXE 后：自动开浏览器到 http://127.0.0.1:5555
 """
 
-import os
-import sys
-from pathlib import Path
 from PyInstaller.utils.hooks import collect_all, collect_submodules
+from pathlib import Path
 
-block_cipher = None
-
-project_root = Path(__file__).parent
-assets_path = project_root / 'web' / 'public'
-han_sim_path = project_root / 'han_sim'
-content_path = project_root / 'content'
-
-# 收集所有动态导入的模块
-_agno_data, _agno_bin, _agno_hidden = collect_all("agno")
+# 收集 flask + openai SDK 的隐藏 import
+_flask_data, _flask_bin, _flask_hidden = collect_all("flask")
+_flask_cors_data, _, _flask_cors_hidden = collect_all("flask_cors")
 _openai_data, _openai_bin, _openai_hidden = collect_all("openai")
-_tiktoken_data, _tiktoken_bin, _tiktoken_hidden = collect_all("tiktoken")
-_webview_data, _webview_bin, _webview_hidden = collect_all("webview")
+_urllib_data, _urllib_bin, _urllib_hidden = collect_all("urllib3")
 
 
 def tree_datas(root: str, dest: str, exclude_parts=()):
-    """收集目录下的文件，排除指定部分"""
+    """v5.2.0 P6-19: 递归收集文件, 排除 dev 缓存."""
     root_path = Path(root)
     rows = []
     if not root_path.exists():
@@ -39,79 +44,55 @@ def tree_datas(root: str, dest: str, exclude_parts=()):
     return rows
 
 
+# han_sim + flask + 第三方 hidden imports
 hiddenimports = (
-    _agno_hidden
+    _flask_hidden
+    + _flask_cors_hidden
     + _openai_hidden
-    + _tiktoken_hidden
-    + _webview_hidden
-    + collect_submodules("uvicorn")
-    + collect_submodules("fastapi")
-    + collect_submodules("anyio")
-    + collect_submodules("starlette")
+    + _urllib_hidden
+    + collect_submodules("han_sim")
+    + collect_submodules("werkzeug")
     + [
-        "han_sim",
-        "flask",
-        "jinja2",
-        "werkzeug",
-        "markupsafe",
-        "click",
-        "itsdangerous",
-        "colorama",
-        "PIL",
-        "PIL._imaging",
-        "ctypes",
-        "socket",
-        "threading",
-        "json",
-        "random",
-        "shutil",
-        "re",
+        "han_sim.image_gen",
+        "han_sim.legacy_stats",
+        "han_sim.llm_config",
+        "han_sim.llm_router",
+        "server",
+        "launcher",
         "sqlite3",
-        "uuid",
-        "unicodedata",
-        "struct",
-        "subprocess",
-        "inspect",
-        "traceback",
-        "functools",
-        "collections",
-        "itertools",
-        "operator",
-        "builtins",
-        "typing",
-        "dataclasses",
-        "types",
-        "pathlib",
     ]
 )
 
+# 资源: web/dist (Vite build) + web/public (静态资源) + data
 datas = (
-    _agno_data
-    + _openai_data
-    + _tiktoken_data
-    + _webview_data
-    + tree_datas(str(assets_path / 'portraits'), 'web/public/portraits')
-    + tree_datas(str(assets_path / 'images'), 'web/public/images')
-    + tree_datas(str(assets_path / 'animations'), 'web/public/animations')
+    _flask_data + _flask_cors_data + _openai_data + _urllib_data
+    + tree_datas("web/dist", "web/dist", exclude_parts={"_backup", "_v4"})
+    + tree_datas("web/public", "web/public", exclude_parts={"_backup", "v4-epic"})
     + [
-        (str(assets_path / 'icons.svg'), 'web/public'),
-        (str(assets_path / 'favicon.svg'), 'web/public'),
+        ("data", "data"),
+        (".env.example", "."),
     ]
-    + tree_datas(str(content_path), 'content')
 )
 
-binaries = _agno_bin + _openai_bin + _tiktoken_bin + _webview_bin
+binaries = _flask_bin + _openai_bin + _urllib_bin
+
+block_cipher = None
 
 a = Analysis(
-    ['launcher.py'],
-    pathex=[str(project_root)],
+    ["launcher.py"],
+    pathex=["."],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
-    keys=[],
-    exclusionplugins=[],
+    runtime_hooks=[],
+    excludes=[
+        "pytest",
+        "PyQt5", "PyQt6", "PySide2", "PySide6",
+        "matplotlib", "pandas",
+        "numpy.tests",
+    ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -125,18 +106,16 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='HanEmpireSim',
+    name="HanEmpireSim",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=False,
-    console=False,
+    console=False,  # 双击无终端窗口, debug 改 True
     disable_windowed_traceback=False,
-    argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=str(assets_path / 'favicon.svg') if (assets_path / 'favicon.svg').exists() else None,
 )
 
 coll = COLLECT(
@@ -147,5 +126,21 @@ coll = COLLECT(
     strip=False,
     upx=False,
     upx_exclude=[],
-    name='HanEmpireSim',
+    name="HanEmpireSim",
 )
+
+# macOS .app bundle
+import sys
+if sys.platform == "darwin":
+    app = BUNDLE(
+        coll,
+        name="HanEmpireSim.app",
+        icon=None,
+        bundle_identifier="com.local.hanempire",
+        info_plist={
+            "NSHighResolutionCapable": True,
+            "LSBackgroundOnly": False,
+            "CFBundleShortVersionString": "5.2.0",
+            "CFBundleVersion": "5.2.0",
+        },
+    )
