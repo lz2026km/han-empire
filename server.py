@@ -281,6 +281,37 @@ def next_turn(campaign_id):
     })
 
 
+# --- v5.2.0 P6-16: 结束一局 (调 record_run_completion) ---
+@app.route('/api/campaigns/<campaign_id>/end', methods=['POST'])
+def end_campaign(campaign_id):
+    """v5.2.0 P6-16: 手动结束一局 (调 legacy_stats.record_run_completion)
+    body: {"ending": "中兴"|...} 可选, 不传则 auto-detect
+    返: { run_id, ending, final_score }
+    """
+    try:
+        from han_sim.legacy_stats import record_run_completion, detect_ending, compute_final_score
+    except Exception as exc:
+        return jsonify({"error": "import_failed", "detail": str(exc)}), 500
+
+    if campaign_id not in GAMES:
+        try:
+            GAMES[campaign_id] = GameSession.load(campaign_id)
+        except Exception as e:
+            return jsonify({"error": "load_failed", "detail": str(e)}), 404
+    session = GAMES[campaign_id]
+    body = request.get_json(silent=True) or {}
+    ending = body.get("ending") or None
+    try:
+        run_id = record_run_completion(session.db, campaign_id, session.state, ending=ending)
+    except Exception as e:
+        return jsonify({"error": "record_failed", "detail": str(e)}), 500
+    return jsonify({
+        "run_id": run_id,
+        "ending": detect_ending(session.state),
+        "final_score": compute_final_score(session.state),
+    })
+
+
 @app.route('/api/campaigns/<campaign_id>/check_events', methods=['GET'])
 def check_events(campaign_id):
     if campaign_id not in GAMES:
