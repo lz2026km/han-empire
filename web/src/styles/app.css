@@ -88,6 +88,19 @@
   --shadow-gold: 0 4px 16px rgba(201, 168, 76, 0.25);
   --shadow-red: 0 4px 16px rgba(196, 43, 43, 0.25);
 
+  /* v5.3.0 P7-6: z-index 统一 (8 层梯度, 避免遮挡) */
+  --z-base: 0;            /* 内容层 */
+  --z-content: 10;        /* 主内容卡片 */
+  --z-tabs: 50;           /* 9 Tab */
+  --z-header: 100;        /* Header */
+  --z-dropdown: 200;      /* 下拉菜单 (季节选择等) */
+  --z-sidebar: 300;       /* 侧栏 */
+  --z-modal: 1050;        /* 所有 modal (统一) */
+  --z-menu: 1040;         /* MenuPage (游戏外背景层) */
+  --z-cheat: 1080;        /* 工程师控制台 (cheat) */
+  --z-loading: 1100;      /* 全屏推演 Loading (最顶) */
+  --z-toast: 1200;        /* 通知 (预留) */
+
   /* 动效时长 - 4 阶梯 */
   --duration-fast: 150ms;
   --duration-base: 250ms;
@@ -96,6 +109,28 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* v5.3.0 P7-6: z-index 文档化 (8 层梯度, 详见 :root 变量)
+ *
+ *  Layer            z-index     用途
+ *  ────────────────  ─────────   ──────────────────────────────
+ *  z-toast          1200        通知 (预留, 当前未用)
+ *  z-loading        1100        全屏推演 LoadingScreen (最顶)
+ *  z-cheat          1080        工程师控制台 (cheat console)
+ *  z-modal          1050        所有 modal (统一: Report/Closed/History/
+ *                                Extraction/State/Settings/Stats/Help/
+ *                                NewGame/Confirm)
+ *  z-menu           1040        MenuPage (背景层)
+ *  z-sidebar        300         侧栏
+ *  z-dropdown       200         下拉菜单
+ *  z-header         100         Header
+ *  z-tabs           50          9 Tab
+ *  z-content        10          主内容卡片
+ *  z-base           0           内容层
+ *
+ * 用法: z-index: var(--z-modal);  (替代硬编码 1050 等)
+ * 调试: DevTools > Computed > z-index
+ */
 
 /* ---- Portrait Frame Variables ---- */
 :root {
@@ -171,7 +206,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: 24px;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: var(--z-header);
 }
 
 .app-header__title {
@@ -716,7 +751,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
+  z-index: var(--z-dropdown);
 }
 
 .modal {
@@ -2481,7 +2516,7 @@ input:focus, select:focus {
 
 /* v5.1.4 P4-3: StateModal 国势详情 (仿 ming_sim StateModal) */
 .state-modal-overlay {
-  position: fixed; inset: 0; z-index: 1060;
+  position: fixed; inset: 0; z-index: var(--z-modal);
   display: flex; align-items: center; justify-content: center;
   background: rgba(8, 12, 8, 0.78);
   backdrop-filter: blur(4px);
@@ -2934,7 +2969,7 @@ input:focus, select:focus {
 
 /* v5.2.0 P6-6: LoadingScreen 全屏推演 (仿 ming_sim simulate_loading) */
 .loading-screen {
-  position: fixed; inset: 0; z-index: 1100;
+  position: fixed; inset: 0; z-index: var(--z-loading);
   display: flex; align-items: center; justify-content: center;
   pointer-events: all;
 }
@@ -3968,7 +4003,7 @@ input:focus, select:focus {
 .report-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1100;
+  z-index: var(--z-modal);
   display: flex;
   align-items: center;
   justify-content: center;
