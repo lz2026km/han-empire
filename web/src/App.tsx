@@ -101,6 +101,45 @@ export default function App() {
   // v5.2.0 P6-8: 多周目统计 (从 SettingsModal 嵌套打开)
   const [showStatsModal, setShowStatsModal] = useState(false)
 
+  // v5.3.0 P7-fix: 必须在 useEffect 之前调 useGame(), 否则 TDZ 死区
+  const {
+    campaignId, gameState, ministers, factions, loading, error, log,
+    createCampaign, loadCampaign, saveGame, issueDecree, nextTurn, returnToMenu
+  } = useGame()
+
+  // v5.3.0 P7-fix: tabs 必须提到 useMemo 之前, 否则 TDZ
+  const tabs: { id: Tab;
+  label: string; key: string }[] = [
+    { id: 'overview', label: '总览 总览', key: '1' },
+    { id: 'decree', label: '诏书 诏书', key: '2' },
+    { id: 'chat', label: '召对 召对', key: '3' },
+    { id: 'ministers', label: '大臣 大臣', key: '4' },
+    { id: 'factions', label: '战斗️ 派系', key: '5' },
+    { id: 'skills', label: '技能 技能', key: '6' },
+    { id: 'buildings', label: '建筑️ 建筑', key: '7' },
+    { id: 'map', label: '地图️ 地图', key: '8' },
+    { id: 'orders', label: '密令 密令', key: '9' },
+    { id: 'log', label: '列表 日志', key: 'L' },
+    { id: 'consort', label: '后宫 后宫', key: 'C' },
+  ]
+
+  // v5.3.0 P7-fix: 全部 hooks 必须上移到 useEffect 之前 (避免 TDZ)
+  const {
+    showChatModal,
+    setShowChatModal,
+    selectedMinister,
+    handleMinisterSelect,
+    handleSendMessage,
+  } = useChatModal(campaignId, ministers)
+
+  const {
+    showCheatConsole,
+    setShowCheatConsole,
+    handleExecuteCheat,
+  } = useCheatConsole(campaignId)
+
+  const { theme, setTheme, cycleSeason, season } = useTheme()
+
   // v5.1.1 P1-3: 检测 gameState.turn 变化 → 拉 /api/gazette → 弹 ReportModal
   useEffect(() => {
     const currentTurn = gameState?.turn
@@ -205,28 +244,7 @@ export default function App() {
       showReportModal, showClosedModal, showEdictModal, showChatModal, showCheatConsole,
       showSecretOrders, showGrandMap, showSettingsModal, showHelpModal, showReturnConfirm])
 
-  const {
-    campaignId, gameState, ministers, factions, loading, error, log,
-    createCampaign, loadCampaign, saveGame, issueDecree, nextTurn, returnToMenu
-  } = useGame()
-
-  // v2.0.0 Phase 3.3: 抽 3 个 handleMinister/Send/Cheat 调用到 useChatModal/useCheatConsole
-  const {
-    showChatModal,
-    setShowChatModal,
-    selectedMinister,
-    handleMinisterSelect,
-    handleSendMessage,
-  } = useChatModal(campaignId, ministers)
-
-  const {
-    showCheatConsole,
-    setShowCheatConsole,
-    handleExecuteCheat,
-  } = useCheatConsole(campaignId)
-
-  // v2.1.0 Phase 3.2: 主题 hook (暗/亮 + 4 季节, 持久化)
-  const { theme, setTheme, cycleSeason, season } = useTheme()
+  // v5.3.0 P7-fix: 删重复的 useChatModal/useCheatConsole/useTheme (已上移 line 133-141)
 
   // v2.1.0 Phase 3.2: 全局快捷键
   // 1-9 → 切前 9 Tab, Ctrl+` → cheat, Space → 推演, T → 切主题, S → 切季节
@@ -273,21 +291,6 @@ export default function App() {
   } = useSettlement(campaignId)
 
   // v2.2.0: EdictModal 自带 SSE 流式颁诏, 旧的 handleEdictPublish 已被取代 (此处不再保留)
-
-  const tabs: { id: Tab;
-  label: string; key: string }[] = [
-    { id: 'overview', label: '总览 总览', key: '1' },
-    { id: 'decree', label: '诏书 诏书', key: '2' },
-    { id: 'chat', label: '召对 召对', key: '3' },
-    { id: 'ministers', label: '大臣 大臣', key: '4' },
-    { id: 'factions', label: '战斗️ 派系', key: '5' },
-    { id: 'skills', label: '技能 技能', key: '6' },
-    { id: 'buildings', label: '建筑️ 建筑', key: '7' },
-    { id: 'map', label: '地图️ 地图', key: '8' },
-    { id: 'orders', label: '密令 密令', key: '9' },
-    { id: 'log', label: '列表 日志', key: 'L' },
-    { id: 'consort', label: '后宫 后宫', key: 'C' },
-  ]
 
   return (
     <div className="app">

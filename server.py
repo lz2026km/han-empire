@@ -110,13 +110,24 @@ def _state_to_dict(state):
 # v2.0.0 Phase 5.5: 全局 after_request 钩子, 自动 gzip 响应
 @app.after_request
 def gzip_response_hook(response):
-    """对 > 1KB 的 JSON 响应自动 gzip 压缩 (Accept-Encoding: gzip 时)。"""
+    """对 > 1KB 的 JSON 响应自动 gzip 压缩 (Accept-Encoding: gzip 时)。
+
+    v5.3.0 P7-fix: 跳过 direct passthrough 响应 (send_file / send_from_directory),
+    否则 get_data() 会抛 RuntimeError。
+    """
     if (response.status_code < 200 or response.status_code >= 300
         or 'gzip' not in request.headers.get('Accept-Encoding', '')
-        or len(response.get_data()) < 1024
         or 'Content-Encoding' in response.headers):
         return response
-    data = response.get_data()
+    # v5.3.0 P7-fix: 跳过 direct passthrough (文件流式响应)
+    if response.is_streamed:
+        return response
+    try:
+        data = response.get_data()
+    except RuntimeError:
+        return response
+    if len(data) < 1024:
+        return response
     buf = io.BytesIO()
     with gzip.GzipFile(fileobj=buf, mode='wb') as f:
         f.write(data)

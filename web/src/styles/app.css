@@ -2,11 +2,7 @@
    汉献帝之末路 - 玄黑/朱红/古金 古风主题
    Theme: Ancient Chinese Dark Palace Style
    ============================================= */
-@import url('./animations.css');
-@import url('./v4-images.css');
-@import url('./v4-补漏.css');
-@import url('./v4-epic.css');
-@import url('./v4.0.3.css');
+/* v5.3.0 P7-fix: 5 dead @import 已移除 (CSS 整合 v5.2.0 P4-2 时移走 4 文件到 archive) */
 
 :root {
   /* 玄黑 - 主背景 */
