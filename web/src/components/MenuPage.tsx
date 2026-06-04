@@ -124,9 +124,19 @@ export function MenuPage({ onNewGame, onLoadSave, onContinue, onShutdown }: Menu
       {/* v5.2.0 P6-12: 朝代 banner 背景 (4 季节, AI 生图) */}
       <div className="menu-page__banner" aria-hidden="true" />
       <div className="menu-page__header">
-        {/* v5.2.0 P6-12: 主公头像 (圆形 mask, 金边) */}
+        {/* v5.5.0+ P8-H: 主公头像 (portraits/main/liuxie_emperor.jpg, fallback 皇冠) */}
         <div className="menu-page__avatar" aria-label="汉献帝刘协">
-          <Crown size={48} className="menu-page__avatar-fallback" />
+          <img
+            src="/portraits/main/liuxie_emperor.jpg"
+            alt="汉献帝刘协"
+            onError={(e) => {
+              const t = e.currentTarget
+              t.style.display = 'none'
+              t.nextElementSibling?.classList.remove('menu-page__avatar-fallback--hidden')
+            }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+          />
+          <Crown size={48} className="menu-page__avatar-fallback menu-page__avatar-fallback--hidden" />
         </div>
         <h1>汉献帝之末路</h1>
         <p className="menu-page__subtitle">献帝 v{status?.version || '5.5.0+'} · 回合制汉风政治游戏</p>

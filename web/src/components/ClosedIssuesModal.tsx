@@ -64,7 +64,12 @@ export function ClosedIssuesModal({ open, issues, onClose }: ClosedIssuesModalPr
       <div className="closed-modal" onClick={(e) => e.stopPropagation()}>
         <div className="closed-modal__titlebar">
           <div className="closed-modal__title">
-            <ListChecks size={18} />
+            <img
+              src="/portraits/main/liuxie_emperor.jpg"
+              alt="主公"
+              style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-gold-dim)' }}
+              onError={(e) => { e.currentTarget.style.display = 'none' }}
+            />
             <span>本月关案 · {issues.length} 项</span>
           </div>
           <button type="button" className="closed-modal__close" onClick={onClose} aria-label="关闭">

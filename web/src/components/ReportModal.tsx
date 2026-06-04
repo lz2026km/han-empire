@@ -47,7 +47,12 @@ export function ReportModal({ open, gazette, onClose }: ReportModalProps) {
       <div className="report-modal" onClick={(e) => e.stopPropagation()}>
         <div className="report-modal__titlebar">
           <div className="report-modal__title">
-            <ScrollText size={18} />
+            <img
+              src="/portraits/main/liuxie_emperor.jpg"
+              alt="主公"
+              style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-gold-dim)' }}
+              onError={(e) => { e.currentTarget.style.display = 'none' }}
+            />
             <span>{gazette.year}年{gazette.period}月 · 月末邸报 · 回合 {gazette.turn}</span>
           </div>
           <div className="report-modal__actions">

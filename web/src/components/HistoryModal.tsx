@@ -125,7 +125,12 @@ export function HistoryModal({ open, data, onClose }: HistoryModalProps) {
       <div className="hist-modal" onClick={(e) => e.stopPropagation()}>
         <div className="hist-modal__titlebar">
           <div className="hist-modal__title">
-            <History size={18} />
+            <img
+              src="/portraits/main/liuxie_emperor.jpg"
+              alt="主公"
+              style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-gold-dim)' }}
+              onError={(e) => { e.currentTarget.style.display = 'none' }}
+            />
             <span>回合历史 · T{data.current_turn ?? '?'}</span>
           </div>
           <button type="button" className="hist-modal__close" onClick={onClose} aria-label="关闭">

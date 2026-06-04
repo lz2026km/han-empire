@@ -73,7 +73,12 @@ export function ExtractionModal({ open, data, onClose }: ExtractionModalProps) {
       <div className="extract-modal" onClick={(e) => e.stopPropagation()}>
         <div className="extract-modal__titlebar">
           <div className="extract-modal__title">
-            <FileJson size={18} />
+            <img
+              src="/portraits/main/liuxie_emperor.jpg"
+              alt="主公"
+              style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-gold-dim)' }}
+              onError={(e) => { e.currentTarget.style.display = 'none' }}
+            />
             <span>提取透明 · T{data.turn}</span>
           </div>
           <button type="button" className="extract-modal__close" onClick={onClose} aria-label="关闭">

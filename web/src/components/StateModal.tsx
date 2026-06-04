@@ -223,7 +223,12 @@ export function StateModal({ open, gameState, budget, factions, regions, armies,
       <div className="state-modal" onClick={(e) => e.stopPropagation()}>
         <div className="state-modal__titlebar">
           <div className="state-modal__title">
-            <BarChart3 size={18} />
+            <img
+              src="/portraits/main/liuxie_emperor.jpg"
+              alt="主公"
+              style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-gold-dim)' }}
+              onError={(e) => { e.currentTarget.style.display = 'none' }}
+            />
             <span>国势详情 · {gameState.turn?.year || '?'}年{gameState.turn?.period || '?'}月</span>
           </div>
           <button type="button" className="state-modal__close" onClick={onClose} aria-label="关闭">

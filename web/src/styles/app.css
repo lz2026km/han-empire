@@ -4448,6 +4448,24 @@ input:focus, select:focus {
   vertical-align: middle;
 }
 
+/* v5.5.0+ P8-H: 主公立绘 (portraits/main/liuxie_emperor.jpg) Header 32x32 */
+.app-header__emperor-portrait {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-gold-dim);
+  box-shadow: 0 0 8px rgba(201, 168, 76, 0.3);
+  margin-left: 8px;
+}
+.app-header__emperor-portrait.portrait-medium {
+  width: 36px; height: 36px;
+}
+
+/* v5.5.0+ P8-H: MenuPage 主公头像 (portraits/main/liuxie_emperor.jpg, 圆形) */
+.menu-page__avatar-fallback--hidden {
+  display: none;
+}
+
 /* v5.5.0+ P8-G9: deco/cloud_pattern_1-4 装饰 (modal 背景, opacity 0.05) */
 .modal-deco-bg {
   position: absolute;

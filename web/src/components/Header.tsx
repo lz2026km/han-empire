@@ -3,8 +3,10 @@
    v2.1.0 Phase 3.3: 加主题切换 + 季节指示按钮
    v5.2.0 P6-4: 加 4 入口按钮 (主菜单/国势/设置/帮助)
    v5.5.0+ P8-G8: 5 阶品秩图 (rank/rank_*_formal.jpg)
+   v5.5.0+ P8-H: 主公立绘 (portraits/main/liuxie_emperor.jpg) 显示在标题旁
    ============================================= */
 import { Menu, BarChart3, Settings, HelpCircle } from 'lucide-react'
+import { MinisterPortrait } from './MinisterPortrait'
 import type { GameState } from '../types'
 
 interface Props {
@@ -44,6 +46,16 @@ export function Header({ gameState, onSave, onNewGame, onReturnToMenu, onOpenSta
         <img src={RANK_IMG.gong} alt="" className="rank-icon" style={{ width: 24, height: 24, marginRight: 6 }} />
         汉献帝之末路
       </h1>
+
+      {gameState && (
+        <MinisterPortrait
+          primary={`/portraits/main/${gameState.emperor_name || 'liuxie_emperor'}.jpg`}
+          fallback="/portraits/liuxie_emperor.jpg"
+          name={gameState.emperor_name || '刘协'}
+          size="small"
+          className="app-header__emperor-portrait"
+        />
+      )}
 
       {gameState && (
         <>
