@@ -353,6 +353,99 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--color-gold-dim);
 }
 
+/* v5.2.0 P6-15: OverviewTab 3 metric 卡片贴图 (resource_*.jpg 复用) */
+.overview-metric {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--color-border-gold);
+  border-radius: 6px;
+  padding: 18px 16px;
+  background-color: var(--color-bg-card);
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: overlay;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.overview-metric::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(20,15,10,0.5), rgba(20,15,10,0.85));
+  z-index: 0;
+}
+.overview-metric > * { position: relative; z-index: 1; }
+.overview-metric--authority {
+  background-image: url('/v4-epic/resource_people.jpg');
+}
+.overview-metric--loyalty {
+  background-image: url('/v4-epic/resource_gold.jpg');
+}
+.overview-metric--ministers {
+  background-image: url('/v4-epic/resource_food.jpg');
+}
+.overview-metric__label {
+  color: var(--color-gold);
+  font-size: 13px;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+  font-family: var(--font-display);
+}
+.overview-metric__value {
+  font-family: var(--font-mono);
+  font-size: 36px;
+  color: var(--color-gold-bright);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.overview-metric__sub {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+/* v5.2.0 P6-15: OverviewTab 派系/大臣卡片加 faction 图腾 */
+.overview-faction-card,
+.overview-minister-card {
+  background-color: var(--color-bg-card);
+  background-size: 36px 36px;
+  background-repeat: no-repeat;
+  background-position: 12px 50%;
+  padding-left: 56px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  margin-bottom: 6px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-right: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* v5.2.0 P6-15: OverviewTab '国势详情' 按钮 (大) */
+.overview-detail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, var(--color-bg-card), var(--color-bg-tertiary));
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold-bright);
+  padding: 8px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font-display);
+  letter-spacing: 1px;
+  transition: all 200ms;
+}
+.overview-detail-btn:hover {
+  background: linear-gradient(90deg, var(--color-gold-dim), var(--color-bg-card));
+  color: #fff;
+  box-shadow: 0 0 12px rgba(201,168,76,0.3);
+}
+
 /* ---- Tabs ---- */
 .tabs {
   display: flex;

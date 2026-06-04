@@ -32,7 +32,7 @@ export function OverviewTab({ gameState, ministers, factions, onNextTurn, onSave
         <button type="button" className="btn btn--gold" onClick={onSave}>存储 存档</button>
         {/* v5.2.0 P6-2: 国势详情弹窗按钮 (S 键亦可触发) */}
         {onOpenStateModal && (
-          <button type="button" className="btn" onClick={onOpenStateModal}>
+          <button type="button" className="overview-detail-btn" onClick={onOpenStateModal}>
             国势详情
             <kbd className="tab__kbd" style={{ marginLeft: '6px' }}>S</kbd>
           </button>
@@ -40,26 +40,26 @@ export function OverviewTab({ gameState, ministers, factions, onNextTurn, onSave
       </div>
 
       <div className="grid-3" style={{ marginBottom: '20px' }}>
-        <div className="card card--gold">
-          <div style={{ color: 'var(--color-gold)', fontSize: '13px', marginBottom: '8px' }}>威权值</div>
-          <div style={{ fontSize: '36px', color: 'var(--color-gold-bright)', marginBottom: '8px' }}>
+        <div className="overview-metric overview-metric--authority">
+          <div className="overview-metric__label">威权值</div>
+          <div className="overview-metric__value">
             {gameState.emperor_authority}
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
+          <div className="overview-metric__sub">
             七档: {getAuthorityTier(gameState.emperor_authority)}阶
           </div>
         </div>
-        <div className="card">
-          <div style={{ color: 'var(--color-text-secondary)', fontSize: '13px', marginBottom: '8px' }}>忠诚度</div>
-          <div style={{ fontSize: '36px', color: 'var(--color-text-primary)' }}>
+        <div className="overview-metric overview-metric--loyalty">
+          <div className="overview-metric__label">忠诚度</div>
+          <div className="overview-metric__value">
             {gameState.emperor_loyalty}
           </div>
+          <div className="overview-metric__sub">群臣归心</div>
         </div>
-        <div className="card">
-          <div style={{ color: 'var(--color-text-secondary)', fontSize: '13px', marginBottom: '8px' }}>在册大臣</div>
-          <div style={{ fontSize: '36px', color: 'var(--color-text-primary)' }}>
-            {ministers.length}
-          </div>
+        <div className="overview-metric overview-metric--ministers">
+          <div className="overview-metric__label">在册大臣</div>
+          <div className="overview-metric__value">{ministers.length}</div>
+          <div className="overview-metric__sub">可召对/派遣</div>
         </div>
       </div>
 
