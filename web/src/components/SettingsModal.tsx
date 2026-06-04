@@ -138,10 +138,10 @@ export function SettingsModal({ open, onClose, onClearSaves, onOpenStats }: Sett
         <section className="settings-section">
           <h3>关于</h3>
           <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
-            <b>汉献帝之末路 v5.2.0</b> — 回合制汉风政治游戏 的回合制汉风政治游戏。<br />
+            <b>汉献帝之末路 v5.5.0+</b> — 回合制汉风政治游戏。<br />
             主公将以献帝身份, 在 189-220 年的乱局中求存。<br />
             <span style={{ color: 'var(--color-text-muted)' }}>
-              灵感: 陈舜臣《三国》、罗贯中《三国演义》、v5.1 内部设计 汉末汉献帝
+              灵感: 陈舜臣《三国》、罗贯中《三国演义》
             </span>
           </p>
         </section>

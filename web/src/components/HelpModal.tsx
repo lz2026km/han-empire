@@ -156,7 +156,7 @@ export function HelpModal({ open, onClose }: HelpModalProps) {
                   <b>献给主公</b>: 愿主公在这汉末乱局中, 步步为营, 重振汉室。
                 </p>
                 <p style={{ color: 'var(--color-text-muted)', fontSize: '11px' }}>
-                  v5.2.0 · 2026-06 · https://github.com/lz2026km/han-empire
+                  v5.5.0+ · 2026-06 · https://github.com/lz2026km/han-empire
                 </p>
               </div>
             </div>

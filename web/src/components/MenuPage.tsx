@@ -129,7 +129,7 @@ export function MenuPage({ onNewGame, onLoadSave, onContinue, onShutdown }: Menu
           <Crown size={48} className="menu-page__avatar-fallback" />
         </div>
         <h1>汉献帝之末路</h1>
-        <p className="menu-page__subtitle">献帝 v{status?.version || '5.2.0'} · 回合制汉风政治游戏</p>
+        <p className="menu-page__subtitle">献帝 v{status?.version || '5.5.0+'} · 回合制汉风政治游戏</p>
       </div>
 
       {error && <div className="menu-page__error">[X] {error}</div>}
