@@ -3233,7 +3233,7 @@ input:focus, select:focus {
   font-family: var(--font-display);
   font-size: 16px;
 }
-/* 4 角云纹装饰 (复用 v4-epic corner_cloud.jpg) */
+/* v5.5.0+ P8-G2/G3: 5 modal 角饰 (corner/modal_*_spring_tl.jpg 替换 v4-epic/corner_cloud.jpg) */
 .report-modal,
 .closed-modal,
 .state-modal,
@@ -3242,30 +3242,37 @@ input:focus, select:focus {
   position: relative;
   overflow: hidden;
 }
+.report-modal::before  { background-image: url('/corner/modal_report_spring_tl.jpg'); }
+.closed-modal::before  { background-image: url('/corner/modal_closed_issues_spring_tl.jpg'); }
+.state-modal::before   { background-image: url('/corner/modal_state_spring_tl.jpg'); }
+.hist-modal::before    { background-image: url('/corner/modal_history_spring_tl.jpg'); }
+.extract-modal::before { background-image: url('/corner/modal_extraction_spring_tl.jpg'); }
+.report-modal::after  { background-image: url('/corner/modal_report_spring_tl.jpg'); transform: scaleX(-1); }
+.closed-modal::after  { background-image: url('/corner/modal_closed_issues_spring_tl.jpg'); transform: scaleX(-1); }
+.state-modal::after   { background-image: url('/corner/modal_state_spring_tl.jpg'); transform: scaleX(-1); }
+.hist-modal::after    { background-image: url('/corner/modal_history_spring_tl.jpg'); transform: scaleX(-1); }
+.extract-modal::after { background-image: url('/corner/modal_extraction_spring_tl.jpg'); transform: scaleX(-1); }
 .report-modal::before, .closed-modal::before,
-.state-modal::before, .hist-modal::before, .extract-modal::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 48px; height: 48px;
-  background: url('/v4-epic/corner_cloud.jpg') no-repeat;
-  background-size: cover;
-  opacity: 0.35;
-  pointer-events: none;
-  z-index: 0;
-}
+.state-modal::before, .hist-modal::before, .extract-modal::before,
 .report-modal::after, .closed-modal::after,
 .state-modal::after, .hist-modal::after, .extract-modal::after {
   content: '';
   position: absolute;
-  top: 0; right: 0;
-  width: 48px; height: 48px;
-  background: url('/v4-epic/corner_cloud.jpg') no-repeat;
+  top: 0;
+  width: 56px; height: 56px;
   background-size: cover;
-  opacity: 0.35;
+  background-repeat: no-repeat;
+  opacity: 0.45;
   pointer-events: none;
   z-index: 0;
-  transform: scaleX(-1);
+}
+.report-modal::before, .closed-modal::before,
+.state-modal::before, .hist-modal::before, .extract-modal::before {
+  left: 0;
+}
+.report-modal::after, .closed-modal::after,
+.state-modal::after, .hist-modal::after, .extract-modal::after {
+  right: 0;
 }
 
 /* v5.2.0 P6-13: TabHero 9 Tab 顶部 hero 贴图 (AI 生图) */
@@ -4314,4 +4321,141 @@ input:focus, select:focus {
   font-size: var(--fs-fluid-sm);
   line-height: 1.6;
   margin: var(--space-fluid-2) 0;
+}
+
+/* v5.5.0+ P8-G1: BottomNav 8 个 btn/ AI 小图 (推演/邸报/诏书/史册 + 主菜单/设置/帮助/返回) */
+.bottom-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-fluid-2);
+  padding: var(--space-fluid-2) var(--space-fluid-3);
+  background: linear-gradient(180deg, rgba(20, 16, 8, 0.95) 0%, rgba(10, 8, 4, 0.95) 100%);
+  border-top: 1px solid var(--color-gold-dim);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.6);
+}
+.bottom-nav__btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  min-width: 56px;
+}
+.bottom-nav__btn:hover {
+  background: rgba(201, 168, 76, 0.1);
+  border-color: var(--color-gold-dim);
+  color: var(--color-gold);
+}
+.bottom-nav__btn--small {
+  min-width: 48px;
+  padding: 4px 6px;
+}
+.bottom-nav__btn--small .bottom-nav__icon {
+  width: 24px; height: 24px;
+}
+.bottom-nav__btn--danger:hover {
+  background: rgba(196, 43, 43, 0.15);
+  border-color: var(--color-accent-red);
+  color: var(--color-accent-red-bright);
+}
+.bottom-nav__icon {
+  width: 32px; height: 32px;
+  border-radius: 3px;
+  object-fit: cover;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.bottom-nav__label {
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: center;
+  font-weight: 600;
+}
+.bottom-nav__label small {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+.bottom-nav__divider {
+  width: 1px;
+  height: 32px;
+  background: var(--color-border);
+  margin: 0 4px;
+}
+
+/* v5.5.0+ P8-G2/P8-G3: 11 modal 角饰 (corner/modal_*_*_tl.jpg 替换 v4-epic/corner_cloud.jpg) */
+.modal-corner-tl, .modal-corner-tr, .modal-corner-bl, .modal-corner-br {
+  position: absolute;
+  width: 56px; height: 56px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 1;
+}
+.modal-corner-tl { top: 4px; left: 4px; }
+.modal-corner-tr { top: 4px; right: 4px; transform: scaleX(-1); }
+.modal-corner-bl { bottom: 4px; left: 4px; transform: scaleY(-1); }
+.modal-corner-br { bottom: 4px; right: 4px; transform: scale(-1, -1); }
+
+/* v5.5.0+ P8-G4: 3 处 resource_* 改 misc/item_* (people->pearl, gold->gold_coin, food->tea) */
+.overview-metric__icon {
+  width: 28px; height: 28px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid var(--color-gold-dim);
+}
+
+/* v5.5.0+ P8-G5: SettingsModal 控制项 ctrl/ 图 (24x24) */
+.settings-section__icon {
+  width: 24px; height: 24px;
+  border-radius: 3px;
+  object-fit: cover;
+  border: 1px solid var(--color-gold-dim);
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* v5.5.0+ P8-G6: 6 状态徽章 (status/loading/success/error/warning/info) */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--color-border);
+}
+.status-badge__icon {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.status-badge--success { color: #4ade80; border-color: rgba(74, 222, 128, 0.4); }
+.status-badge--error { color: #f87171; border-color: rgba(248, 113, 113, 0.4); }
+.status-badge--warning { color: #fbbf24; border-color: rgba(251, 191, 36, 0.4); }
+.status-badge--info { color: #60a5fa; border-color: rgba(96, 165, 250, 0.4); }
+.status-badge--loading { color: #c9a84c; border-color: rgba(201, 168, 76, 0.4); }
+
+/* v5.5.0+ P8-G8: 5 阶品秩 (rank/rank_*_*.jpg, 16x16) */
+.rank-icon {
+  width: 16px; height: 16px;
+  border-radius: 2px;
+  object-fit: cover;
+  vertical-align: middle;
+}
+
+/* v5.5.0+ P8-G9: deco/cloud_pattern_1-4 装饰 (modal 背景, opacity 0.05) */
+.modal-deco-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
 }

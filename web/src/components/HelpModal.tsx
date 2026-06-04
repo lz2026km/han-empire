@@ -1,9 +1,8 @@
 /* =============================================
-   HelpModal - 帮助弹窗 (v5.2.0 P6-9)
+   HelpModal - 帮助弹窗 (v5.2.0 P6-9 + v5.5.0+ P8-G6)
    3 Tab: 玩法 / 快捷键 / 致谢
    ============================================= */
 import { useEffect, useState } from 'react'
-import { BookOpen, Keyboard, Heart, Crown, Scroll, Users, Sword, Building, Sparkles } from 'lucide-react'
 
 type Tab = 'play' | 'shortcuts' | 'credits'
 
@@ -12,34 +11,44 @@ interface HelpModalProps {
   onClose: () => void
 }
 
-const GAMEPLAY_SECTIONS: { icon: any; title: string; body: string }[] = [
+// v5.5.0+ P8-G6: 用 icon_*.png (已有) 替代 lucide icons
+const ICON_BOOK = '/icon_book.png'
+const ICON_CHESS = '/icon_chess.png'
+const ICON_COIN = '/icon_coin.png'
+const ICON_JADE = '/icon_jade.png'
+const ICON_LAMP = '/icon_lamp.png'
+const ICON_SCROLL = '/icon_scroll.png'
+const ICON_SEAL = '/icon_seal.png'
+const ICON_SWORD = '/icon_sword.png'
+
+const GAMEPLAY_SECTIONS: { icon: string; title: string; body: string }[] = [
   {
-    icon: Crown,
+    icon: ICON_SEAL,
     title: '开局',
     body: '主公以汉献帝刘协之身, 在 189-220 年的三国乱局中求存。初起威权仅 15, 藩镇高达 80, 必须步步为营。',
   },
   {
-    icon: Scroll,
+    icon: ICON_SCROLL,
     title: '诏书',
     body: '通过颁布诏书推行政策: 勤政爱民可提声望, 任用贤能可增威权, 但诏令不当会招致反噬。每月限 1 道。',
   },
   {
-    icon: Users,
+    icon: ICON_CHESS,
     title: '大臣',
     body: '召对大臣可影响其忠诚度与派系立场。曹操、袁绍、董卓等 200+ 历史人物皆可收为己用或外戚安抚。',
   },
   {
-    icon: Sword,
+    icon: ICON_SWORD,
     title: '派系',
     body: '外戚、宦官、世族、寒门、边将 5 大派系此消彼长, 需用联姻、迁都、密令等手段制衡。',
   },
   {
-    icon: Sparkles,
+    icon: ICON_JADE,
     title: '技能',
     body: '献帝可学习 4 系技能 (帝术/用人/军事/民生), 解锁更强的政策选项与被动加成。',
   },
   {
-    icon: Building,
+    icon: ICON_COIN,
     title: '建筑',
     body: '建设宫殿、农田、水利、军营等设施, 提升国势与经济。建筑需要时间与库银, 且受派系阻力。',
   },
@@ -58,10 +67,10 @@ const SHORTCUT_LIST: { keys: string; desc: string }[] = [
 ]
 
 const CREDITS = [
-  { role: '灵感', who: '陈舜臣《三国》/ 罗贯中《三国演义》/ v5.1 内部设计 汉末汉献帝' },
-  { role: '技术栈', who: 'Python 3.11 + Flask 3.1 + React 19 + Vite 5 + TypeScript 5' },
+  { role: '灵感', who: '陈舜臣《三国》/ 罗贯中《三国演义》' },
+  { role: '技术栈', who: 'Python 3.11 + Flask 3.1 + React 19 + Vite 7 + TypeScript 5' },
   { role: 'LLM', who: 'MiniMax-Text-01 / deepseek-v4-flash (OpenAI SDK 2.38 兼容)' },
-  { role: 'AI 生图', who: 'MiniMax image-01 (v5.2.0+ AI 贴图)' },
+  { role: 'AI 生图', who: 'MiniMax image-01 (v5.2.0+ AI 贴图, v5.5.0+ 200+ 小图)' },
   { role: '开发', who: '主公 + AI 协程' },
 ]
 
@@ -90,21 +99,24 @@ export function HelpModal({ open, onClose }: HelpModalProps) {
             className={`help-tab ${tab === 'play' ? 'help-tab--active' : ''}`}
             onClick={() => setTab('play')}
           >
-            <BookOpen size={14} /> 玩法
+            <img src={ICON_BOOK} alt="" style={{ width: 14, height: 14, verticalAlign: 'middle', marginRight: 4 }} />
+            玩法
           </button>
           <button
             type="button"
             className={`help-tab ${tab === 'shortcuts' ? 'help-tab--active' : ''}`}
             onClick={() => setTab('shortcuts')}
           >
-            <Keyboard size={14} /> 快捷键
+            <img src={ICON_LAMP} alt="" style={{ width: 14, height: 14, verticalAlign: 'middle', marginRight: 4 }} />
+            快捷键
           </button>
           <button
             type="button"
             className={`help-tab ${tab === 'credits' ? 'help-tab--active' : ''}`}
             onClick={() => setTab('credits')}
           >
-            <Heart size={14} /> 致谢
+            <img src={ICON_COIN} alt="" style={{ width: 14, height: 14, verticalAlign: 'middle', marginRight: 4 }} />
+            致谢
           </button>
         </div>
 
@@ -112,11 +124,10 @@ export function HelpModal({ open, onClose }: HelpModalProps) {
           {tab === 'play' && (
             <div className="help-section">
               {GAMEPLAY_SECTIONS.map((s, i) => {
-                const Icon = s.icon
                 return (
                   <div key={i} className="help-section__item">
                     <div className="help-section__icon">
-                      <Icon size={20} />
+                      <img src={s.icon} alt="" style={{ width: 20, height: 20 }} />
                     </div>
                     <div>
                       <h4>{s.title}</h4>

@@ -1,9 +1,8 @@
 /* =============================================
-   ConfirmDialog - 通用确认弹窗 (v5.2.0 P6-5)
-   v5.1 内部设计 ConfirmDialog, 4 种 variant
+   ConfirmDialog - 通用确认弹窗 (v5.2.0 P6-5 + v5.5.0+ P8-G6)
+   4 种 variant: danger / warning / info / success
    ============================================= */
 import { useEffect, useRef } from 'react'
-import { AlertTriangle, Info, AlertCircle, CheckCircle2 } from 'lucide-react'
 
 type Variant = 'danger' | 'warning' | 'info' | 'success'
 
@@ -19,11 +18,11 @@ interface ConfirmDialogProps {
   onCancel: () => void
 }
 
-const VARIANT_META: Record<Variant, { icon: any; color: string; bg: string }> = {
-  danger: { icon: AlertTriangle, color: '#c42b2b', bg: 'rgba(196, 43, 43, 0.12)' },
-  warning: { icon: AlertCircle, color: '#d4a017', bg: 'rgba(212, 160, 23, 0.12)' },
-  info: { icon: Info, color: '#5b8fb9', bg: 'rgba(91, 143, 185, 0.12)' },
-  success: { icon: CheckCircle2, color: '#5bbf6b', bg: 'rgba(91, 191, 107, 0.12)' },
+const VARIANT_META: Record<Variant, { icon: string; color: string; bg: string; cls: string }> = {
+  danger:  { icon: '/status/error_spring.jpg',   color: '#c42b2b', bg: 'rgba(196, 43, 43, 0.12)',  cls: 'status-badge--error' },
+  warning: { icon: '/status/warning_spring.jpg', color: '#d4a017', bg: 'rgba(212, 160, 23, 0.12)', cls: 'status-badge--warning' },
+  info:    { icon: '/status/info_spring.jpg',    color: '#5b8fb9', bg: 'rgba(91, 143, 185, 0.12)', cls: 'status-badge--info' },
+  success: { icon: '/status/success_spring.jpg', color: '#5bbf6b', bg: 'rgba(91, 191, 107, 0.12)', cls: 'status-badge--success' },
 }
 
 export function ConfirmDialog({
@@ -49,7 +48,6 @@ export function ConfirmDialog({
   if (!open) return null
 
   const meta = VARIANT_META[variant]
-  const Icon = meta.icon
 
   return (
     <div className="modal-overlay" onClick={onCancel}>
@@ -59,13 +57,15 @@ export function ConfirmDialog({
           display: 'flex', alignItems: 'flex-start', gap: '12px',
           padding: '4px 0 12px',
         }}>
-          <div style={{
+          <div className={`status-badge ${meta.cls}`} style={{
             width: '36px', height: '36px', borderRadius: '50%',
             background: meta.bg, color: meta.color,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
+            padding: 0,
           }}>
-            <Icon size={20} />
+            <img className="status-badge__icon" src={meta.icon} alt=""
+              style={{ width: '24px', height: '24px' }} />
           </div>
           <div style={{ flex: 1 }}>
             <div className="modal__title" style={{ marginBottom: '4px' }}>{title}</div>
@@ -80,6 +80,8 @@ export function ConfirmDialog({
         </div>
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
           <button type="button" className="btn" onClick={onCancel} disabled={loading}>
+            <img className="settings-section__icon" src="/btn/btn_cancel.jpg" alt=""
+              style={{ width: '14px', height: '14px', marginRight: 4 }} />
             {cancelText}
           </button>
           <button
@@ -90,6 +92,8 @@ export function ConfirmDialog({
             disabled={loading}
             style={variant === 'danger' ? { background: meta.color, color: '#fff' } : undefined}
           >
+            <img className="settings-section__icon" src="/btn/btn_confirm.jpg" alt=""
+              style={{ width: '14px', height: '14px', marginRight: 4 }} />
             {loading ? '处理中...' : confirmText}
           </button>
         </div>

@@ -1,9 +1,8 @@
 /* =============================================
-   SettingsModal - 设置弹窗 (v5.2.0 P6-7)
+   SettingsModal - 设置弹窗 (v5.2.0 P6-7 + v5.5.0+ P8-G5)
    4 段: 主题 / 季节 / 快捷键 / 关于
    ============================================= */
 import { useEffect, useState } from 'react'
-import { Sun, Moon, Cloud, Flower, Leaf, Snowflake, Keyboard, Info, Save, Trash2 } from 'lucide-react'
 import { useTheme } from '../hooks/useTheme'
 import { api } from '../api'
 
@@ -11,7 +10,6 @@ interface SettingsModalProps {
   open: boolean
   onClose: () => void
   onClearSaves?: () => void
-  // v5.2.0 P6-8: 嵌套 StatsModal
   onOpenStats?: () => void
 }
 
@@ -51,28 +49,36 @@ export function SettingsModal({ open, onClose, onClearSaves, onOpenStats }: Sett
 
         {/* 主题 */}
         <section className="settings-section">
-          <h3>主题</h3>
+          <h3>
+            <img className="settings-section__icon" src="/ctrl/ctrl_theme_icon.jpg" alt="" />
+            主题
+          </h3>
           <div className="settings-row">
             <button
               type="button"
               className={`btn ${theme === 'dark' ? 'btn--primary' : ''}`}
               onClick={() => setTheme('dark')}
             >
-              <Moon size={14} /> 玄黑 (默认)
+              <img className="settings-section__icon" src="/deco/dragon_motif.jpg" alt="" />
+              玄黑 (默认)
             </button>
             <button
               type="button"
               className={`btn ${theme === 'light' ? 'btn--primary' : ''}`}
               onClick={() => setTheme('light')}
             >
-              <Sun size={14} /> 亮色
+              <img className="settings-section__icon" src="/deco/phoenix_motif.jpg" alt="" />
+              亮色
             </button>
           </div>
         </section>
 
         {/* 季节 */}
         <section className="settings-section">
-          <h3>季节 (背景)</h3>
+          <h3>
+            <img className="settings-section__icon" src="/ctrl/ctrl_volume_icon.jpg" alt="" />
+            季节 (背景)
+          </h3>
           <div className="settings-row">
             {(['spring', 'summer', 'autumn', 'winter'] as const).map(s => (
               <button
@@ -82,10 +88,7 @@ export function SettingsModal({ open, onClose, onClearSaves, onOpenStats }: Sett
                 onClick={() => cycleSeason()}
                 data-tooltip={`当前: ${season}`}
               >
-                {s === 'spring' && <Flower size={14} />}
-                {s === 'summer' && <Cloud size={14} />}
-                {s === 'autumn' && <Leaf size={14} />}
-                {s === 'winter' && <Snowflake size={14} />}
+                <img className="settings-section__icon" src={`/deco/${s === 'spring' ? 'bamboo_motif' : s === 'summer' ? 'lotus_motif' : s === 'autumn' ? 'chrysanthemum_motif' : 'plum_motif'}.jpg`} alt="" />
                 {s === 'spring' ? '春' : s === 'summer' ? '夏' : s === 'autumn' ? '秋' : '冬'}
               </button>
             ))}
@@ -97,7 +100,10 @@ export function SettingsModal({ open, onClose, onClearSaves, onOpenStats }: Sett
 
         {/* 快捷键 */}
         <section className="settings-section">
-          <h3><Keyboard size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} /> 快捷键</h3>
+          <h3>
+            <img className="settings-section__icon" src="/ctrl/ctrl_slider_track.jpg" alt="" />
+            快捷键
+          </h3>
           <div className="settings-shortcut-list">
             {SHORTCUTS.map(s => (
               <div key={s.keys} className="settings-shortcut-row">
@@ -110,7 +116,10 @@ export function SettingsModal({ open, onClose, onClearSaves, onOpenStats }: Sett
 
         {/* 多周目统计 (from v5.1.5 P5-1) */}
         <section className="settings-section">
-          <h3><Info size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} /> 多周目统计</h3>
+          <h3>
+            <img className="settings-section__icon" src="/accent/badge_authority.jpg" alt="" />
+            多周目统计
+          </h3>
           {stats ? (
             <div className="settings-stats">
               <div><b>总局数</b>: {stats.total_runs}</div>
@@ -149,21 +158,28 @@ export function SettingsModal({ open, onClose, onClearSaves, onOpenStats }: Sett
         {/* 危险区 */}
         {onClearSaves && (
           <section className="settings-section settings-section--danger">
-            <h3>危险操作</h3>
+            <h3>
+              <img className="settings-section__icon" src="/status/error_spring.jpg" alt="" />
+              危险操作
+            </h3>
             <button
               type="button"
               className="btn btn--danger"
               onClick={onClearSaves}
             >
-              <Trash2 size={14} /> 清空所有存档
+              <img className="settings-section__icon" src="/btn/btn_danger.jpg" alt="" />
+              清空所有存档
             </button>
-            <Save size={14} style={{ marginLeft: 8, color: 'var(--color-text-muted)' }} />
+            <img className="settings-section__icon" src="/btn/btn_save.jpg" alt="" style={{ marginLeft: 8 }} />
             <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>主公慎用</span>
           </section>
         )}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
-          <button type="button" className="btn btn--primary" onClick={onClose}>关闭</button>
+          <button type="button" className="btn btn--primary" onClick={onClose}>
+            <img className="settings-section__icon" src="/btn/btn_confirm.jpg" alt="" />
+            关闭
+          </button>
         </div>
       </div>
     </div>

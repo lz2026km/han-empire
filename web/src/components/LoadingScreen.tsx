@@ -1,10 +1,9 @@
 /* =============================================
-   LoadingScreen - 全屏推演 Loading (v5.2.0 P6-6)
+   LoadingScreen - 全屏推演 Loading (v5.2.0 P6-6 + v5.5.0+ P8-G6)
    v5.1 内部设计 simulate_loading, 月相轮转 + 古风文案
    v5.3.0 P7-1: currentStage 联动 (fiscal/faction/events/narrative)
    ============================================= */
 import { useEffect, useState } from 'react'
-import { Loader2, Sparkles } from 'lucide-react'
 
 const PHASES = [
   { label: '主公稍候...', desc: '正在推演本月天机' },
@@ -68,7 +67,7 @@ export function LoadingScreen({ open, title = '推演中', currentStage }: Loadi
         </div>
         <h2 className="loading-screen__title">{title}</h2>
         <div className="loading-screen__phase">
-          <Sparkles size={14} style={{ marginRight: 4 }} />
+          <img src="/status/loading_spring.jpg" alt="" style={{ width: 16, height: 16, borderRadius: '50%', marginRight: 4, verticalAlign: 'middle' }} />
           {phase.label}
         </div>
         <p className="loading-screen__desc">{phase.desc}</p>
@@ -96,7 +95,7 @@ export function LoadingScreen({ open, title = '推演中', currentStage }: Loadi
           <div className="loading-screen__bar-fill" />
         </div>
         <div className="loading-screen__hint">
-          <Loader2 size={12} className="loading-screen__spin" />
+          <img src="/status/loading_spring.jpg" alt="" className="loading-screen__spin" style={{ width: 12, height: 12, borderRadius: '50%', marginRight: 4, verticalAlign: 'middle' }} />
           推演涉及 LLM 调用, 通常需 2-10 秒
         </div>
       </div>
