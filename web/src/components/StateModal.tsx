@@ -1,6 +1,6 @@
 /* =============================================
    StateModal - 国势详情弹窗 (v5.1.4 P4-3)
-   仿 ming_sim StateModal, 6 Tab: 国势/财政/派系/地区/军队/外部
+   v5.1 内部设计 StateModal, 6 Tab: 国势/财政/派系/地区/军队/外部
    ============================================= */
 import { useEffect, useRef, useState } from 'react'
 import { X, BarChart3, Coins, Users, Map, Sword, Globe } from 'lucide-react'

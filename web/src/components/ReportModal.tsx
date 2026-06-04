@@ -1,6 +1,6 @@
 /* =============================================
    ReportModal - 月初邸报弹窗 (v5.1.1 P1-3)
-   仿 ming_sim ReportModal, 全屏竹简底图 + 文言风叙事
+   v5.1 内部设计 ReportModal, 全屏竹简底图 + 文言风叙事
    ============================================= */
 import { useEffect, useRef, useState } from 'react'
 import { X, Copy, Check, ScrollText } from 'lucide-react'

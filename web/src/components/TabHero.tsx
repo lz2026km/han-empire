@@ -1,6 +1,6 @@
 /* =============================================
    TabHero - Tab 顶部 hero 贴图 (v5.2.0 P6-13)
-   仿 ming_sim tab_hero, AI 生图 (scripts/gen_images_v52.py)
+   v5.1 内部设计 tab_hero, AI 生图 (scripts/gen_images_v52.py)
    ============================================= */
 const TAB_HERO_MAP: Record<string, string> = {
   overview: '/v4-epic/tab_hero_overview.jpg',

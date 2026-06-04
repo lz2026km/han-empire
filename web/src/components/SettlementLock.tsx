@@ -1,7 +1,7 @@
 /* =============================================
-   SettlementLock - 全屏锁推演组件 (v2.2.0 借鉴明末, v5.1.1 双栏)
+   SettlementLock - 全屏锁推演组件 (v2.2.0 内部设计, v5.1.1 双栏)
    - 推演期间锁键盘
-   - v5.1.1 升级: 双栏布局 (左推敲 / 右正文), 仿 ming_sim SettlementLock
+   - v5.1.1 升级: 双栏布局 (左推敲 / 右正文), v5.1 内部设计 SettlementLock
    - 自动滚到底
    - 完成后显示「已颁布」+ 「退朝/退下」按钮
    ============================================= */
@@ -72,7 +72,7 @@ export function SettlementLock({
           </div>
         )}
 
-        {/* v5.1.1 P1-2: 双栏布局 (左推敲 / 右正文), 仿 ming_sim SettlementLock:1376-1427 */}
+        {/* v5.1.1 P1-2: 双栏布局 (左推敲 / 右正文), v5.1 内部设计 SettlementLock:1376-1427 */}
         <div className="settlement-two-col">
           <div className="settlement-col settlement-col--thinking">
             <div className="settlement-col-label">邸报房推敲</div>

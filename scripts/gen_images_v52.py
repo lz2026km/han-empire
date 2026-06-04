@@ -31,11 +31,11 @@ ROOT = Path(__file__).resolve().parent.parent
 WEB_PUBLIC = ROOT / "web" / "public"
 V4_EPIC = WEB_PUBLIC / "v4-epic"
 
-# 统一风格后缀
+# v5.4.0 P7-B: 风格统一 (更"水墨山水画"而非 cinematic 摄影)
 STYLE_SUFFIX = (
-    "Chinese ink painting, Han dynasty aesthetic, gold-red-black palette, "
-    "cinematic lighting, no text, no watermark, no logos, ultra-detailed, "
-    "masterpiece, 8k"
+    "Chinese ink wash painting shuimo style, Han dynasty, "
+    "rice paper background texture, fine line work, gold and red seal accents, "
+    "master brushwork, no text overlay, no watermark, masterpiece"
 )
 
 # 25 张图: (filename, prompt, aspect_ratio)
@@ -210,6 +210,83 @@ IMAGES = [
         "people fleeing, ink painting, tragic, " + STYLE_SUFFIX,
         "1:1",
     ),
+    # v5.4.0 P7-B1: 13 州郡 + 全屏地图
+    (
+        "bg_map_han.jpg",
+        "Panoramic ancient Chinese map of Han dynasty, 13 provinces "
+        "with mountain ranges and rivers, calligraphic labels, parchment "
+        "texture, top-down view, masterpiece, no text overlay, " + STYLE_SUFFIX,
+        "16:9",
+    ),
+    # v5.4.0 P7-B1: 13 州郡 (含北方辽东/西凉/南方百越, 各省地理标志)
+    (
+        "bg_province_youzhou.jpg", "Youzhou Han province, northern frontier, "
+        "mountains and the Great Wall, military outpost, " + STYLE_SUFFIX, "1:1"),
+    (
+        "bg_province_jizhou.jpg", "Jizhou Han province, central plains, "
+        "yellow river valley, farmland, " + STYLE_SUFFIX, "1:1"),
+    (
+        "bg_provence_qingzhou.jpg", "Qingzhou Han province, eastern coast, "
+        "seaside, salt fields, " + STYLE_SUFFIX, "1:1"),
+    (
+        "bg_province_xuzhou.jpg", "Xuzhou Han province, central east, "
+        "hills and rivers, " + STYLE_SUFFIX, "1:1"),
+    (
+        "bg_province_yanzhou.jpg", "Yanzhou Han province, Confucius homeland, "
+        "mountains and temples, " + STYLE_SUFFIX, "1:1"),
+    (
+        "bg_province_yuzhou.jpg", "Yuzhou Han province, central plains, "
+        "ancient capital Luoyang, " + STYLE_SUFFIX, "1:1"),
+    (
+        "bg_province_jingzhou.jpg", "Jingzhou Han province, southern central, "
+        "rivers and bamboo, " + STYLE_SUFFIX, "1:1"),
+    (
+        "bg_province_yangzhou.jpg", "Yangzhou Han province, southeast coast, "
+        "Yangtze delta, rice paddies, " + STYLE_SUFFIX, "1:1"),
+    (
+        "bg_province_jiangzhou.jpg", "Jiangzhou Han province, south, "
+        "lake and rice paddies, " + STYLE_SUFFIX, "1:1"),
+    (
+        "bg_province_youzhou_south.jpg", "Lingnan Han province, south, "
+        "tropical jungle and coast, " + STYLE_SUFFIX, "1:1"),
+    (
+        "bg_provence_xiangzhou.jpg", "Xiangzhou Han province, south central, "
+        "mountains and rivers, " + STYLE_SUFFIX, "1:1"),
+    (
+        "bg_province_yizhou.jpg", "Yizhou Han province, southwest, "
+        "Sichuan basin, misty mountains, " + STYLE_SUFFIX, "1:1"),
+    (
+        "bg_province_liangzhou.jpg", "Liangzhou Han province, northwest, "
+        "Gansu corridor, desert and mountains, " + STYLE_SUFFIX, "1:1"),
+    # v5.4.0 P7-B3: 5 大臣立绘 (代表性, 余下复用现有 portraits/main/*.jpg)
+    (
+        "portraits/main/caocao_emperor.jpg", "Portrait of Cao Cao, warlord and "
+        "poet, Han dynasty, cunning and charismatic, dark armor, " + STYLE_SUFFIX, "1:1"),
+    (
+        "portraits/main/liubiao_emperor.jpg", "Portrait of Liu Biao, Han governor, "
+        "scholarly, hanfu robe, " + STYLE_SUFFIX, "1:1"),
+    (
+        "portraits/main/yuan_shao_emperor.jpg", "Portrait of Yuan Shao, "
+        "arrogant noble, golden armor, " + STYLE_SUFFIX, "1:1"),
+    (
+        "portraits/main/sun_jian_emperor.jpg", "Portrait of Sun Jian, "
+        "warrior general, red battle robes, " + STYLE_SUFFIX, "1:1"),
+    (
+        "portraits/main/lu_bu_emperor.jpg", "Portrait of Lu Bu, "
+        "greatest warrior, red horse halberd, " + STYLE_SUFFIX, "1:1"),
+    # v5.4.0 P7-B4: 4 季节角饰
+    (
+        "corner_spring.jpg", "Spring Chinese cloud pattern, jade green, "
+        "jade beads, gold tassel, " + STYLE_SUFFIX, "1:1"),
+    (
+        "corner_summer.jpg", "Summer Chinese cloud pattern, lotus, "
+        "vermillion red, gold tassel, " + STYLE_SUFFIX, "1:1"),
+    (
+        "corner_autumn.jpg", "Autumn Chinese cloud pattern, maple leaves, "
+        "gold and brown, " + STYLE_SUFFIX, "1:1"),
+    (
+        "corner_winter.jpg", "Winter Chinese cloud pattern, plum blossoms, "
+        "jade white and gold, " + STYLE_SUFFIX, "1:1"),
 ]
 
 

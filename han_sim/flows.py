@@ -304,7 +304,7 @@ def apply_class_delta_from_factions(
 
 def apply_warlord_actions(state: GameState, db: GameDB) -> List[Dict]:
     """每回合各路诸侯自动行动：写入 powers.last_action，推进藩镇值。
-    参照 ming_sim/db.apply_power_deltas() + power_payload()。
+    参照 v5.1 内部设计/db.apply_power_deltas() + power_payload()。
     """
     changes: List[Dict] = []
     # 含汉室自身，取除汉室外所有势力

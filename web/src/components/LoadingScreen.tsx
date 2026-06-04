@@ -1,6 +1,6 @@
 /* =============================================
    LoadingScreen - 全屏推演 Loading (v5.2.0 P6-6)
-   仿 ming_sim simulate_loading, 月相轮转 + 古风文案
+   v5.1 内部设计 simulate_loading, 月相轮转 + 古风文案
    v5.3.0 P7-1: currentStage 联动 (fiscal/faction/events/narrative)
    ============================================= */
 import { useEffect, useState } from 'react'

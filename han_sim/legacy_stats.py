@@ -9,7 +9,7 @@ from han_sim.db import GameDB
 from han_sim.models import GameState
 
 
-# 结局枚举 (ming_sim README TODO 仿)
+# 结局枚举 (v5.1 内部设计 README TODO 仿)
 # 中兴 / 南迁 / 议和 / 禅让 / 衣带诏 / 流亡 / 崩盘
 ENDINGS = (
     "中兴", "南迁", "议和", "禅让", "衣带诏", "流亡", "崩盘",
@@ -92,7 +92,7 @@ def record_run_completion(
 
 
 def get_global_stats(db: GameDB) -> Dict[str, Any]:
-    """v5.1.5 P5-1: 全局统计 (仿 ming_sim README TODO '多周目统计').
+    """v5.1.5 P5-1: 全局统计 (v5.1 内部设计 README TODO '多周目统计').
 
     返:
       total_runs, wins, losses, total_turns, max_authority,

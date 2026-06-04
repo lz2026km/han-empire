@@ -210,5 +210,5 @@
 ## 8. 版本信息
 
 - **v1.12.0 (2026-06-01)** — 乾坤大挪移一号方案 Phase A 落地
-- 来源：明末 `game_world.md` 宪法对位汉献帝版本
+- 来源：汉末 `game_world.md` 宪法对位汉献帝版本
 - 实施底册：`/home/admin/.openclaw/workspace/han-empire/docs/phaseA_v1.12.0_proposal.md`

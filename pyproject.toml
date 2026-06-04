@@ -1,7 +1,7 @@
 [project]
 name = "han-empire"
-version = "5.3.0"
-description = "汉献帝之末路 v5.3.0 - 体验收口 (LoadingScreen 流式 + Cheat 加强 + TTS + e2e + 视觉回归 + z-index 统一)"
+version = "5.5.0"
+description = "汉献帝之末路 v5.5.0 - 彻底代码审查 + UI/UX 整改 (法律合规清洗 + 仓库瘦身 + 大屏适配)"
 requires-python = ">=3.11"
 dependencies = [
     "agno>=2.6.9",

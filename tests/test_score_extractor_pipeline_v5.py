@@ -77,7 +77,7 @@ def test_tier_order_4_tiers():
 
 def test_tier_prompts_match_files():
     """档房 prompt 文件名 (实际文件存在)"""
-    base = "/home/admin/.openclaw/workspace/han-empire/content/prompts"
+    base = os.path.join(os.path.dirname(__file__), "..", "content", "prompts")
     for tier, prompt_name in TIER_PROMPTS.items():
         path = os.path.join(base, f"{prompt_name}.md")
         assert os.path.exists(path), f"{path} 不存在"

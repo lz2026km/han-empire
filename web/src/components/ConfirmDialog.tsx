@@ -1,6 +1,6 @@
 /* =============================================
    ConfirmDialog - 通用确认弹窗 (v5.2.0 P6-5)
-   仿 ming_sim ConfirmDialog, 4 种 variant
+   v5.1 内部设计 ConfirmDialog, 4 种 variant
    ============================================= */
 import { useEffect, useRef } from 'react'
 import { AlertTriangle, Info, AlertCircle, CheckCircle2 } from 'lucide-react'

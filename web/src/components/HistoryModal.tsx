@@ -1,6 +1,6 @@
 /* =============================================
    HistoryModal - 回合历史弹窗 (v5.1.2 P2-2)
-   仿 ming_sim HistoryModal, 3 Tab: Summary / Decisions / Closed
+   v5.1 内部设计 HistoryModal, 3 Tab: Summary / Decisions / Closed
    ============================================= */
 import { useEffect, useRef, useState } from 'react'
 import { X, History, ScrollText, ListChecks, ScrollText as Scroll } from 'lucide-react'

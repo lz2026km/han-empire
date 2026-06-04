@@ -1,6 +1,6 @@
 /* =============================================
    ClosedIssuesModal - 关案弹窗 (v5.1.2 P2-1)
-   仿 ming_sim ClosedIssuesModal, 月末自动弹
+   v5.1 内部设计 ClosedIssuesModal, 月末自动弹
    ============================================= */
 import { useEffect, useRef } from 'react'
 import { X, Check, ListChecks } from 'lucide-react'

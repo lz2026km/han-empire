@@ -1,6 +1,6 @@
 """大臣 Agent 工具集：查询工具 + court tools（拟旨/退下/换人）。L5。
 
-基于 ming_sim/tools.py 改编为汉末版本。
+基于 v5.1 内部设计/tools.py 改编为汉末版本。
 v1.14.0 乾坤大挪移 Phase C 扩展：
   - build_minister_tools: 18 → 28 工具
   - build_board_query_tools: 9 → 12 工具

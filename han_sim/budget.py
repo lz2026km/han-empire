@@ -1,6 +1,6 @@
 """v5.1.0 P0-2: 财政预算视图 (国库/内库 分账户)
 
-仿 ming_sim/models.py:113-114 BudgetAccount + ming_sim/web_app.py:700+ /api/budget
+v5.1 内部设计/models.py:113-114 BudgetAccount + v5.1 内部设计/web_app.py:700+ /api/budget
 本模块提供只读视图, 不修改 state.metrics["汉室库"] / state.metrics["内库"]。
 应用层仍走 flows.apply_monthly_flow / apply_graduated_fiscal。
 
@@ -80,7 +80,7 @@ _PROVINCE_TAX_FALLBACK = {
 
 
 def _province_efficiency(fiscal: Dict, gentry: int, unrest: int) -> float:
-    """省份税收效率 (0-1). 仿 ming_sim 公式.
+    """省份税收效率 (0-1). v5.1 内部设计 公式.
     
     efficiency = 1 - corruption/100 * 0.6 - gentry/100 * 0.3 - unrest/100 * 0.3
     """

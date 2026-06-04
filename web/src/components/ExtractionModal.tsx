@@ -1,6 +1,6 @@
 /* =============================================
    ExtractionModal - 提取章节透明 (v5.1.2 P2-3)
-   仿 ming_sim ExtractionModal, 4 档房 Tab + 折叠 JSON
+   v5.1 内部设计 ExtractionModal, 4 档房 Tab + 折叠 JSON
    ============================================= */
 import { useEffect, useRef, useState } from 'react'
 import { X, ChevronDown, ChevronRight, FileJson, AlertCircle } from 'lucide-react'

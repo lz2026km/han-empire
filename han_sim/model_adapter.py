@@ -2,7 +2,7 @@
 v3.0-BE-3: 多模型适配器 (调研 P0-3)
 ====================================
 
-设计依据: 青干《崇祯模拟器》官方适配 3 家
+设计依据: 历史策略游戏类作品官方适配 3 家
   "目前 Deepseek, Alibaba 和 GLM 进行了官方适配,
    您也可以在下方新建 Key 策略中任意新建模型 Key,
    不过无法确定其他模型在本场景下的适配效果如何."
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 class Provider(str, Enum):
-    """支持的 LLM 提供商 (按青干官方 + 主公 MiniMax)"""
+    """支持的 LLM 提供商 (按内部官方 + 主公 MiniMax)"""
     MINIMAX = "minimax"     # 主公默认
     QWEN = "qwen"           # 阿里 DashScope
     DEEPSEEK = "deepseek"   # DeepSeek
@@ -64,7 +64,7 @@ def detect_provider(base_url: str) -> Provider:
     return Provider.UNKNOWN
 
 
-# Provider 默认推荐模型 (从青干官方 + 实测)
+# Provider 默认推荐模型 (从内部官方 + 实测)
 PROVIDER_DEFAULT_MODELS = {
     Provider.MINIMAX: "MiniMax-Text-01",
     Provider.QWEN: "qwen-plus",

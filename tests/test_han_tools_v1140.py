@@ -4,7 +4,7 @@
 - build_phase_c_tools: 12 工具实例化
 - build_extractor_tools: 10 工具
 - build_emperor_tools: 7 工具
-- 明朝漏网词 0
+- 时代错位词 0
 - submit_extraction 16 字段契约
 """
 
@@ -277,16 +277,16 @@ class TestBuildEmperorTools(unittest.TestCase):
 
 
 class TestHanNamesOnly(unittest.TestCase):
-    """明朝漏网词 0 检查。"""
+    """时代错位词 0 检查。"""
 
-    def test_no_ming_words(self):
+    def test_no_forbidden_words(self):
         src = open(os.path.join(os.path.dirname(__file__), '..', 'han_sim', 'tools.py'),
                    encoding='utf-8').read()
-        ming_words = ['崇祯', '东林', '阉党', '锦衣卫', '东厂', '校事', '厂卫',
+        forbidden_words = ['崇祯', '东林', '阉党', '锦衣卫', '东厂', '校事', '厂卫',
                       '辽东', '建奴', '流寇', '闯王', '内阁', '首辅']
-        for w in ming_words:
+        for w in forbidden_words:
             count = src.count(w)
-            self.assertEqual(count, 0, f"明朝漏网词 '{w}' 出现 {count} 次")
+            self.assertEqual(count, 0, f"时代错位词 '{w}' 出现 {count} 次")
 
 
 if __name__ == '__main__':

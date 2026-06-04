@@ -174,6 +174,6 @@
 ## 8. 版本信息
 
 - **v1.13.0 (2026-06-01)** — 乾坤大挪移一号方案 Phase B 落地
-- 来源：明末 `chat_memory_extractor.md` 汉化版
+- 来源：汉末 `chat_memory_extractor.md` 汉化版
 - 实施底册：`/home/admin/.openclaw/workspace/han-empire/docs/phaseB_v1.13.0_proposal.md`
 - 施工总底册：`/home/admin/.openclaw/workspace/han-empire/docs/game-bible-localization-plan.md` §4

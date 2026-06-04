@@ -58,7 +58,7 @@ const SHORTCUT_LIST: { keys: string; desc: string }[] = [
 ]
 
 const CREDITS = [
-  { role: '灵感', who: '陈舜臣《三国》/ 罗贯中《三国演义》/ ming_sim 明末崇祯' },
+  { role: '灵感', who: '陈舜臣《三国》/ 罗贯中《三国演义》/ v5.1 内部设计 汉末汉献帝' },
   { role: '技术栈', who: 'Python 3.11 + Flask 3.1 + React 19 + Vite 5 + TypeScript 5' },
   { role: 'LLM', who: 'MiniMax-Text-01 / deepseek-v4-flash (OpenAI SDK 2.38 兼容)' },
   { role: 'AI 生图', who: 'MiniMax image-01 (v5.2.0+ AI 贴图)' },

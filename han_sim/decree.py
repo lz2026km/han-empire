@@ -45,7 +45,7 @@ class DecreeEffect:
     description: str
 
 
-# v5.1.1 P1-1: 天命控制台强制结算前缀 (M# 仿 ming_sim/decree.py:50-57)
+# v5.1.1 P1-1: 天命控制台强制结算前缀 (M# v5.1 内部设计/decree.py:50-57)
 # 仅在 resolve_directives / stream_issue_decree 拼一次 (cheat 非空时),
 # LLM 看到即视作既成事实按字面抽. 严禁复用此串.
 CHEAT_NARRATIVE_PREFIX = (

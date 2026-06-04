@@ -257,7 +257,7 @@ class SimulationResult:
 
 def _extract_entities_from_decree_draft(state: "GameState") -> List[str]:
     """v5.1.0 P0-5 step 1.7: 从 directive_draft 提实体词 (人名/州郡/军队/势力).
-    仿 ming_sim/decree.py step 1.8 memory_retrieval.
+    v5.1 内部设计/decree.py step 1.8 memory_retrieval.
     """
     entities: List[str] = []
     text = ""
@@ -308,7 +308,7 @@ def _extract_entities_from_decree_draft(state: "GameState") -> List[str]:
 
 def _build_memory_injection_block(state: "GameState", db: "GameDB") -> str:
     """v5.1.0 P0-5 step 1.8: 注入推演记忆到 prompt.
-    仿 ming_sim/decree.py step 1.8.
+    v5.1 内部设计/decree.py step 1.8.
     """
     try:
         entities = _extract_entities_from_decree_draft(state)

@@ -1693,7 +1693,7 @@ def list_consort_records_api(campaign_id, consort_id):
 def api_consort_memories(campaign_id, consort_id):
     """v5.1.3 P3-1: 妃嫔永久记忆 (调教 + 召见 + 画像).
 
-    仿 ming_sim HaremDrawer 调教历史.
+    v5.1 内部设计 HaremDrawer 调教历史.
     综合: consort_traits (永久技能/性情) + consort_events (调教流水) + 画像.
     """
     from han_sim.paths import user_data_path
@@ -2104,7 +2104,7 @@ def api_intro_hints():
 # --- 6k) /api/menu/status (v5.1.4 P4-1: 菜单页 MenuPage) ---
 @app.route('/api/menu/status', methods=['GET'])
 def api_menu_status():
-    """v5.1.4 P4-1: 菜单页总状态 (仿 ming_sim /api/menu/status)
+    """v5.1.4 P4-1: 菜单页总状态 (v5.1 内部设计 /api/menu/status)
 
     返回: 存档列表 + LLM 配置 + 是否有主存档 + 是否有 API Key
     """
@@ -2226,7 +2226,7 @@ def api_menu_quick_start():
 # --- 6m) /api/stats/global + /api/stats/runs (v5.1.5 P5-1: 多周目统计) ---
 @app.route('/api/stats/global', methods=['GET'])
 def api_stats_global():
-    """v5.1.5 P5-1: 全局统计 (仿 ming_sim README TODO '多周目统计')
+    """v5.1.5 P5-1: 全局统计 (v5.1 内部设计 README TODO '多周目统计')
 
     返:
       total_runs, wins, losses, total_turns, max_authority,
@@ -2278,7 +2278,7 @@ def api_stats_runs():
 # --- 6j) /api/extraction (v5.1.2 P2-3: ExtractionModal 提取透明) ---
 @app.route('/api/extraction', methods=['GET'])
 def api_extraction():
-    """v5.1.2 P2-3: 读 turn_extractions 表 (仿 ming_sim ExtractionModal)
+    """v5.1.2 P2-3: 读 turn_extractions 表 (v5.1 内部设计 ExtractionModal)
 
     Query params:
         campaign_id: 战役 ID (必需)
@@ -2447,7 +2447,7 @@ def api_history():
 # --- 6h) /api/issues/closed (v5.1.2 P2-1: ClosedIssuesModal 关案弹窗) ---
 @app.route('/api/issues/closed', methods=['GET'])
 def api_issues_closed():
-    """v5.1.2 P2-1: 列本 turn 内结案的事项 (仿 ming_sim ClosedIssuesModal)
+    """v5.1.2 P2-1: 列本 turn 内结案的事项 (v5.1 内部设计 ClosedIssuesModal)
 
     Query params:
         campaign_id: 战役 ID (必需)
@@ -2489,7 +2489,7 @@ def api_issues_closed():
 # --- 6g) /api/gazette (v5.1.1 P1-3: 月初邸报弹窗) ---
 @app.route('/api/gazette', methods=['GET'])
 def api_gazette():
-    """v5.1.1 P1-3: 读 turn_reports 表 (仿 ming_sim /api/menu/status gazette)
+    """v5.1.1 P1-3: 读 turn_reports 表 (v5.1 内部设计 /api/menu/status gazette)
 
     Query params:
         campaign_id: 战役 ID (必需)
@@ -2610,7 +2610,7 @@ def api_clear_legacy(legacy_key):
 # --- 6e) /api/budget (v5.1.0 P0-2: 国库/内库 分账户预算视图) ---
 @app.route('/api/budget', methods=['GET'])
 def api_budget():
-    """v5.1.0 P0-2: 财政预算视图 (仿 ming_sim /api/budget)
+    """v5.1.0 P0-2: 财政预算视图 (v5.1 内部设计 /api/budget)
 
     Query params:
         campaign_id: 战役 ID (必需)
@@ -2663,7 +2663,7 @@ def api_budget():
 # --- 6d) /api/event_memories (v5.1.0 P0-1: 事件记忆) ---
 @app.route('/api/event_memories', methods=['GET'])
 def api_event_memories():
-    """v5.1.0 P0-1: 事件记忆召回 (仿 ming_sim/memories.py:729)
+    """v5.1.0 P0-1: 事件记忆召回 (v5.1 内部设计/memories.py:729)
 
     支持 3 种召回模式:
         1) subject 召回: ?campaign_id=&subject=曹操&subject_type=character&limit=10

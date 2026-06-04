@@ -76,7 +76,7 @@
 - **WCAG 2.1 AA 可达性**: 90 button 100% 可达 (16 aria-label + 12 role=button + 62 textContent)
 - **全键盘操作**: 5 Modal 支持 Escape 关闭 + 背景滚动锁定
 - **UI 控件标准**: 89 button 全 type="button" (防 form 误提交)
-- **法律合规 100%**: 0 借鉴 / 0 emoji / 0 青干 / 0 回归, 38 文件实测通过
+- **法律合规 100%**: 0 借鉴 / 0 emoji / 0 内部 / 0 回归, 38 文件实测通过
 - **详见**: [CHANGELOG v3.3 段](CHANGELOG.md#-v33--2026-06-02-uxui-大修--全代码审查)
 
 ---

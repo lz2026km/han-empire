@@ -2274,9 +2274,9 @@ input:focus, select:focus {
 
 /* ════════════════════════════════════════════════════════════════
    v1.18.0 Phase G · 古风背景图 + 视觉系统
-   全面抄袭 ming-salvage-sim (明末力挽狂阑) 的视觉方案
-   注：明末用紫禁城/明制背景图 → 汉献帝也复用，
-       按主公指示"满足东汉末年+全面抄袭明末"轻量复用
+   全面抄袭 历史策略游戏类作品 的视觉方案
+   注：本作用古风背景图 → 汉献帝也复用，
+       按主公指示"满足东汉末年+全面抄袭汉末"轻量复用
    ════════════════════════════════════════════════════════════════ */
 
 /* 弹窗背景：背景图铺满，去掉 fullscreen-modal 的深色渐变 */
@@ -2398,7 +2398,7 @@ input:focus, select:focus {
 }
 
 /* ============================================
-   v2.2.0 借鉴明末: EdictModal 升级 (草稿池/拟诏/颁布)
+   v2.2.0 内部设计: EdictModal 升级 (草稿池/拟诏/颁布)
    ============================================ */
 .edict-modal {
   background:
@@ -2501,7 +2501,7 @@ input:focus, select:focus {
   font-size: 13px;
 }
 
-/* v5.1.1 P1-2: 双栏布局 (仿 ming_sim SettlementLock:1376-1427) */
+/* v5.1.1 P1-2: 双栏布局 (v5.1 内部设计 SettlementLock:1376-1427) */
 .settlement-two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2510,7 +2510,7 @@ input:focus, select:focus {
   min-height: 320px;
 }
 
-/* v5.1.4 P4-3: StateModal 国势详情 (仿 ming_sim StateModal) */
+/* v5.1.4 P4-3: StateModal 国势详情 (v5.1 内部设计 StateModal) */
 .state-modal-overlay {
   position: fixed; inset: 0; z-index: var(--z-modal);
   display: flex; align-items: center; justify-content: center;
@@ -2963,7 +2963,7 @@ input:focus, select:focus {
   color: var(--color-gold);
 }
 
-/* v5.2.0 P6-6: LoadingScreen 全屏推演 (仿 ming_sim simulate_loading) */
+/* v5.2.0 P6-6: LoadingScreen 全屏推演 (v5.1 内部设计 simulate_loading) */
 .loading-screen {
   position: fixed; inset: 0; z-index: var(--z-loading);
   display: flex; align-items: center; justify-content: center;
@@ -3325,7 +3325,7 @@ input:focus, select:focus {
   margin: 0;
 }
 
-/* v5.1.4 P4-1: MenuPage 主菜单 (仿 ming_sim MenuPage) */
+/* v5.1.4 P4-1: MenuPage 主菜单 (v5.1 内部设计 MenuPage) */
 .menu-page {
   width: 100%; max-width: 920px;
   margin: 0 auto;
@@ -3500,7 +3500,7 @@ input:focus, select:focus {
   .menu-page__actions { grid-template-columns: 1fr; }
 }
 
-/* v5.1.2 P2-3: ExtractionModal 提取透明 (仿 ming_sim ExtractionModal) */
+/* v5.1.2 P2-3: ExtractionModal 提取透明 (v5.1 内部设计 ExtractionModal) */
 .extract-modal-overlay {
   position: fixed;
   inset: 0;
@@ -3652,7 +3652,7 @@ input:focus, select:focus {
   gap: 8px;
 }
 
-/* v5.1.2 P2-2: HistoryModal 回合回看 (仿 ming_sim HistoryModal) */
+/* v5.1.2 P2-2: HistoryModal 回合回看 (v5.1 内部设计 HistoryModal) */
 .hist-modal-overlay {
   position: fixed;
   inset: 0;
@@ -3827,7 +3827,7 @@ input:focus, select:focus {
 .hist-pos { color: #4ade80; }
 .hist-neg { color: #f87171; }
 
-/* v5.1.2 P2-1: ClosedIssuesModal 关案弹窗 (仿 ming_sim ClosedIssuesModal) */
+/* v5.1.2 P2-1: ClosedIssuesModal 关案弹窗 (v5.1 内部设计 ClosedIssuesModal) */
 .closed-modal-overlay {
   position: fixed;
   inset: 0;
@@ -3995,7 +3995,7 @@ input:focus, select:focus {
   font-size: 11px;
 }
 
-/* v5.1.1 P1-3: 月初邸报弹窗 (仿 ming_sim ReportModal) */
+/* v5.1.1 P1-3: 月初邸报弹窗 (v5.1 内部设计 ReportModal) */
 .report-modal-overlay {
   position: fixed;
   inset: 0;

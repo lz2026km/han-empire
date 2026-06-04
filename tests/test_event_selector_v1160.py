@@ -6,7 +6,7 @@
 - tools.py build_event_selector_tools 2 工具
 - agents.py create_event_selector_agent
 - simulation.py LLM 软筛插入点
-- 明朝漏网词 0
+- 时代错位词 0
 """
 
 import sys
@@ -298,11 +298,11 @@ class TestSimulationIntegration(unittest.TestCase):
         self.assertTrue(hasattr(event_selector, "judge_candidates"))
 
 
-class TestNoMingWords(unittest.TestCase):
-    """v1.16.0 新文件明朝漏网词 = 0。"""
+class TestNoAnachronismWords(unittest.TestCase):
+    """v1.16.0 新文件时代错位词 = 0。"""
 
-    def test_no_ming_words_in_new_files(self):
-        ming_words = ['崇祯', '东林', '阉党', '锦衣卫', '东厂', '校事', '九千岁',
+    def test_no_forbidden_words_in_new_files(self):
+        forbidden_words = ['崇祯', '东林', '阉党', '锦衣卫', '东厂', '校事', '九千岁',
                       '魏忠贤', '袁崇焕', '李自成', '皇太极', '万历', '天启',
                       '崇祯帝', '正德', '嘉靖', '弘光', '魏阉', '客氏']
         files = [
@@ -317,9 +317,9 @@ class TestNoMingWords(unittest.TestCase):
                 continue
             with open(path, encoding='utf-8') as fh:
                 content = fh.read()
-            for w in ming_words:
+            for w in forbidden_words:
                 self.assertEqual(content.count(w), 0,
-                                 f"明朝漏网词 '{w}' 出现于 {f}")
+                                 f"时代错位词 '{w}' 出现于 {f}")
 
 
 if __name__ == '__main__':

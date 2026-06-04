@@ -205,7 +205,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [campaignId, showExtractionModal])
 
-  // v5.2.0 P6-2: S 键弹 StateModal (国势详情, 仿 ming_sim)
+  // v5.2.0 P6-2: S 键弹 StateModal (国势详情)
   useEffect(() => {
     if (!campaignId) return
     const onKey = (e: KeyboardEvent) => {
@@ -433,14 +433,14 @@ export default function App() {
         onSendMessage={handleSendMessage}
       />
 
-      {/* Edict Modal - v2.2.0 借鉴明末: 3 阶段 (草稿池/拟诏/颁布 SSE 流式) */}
+      {/* Edict Modal - v2.2.0 内部设计: 3 阶段 (草稿池/拟诏/颁布 SSE 流式) */}
       <EdictModal
         isOpen={showEdictModal}
         onClose={() => setShowEdictModal(false)}
         campaignId={gameState?.campaign_id || ''}
       />
 
-      {/* Settlement Lock Modal - v2.2.0 借鉴明末: 全屏锁 + 3 态推演 */}
+      {/* Settlement Lock Modal - v2.2.0 内部设计: 全屏锁 + 3 态推演 */}
       <SettlementLock
         stage=""
         thinking=""

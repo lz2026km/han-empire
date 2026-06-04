@@ -1,6 +1,6 @@
 /* =============================================
    MenuPage - 主菜单页 (v5.1.4 P4-1)
-   仿 ming_sim MenuPage, 选项: 继续/新朝/读档/退出
+   v5.1 内部设计 MenuPage, 选项: 继续/新朝/读档/退出
    v5.2.0 P6-3: 改用 NewGameModal 组件
    v5.2.0 P6-12: 美化 (主公头像 + 朝代 banner + 4 季节背景)
    ============================================= */
@@ -129,7 +129,7 @@ export function MenuPage({ onNewGame, onLoadSave, onContinue, onShutdown }: Menu
           <Crown size={48} className="menu-page__avatar-fallback" />
         </div>
         <h1>汉献帝之末路</h1>
-        <p className="menu-page__subtitle">献帝 v{status?.version || '5.2.0'} · 借鉴明末崇祯模拟器</p>
+        <p className="menu-page__subtitle">献帝 v{status?.version || '5.2.0'} · 回合制汉风政治游戏</p>
       </div>
 
       {error && <div className="menu-page__error">[X] {error}</div>}

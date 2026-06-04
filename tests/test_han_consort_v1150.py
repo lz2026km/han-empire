@@ -6,7 +6,7 @@
 - add_consort + cultivate_consort + list_consort_events 全流程
 - cultivate_consort_api (后端 API mock)
 - cultivate_consort 工具 (build_emperor_tools)
-- 明朝漏网词 0
+- 时代错位词 0
 """
 
 import sys
@@ -247,9 +247,9 @@ class TestConsortAPIs(unittest.TestCase):
         self.assertGreaterEqual(len(consort_rules), 7,
                                 f"后宫 API 应 ≥7 个，实测 {len(consort_rules)}: {consort_rules}")
 
-    def test_no_ming_words(self):
-        """所有 v1.15.0 新文件明朝漏网词 = 0。"""
-        ming_words = ['崇祯', '东林', '阉党', '锦衣卫', '东厂', '校事', '九千岁',
+    def test_no_forbidden_words(self):
+        """所有 v1.15.0 新文件时代错位词 = 0。"""
+        forbidden_words = ['崇祯', '东林', '阉党', '锦衣卫', '东厂', '校事', '九千岁',
                       '魏忠贤', '袁崇焕', '李自成', '皇太极', '万历', '天启',
                       '崇祯帝', '正德', '嘉靖', '弘光']
         files = [
@@ -264,9 +264,9 @@ class TestConsortAPIs(unittest.TestCase):
                 continue
             with open(path, encoding='utf-8') as fh:
                 content = fh.read()
-            for w in ming_words:
+            for w in forbidden_words:
                 self.assertEqual(content.count(w), 0,
-                                 f"明朝漏网词 '{w}' 出现于 {f}")
+                                 f"时代错位词 '{w}' 出现于 {f}")
 
 
 if __name__ == '__main__':

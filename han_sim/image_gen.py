@@ -9,7 +9,7 @@
 
 特性:
 - 链式 fallback: MINIMAX_API_KEY (主) → 无 key 报错
-- retry 1 + 60s 退避 (仿 ming_sim 5 RPM 限流经验)
+- retry 1 + 60s 退避 (v5.1 内部设计 5 RPM 限流经验)
 - 支持 aspect_ratio: 1:1 / 16:9 / 9:16 / 4:3 / 3:4 / 1:2 / 2:1
 - 支持 n: 1-4
 - 自动下载 url → 本地文件
@@ -32,7 +32,7 @@ MINIMAX_URL = "https://api.minimaxi.com/v1/image_generation"
 DEFAULT_MODEL = "image-01"
 ALLOWED_ASPECT = {"1:1", "16:9", "9:16", "4:3", "3:4", "1:2", "2:1"}
 DEFAULT_TIMEOUT = 90
-RETRY_DELAY = 60  # 秒 (仿 ming_sim MiniMax 5 RPM 限流经验)
+RETRY_DELAY = 60  # 秒 (v5.1 内部设计 MiniMax 5 RPM 限流经验)
 RETRY_MAX = 1
 
 

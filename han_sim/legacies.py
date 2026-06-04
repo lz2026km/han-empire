@@ -1,6 +1,6 @@
 """v5.1.0 P0-4: Opening Legacies 开幕负担
 
-仿 ming_sim/models.py:200-211 OpeningLegacy + ming_sim/legacies.py:88 check_clear_gates
+v5.1 内部设计/models.py:200-211 OpeningLegacy + v5.1 内部设计/legacies.py:88 check_clear_gates
 本模块:
   1. apply_legacy_modifiers(state, db): 把活跃 legacy 的 modifier 注入 state.metrics
   2. 修饰 modifier: 简单 metric 增减 + 复杂 modifier (decay_authority, faction_decay 等)
